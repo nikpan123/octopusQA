@@ -2,6 +2,7 @@ import { randomUUID } from 'node:crypto';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { test, expect } from './support/fixtures';
 import { Octopus } from './support/octopus';
+import { cleanupSuccessfulTeacher } from '../scripts/cleanup-teachers.mjs';
 
 test('szkoła → nauczyciel → relacja → wyszukiwanie → nauczyciel → historia @smoke', async ({ page }, testInfo) => {
   const app = new Octopus(page);
@@ -83,6 +84,10 @@ test('szkoła → nauczyciel → relacja → wyszukiwanie → nauczyciel → his
   } finally {
     run.finishedAt = new Date().toISOString();
     await saveRun();
-    await testInfo.attach('Dane utworzone w tym przebiegu', { body: JSON.stringify(run, null, 2), contentType: 'application/json' });
+    try {
+      await cleanupSuccessfulTeacher(page, run, saveRun);
+    } finally {
+      await testInfo.attach('Dane utworzone w tym przebiegu', { body: JSON.stringify(run, null, 2), contentType: 'application/json' });
+    }
   }
 });

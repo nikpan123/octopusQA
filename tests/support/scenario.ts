@@ -2,6 +2,7 @@ import { randomUUID } from 'node:crypto';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { test as base, expect } from './fixtures';
 import { Octopus } from './octopus';
+import { cleanupSuccessfulTeacher } from '../../scripts/cleanup-teachers.mjs';
 
 type Scenario = {
   app: Octopus;
@@ -50,7 +51,11 @@ export const test = base.extend<{ scenario: Scenario }>({
       data.result = testInfo.status === 'passed' ? 'PASS' : String(testInfo.status).toUpperCase();
       data.finishedAt = new Date().toISOString();
       await save();
-      await testInfo.attach('Dane scenariusza', { body: JSON.stringify(data, null, 2), contentType: 'application/json' });
+      try {
+        await cleanupSuccessfulTeacher(page, data, save);
+      } finally {
+        await testInfo.attach('Dane scenariusza', { body: JSON.stringify(data, null, 2), contentType: 'application/json' });
+      }
     }
   },
 });

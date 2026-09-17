@@ -120,7 +120,7 @@ npm.cmd test -- nauczyciel-rozszerzenie.spec.ts
 
 ### Rejestry przebiegów
 
-Każdy przebieg ma unikalny prefiks `REG_...`. ID i linki do rekordów są w `runs/<identyfikator>.json` oraz w załączniku raportu. Dane pozostają na dev do obejrzenia — skrypt ich nie usuwa. Przy błędzie przed odczytaniem ID można szukać szkoły po zapisanej w pliku nazwie.
+Każdy przebieg ma unikalny prefiks `REG_...`. ID i linki do rekordów są w `runs/<identyfikator>.json` oraz w załączniku raportu. Po udanym teście jego nauczyciel jest automatycznie usuwany wraz z powiązaniami i formularzami. Szkoły i ich zamówienia pozostają. Dane nieudanych testów zostają do analizy. Przy błędzie przed odczytaniem ID można szukać szkoły po zapisanej w pliku nazwie.
 
 Nie ma automatycznych ponowień. Testy działają kolejno w jednym procesie, by ograniczyć wzajemny wpływ operacji na tej samej sesji. Ponowne uruchomienie to nowy zestaw danych.
 
@@ -165,9 +165,37 @@ Uruchomienie tylko nowych testów:
 npm.cmd test -- zamowienia-klubowiczostwo.spec.ts
 ```
 
-Rekordy pozostają na dev; ich ID i parametry są zapisane w `runs/REG_*.json` i załączone do raportu. Konto wymaga praw do dodawania zamówień, przedmiotopoziomów i formularzy klubowych.
+ID i parametry rekordów są zapisane w `runs/REG_*.json` i załączone do raportu. Po udanym CLUB-01 nauczyciel i formularz są usuwani; szkoła oraz zamówienie ORD-01 pozostają. Konto wymaga praw do dodawania tych danych oraz usuwania nauczycieli.
 
 ## Gdy test nie działa
+
+### Podgląd danych do sprzątania
+
+```powershell
+npm.cmd run cleanup:preview
+```
+
+Polecenie odczytuje lokalne `runs/REG_*.json`, łączy powtarzające się ID i zapisuje zestawienie w `runs/cleanup-preview.json`. Nie loguje się do Octopusa i niczego w nim nie zmienia. Rekordy związane z nieudanym lub niedokończonym przebiegiem oznacza jako `KEEP_FOR_DIAGNOSIS`. Pozostałe wymagają sprawdzenia w aplikacji (`VERIFY_IN_OCTOPUS`), w tym własności rekordu, zależności i flagi Testowy. Sam wpis w rejestrze nie dowodzi, że dany test utworzył rekord — szkoły bywają współdzielone. Starsze zapisy mogą nie zawierać wszystkich ID.
+
+### Usuwanie nauczycieli
+
+Sprzątanie działa automatycznie po PASS w scenariuszach tworzących nauczyciela, także w teście smoke. Korzysta z `DELETE /api/DeleteRecordsDB/DeleteRecordsFromDB`, z query parameters `userId` (zalogowany użytkownik) i `jsonData` (jeden własny `nauczycielId`). Zgodnie z kontraktem potwierdzonym przez programistę endpoint usuwa dane nauczyciela, w tym formularze klubowe i przedmiotopoziomy, oraz odpina szkoły. Szkół i ich zamówień nie usuwa.
+
+Przed DELETE sprawdzane są ID, zgodność e-maila z unikalnym identyfikatorem przebiegu i aktualna flaga Testowy. Po DELETE API musi potwierdzić brak nauczyciela. Błąd sprzątania powoduje niepowodzenie testu; `result` w rejestrze opisuje wynik scenariusza, a `cleanupStatus` wynik sprzątania: `DELETED`, `ALREADY_ABSENT`, `KEPT_FAILED_TEST`, `FAILED` albo `RUNNING` (operacja przerwana/niezakończona). Brak nauczyciela potwierdzony przez API oznacza HTTP 204; samo HTTP 200 z DELETE nie wystarcza. Rejestry i raporty nie są kasowane. `ABSENCE_CONFIRMED` w podglądzie odnosi się do zapisanego wyniku sprzątania, nie nowego odczytu API.
+
+Podgląd nauczycieli ze starszych udanych przebiegów (bez logowania i usuwania):
+
+```powershell
+npm.cmd run cleanup:teachers
+```
+
+Usunięcie nauczyciela z konkretnego rejestru wymaga podania jego rzeczywistej nazwy oraz `--apply`:
+
+```powershell
+npm.cmd run cleanup:teachers -- REG_123456_abcdef.json --apply
+```
+
+Przykładową nazwę zastąp nazwą z podglądu. Można podać kilka rejestrów. Nie ma operacji „usuń wszystkich”; rejestry nieudanych testów są odrzucane. Narzędzie ponownie weryfikuje rekord w Octopusie i zatrzymuje się przy pierwszym błędzie. Endpoint działa wyłącznie na dev. Testy zabezpieczeń: `npm.cmd run test:cleanup`.
 
 - Błąd automatycznego logowania: sprawdź cztery wartości w `.env` i wykonaj `npm.cmd run login:auto`. Alternatywnie użyj ręcznego `npm.cmd run login`.
 - Po nieudanym logowaniu kolejne testy w tym samym uruchomieniu nie ponawiają próby hasła. Po poprawieniu danych uruchom zestaw/panel UI ponownie.

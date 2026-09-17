@@ -12,6 +12,9 @@
     "test:headed": "playwright test --headed",
     "test:ui": "playwright test --ui",
     "test:list": "playwright test --list",
+    "cleanup:preview": "node scripts/cleanup-preview.mjs",
+    "cleanup:teachers": "node scripts/cleanup-teachers.mjs",
+    "test:cleanup": "node --test scripts/cleanup-teachers.test.mjs",
     "report": "playwright show-report",
     "check": "tsc --noEmit",
     "install:browser": "playwright install chromium"

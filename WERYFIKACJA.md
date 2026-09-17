@@ -1,5 +1,16 @@
 # Weryfikacja projektu testów
 
+## Sprzątanie nauczycieli — 2026-09-17
+
+Dodano automatyczne sprzątanie nauczyciela po PASS w fixture scenariusza i w teście smoke. Endpoint oraz query parameters potwierdzono w kodzie klienta i u programisty. Według kontraktu endpoint usuwa także formularze i przedmiotopoziomy oraz odpina szkoły; szkoły i ich zamówienia pozostają. Nie wykonano zbiorczego usuwania starych danych.
+
+- CLUB-01: PASS (1,2 min z odnowieniem sesji), nauczyciel 532324, formularz 737029, szkoła 93116. Rejestr `REG_1789638250903_bc579c.json`: `cleanupStatus=DELETED`. Odczyt nauczyciela po DELETE zwrócił HTTP 204; sprzątanie trwało około 5 s. Kaskada zależności opiera się na kontrakcie programisty; nie odczytywano osobno tabel bazy.
+- Smoke szkoła–nauczyciel: PASS, 47,1 s, łącznie ze sprzątaniem.
+- `npm.cmd run test:cleanup`: 7 PASS (lokalne testy blokad i obsługi błędów, bez sieci).
+- `npm.cmd run check`, `git diff --check`: PASS. Podgląd `npm.cmd run cleanup:teachers` działa bez logowania i zmian w Octopusie.
+
+Nie wykonywano ponownie całego zestawu 18 testów. Narzędzie do starszych przebiegów domyślnie pokazuje listę; `--apply` wymaga jawnych nazw rejestrów PASS i ponownie weryfikuje rekord w API. Nieudane przebiegi nie są sprzątane. Błąd sprzątania jest zgłaszany jako niepowodzenie testu, a rejestr zachowuje osobno wynik scenariusza i `cleanupStatus`.
+
 ## Zamówienia i klubowiczostwo — 2026-09-17
 
 `npm.cmd test -- zamowienia-klubowiczostwo.spec.ts`: **2 PASS**, 1,1 minuty w jednym przebiegu. ORD-01: 27,3 s; CLUB-01: 34,1 s. Kontrola TypeScript i lista 18 testów w czterech plikach: PASS. Nie wykonywano całego zestawu 18 testów razem.
