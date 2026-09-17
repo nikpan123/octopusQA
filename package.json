@@ -1,0 +1,22 @@
+{
+  "name": "octopus-regression",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Testy regresji Octopus dev przez interfejs przeglądarki",
+  "scripts": {
+    "login": "node scripts/login.mjs",
+    "test": "playwright test",
+    "test:headed": "playwright test --headed",
+    "test:ui": "playwright test --ui",
+    "test:list": "playwright test --list",
+    "report": "playwright show-report",
+    "check": "tsc --noEmit",
+    "install:browser": "playwright install chromium"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.63.0",
+    "@types/node": "^22.0.0",
+    "typescript": "~5.9.3"
+  },
+  "engines": { "node": ">=22" }
+}
