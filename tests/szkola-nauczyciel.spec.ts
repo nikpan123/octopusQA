@@ -2,7 +2,6 @@ import { randomUUID } from 'node:crypto';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { test, expect } from './support/fixtures';
 import { Octopus } from './support/octopus';
-import { cleanupSuccessfulTeacher } from '../scripts/cleanup-teachers.mjs';
 
 test('szkoła → nauczyciel → relacja → wyszukiwanie → nauczyciel → historia @smoke', async ({ page }, testInfo) => {
   const app = new Octopus(page);
@@ -12,7 +11,7 @@ test('szkoła → nauczyciel → relacja → wyszukiwanie → nauczyciel → his
   const normalizedLastName = 'Reg' + runId.slice(3).toLowerCase();
   const email = `${runId.toLowerCase()}@example.invalid`;
   const number = String(Date.now()); // Unikalny syntetyczny adres, bez kolizji kolejnych przebiegów.
-  const run: Record<string, string> = { runId, schoolName, lastName, email, number, startedAt: new Date().toISOString() };
+  const run: Record<string, string> = { runId, schoolName, lastName, email, number, startedAt: new Date().toISOString(), cleanupBatchId: process.env.OCTOPUS_CLEANUP_BATCH_ID ?? '' };
   await mkdir('runs', { recursive: true });
   const saveRun = () => writeFile(`runs/${runId}.json`, JSON.stringify(run, null, 2));
   await saveRun();
@@ -83,11 +82,8 @@ test('szkoła → nauczyciel → relacja → wyszukiwanie → nauczyciel → his
     throw error;
   } finally {
     run.finishedAt = new Date().toISOString();
+    if (run.teacherId) run.cleanupStatus = run.result === 'PASS' ? 'PENDING_SUITE_END' : 'KEPT_FAILED_TEST';
     await saveRun();
-    try {
-      await cleanupSuccessfulTeacher(page, run, saveRun);
-    } finally {
-      await testInfo.attach('Dane utworzone w tym przebiegu', { body: JSON.stringify(run, null, 2), contentType: 'application/json' });
-    }
+    await testInfo.attach('Dane utworzone w tym przebiegu', { body: JSON.stringify(run, null, 2), contentType: 'application/json' });
   }
 });

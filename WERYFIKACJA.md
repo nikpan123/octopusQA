@@ -1,5 +1,23 @@
 # Weryfikacja projektu testów
 
+## Timeout zbiorczego usuwania — poprawka nieuruchamiana
+
+Zrzut użytkownika pokazuje 18 PASS i timeout podczas jednego DELETE dla 8 nauczycieli. Dotychczasowy limit klienta wynosił 30 s. Zmieniono limit DELETE na 180 s, pozostawiając 30 s dla GET. Po błędzie DELETE wykonywane są odczyty kontrolne, bez ponawiania usuwania; niepewne wyniki oznaczane są UNKNOWN. Nie ustalono na podstawie zrzutu, czy serwer zakończył usuwanie. Zgodnie z prośbą użytkownika poprawki nie uruchamiano.
+
+
+## Zbiorcze DELETE — zmiana niezweryfikowana
+
+Końcowe sprzątanie i ręczne cleanup:teachers wysyłają teraz jedno DELETE z listą unikalnych ID. Zachowano kontrolę rekordów przed wysłaniem i sprawdzanie ich braku po operacji. Zgodnie z prośbą użytkownika po tej zmianie nie uruchamiano testów ani usuwania na dev. Wyniki poniżej dotyczą wcześniejszego kodu.
+
+
+## Sprzątanie po całym zestawie — 2026-09-17
+
+Usunięto wywołania DELETE z końca pojedynczych scenariuszy. Global setup nadaje uruchomieniu `cleanupBatchId`, a global teardown po zakończeniu wszystkich testów wybiera wyłącznie nauczycieli z jego rejestrów PASS. Szkoły, starsze przebiegi i dane nieudanych testów pozostają.
+
+Weryfikacja: `npm.cmd test -- szkola-nauczyciel.spec.ts zamowienia-klubowiczostwo.spec.ts --reporter=line`: **3 PASS, 1,9 min**. Po smoke nauczyciel 532334 miał status `PENDING_SUITE_END`, gdy trwał ORD-01. Dopiero po CLUB-01 konsola zgłosiła końcowe sprzątanie dwóch nauczycieli: 532334 i 532335, obaj `DELETED`. Nie wykonano ponownie pozostałych 15 scenariuszy. Lokalnie przeszło 10 testów zabezpieczeń (w tym izolacja bieżącego uruchomienia), TypeScript i kontrola diff.
+
+Końcowy status sprzątania znajduje się w rejestrze `runs/REG_*.json` i konsoli; załącznik testu jest wcześniejszym zapisem i może wskazywać oczekiwanie. Błąd globalnego sprzątania kończy całe uruchomienie błędem. W trybie UI sprzątanie jest związane z globalnym teardown sesji; nie zweryfikowano interaktywnie tego trybu. Ręczne polecenie cleanup:teachers pozostaje dostępne po przerwanym uruchomieniu.
+
 ## Sprzątanie nauczycieli — 2026-09-17
 
 Dodano automatyczne sprzątanie nauczyciela po PASS w fixture scenariusza i w teście smoke. Endpoint oraz query parameters potwierdzono w kodzie klienta i u programisty. Według kontraktu endpoint usuwa także formularze i przedmiotopoziomy oraz odpina szkoły; szkoły i ich zamówienia pozostają. Nie wykonano zbiorczego usuwania starych danych.

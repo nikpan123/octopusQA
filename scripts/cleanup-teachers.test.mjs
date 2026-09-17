@@ -1,6 +1,16 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { deleteTestTeacher, cleanupSuccessfulTeacher, validateTeacherRun, parseCleanupArgs } from './cleanup-teachers.mjs';
+import { belongsToCleanupBatch } from './cleanup-global-teardown.mjs';
+
+test('koniec zestawu wybiera tylko własny batch i udanych nauczycieli',()=>{
+  const data={...run(),cleanupBatchId:'current',cleanupStatus:'PENDING_SUITE_END'};
+  assert.equal(belongsToCleanupBatch(data,'current'),true);
+  for(const changes of [{cleanupBatchId:'older'},{result:'FAIL'},{result:'RUNNING'},{teacherId:''},{cleanupStatus:'DELETED'},{cleanupStatus:'ALREADY_ABSENT'}]) {
+    assert.equal(belongsToCleanupBatch({...data,...changes},'current'),false);
+  }
+  assert.equal(belongsToCleanupBatch({...data,cleanupBatchId:''},''),false);
+});
 
 test('--all domyślnie pokazuje podgląd; wykonanie wymaga --apply',()=>{
   assert.deepEqual(parseCleanupArgs(['--all']),{all:true,apply:false,files:[]});

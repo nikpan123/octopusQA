@@ -120,7 +120,7 @@ npm.cmd test -- nauczyciel-rozszerzenie.spec.ts
 
 ### Rejestry przebiegów
 
-Każdy przebieg ma unikalny prefiks `REG_...`. ID i linki do rekordów są w `runs/<identyfikator>.json` oraz w załączniku raportu. Po udanym teście jego nauczyciel jest automatycznie usuwany wraz z powiązaniami i formularzami. Szkoły i ich zamówienia pozostają. Dane nieudanych testów zostają do analizy. Przy błędzie przed odczytaniem ID można szukać szkoły po zapisanej w pliku nazwie.
+Każdy przebieg ma unikalny prefiks `REG_...`. ID i linki do rekordów są w `runs/<identyfikator>.json` oraz w załączniku raportu. Dopiero po ostatnim teście całego uruchomienia nauczyciele z udanych scenariuszy są usuwani wraz z powiązaniami i formularzami. Szkoły i ich zamówienia pozostają. Dane nieudanych testów zostają do analizy. Przy błędzie przed odczytaniem ID można szukać szkoły po zapisanej w pliku nazwie.
 
 Nie ma automatycznych ponowień. Testy działają kolejno w jednym procesie, by ograniczyć wzajemny wpływ operacji na tej samej sesji. Ponowne uruchomienie to nowy zestaw danych.
 
@@ -165,7 +165,7 @@ Uruchomienie tylko nowych testów:
 npm.cmd test -- zamowienia-klubowiczostwo.spec.ts
 ```
 
-ID i parametry rekordów są zapisane w `runs/REG_*.json` i załączone do raportu. Po udanym CLUB-01 nauczyciel i formularz są usuwani; szkoła oraz zamówienie ORD-01 pozostają. Konto wymaga praw do dodawania tych danych oraz usuwania nauczycieli.
+ID i parametry rekordów są zapisane w `runs/REG_*.json` i załączone do raportu. Po zakończeniu całego uruchomienia nauczyciel i formularz z udanego CLUB-01 są usuwani; szkoła oraz zamówienie ORD-01 pozostają. Konto wymaga praw do dodawania tych danych oraz usuwania nauczycieli.
 
 ## Gdy test nie działa
 
@@ -179,9 +179,9 @@ Polecenie odczytuje lokalne `runs/REG_*.json`, łączy powtarzające się ID i z
 
 ### Usuwanie nauczycieli
 
-Sprzątanie działa automatycznie po PASS w scenariuszach tworzących nauczyciela, także w teście smoke. Korzysta z `DELETE /api/DeleteRecordsDB/DeleteRecordsFromDB`, z query parameters `userId` (zalogowany użytkownik) i `jsonData` (jeden własny `nauczycielId`). Zgodnie z kontraktem potwierdzonym przez programistę endpoint usuwa dane nauczyciela, w tym formularze klubowe i przedmiotopoziomy, oraz odpina szkoły. Szkół i ich zamówień nie usuwa.
+Sprzątanie działa w globalTeardown, po zakończeniu wszystkich testów i workerów. Każde uruchomienie dostaje własny cleanupBatchId. Sprzątane są wyłącznie rekordy PASS z tego uruchomienia, także z testu smoke; starsze rejestry pozostają nietknięte. Usuwanie odbywa się jednym żądaniem DELETE w fazie końcowej, z listą unikalnych ID wszystkich zweryfikowanych nauczycieli. Odczyty kontrolne przed i po usunięciu nadal są osobnymi żądaniami GET. Jeśli wszyscy już nie istnieją, DELETE nie jest wysyłany. W trybie UI globalny teardown zależy od zakończenia sesji/globalnego teardown w panelu, a nie od zakończenia pojedynczego testu. Po wymuszonym zamknięciu procesu pozostaje ręczne cleanup:teachers. Korzysta z `DELETE /api/DeleteRecordsDB/DeleteRecordsFromDB`, z query parameters `userId` (zalogowany użytkownik) i `jsonData` (lista własnych `nauczycielId`). Zgodnie z kontraktem potwierdzonym przez programistę endpoint usuwa dane nauczyciela, w tym formularze klubowe i przedmiotopoziomy, oraz odpina szkoły. Szkół i ich zamówień nie usuwa.
 
-Przed DELETE sprawdzane są ID, zgodność e-maila z unikalnym identyfikatorem przebiegu i aktualna flaga Testowy. Po DELETE API musi potwierdzić brak nauczyciela. Błąd sprzątania powoduje niepowodzenie testu; `result` w rejestrze opisuje wynik scenariusza, a `cleanupStatus` wynik sprzątania: `DELETED`, `ALREADY_ABSENT`, `KEPT_FAILED_TEST`, `FAILED` albo `RUNNING` (operacja przerwana/niezakończona). Brak nauczyciela potwierdzony przez API oznacza HTTP 204; samo HTTP 200 z DELETE nie wystarcza. Rejestry i raporty nie są kasowane. `ABSENCE_CONFIRMED` w podglądzie odnosi się do zapisanego wyniku sprzątania, nie nowego odczytu API.
+Przed DELETE sprawdzane są ID, zgodność e-maila z unikalnym identyfikatorem przebiegu i aktualna flaga Testowy. Po DELETE API musi potwierdzić brak nauczyciela. Błąd sprzątania powoduje niepowodzenie całego uruchomienia, bez zmiany wyniku zakończonego testu; `result` w rejestrze opisuje wynik scenariusza, a `cleanupStatus` wynik sprzątania: `DELETED`, `ALREADY_ABSENT`, `KEPT_FAILED_TEST`, `PENDING_SUITE_END` (oczekuje na koniec zestawu), `UNKNOWN` (niepewny wynik DELETE), `FAILED` albo `RUNNING` (operacja przerwana/niezakończona). Brak nauczyciela potwierdzony przez API oznacza HTTP 204; samo HTTP 200 z DELETE nie wystarcza. Rejestry i raporty nie są kasowane. Załącznik testu jest zapisywany przed końcowym sprzątaniem i może pokazywać PENDING_SUITE_END; końcowy wynik jest w pliku runs/REG_*.json i w konsoli. `ABSENCE_CONFIRMED` w podglądzie odnosi się do zapisanego wyniku sprzątania, nie nowego odczytu API.
 
 Podgląd nauczycieli ze starszych udanych przebiegów (bez logowania i usuwania):
 
@@ -202,7 +202,7 @@ npm.cmd run cleanup:teachers -- --all          # podgląd, bez zmian
 npm.cmd run cleanup:teachers -- --all --apply  # wykonanie
 ```
 
-`--all` nie obejmuje wszystkich nauczycieli w bazie: wybiera tylko poprawne rejestry udanych testów, których jeszcze nie oznaczono jako posprzątane. Nauczyciele usunięci wcześniej np. przez Excel otrzymują `ALREADY_ABSENT`, bez ponownego DELETE. Rejestry nieudanych testów są pomijane w trybie --all, a odrzucane przy jawnym podaniu pliku. Nie łącz --all z nazwami rejestrów. Narzędzie ponownie weryfikuje każdy rekord w Octopusie i zatrzymuje się przy pierwszym błędzie; ponowne uruchomienie pomija już posprzątane rejestry. Szkoły i zamówienia pozostają. Endpoint działa wyłącznie na dev. Testy zabezpieczeń: `npm.cmd run test:cleanup`.
+`--all` nie obejmuje wszystkich nauczycieli w bazie: wybiera tylko poprawne rejestry udanych testów, których jeszcze nie oznaczono jako posprzątane. Nauczyciele usunięci wcześniej np. przez Excel otrzymują `ALREADY_ABSENT`, bez ponownego DELETE. Rejestry nieudanych testów są pomijane w trybie --all, a odrzucane przy jawnym podaniu pliku. Nie łącz --all z nazwami rejestrów. Narzędzie weryfikuje całą listę przed jednym zbiorczym DELETE. Błąd weryfikacji blokuje wysłanie DELETE. Po zapisie sprawdza osobno każdego nauczyciela i zachowuje jego wynik. Nie dzieli żądania na części i nie ponawia go automatycznie; ponowne uruchomienie pomija już posprzątane rejestry. Szkoły i zamówienia pozostają. Endpoint działa wyłącznie na dev. Testy zabezpieczeń: `npm.cmd run test:cleanup`.
 
 - Błąd automatycznego logowania: sprawdź cztery wartości w `.env` i wykonaj `npm.cmd run login:auto`. Alternatywnie użyj ręcznego `npm.cmd run login`.
 - Po nieudanym logowaniu kolejne testy w tym samym uruchomieniu nie ponawiają próby hasła. Po poprawieniu danych uruchom zestaw/panel UI ponownie.
@@ -212,3 +212,5 @@ npm.cmd run cleanup:teachers -- --all --apply  # wykonanie
 - Błąd w połowie procesu: sprawdź `runs` przed kolejnym uruchomieniem; część danych mogła już powstać.
 
 Dokumentacja: [sesje Playwright](https://playwright.dev/docs/auth), [panel UI](https://playwright.dev/docs/test-ui-mode), [raporty](https://playwright.dev/docs/test-reporters).
+
+Zbiorcze DELETE ma limit 180 sekund, odczyty kontrolne 30 sekund. Po timeout lub błędzie DELETE narzędzie nie ponawia usuwania, tylko sprawdza brak poszczególnych rekordów. Potwierdzony brak otrzymuje DELETED, a niepewny wynik UNKNOWN i błąd całego uruchomienia. Timeout klienta nie oznacza zatrzymania operacji na serwerze.

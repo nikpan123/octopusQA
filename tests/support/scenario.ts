@@ -2,7 +2,6 @@ import { randomUUID } from 'node:crypto';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { test as base, expect } from './fixtures';
 import { Octopus } from './octopus';
-import { cleanupSuccessfulTeacher } from '../../scripts/cleanup-teachers.mjs';
 
 type Scenario = {
   app: Octopus;
@@ -20,7 +19,7 @@ export const test = base.extend<{ scenario: Scenario }>({
     const id = `REG_${Date.now()}_${randomUUID().slice(0, 6)}`;
     const schoolName = `${id} Szkoła testowa`;
     const email = `${id.toLowerCase()}@example.invalid`;
-    const data: Record<string, string> = { id, schoolName, email, title: testInfo.title, result: 'RUNNING' };
+    const data: Record<string, string> = { id, schoolName, email, title: testInfo.title, result: 'RUNNING', cleanupBatchId: process.env.OCTOPUS_CLEANUP_BATCH_ID ?? '' };
     await mkdir('runs', { recursive: true });
     const save = () => writeFile(`runs/${id}.json`, JSON.stringify(data, null, 2));
     const record = async (key: string, value: string) => { data[key] = value; await save(); };
@@ -50,12 +49,9 @@ export const test = base.extend<{ scenario: Scenario }>({
       if (/^https:\/\/octopus\.gwodev\.pl\/(teacher|school)\//.test(current)) data.lastUrl = current;
       data.result = testInfo.status === 'passed' ? 'PASS' : String(testInfo.status).toUpperCase();
       data.finishedAt = new Date().toISOString();
+      if (data.teacherId) data.cleanupStatus = data.result === 'PASS' ? 'PENDING_SUITE_END' : 'KEPT_FAILED_TEST';
       await save();
-      try {
-        await cleanupSuccessfulTeacher(page, data, save);
-      } finally {
-        await testInfo.attach('Dane scenariusza', { body: JSON.stringify(data, null, 2), contentType: 'application/json' });
-      }
+      await testInfo.attach('Dane scenariusza', { body: JSON.stringify(data, null, 2), contentType: 'application/json' });
     }
   },
 });

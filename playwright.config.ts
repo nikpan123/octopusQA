@@ -7,6 +7,8 @@ process.env.OCTOPUS_AUTH_RUN_ID ??= randomUUID();
 
 export default defineConfig({
   testDir: './tests',
+  globalSetup: './scripts/cleanup-global-setup.mjs',
+  globalTeardown: './scripts/cleanup-global-teardown.mjs',
   fullyParallel: false,
   workers: 1,
   retries: 0, // Każda próba tworzy dane: bez automatycznych powtórek.
