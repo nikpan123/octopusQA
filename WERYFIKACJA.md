@@ -1,5 +1,26 @@
 # Weryfikacja projektu testów
 
+## Rozszerzenie nauczyciela — 2026-09-17
+
+Dodano sześć przypadków w `tests/nauczyciel-rozszerzenie.spec.ts`; projekt wykrywa teraz 16 testów w trzech plikach.
+
+| Przypadek | Wynik |
+|---|---|
+| EDIT-03 — zapis nazwiska, trwałość i historia | PASS w osobnej próbie po korekcie danych, 44,1 s wraz z przygotowaniem wspólnej szkoły |
+| TEA-04 — niepoprawny e-mail | PASS, 19,4 s |
+| TEA-04 — za krótki telefon | PASS, 15,6 s |
+| FIND-05 — e-mail | PASS, 14,5 s |
+| FIND-05 — nazwisko | PASS, 15,5 s |
+| REL-02 — druga szkoła, trwałość i obie strony relacji | PASS, 32,3 s |
+
+Pierwsze uruchomienie nowego pliku dało 5 PASS / 1 FAIL (3 minuty). Edycja nazwiska dopuszcza litery i łącznik, więc syntetyczna wartość z cyframi i podkreśleniami została odfiltrowana. Zmieniono ją na `Nowak`, identyfikując nauczyciela przez jego ID. Ponownie wykonano wyłącznie EDIT-03: PASS. Nie jest to wynik jednego nieprzerwanego przebiegu wszystkich 16 testów.
+
+Polecenia: `npm.cmd test -- nauczyciel-rozszerzenie.spec.ts`, następnie `npm.cmd test -- nauczyciel-rozszerzenie.spec.ts --grep EDIT-03 --reporter=line --output=runs/weryfikacja-edit-03`. HTML zachowuje pierwszy przebieg rozszerzenia z pierwotnym niepowodzeniem; oddzielna poprawna próba znajduje się w `runs/weryfikacja-edit-03`, a dane utworzonych rekordów w `runs/REG_*.json`. Poprawki nazw testów `email/phone` na `e-mail/telefon` nie zmieniają scenariuszy.
+
+Walidację potwierdzono w UI dla `invalid-email` oraz numeru `123`, przy poprawnych pozostałych wymaganych danych. Każdy przypadek sprawdza komunikat i brak utworzonego nauczyciela w wyszukiwaniu. Nie wywodzimy z tych przykładów pełnej specyfikacji numerów międzynarodowych ani adresów e-mail.
+
+Nowy fixture tworzy szkołę raz na proces wykonawczy. Każdy test ma własnego nauczyciela/formularz; REL-02 dodatkowo tworzy drugą szkołę. Wspólna szkoła nie jest usuwana; zapis jej ID i nazwy jest w `runs/REG_SHARED_*.json`. Starsze scenariusze zachowują dotychczasowe przygotowanie. Kontrola TypeScript, lista 16 testów oraz `git diff --check`: PASS.
+
 ## Aktualna weryfikacja po poprawce wyszukiwania — 2026-09-17
 
 Poprawiono `tests/support/octopus.ts`: pierwsze wyszukiwanie szkoły/nauczyciela zaczyna się od panelu bez ID, a wpisywanie kryteriów czeka na widoczność formularza i fokus pierwszego pola. Drugie wyszukiwanie w FIND-04 pozostaje w tej samej sesji panelu z poprzednimi wynikami. Nie usunięto asercji komunikatu, kliknięcia OK ani pustej listy.

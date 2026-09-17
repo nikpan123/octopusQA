@@ -2,7 +2,7 @@
 
 Projekt Playwright uruchamia test w prawdziwej przeglądarce Chromium na **dev: https://octopus.gwodev.pl**. Nie potrzebuje kodu źródłowego Octopusa.
 
-Status po poprawce wyszukiwania, 2026-09-17: **9 PASS w pełnym przebiegu; dziesiąty test przerwany wygaśnięciem sesji przeszedł w oddzielnej powtórce**. Test główny i oba przypadki pustych wyników przeszły. Szczegóły w [WERYFIKACJA.md](WERYFIKACJA.md); ograniczenie dotyczące wejścia bezpośrednim linkiem do kartoteki opisano w [OCT-OBS-002](OCT-OBS-002.md). Sesje i lokalne raporty nie są częścią repozytorium. Po sklonowaniu skonfiguruj logowanie według instrukcji poniżej.
+Projekt zawiera **16 testów**. Najnowsze rozszerzenie nauczyciela: **5 PASS w pierwszym zestawie i 1 PASS po poprawce danych testu nazwiska**. Nie uruchamiano jeszcze wszystkich 16 przypadków w jednym przebiegu. Szczegóły i wcześniejsze wyniki w [WERYFIKACJA.md](WERYFIKACJA.md); ograniczenie dotyczące wejścia bezpośrednim linkiem do kartoteki opisano w [OCT-OBS-002](OCT-OBS-002.md). Sesje i lokalne raporty nie są częścią repozytorium. Po sklonowaniu skonfiguruj logowanie według instrukcji poniżej.
 
 ## Pierwsze uruchomienie
 
@@ -53,6 +53,8 @@ Wybierz test i kliknij przycisk uruchomienia. Panel pokazuje kroki i ich wyniki.
 
 - `tests/szkola-nauczyciel.spec.ts` — scenariusz i oczekiwane wyniki, opisane przez `test.step`.
 - `tests/walidacja-anulowanie.spec.ts` — 9 przypadków walidacji, anulowania i pustych wyników.
+- `tests/nauczyciel-rozszerzenie.spec.ts` — 6 przypadków zapisu nazwiska, walidacji kontaktu, wyszukiwania i drugiej szkoły.
+- `tests/support/shared-school.ts` — szkoła przygotowywana raz na proces wykonawczy nowych testów.
 - `tests/support/scenario.ts` — osobne dane i rejestr przebiegu każdego nowego przypadku.
 - `tests/support/octopus.ts` — obsługa formularzy i selektory elementów aplikacji.
 - `tests/support/fixtures.ts` — odtworzenie sesji i sprawdzenie dostępu przed zmianą danych.
@@ -75,7 +77,7 @@ Ten test sprawdza cały proces biznesowy. Przygotowanie sesji (w tym ewentualne 
 
 ## Dodatkowe testy
 
-Zestaw zawiera łącznie 10 przypadków: dotychczasową ścieżkę oraz 9 nowych testów w czterech obszarach:
+Pierwsze rozszerzenie zawiera 9 przypadków obok dotychczasowej ścieżki:
 
 | Obszar | Przypadki | Sprawdzenie |
 |---|---:|---|
@@ -94,6 +96,29 @@ npm.cmd test -- --grep @search
 ```
 
 ## Dane i wyniki
+
+### Drugie rozszerzenie: nauczyciel
+
+Łącznie projekt zawiera teraz **16 testów**. Plik `tests/nauczyciel-rozszerzenie.spec.ts` dodaje:
+
+| Test | Sprawdzenie |
+|---|---|
+| EDIT-03 | Zapis nazwiska Nowak, trwałość po ponownym otwarciu, zachowanie imienia, e-maila i szkoły oraz wpis historii z autorem i datą |
+| TEA-04, e-mail | Adres `invalid-email` bez @: niepoprawne pole, komunikat, otwarty formularz i brak rekordu po próbie zapisu |
+| TEA-04, telefon | Numer `123`: niepoprawne pole, komunikat, otwarty formularz i brak rekordu; pozostałe wymagane dane są poprawne |
+| FIND-05, e-mail | Dokładnie jeden wynik dla unikalnego e-maila, właściwe ID i dane otwartego nauczyciela |
+| FIND-05, nazwisko | Dokładnie jeden wynik dla unikalnego nazwiska, właściwe ID i dane otwartego nauczyciela |
+| REL-02 | Dodanie drugiej szkoły, zachowanie pierwszej, dokładnie dwa trwałe powiązania i ten sam nauczyciel w obu szkołach |
+
+Reguły walidacji dla podanych przykładów sprawdzono w UI dev. To nie jest pełna specyfikacja dopuszczalnych e-maili ani numerów międzynarodowych. W tym rozszerzeniu pozytywna edycja dotyczy nazwiska, nie zapisu nowego kontaktu.
+
+Nowe testy mają wspólną szkołę tworzoną raz na proces wykonawczy, bez stałego ID istniejącej placówki. Każdy przypadek tworzy własnego nauczyciela albo własny niezapisany formularz. REL-02 tworzy dodatkową szkołę. Po błędzie Playwright uruchamia nowy proces, więc może powstać kolejna wspólna szkoła. Dotychczasowe testy zachowują swoje przygotowanie danych.
+
+```powershell
+npm.cmd test -- nauczyciel-rozszerzenie.spec.ts
+```
+
+### Rejestry przebiegów
 
 Każdy przebieg ma unikalny prefiks `REG_...`. ID i linki do rekordów są w `runs/<identyfikator>.json` oraz w załączniku raportu. Dane pozostają na dev do obejrzenia — skrypt ich nie usuwa. Przy błędzie przed odczytaniem ID można szukać szkoły po zapisanej w pliku nazwie.
 

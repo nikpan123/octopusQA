@@ -10,7 +10,7 @@ type Scenario = {
   email: string;
   record: (key: string, value: string) => Promise<void>;
   createSchool: () => Promise<string>;
-  createTeacher: (schoolId: string) => Promise<string>;
+  createTeacher: (schoolId: string, relatedSchoolName?: string) => Promise<string>;
 };
 
 export const test = base.extend<{ scenario: Scenario }>({
@@ -33,8 +33,10 @@ export const test = base.extend<{ scenario: Scenario }>({
           await app.markTestRecord();
           return schoolId;
         },
-        createTeacher: async schoolId => {
-          const teacherId = await app.createTeacher(id, email, schoolId, schoolName);
+        createTeacher: async (schoolId, relatedSchoolName = schoolName) => {
+          await record('schoolId', schoolId);
+          await record('relatedSchoolName', relatedSchoolName);
+          const teacherId = await app.createTeacher(id, email, schoolId, relatedSchoolName);
           await record('teacherId', teacherId);
           await app.markTestRecord();
           return teacherId;

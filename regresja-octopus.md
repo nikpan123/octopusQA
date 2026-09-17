@@ -9,6 +9,8 @@ Rozszerzenie: dodano testy TEA-02 (4 warianty), TEA-03, SCH-02, EDIT-02 oraz FIN
 
 ## Podstawa i ograniczenia
 
+Drugie rozszerzenie: EDIT-03 (nazwisko i historia), TEA-04 (błędny e-mail / telefon), FIND-05 (e-mail / nazwisko), REL-02 (druga szkoła). Łącznie 16 testów. Wszystkie sześć nowych przypadków uzyskało PASS w weryfikacji opisanej w WERYFIKACJA.md; EDIT-03 po poprawieniu danych i osobnym uruchomieniu. Nie wykonywano jeszcze całego zestawu 16 przypadków razem.
+
 Rozpoznano interfejs zalogowanej sesji: panele Nauczyciele i Szkoły, formularze tworzenia i wyszukiwania oraz menu główne. W pierwszym przebiegu utworzono szkołę 93033 i nauczyciela 532276 oraz sprawdzono relację, edycję i historię. Nie analizowano kodu źródłowego aplikacji, API ani konfiguracji ról. Ten plik jest katalogiem scenariuszy; wyniki wykonania znajdują się w raportach. Niepotwierdzone oczekiwania wymagają uzgodnienia z osobą znającą reguły biznesowe.
 
 ## Mapa funkcji
