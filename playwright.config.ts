@@ -1,7 +1,9 @@
 import { defineConfig, devices } from '@playwright/test';
-import { existsSync } from 'node:fs';
+import { randomUUID } from 'node:crypto';
 
-const authFile = 'playwright/.auth/user.json';
+// Dziedziczone przez workery: po błędzie logowania nie próbujemy hasła
+// ponownie dla każdego kolejnego testu w tym samym uruchomieniu.
+process.env.OCTOPUS_AUTH_RUN_ID ??= randomUUID();
 
 export default defineConfig({
   testDir: './tests',
@@ -15,7 +17,6 @@ export default defineConfig({
   outputDir: 'test-results',
   use: {
     baseURL: 'https://octopus.gwodev.pl',
-    storageState: existsSync(authFile) ? authFile : undefined,
     actionTimeout: 20_000,
     navigationTimeout: 45_000,
     screenshot: 'only-on-failure',

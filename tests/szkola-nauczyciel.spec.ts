@@ -3,7 +3,7 @@ import { mkdir, writeFile } from 'node:fs/promises';
 import { test, expect } from './support/fixtures';
 import { Octopus } from './support/octopus';
 
-test('szkoła → nauczyciel → relacja → wyszukiwanie → Bożena → historia @smoke', async ({ page }, testInfo) => {
+test('szkoła → nauczyciel → relacja → wyszukiwanie → nauczyciel → historia @smoke', async ({ page }, testInfo) => {
   const app = new Octopus(page);
   const runId = `REG_${Date.now()}_${randomUUID().slice(0, 6)}`;
   const schoolName = `${runId} Szkoła testowa`;
@@ -41,10 +41,10 @@ test('szkoła → nauczyciel → relacja → wyszukiwanie → Bożena → histor
       await expect(app.detail('email')).toHaveValue(email);
     });
 
-    await test.step('EDIT-01 / NORM-01: zapisz BoŻena i sprawdź Bożena po ponownym otwarciu', async () => {
-      await app.editFirstName('BoŻena');
+    await test.step('EDIT-01 / NORM-01: zapisz JaN i sprawdź Jan po ponownym otwarciu', async () => {
+      await app.editFirstName('JaN');
       await app.openPanel('teacher', run.teacherId);
-      await expect(app.detail('firstName')).toHaveValue('Bożena');
+      await expect(app.detail('firstName')).toHaveValue('Jan');
       await expect(app.detail('lastName')).toHaveValue(normalizedLastName);
       await expect(app.detail('email')).toHaveValue(email);
       await expect(page.getByRole('checkbox', { name: 'Testowy', exact: true })).toBeChecked();
@@ -59,7 +59,7 @@ test('szkoła → nauczyciel → relacja → wyszukiwanie → Bożena → histor
       const history = page.getByRole('tabpanel', { name: 'Historia zmian', exact: true });
       const edit = history.getByRole('row')
         .filter({ has: page.getByRole('gridcell', { name: 'Imię', exact: true }) })
-        .filter({ has: page.getByRole('gridcell', { name: 'Bożena', exact: true }) })
+        .filter({ has: page.getByRole('gridcell', { name: 'Jan', exact: true }) })
         .filter({ has: page.getByRole('gridcell', { name: 'Edycja danych', exact: true }) });
       await expect(edit).toHaveCount(1);
       await expect(edit).toContainText(/\d{4}-\d{2}-\d{2} \d{2}:\d{2}/);
@@ -73,7 +73,7 @@ test('szkoła → nauczyciel → relacja → wyszukiwanie → Bożena → histor
       await expect(teachers.getByRole('button', { name: 'Nauczyciele: 1', exact: true })).toBeVisible();
       const row = teachers.getByRole('row').filter({ has: page.getByRole('gridcell', { name: run.teacherId, exact: true }) });
       await expect(row).toHaveCount(1);
-      await expect(row.getByRole('gridcell', { name: 'Bożena', exact: true })).toBeVisible();
+      await expect(row.getByRole('gridcell', { name: 'Jan', exact: true })).toBeVisible();
       await expect(row.getByRole('gridcell', { name: normalizedLastName, exact: true })).toBeVisible();
     });
     run.result = 'PASS';

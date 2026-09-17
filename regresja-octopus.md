@@ -5,6 +5,8 @@ Użytkownik potwierdził, że to dev i można tworzyć dane testowe.
 
 Aktualizacja: wykonano pierwszy przebieg REG_20260917_01. Wyniki, ID danych i obserwacja dotycząca normalizacji nazwiska znajdują się w [raporcie](raport-regresji-REG_20260917_01.md). Poniższy katalog zachowuje pierwotny projekt scenariuszy; statusy wykonania należy odczytywać z raportu przebiegu.
 
+Rozszerzenie: dodano testy TEA-02 (4 warianty), TEA-03, SCH-02, EDIT-02 oraz FIND-04 dla szkół i nauczycieli. Aktualny zestaw liczy 10 przypadków; najnowsze wyniki opisano w WERYFIKACJA.md. Poprawiono przygotowanie wyszukiwania i oczekiwanie na formularz; oba przypadki FIND-04 przeszły. Osobną obserwację dotyczącą wejścia bezpośrednim linkiem do kartoteki opisuje OCT-OBS-002.
+
 ## Podstawa i ograniczenia
 
 Rozpoznano interfejs zalogowanej sesji: panele Nauczyciele i Szkoły, formularze tworzenia i wyszukiwania oraz menu główne. W pierwszym przebiegu utworzono szkołę 93033 i nauczyciela 532276 oraz sprawdzono relację, edycję i historię. Nie analizowano kodu źródłowego aplikacji, API ani konfiguracji ról. Ten plik jest katalogiem scenariuszy; wyniki wykonania znajdują się w raportach. Niepotwierdzone oczekiwania wymagają uzgodnienia z osobą znającą reguły biznesowe.
@@ -44,6 +46,8 @@ P0: proponowany krótki zestaw przed wydaniem. P1: rozszerzona regresja. Zakres 
 | TEA-01 | P0 | Przygotować szkołę; Dodaj nauczyciela; wypełnić wymagane dane, źródło i szkołę; zapisać; wyszukać i otworzyć ponownie | Jeden rekord z ID; zapisane dane i powiązanie są trwałe |
 | TEA-02 | P0 | Otworzyć Dodaj; próbować zapisu bez nazwiska, imienia lub szkoły, osobno dla każdego braku | Czytelna walidacja; brak częściowo utworzonego rekordu. Obowiązkowość ustalona wstępnie z gwiazdek formularza |
 | TEA-03 | P1 | Wprowadzić dane nowego nauczyciela; Anuluj; następnie wyszukać po unikalnej nazwie | Formularz zamknięty, rekord nieutworzony |
+| SCH-02 | P1 | Uzupełnić kompletny formularz szkoły i anulować; ponownie otworzyć panel i wyszukać unikalną nazwę | Brak zapisanego rekordu |
+| EDIT-02 | P1 | Na osobnym nauczycielu zmienić imię i nazwisko, anulować; otworzyć kartotekę ponownie | Poprzednie dane, powiązanie i flaga Testowy zachowane; historia identyczna jak przed anulowaniem |
 | TEA-04 | P1 | Sprawdzić niepoprawny e-mail, telefon i datę oraz wartości graniczne według ustalonej specyfikacji | Walidacja zgodna z regułami; bez utraty pozostałych danych |
 | TEA-05 | P1 | Wpisać dane podobne do przygotowanego nauczyciela | Lista podobnych osób wskazuje właściwy rekord; zasady blokowania duplikatu do ustalenia |
 | FIND-01 | P0 | Wyszukać znanego nauczyciela po jego ID; otworzyć wynik | Wynik wskazuje właściwy rekord i zgodne szczegóły |
@@ -56,7 +60,7 @@ P0: proponowany krótki zestaw przed wydaniem. P1: rozszerzona regresja. Zakres 
 | REL-01 | P0 | Powiązać syntetycznego nauczyciela ze szkołą; obejrzeć obie kartoteki | Relacja widoczna po obu stronach, bez duplikacji |
 | REL-02 | P1 | Powiązać nauczyciela z drugą szkołą i przypisać przedmiot/poziom | Dane globalne i szkolne zgodne z ustalonym modelem; pierwsze powiązanie pozostaje prawidłowe |
 | EDIT-01 | P0 | Zmienić pojedyncze pole rekordu testowego; ponownie otworzyć | Zmiana trwała; dopuszczona potwierdzona normalizacja wielkości liter imienia i nazwiska; pozostałe dane bez niezamierzonych zmian |
-| NORM-01 | P1 | Na nauczycielu testowym wpisać imię BoŻena w edycji, zapisać, ponownie otworzyć rekord i sprawdzić historię | Imię Bożena z zachowaną literą ż; wartość trwała i zgodna z historią. Reguła potwierdzona przez użytkownika; wykonano automatycznie 2026-09-17 — PASS, zob. WERYFIKACJA.md |
+| NORM-01 | P1 | Na nauczycielu testowym wpisać imię JaN w edycji, zapisać, ponownie otworzyć rekord i sprawdzić historię | Imię Jan; wartość trwała i zgodna z historią. Reguła potwierdzona przez użytkownika. Wariant z imieniem Jan wykonano na dev — PASS. |
 | AUDIT-01 | P1 | Po kontrolowanej zmianie otworzyć Historię zmian | Zapis zmiany zgodny z wymaganym zakresem audytu; autor, czas i wartości do potwierdzenia |
 | CONSENT-01 | P1 | Na rekordzie testowym sprawdzić zapis kombinacji zgód | Zgody utrwalone dokładnie według wyboru; wpływ na wysyłki do osobnego potwierdzenia |
 | TAB-01 | P1 | Dla przygotowanego rekordu otworzyć kolejno każdą zakładkę kartoteki | Właściwy kontekst osoby/szkoły, czytelny stan pusty lub zgodne dane |

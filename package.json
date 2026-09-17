@@ -5,6 +5,9 @@
   "description": "Testy regresji Octopus dev przez interfejs przeglądarki",
   "scripts": {
     "login": "node scripts/login.mjs",
+    "auth:check": "node scripts/check-auth.mjs",
+    "login:auto": "node scripts/check-auth.mjs --force",
+    "test:auth": "node --test scripts/auth.test.mjs",
     "test": "playwright test",
     "test:headed": "playwright test --headed",
     "test:ui": "playwright test --ui",

@@ -41,7 +41,7 @@ export class Octopus {
     }
   }
 
-  async createSchool(name: string, number: string) {
+  async prepareSchool(name: string, number: string) {
     await this.openPanel('school');
     await this.page.getByRole('button', { name: 'Dodaj', exact: true }).filter({
       has: this.page.getByText('school', { exact: true }),
@@ -59,6 +59,11 @@ export class Octopus {
     await typeValue(address.locator('input[id="number"]'), number);
     await address.getByRole('button', { name: 'Zapisz', exact: true }).click();
     await expect(address).toHaveCount(0);
+    return form;
+  }
+
+  async createSchool(name: string, number: string) {
+    const form = await this.prepareSchool(name, number);
     await form.getByRole('button', { name: 'Zapisz', exact: true }).click();
     await expect(form).toHaveCount(0);
     await expect(this.page).toHaveURL(/\/school\/school-panel\/\d+$/);
@@ -68,14 +73,35 @@ export class Octopus {
   }
 
   async markTestRecord() {
-    await this.page.getByRole('checkbox', { name: 'Testowy', exact: true }).check();
-    await expect(this.page.getByRole('checkbox', { name: 'Testowy', exact: true })).toBeChecked();
-    // Poczekaj na utrwalenie przez UI: odczyt po pełnej nawigacji wykonuje scenariusz.
+    // Flaga doczytuje się osobnym żądaniem. Nie zaznaczaj jej w trakcie
+    // inicjalizacji, ani nie opuszczaj strony przed zakończeniem zapisu.
+    const kind = this.page.url().includes('/teacher/') ? 'Teacher' : 'School';
+    const loaded = this.page.waitForResponse(r => new URL(r.url()).pathname === `/api/${kind}/Get${kind}IsTested`);
+    await this.page.reload();
+    const initial = await loaded;
+    expect(initial.ok()).toBeTruthy();
+    await initial.finished();
+    const checkbox = this.page.getByRole('checkbox', { name: 'Testowy', exact: true });
+    await expect(checkbox).toBeEnabled();
+    if (!(await checkbox.isChecked())) {
+      const saved = this.page.waitForResponse(r =>
+        new URL(r.url()).pathname.startsWith(`/api/${kind}/`) &&
+        new URL(r.url()).pathname.includes('Test') && r.request().method() === 'POST');
+      await checkbox.check();
+      const response = await saved;
+      expect(response.ok(), 'Zapis flagi Testowy musi zakończyć się powodzeniem').toBeTruthy();
+      await response.finished();
+    }
+    await this.page.reload();
+    await expect(checkbox).toBeChecked();
   }
 
   async searchSchool(name: string, id: string) {
-    await this.page.getByRole('button', { name: 'Szukaj', exact: true }).click();
-    const search = this.dialog('Wyszukiwarka szkół');
+    // Rozpocznij wyszukiwanie w panelu, jak użytkownik z menu aplikacji.
+    // Wejście bezpośrednio na URL z ID uruchamia dodatkowe ładowanie rekordu
+    // i tabeli, niezależne od nowego formularza wyszukiwania.
+    await this.openPanel('school');
+    const search = await this.openSearch('school');
     await typeValue(this.field(search, 'Nazwa szkoły'), name);
     await search.getByRole('button', { name: 'Szukaj', exact: true }).click();
     await expect(search).toHaveCount(0);
@@ -86,7 +112,7 @@ export class Octopus {
     await expect(this.page.getByRole('heading', { name: 'Rekordów: 1', exact: true })).toBeVisible();
   }
 
-  async createTeacher(lastName: string, email: string, schoolId: string, schoolName: string) {
+  async prepareTeacher(lastName: string, email: string, schoolId?: string, schoolName?: string) {
     await this.openPanel('teacher');
     await this.page.getByRole('button', { name: 'Dodaj', exact: true }).click();
     const form = this.dialog('Dodaj nowego nauczyciela');
@@ -95,6 +121,11 @@ export class Octopus {
     await typeValue(form.locator('.new-teacher__personal-input').filter({
       has: this.page.getByText('E-mail', { exact: true }),
     }).locator('input'), email);
+    if (schoolId && schoolName) await this.attachSchool(form, schoolId, schoolName);
+    return form;
+  }
+
+  async attachSchool(form: Locator, schoolId: string, schoolName: string) {
     await form.getByRole('button', { name: 'Dodaj szkołę', exact: true }).click();
     const schools = this.dialog('Dodaj szkołę - szkoły nauczyciela');
     await typeValue(this.field(schools, 'ID szkoły'), schoolId);
@@ -107,6 +138,10 @@ export class Octopus {
     await schools.getByRole('button', { name: 'Zapisz', exact: true }).click();
     await expect(schools).toHaveCount(0);
     await expect(form.getByRole('row').filter({ hasText: schoolName })).toHaveCount(1);
+  }
+
+  async createTeacher(lastName: string, email: string, schoolId: string, schoolName: string) {
+    const form = await this.prepareTeacher(lastName, email, schoolId, schoolName);
     await form.getByRole('button', { name: 'Zapisz', exact: true }).click();
     const warning = this.dialog('Uwaga');
     await expect(warning).toContainText('Nie dodałeś przedmioto-poziomu');
@@ -120,8 +155,8 @@ export class Octopus {
   }
 
   async searchTeacher(id: string) {
-    await this.page.getByRole('button', { name: 'Szukaj', exact: true }).click();
-    const search = this.dialog('Wyszukiwarka nauczycieli');
+    await this.openPanel('teacher');
+    const search = await this.openSearch('teacher');
     await typeValue(this.field(search, 'ID nauczyciela'), id);
     await search.getByRole('button', { name: 'Szukaj', exact: true }).click();
     await expect(search).toHaveCount(0);
@@ -137,6 +172,39 @@ export class Octopus {
     await typeValue(form.locator('input[id="firstName"]'), value);
     await form.getByRole('button', { name: 'Zapisz', exact: true }).click();
     await expect(form).toHaveCount(0);
-    await expect(this.detail('firstName')).toHaveValue('Bożena');
+    await expect(this.detail('firstName')).toHaveValue('Jan');
+  }
+
+  results(kind: 'teacher' | 'school') {
+    return this.page.getByRole('treegrid').filter({
+      has: this.page.getByRole('columnheader', {
+        name: kind === 'teacher' ? 'Osoba' : 'Nazwa z SIO', exact: true,
+      }),
+    });
+  }
+
+  async openSearch(kind: 'teacher' | 'school') {
+    await this.page.getByRole('button', { name: 'Szukaj', exact: true }).click();
+    const search = this.dialog(kind === 'teacher' ? 'Wyszukiwarka nauczycieli' : 'Wyszukiwarka szkół');
+    await expect(search).toBeVisible();
+    // Formularz ustawia fokus asynchronicznie po otwarciu dialogu.
+    await expect(search.locator('input:not([type="checkbox"])').first()).toBeFocused();
+    return search;
+  }
+
+  async searchMissing(kind: 'teacher' | 'school', label: string, value: string) {
+    // Nie resetuj tu panelu: FIND-04 musi sprawdzać usunięcie poprzedniej listy.
+    const search = await this.openSearch(kind);
+    // Wyszukiwarka może pamiętać kryteria poprzedniej operacji.
+    for (const input of await search.locator('input:not([type="checkbox"]):not([readonly]):not([disabled])').all()) {
+      await typeValue(input, '');
+    }
+    await typeValue(this.field(search, label), value);
+    await search.getByRole('button', { name: 'Szukaj', exact: true }).click();
+    const empty = this.page.locator('mat-dialog-container').filter({ hasText: 'Brak wyników wyszukiwania' });
+    await expect(empty).toBeVisible();
+    await empty.getByRole('button', { name: 'OK', exact: true }).click();
+    await expect(empty).toHaveCount(0);
+    await expect(this.results(kind).getByRole('gridcell')).toHaveCount(0);
   }
 }

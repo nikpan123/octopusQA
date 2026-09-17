@@ -1,5 +1,44 @@
 # Weryfikacja projektu testów
 
+## Aktualna weryfikacja po poprawce wyszukiwania — 2026-09-17
+
+Poprawiono `tests/support/octopus.ts`: pierwsze wyszukiwanie szkoły/nauczyciela zaczyna się od panelu bez ID, a wpisywanie kryteriów czeka na widoczność formularza i fokus pierwszego pola. Drugie wyszukiwanie w FIND-04 pozostaje w tej samej sesji panelu z poprzednimi wynikami. Nie usunięto asercji komunikatu, kliknięcia OK ani pustej listy.
+
+- `npm.cmd test`: **9 PASS, 1 FAIL**, 5,4 minuty. Test główny oraz oba FIND-04: **PASS**.
+- Jedyny FAIL: TEA-02, brak nazwiska. Sesja wygasła podczas przygotowania szkoły i aplikacja skierowała test na `/login`. Następny worker automatycznie zalogował się do GitLaba i Octopusa.
+- `npm.cmd test -- --grep nazwisko --reporter=line --output=runs/diagnostyka-wyszukiwania/powtorka-walidacji`: **1 PASS**, 31 sekund. Powtórzono wyłącznie przypadek przerwany utratą sesji.
+- Wszystkie 10 scenariuszy uzyskało PASS w tej weryfikacji, ale nie w jednym nieprzerwanym przebiegu.
+- `npm.cmd run check` i `git diff --check`: PASS.
+
+Raport HTML w `playwright-report` zachowuje pełny przebieg 9/1; oddzielna powtórka nie nadpisuje go. Jej pliki wynikowe są w `runs/diagnostyka-wyszukiwania/powtorka-walidacji`, a zapis danych w `runs/REG_*.json`. Kopia poprzedniego raportu użytkownika jest w `runs/diagnostyka-wyszukiwania/playwright-report`.
+
+Wcześniejsze stwierdzenie o ogólnym błędzie komunikatu było zbyt szerokie. Odrębną ścieżkę wejścia przez bezpośredni adres z ID i ustalenia z diagnostyki opisano w [OCT-OBS-002](OCT-OBS-002.md). Nie zmieniano kodu aplikacji.
+
+## Historyczne rozszerzenie zestawu — 2026-09-17
+
+Dodano dziewięć niezależnych przypadków w `tests/walidacja-anulowanie.spec.ts`. Łącznie jest 10 testów (w tym dotychczasowy proces z imieniem Jan).
+
+Końcowe uruchomienie `npm.cmd test`: **8 passed, 2 failed**, około 4,4 minuty. `npm.cmd run check` oraz `git diff --check` zakończyły się poprawnie.
+
+| Obszar | Wynik końcowego przebiegu |
+|---|---|
+| Pełna ścieżka szkoła–nauczyciel, JaN → Jan, historia | PASS |
+| Walidacja braku imienia, nazwiska, szkoły, kontaktu | 4 × PASS |
+| Anulowanie dodawania nauczyciela i szkoły | 2 × PASS |
+| Anulowanie edycji, zachowanie danych i historii | PASS |
+| Puste wyniki po wcześniejszym znalezieniu nauczyciela | FAIL — komunikat nie był widoczny w końcowym stanie |
+| Puste wyniki po wcześniejszym znalezieniu szkoły | FAIL — komunikat zniknął przed kliknięciem OK |
+
+Opis obserwacji i odtworzenia: [OCT-OBS-002](OCT-OBS-002.md). Te same dwa przypadki przeszły we wcześniejszym przebiegu, co wskazuje na zależność od momentu zamknięcia komunikatu. Nie oznaczono ich jako pomijanych ani oczekiwanych błędów. Przyczynę w kodzie aplikacji trzeba jeszcze ustalić.
+
+Raport końcowy: lokalny `playwright-report/index.html`, dostępny przez `npm.cmd run report`. Zrzuty i ślady nieudanych przypadków: `test-results`. Rejestry danych: `runs/*.json`. Dane są pozostawione na dev. Wcześniejsze próby również tworzyły dane, a przed poprawką oczekiwania na zapis nie każda próba utrwaliła flagę Testowy; rekordy nadal można rozpoznać po unikalnym prefiksie REG.
+
+Podczas uruchamiania poprawiono synchronizację automatyzacji: odczyt początkowych danych dopiero po załadowaniu e-maila; zaznaczenie flagi Testowy dopiero po wczytaniu jej stanu, oczekiwanie na zakończenie zapisu i weryfikacja po odświeżeniu. Anulowanie edycji po tych poprawkach przeszło zarówno oddzielnie, jak i w pełnym zestawie.
+
+Pierwsza próba zestawu została przerwana z powodu wygasłej sesji, zanim powstały dane. Użytkownik odnowił sesję. Wszystkie powyższe wyniki pochodzą z późniejszych uruchomień z aktywną sesją.
+
+## Historyczny pierwszy test
+
 2026-09-17, Octopus dev, Chromium (Playwright 1.63.0).
 
 - `npm.cmd run check`: PASS — kontrola typów TypeScript.

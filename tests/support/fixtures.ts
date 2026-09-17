@@ -1,22 +1,19 @@
 import { test as base, expect } from '@playwright/test';
-import { existsSync, readFileSync } from 'node:fs';
+import { ensureSession, restoreSession, type AuthSession } from '../../scripts/auth.mjs';
 
-export const test = base.extend({
-  page: async ({ page }, use) => {
-    if (!existsSync('playwright/.auth/user.json')) {
-      throw new Error('Brak zapisanej sesji. Najpierw uruchom: npm.cmd run login');
-    }
-    if (existsSync('playwright/.auth/session.json')) {
-      const state = JSON.parse(readFileSync('playwright/.auth/session.json', 'utf8'));
-      await page.context().addInitScript(({ origin, values }) => {
-        if (window.location.origin === origin) {
-          for (const [key, value] of Object.entries(values)) window.sessionStorage.setItem(key, String(value));
-        }
-      }, state);
-    }
+export const test = base.extend<{}, { authSession: AuthSession }>({
+  // Działa także w panelu UI i przy uruchomieniu pojedynczego testu.
+  authSession: [async ({}, use) => {
+    await use(await ensureSession());
+  }, { scope: 'worker', timeout: 180_000 }],
+  storageState: async ({ authSession }, use) => {
+    await use(authSession.storageState);
+  },
+  page: async ({ page, authSession }, use) => {
+    await restoreSession(page.context(), authSession.session);
     await page.goto('/teacher/teacher-panel');
     await expect(page.getByRole('button', { name: 'Wyloguj', exact: true }),
-      'Sesja wygasła lub brak dostępu. Uruchom npm.cmd run login.').toBeVisible({ timeout: 30_000 });
+      'Brak dostępu do Octopusa po przygotowaniu sesji. Sprawdź npm.cmd run auth:check.').toBeVisible({ timeout: 30_000 });
     await expect(page).toHaveURL(/^https:\/\/octopus\.gwodev\.pl\/teacher\//);
     await use(page);
   },
