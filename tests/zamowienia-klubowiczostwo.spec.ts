@@ -20,11 +20,9 @@ test("ORD-01: zamówienie szkoły zachowuje produkt i ilość po ponownym otwarc
     const form = s.app.dialog("Dodaj zamówienie");
     await form.getByPlaceholder("Wpisz", { exact: true }).fill(code);
     await form.getByRole("button", { name: "Szukaj", exact: true }).click();
-    const available = form
-      .getByRole("treegrid")
-      .filter({
-        has: page.getByRole("columnheader", { name: "Dodaj", exact: true }),
-      });
+    const available = form.getByRole("treegrid").filter({
+      has: page.getByRole("columnheader", { name: "Dodaj", exact: true }),
+    });
     const product = available
       .getByRole("row")
       .filter({ has: page.getByRole("gridcell", { name: code, exact: true }) });
@@ -39,11 +37,9 @@ test("ORD-01: zamówienie szkoły zachowuje produkt i ilość po ponownym otwarc
         has: page.locator("mat-icon").filter({ hasText: /^arrow_right$/ }),
       })
       .click();
-    const selected = form
-      .getByRole("treegrid")
-      .filter({
-        has: page.getByRole("columnheader", { name: "Ilość", exact: true }),
-      });
+    const selected = form.getByRole("treegrid").filter({
+      has: page.getByRole("columnheader", { name: "Ilość", exact: true }),
+    });
     await expect(
       selected.getByRole("row").filter({ has: page.getByRole("gridcell") }),
     ).toHaveCount(1);
@@ -337,6 +333,757 @@ test("ORD-02: zamówienie szkoły z dwoma produktami zachowuje produkty i ilośc
   });
 });
 
+test("ORD-03: edycja ilości dwóch produktów w zamówieniu i usunięcie zamówienia @school @order", async ({
+  page,
+  scenario: s,
+}) => {
+  const schoolId = await s.createSchool();
+
+  const code1 = "KMLT18";
+  const code2 = "4P-2";
+
+  const initialQuantity1 = "1";
+  const initialQuantity2 = "2";
+
+  const editedQuantity1 = "3";
+  const editedQuantity2 = "5";
+
+  const orders = page
+    .getByRole("tabpanel", {
+      name: "Zamówienia",
+      exact: true,
+    })
+    .last();
+
+  let title1 = "";
+  dsfdsgfgdgfdg;
+  let title2 = "";
+  let orderId = "";
+
+  /*
+   * Jeżeli główny test zakończy się błędem, zapamiętujemy go.
+   * Dzięki temu ewentualny problem cleanupu nie przykryje
+   * pierwotnej przyczyny FAIL-a.
+   */
+  let scenarioError: unknown;
+
+  await s.record("productCode1", code1);
+  await s.record("productCode2", code2);
+
+  await s.record("initialQuantity1", initialQuantity1);
+
+  await s.record("initialQuantity2", initialQuantity2);
+
+  await s.record("editedQuantity1", editedQuantity1);
+
+  await s.record("editedQuantity2", editedQuantity2);
+
+  try {
+    /*
+     * =====================================================
+     * 1. TWORZENIE ZAMÓWIENIA
+     * =====================================================
+     */
+
+    await test.step("Utwórz zamówienie z dwoma produktami", async () => {
+      await page
+        .getByRole("tab", {
+          name: "Zamówienia",
+          exact: true,
+        })
+        .click();
+
+      await orders
+        .getByRole("button", {
+          name: "Dodaj",
+          exact: true,
+        })
+        .click();
+
+      const form = s.app.dialog("Dodaj zamówienie");
+
+      const searchInput = form.getByPlaceholder("Wpisz", { exact: true });
+
+      const available = form.getByRole("treegrid").filter({
+        has: page.getByRole("columnheader", {
+          name: "Dodaj",
+          exact: true,
+        }),
+      });
+
+      /*
+       * ---------------------------------------------
+       * Produkt 1
+       * ---------------------------------------------
+       */
+
+      await searchInput.fill(code1);
+
+      await form
+        .getByRole("button", {
+          name: "Szukaj",
+          exact: true,
+        })
+        .click();
+
+      const product1 = available.getByRole("row").filter({
+        has: page.getByRole("gridcell", {
+          name: code1,
+          exact: true,
+        }),
+      });
+
+      await expect(product1).toHaveCount(1);
+
+      title1 = (await product1.getByRole("gridcell").nth(3).innerText()).trim();
+
+      expect(title1).not.toBe("");
+
+      await s.record("productTitle1", title1);
+
+      await product1.getByRole("checkbox").check();
+
+      await form
+        .getByRole("button")
+        .filter({
+          has: page.locator("mat-icon").filter({
+            hasText: /^arrow_right$/,
+          }),
+        })
+        .click();
+
+      /*
+       * ---------------------------------------------
+       * Produkt 2
+       * ---------------------------------------------
+       */
+
+      await searchInput.fill(code2);
+
+      await form
+        .getByRole("button", {
+          name: "Szukaj",
+          exact: true,
+        })
+        .click();
+
+      const product2 = available.getByRole("row").filter({
+        has: page.getByRole("gridcell", {
+          name: code2,
+          exact: true,
+        }),
+      });
+
+      await expect(product2).toHaveCount(1);
+
+      title2 = (await product2.getByRole("gridcell").nth(3).innerText()).trim();
+
+      expect(title2).not.toBe("");
+
+      await s.record("productTitle2", title2);
+
+      await product2.getByRole("checkbox").check();
+
+      await form
+        .getByRole("button")
+        .filter({
+          has: page.locator("mat-icon").filter({
+            hasText: /^arrow_right$/,
+          }),
+        })
+        .click();
+
+      /*
+       * ---------------------------------------------
+       * Wybrane produkty
+       * ---------------------------------------------
+       */
+
+      const selected = form.getByRole("treegrid").filter({
+        has: page.getByRole("columnheader", {
+          name: "Ilość",
+          exact: true,
+        }),
+      });
+
+      const selectedRows = selected.getByRole("row").filter({
+        has: page.getByRole("gridcell"),
+      });
+
+      await expect(selectedRows).toHaveCount(2);
+
+      /*
+       * Produkt 1
+       */
+
+      const selectedProduct1 = selected.getByRole("row").filter({
+        has: page.getByRole("gridcell", {
+          name: code1,
+          exact: true,
+        }),
+      });
+
+      await expect(selectedProduct1).toHaveCount(1);
+
+      const quantity1 = selectedProduct1.getByRole("spinbutton");
+
+      /*
+       * AG Grid:
+       * najpierw click, potem fill.
+       */
+      await quantity1.click();
+
+      await quantity1.fill(initialQuantity1);
+
+      await quantity1.press("Tab");
+
+      /*
+       * Produkt 2
+       */
+
+      const selectedProduct2 = selected.getByRole("row").filter({
+        has: page.getByRole("gridcell", {
+          name: code2,
+          exact: true,
+        }),
+      });
+
+      await expect(selectedProduct2).toHaveCount(1);
+
+      const quantity2 = selectedProduct2.getByRole("spinbutton");
+
+      await quantity2.click();
+
+      await quantity2.fill(initialQuantity2);
+
+      await quantity2.press("Tab");
+
+      /*
+       * Kontrola przed zapisem.
+       */
+
+      await expect(selectedProduct1.getByRole("spinbutton")).toHaveValue(
+        initialQuantity1,
+      );
+
+      await expect(selectedProduct2.getByRole("spinbutton")).toHaveValue(
+        initialQuantity2,
+      );
+
+      /*
+       * Zapis zamówienia.
+       */
+
+      await form
+        .getByRole("button", {
+          name: "Zapisz",
+          exact: true,
+        })
+        .click();
+
+      await expect(form).toHaveCount(0);
+
+      /*
+       * Pobranie ID utworzonego zamówienia.
+       */
+
+      const saved = orders.locator("td.mat-column-id");
+
+      await expect(saved).toHaveCount(1);
+
+      orderId = (await saved.innerText()).trim();
+
+      expect(orderId).toMatch(/^\d+$/);
+
+      await s.record("orderId", orderId);
+    });
+
+    /*
+     * =====================================================
+     * 2. SPRAWDZENIE ZAPISANEGO ZAMÓWIENIA
+     * =====================================================
+     */
+
+    await test.step("Otwórz ponownie szkołę i sprawdź początkowe ilości produktów", async () => {
+      await s.app.openPanel("school", schoolId);
+
+      await page
+        .getByRole("tab", {
+          name: "Zamówienia",
+          exact: true,
+        })
+        .click();
+
+      const orderRow = orders.getByRole("row").filter({
+        has: page.getByRole("cell", {
+          name: orderId,
+          exact: true,
+        }),
+      });
+
+      await expect(orderRow).toHaveCount(1);
+
+      /*
+       * Rozwinięcie pozycji zamówienia.
+       */
+
+      await orderRow
+        .locator("mat-icon")
+        .filter({
+          hasText: "keyboard_arrow_down",
+        })
+        .click();
+
+      const items = orders
+        .getByRole("table")
+        .filter({
+          has: page.getByRole("columnheader", {
+            name: "Ilość",
+            exact: true,
+          }),
+        })
+        .last();
+
+      const itemRows = items.getByRole("row").filter({
+        has: page.getByRole("cell"),
+      });
+
+      await expect(itemRows).toHaveCount(2);
+
+      const item1 = items.getByRole("row").filter({
+        has: page.getByRole("cell", {
+          name: code1,
+          exact: true,
+        }),
+      });
+
+      const item2 = items.getByRole("row").filter({
+        has: page.getByRole("cell", {
+          name: code2,
+          exact: true,
+        }),
+      });
+
+      await expect(item1).toHaveCount(1);
+
+      await expect(item2).toHaveCount(1);
+
+      /*
+       * Nazwy produktów.
+       */
+
+      await expect(item1.getByRole("cell").nth(0)).toHaveText(title1);
+
+      await expect(item2.getByRole("cell").nth(0)).toHaveText(title2);
+
+      /*
+       * Początkowe ilości.
+       */
+
+      await expect(item1.getByRole("cell").nth(4)).toHaveText(initialQuantity1);
+
+      await expect(item2.getByRole("cell").nth(4)).toHaveText(initialQuantity2);
+    });
+
+    /*
+     * =====================================================
+     * 3. EDYCJA ZAMÓWIENIA
+     * =====================================================
+     */
+
+    await test.step("Edytuj ilości obu produktów", async () => {
+      /*
+       * Ponownie otwieramy panel.
+       * Dzięki temu pracujemy na świeżych danych.
+       */
+      await s.app.openPanel("school", schoolId);
+
+      await page
+        .getByRole("tab", {
+          name: "Zamówienia",
+          exact: true,
+        })
+        .click();
+
+      const orderRow = orders.getByRole("row").filter({
+        has: page.getByRole("cell", {
+          name: orderId,
+          exact: true,
+        }),
+      });
+
+      await expect(orderRow).toHaveCount(1);
+
+      /*
+       * WAŻNE:
+       * najpierw klikamy konkretny wiersz.
+       * Dopiero wtedy przycisk Edytuj jest aktywny.
+       */
+      await orderRow.click();
+
+      /*
+       * Na screenie/DOM przycisk ma stabilny data-cy:
+       *
+       * data-cy="manually-edit-order-btn"
+       */
+      const editButton = orders.locator('[data-cy="manually-edit-order-btn"]');
+
+      await expect(editButton).toBeEnabled();
+
+      await editButton.click();
+
+      /*
+       * Nie znamy jeszcze dokładnego nagłówka
+       * dialogu edycji, dlatego pobieramy
+       * aktualnie otwarty mat-dialog.
+       */
+      const form = page.locator("mat-dialog-container").last();
+
+      await expect(form).toBeVisible();
+
+      /*
+       * Tabela produktów w edycji.
+       */
+      const selected = form.getByRole("treegrid").filter({
+        has: page.getByRole("columnheader", {
+          name: "Ilość",
+          exact: true,
+        }),
+      });
+
+      const selectedRows = selected.getByRole("row").filter({
+        has: page.getByRole("gridcell"),
+      });
+
+      await expect(selectedRows).toHaveCount(2);
+
+      /*
+       * ---------------------------------------------
+       * Produkt 1
+       * ---------------------------------------------
+       */
+
+      const product1Row = selected.getByRole("row").filter({
+        has: page.getByRole("gridcell", {
+          name: code1,
+          exact: true,
+        }),
+      });
+
+      await expect(product1Row).toHaveCount(1);
+
+      const quantity1 = product1Row.getByRole("spinbutton");
+
+      await quantity1.click();
+
+      await quantity1.fill(editedQuantity1);
+
+      await quantity1.press("Tab");
+
+      /*
+       * ---------------------------------------------
+       * Produkt 2
+       * ---------------------------------------------
+       */
+
+      const product2Row = selected.getByRole("row").filter({
+        has: page.getByRole("gridcell", {
+          name: code2,
+          exact: true,
+        }),
+      });
+
+      await expect(product2Row).toHaveCount(1);
+
+      const quantity2 = product2Row.getByRole("spinbutton");
+
+      await quantity2.click();
+
+      await quantity2.fill(editedQuantity2);
+
+      await quantity2.press("Tab");
+
+      /*
+       * Kontrola wartości w formularzu
+       * przed zapisem.
+       */
+
+      await expect(product1Row.getByRole("spinbutton")).toHaveValue(
+        editedQuantity1,
+      );
+
+      await expect(product2Row.getByRole("spinbutton")).toHaveValue(
+        editedQuantity2,
+      );
+
+      /*
+       * Zapis zmian.
+       */
+
+      await form
+        .getByRole("button", {
+          name: "Zapisz",
+          exact: true,
+        })
+        .click();
+
+      await expect(form).toHaveCount(0);
+
+      await s.record("orderEdited", "true");
+    });
+
+    /*
+     * =====================================================
+     * 4. SPRAWDZENIE TRWAŁOŚCI EDYCJI
+     * =====================================================
+     */
+
+    await test.step("Otwórz szkołę ponownie i sprawdź zmienione ilości", async () => {
+      await s.app.openPanel("school", schoolId);
+
+      await page
+        .getByRole("tab", {
+          name: "Zamówienia",
+          exact: true,
+        })
+        .click();
+
+      const orderRow = orders.getByRole("row").filter({
+        has: page.getByRole("cell", {
+          name: orderId,
+          exact: true,
+        }),
+      });
+
+      await expect(orderRow).toHaveCount(1);
+
+      /*
+       * Rozwinięcie zamówienia.
+       */
+
+      await orderRow
+        .locator("mat-icon")
+        .filter({
+          hasText: "keyboard_arrow_down",
+        })
+        .click();
+
+      const items = orders
+        .getByRole("table")
+        .filter({
+          has: page.getByRole("columnheader", {
+            name: "Ilość",
+            exact: true,
+          }),
+        })
+        .last();
+
+      /*
+       * Nadal mają istnieć dokładnie
+       * dwie pozycje.
+       */
+
+      await expect(
+        items.getByRole("row").filter({
+          has: page.getByRole("cell"),
+        }),
+      ).toHaveCount(2);
+
+      const item1 = items.getByRole("row").filter({
+        has: page.getByRole("cell", {
+          name: code1,
+          exact: true,
+        }),
+      });
+
+      const item2 = items.getByRole("row").filter({
+        has: page.getByRole("cell", {
+          name: code2,
+          exact: true,
+        }),
+      });
+
+      await expect(item1).toHaveCount(1);
+
+      await expect(item2).toHaveCount(1);
+
+      /*
+       * Produkty nie powinny się zmienić.
+       */
+
+      await expect(item1.getByRole("cell").nth(0)).toHaveText(title1);
+
+      await expect(item2.getByRole("cell").nth(0)).toHaveText(title2);
+
+      /*
+       * Najważniejsza asercja:
+       * zmienione ilości są trwałe
+       * po ponownym pobraniu danych.
+       */
+
+      await expect(item1.getByRole("cell").nth(4)).toHaveText(editedQuantity1);
+
+      await expect(item2.getByRole("cell").nth(4)).toHaveText(editedQuantity2);
+
+      /*
+       * Zamówienie nadal należy
+       * do właściwej szkoły.
+       */
+
+      await expect(
+        orders.getByText("Adres " + s.schoolName, {
+          exact: false,
+        }),
+      ).toBeVisible();
+    });
+  } catch (error) {
+    /*
+     * Zapamiętujemy pierwotny FAIL.
+     * Cleanup wykona się w finally.
+     */
+    scenarioError = error;
+
+    throw error;
+  } finally {
+    /*
+     * =====================================================
+     * 5. CLEANUP — USUNIĘCIE ZAMÓWIENIA
+     * =====================================================
+     *
+     * Wykonujemy także po FAIL,
+     * jeśli udało się wcześniej uzyskać orderId.
+     */
+
+    if (orderId) {
+      try {
+        await test.step("Cleanup: usuń utworzone zamówienie", async () => {
+          await s.app.openPanel("school", schoolId);
+
+          await page
+            .getByRole("tab", {
+              name: "Zamówienia",
+              exact: true,
+            })
+            .click();
+
+          const orderRow = orders.getByRole("row").filter({
+            has: page.getByRole("cell", {
+              name: orderId,
+              exact: true,
+            }),
+          });
+
+          /*
+           * Jeżeli zamówienie z jakiegoś powodu
+           * już nie istnieje, cleanup uznajemy
+           * za zakończony.
+           */
+          if ((await orderRow.count()) === 0) {
+            await s.record("orderCleanup", "ALREADY_ABSENT");
+
+            return;
+          }
+
+          await expect(orderRow).toHaveCount(1);
+
+          /*
+           * WAŻNE:
+           * zaznaczamy wiersz zamówienia.
+           *
+           * Dopiero wtedy przycisk "Usuń"
+           * jest aktywny.
+           */
+          await orderRow.click();
+
+          const deleteButton = orders.getByRole("button", {
+            name: "Usuń",
+            exact: true,
+          });
+
+          await expect(deleteButton).toBeEnabled();
+
+          await deleteButton.click();
+
+          /*
+           * Octopus może pokazać dialog
+           * potwierdzający usunięcie.
+           *
+           * Ponieważ nie mamy jeszcze
+           * screena tego dialogu,
+           * kod obsługuje kilka typowych
+           * nazw przycisku potwierdzającego.
+           */
+
+          const confirmation = page.locator("mat-dialog-container").last();
+
+          /*
+           * Dajemy krótki czas na pojawienie
+           * się dialogu.
+           *
+           * Jeżeli aplikacja usuwa bez dialogu,
+           * przechodzimy dalej.
+           */
+          const dialogAppeared = await confirmation
+            .waitFor({
+              state: "visible",
+              timeout: 1500,
+            })
+            .then(() => true)
+            .catch(() => false);
+
+          if (dialogAppeared) {
+            const confirmButton = confirmation.getByRole("button", {
+              name: /^(Tak|Usuń|OK)$/,
+            });
+
+            await expect(confirmButton).toBeVisible();
+
+            await confirmButton.click();
+
+            await expect(confirmation).toHaveCount(0);
+          }
+
+          /*
+           * Najważniejsza asercja cleanupu:
+           * zamówienie o naszym ID
+           * musi zniknąć z tabeli.
+           */
+
+          await expect(
+            orders.getByRole("row").filter({
+              has: page.getByRole("cell", {
+                name: orderId,
+                exact: true,
+              }),
+            }),
+          ).toHaveCount(0);
+
+          await s.record("orderCleanup", "DELETED");
+        });
+      } catch (cleanupError) {
+        await s.record("orderCleanup", "FAILED");
+
+        /*
+         * Jeżeli sam scenariusz był poprawny,
+         * błąd cleanupu powinien wywalić test.
+         *
+         * Jeżeli test już wcześniej miał FAIL,
+         * nie przykrywamy pierwotnego błędu
+         * błędem sprzątania.
+         */
+        if (!scenarioError) {
+          throw cleanupError;
+        }
+
+        console.error(
+          `Cleanup zamówienia ${orderId} nie powiódł się:`,
+          cleanupError,
+        );
+      }
+    }
+  }
+});
+
 test("CLUB-01: przedmiotopoziom i formularz klubowy nauczyciela są trwałe @teacher @club", async ({
   page,
   scenario: s,
@@ -344,11 +1091,9 @@ test("CLUB-01: przedmiotopoziom i formularz klubowy nauczyciela są trwałe @tea
   const schoolId = await s.createSchool();
   const teacherId = await s.createTeacher(schoolId);
   const subjects = page.locator("app-teacher-subjects");
-  const subjectRow = subjects
-    .getByRole("row")
-    .filter({
-      has: page.getByRole("cell", { name: "Matematyka", exact: true }),
-    });
+  const subjectRow = subjects.getByRole("row").filter({
+    has: page.getByRole("cell", { name: "Matematyka", exact: true }),
+  });
   const confirmations = page.getByRole("tabpanel", {
     name: "Potwierdzenia",
     exact: true,
@@ -406,11 +1151,9 @@ test("CLUB-01: przedmiotopoziom i formularz klubowy nauczyciela są trwałe @tea
     await s.record("sendEmail", "false");
     await form.getByRole("button", { name: "Zapisz", exact: true }).click();
     await expect(form).toHaveCount(0);
-    const row = confirmations
-      .getByRole("row")
-      .filter({
-        has: page.getByRole("cell", { name: "Matematyka", exact: true }),
-      });
+    const row = confirmations.getByRole("row").filter({
+      has: page.getByRole("cell", { name: "Matematyka", exact: true }),
+    });
     await expect(row).toHaveCount(1);
     confirmationId = (await row.getByRole("cell").nth(1).innerText()).trim();
     expect(confirmationId).toMatch(/^\d+$/);
@@ -421,11 +1164,9 @@ test("CLUB-01: przedmiotopoziom i formularz klubowy nauczyciela są trwałe @tea
     await expect(
       subjectRow.getByRole("cell", { name: "Nasz", exact: true }),
     ).toBeVisible();
-    const row = confirmations
-      .getByRole("row")
-      .filter({
-        has: page.getByRole("cell", { name: confirmationId, exact: true }),
-      });
+    const row = confirmations.getByRole("row").filter({
+      has: page.getByRole("cell", { name: confirmationId, exact: true }),
+    });
     await expect(row).toHaveCount(1);
     await expect(
       row.getByRole("cell", { name: "Matematyka", exact: true }),
