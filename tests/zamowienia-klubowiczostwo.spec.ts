@@ -356,7 +356,6 @@ test("ORD-03: edycja ilości dwóch produktów w zamówieniu i usunięcie zamów
     .last();
 
   let title1 = "";
-  dsfdsgfgdgfdg;
   let title2 = "";
   let orderId = "";
 
@@ -1193,6 +1192,509 @@ test("CLUB-01: przedmiotopoziom i formularz klubowy nauczyciela są trwałe @tea
     await expect(
       detail.getByRole("cell", { name: "4", exact: true }),
     ).toBeVisible();
+    await expect(
+      detail.getByRole("cell").last().locator("mat-icon"),
+    ).toHaveText("check_circle_outline");
+  });
+});
+
+test("CLUB-02: edycja klasy w formularzu klubowym jest trwała @teacher @club", async ({
+  page,
+  scenario: s,
+}) => {
+  const schoolId = await s.createSchool();
+  const teacherId = await s.createTeacher(schoolId);
+
+  const subjects = page.locator("app-teacher-subjects");
+
+  const subjectRow = subjects.getByRole("row").filter({
+    has: page.getByRole("cell", {
+      name: "Matematyka",
+      exact: true,
+    }),
+  });
+
+  const confirmations = page.getByRole("tabpanel", {
+    name: "Potwierdzenia",
+    exact: true,
+  });
+
+  const initialClass = "4";
+  const editedClass = "5";
+
+  let schoolYear = "";
+  let confirmationId = "";
+
+  await s.record("subject", "Matematyka");
+  await s.record("level", "SP");
+  await s.record("initialClass", initialClass);
+  await s.record("editedClass", editedClass);
+
+  /*
+   * =====================================================
+   * 1. PRZEDMIOTO-POZIOM
+   * =====================================================
+   */
+
+  await test.step("Dodaj matematykę na poziomie szkoły podstawowej", async () => {
+    await subjects.getByRole("combobox").nth(0).click();
+
+    await page
+      .getByRole("option", {
+        name: "Matematyka",
+        exact: true,
+      })
+      .click();
+
+    await subjects.getByRole("combobox").nth(1).click();
+
+    await page
+      .getByRole("option", {
+        name: "Szkoła Podstawowa",
+        exact: true,
+      })
+      .click();
+
+    await subjects
+      .getByRole("button", {
+        name: "Dodaj",
+        exact: true,
+      })
+      .click();
+
+    await expect(
+      subjectRow.getByRole("cell", {
+        name: "SP",
+        exact: true,
+      }),
+    ).toBeVisible();
+
+    /*
+     * Sprawdzamy trwałość po ponownym otwarciu.
+     */
+    await s.app.openPanel("teacher", teacherId);
+
+    await expect(
+      subjectRow.getByRole("cell", {
+        name: "SP",
+        exact: true,
+      }),
+    ).toBeVisible();
+  });
+
+  /*
+   * =====================================================
+   * 2. UTWORZENIE FORMULARZA KLUBOWEGO
+   * =====================================================
+   */
+
+  await test.step("Utwórz formularz klubowy dla klasy 4", async () => {
+    await confirmations
+      .getByRole("button", {
+        name: "Dodaj formularz",
+        exact: true,
+      })
+      .click();
+
+    const form = s.app.dialog("Formularz klubowy");
+
+    /*
+     * Odczytujemy domyślnie wybrany rok szkolny.
+     */
+    schoolYear = (
+      await form
+        .locator("mat-radio-button")
+        .filter({
+          has: page.getByRole("radio", { checked: true }),
+        })
+        .innerText()
+    ).trim();
+
+    expect(schoolYear).toMatch(/^\d{4}\/\d{4}$/);
+
+    await s.record("schoolYear", schoolYear);
+
+    /*
+     * Przedmiot powinien być już wybrany
+     * na podstawie przedmioto-poziomu.
+     */
+    await expect(form.getByRole("combobox")).toHaveText("Matematyka");
+
+    /*
+     * Wybieramy szkołę nauczyciela.
+     */
+    const schoolRow = form.getByRole("row").filter({
+      hasText: s.schoolName,
+    });
+
+    await expect(schoolRow).toBeVisible();
+
+    await schoolRow.getByRole("checkbox").check();
+
+    /*
+     * Wybieramy klasę 4 w zielonej sekcji "nasze".
+     */
+    const ourClasses = form.locator(".green-box");
+
+    const class4 = ourClasses.getByRole("checkbox", {
+      name: initialClass,
+      exact: true,
+    });
+
+    await class4.check();
+
+    await expect(class4).toBeChecked();
+
+    /*
+     * Test nie może wysyłać maila.
+     */
+    const email = form.getByRole("checkbox", {
+      name: "Wysłać maila do nauczyciela",
+      exact: true,
+    });
+
+    await email.uncheck();
+
+    await expect(email).not.toBeChecked();
+
+    await s.record("sendEmail", "false");
+
+    /*
+     * Zapis.
+     */
+    await form
+      .getByRole("button", {
+        name: "Zapisz",
+        exact: true,
+      })
+      .click();
+
+    await expect(form).toHaveCount(0);
+
+    /*
+     * Szukamy właśnie utworzonego formularza.
+     */
+    const row = confirmations.getByRole("row").filter({
+      has: page.getByRole("cell", {
+        name: "Matematyka",
+        exact: true,
+      }),
+    });
+
+    await expect(row).toHaveCount(1);
+
+    confirmationId = (await row.getByRole("cell").nth(1).innerText()).trim();
+
+    expect(confirmationId).toMatch(/^\d+$/);
+
+    await s.record("confirmationId", confirmationId);
+  });
+
+  /*
+   * =====================================================
+   * 3. WERYFIKACJA PRZED EDYCJĄ
+   * =====================================================
+   */
+
+  await test.step("Sprawdź formularz z klasą 4 przed edycją", async () => {
+    await s.app.openPanel("teacher", teacherId);
+
+    const row = confirmations.getByRole("row").filter({
+      has: page.getByRole("cell", {
+        name: confirmationId,
+        exact: true,
+      }),
+    });
+
+    await expect(row).toHaveCount(1);
+
+    await expect(
+      row.getByRole("cell", {
+        name: "Matematyka",
+        exact: true,
+      }),
+    ).toBeVisible();
+
+    await expect(
+      row.getByRole("cell", {
+        name: "SP",
+        exact: true,
+      }),
+    ).toBeVisible();
+
+    await expect(
+      row.getByRole("cell", {
+        name: schoolYear,
+        exact: true,
+      }),
+    ).toBeVisible();
+
+    /*
+     * Rozwijamy szczegóły.
+     */
+    await row
+      .locator("mat-icon")
+      .filter({
+        hasText: "keyboard_arrow_down",
+      })
+      .click();
+
+    const details = confirmations.locator("app-form-clubs-inner-table");
+
+    const detail = details.getByRole("row").filter({
+      has: page.getByRole("cell"),
+    });
+
+    await expect(detail).toHaveCount(1);
+
+    await expect(detail.getByRole("cell").nth(1)).toContainText(s.schoolName);
+
+    await expect(
+      detail.getByRole("cell", {
+        name: "SP",
+        exact: true,
+      }),
+    ).toBeVisible();
+
+    await expect(
+      detail.getByRole("cell", {
+        name: initialClass,
+        exact: true,
+      }),
+    ).toBeVisible();
+
+    /*
+     * Status "Nasz".
+     */
+    await expect(
+      detail.getByRole("cell").last().locator("mat-icon"),
+    ).toHaveText("check_circle_outline");
+  });
+
+  /*
+   * =====================================================
+   * 4. EDYCJA FORMULARZA
+   * =====================================================
+   */
+
+  await test.step("Edytuj formularz klubowy i zmień klasę 4 na 5", async () => {
+    /*
+     * Ponownie otwieramy nauczyciela,
+     * żeby edycja zaczynała się na świeżym widoku.
+     */
+    await s.app.openPanel("teacher", teacherId);
+
+    const row = confirmations.getByRole("row").filter({
+      has: page.getByRole("cell", {
+        name: confirmationId,
+        exact: true,
+      }),
+    });
+
+    await expect(row).toHaveCount(1);
+
+    /*
+     * WAŻNE:
+     * najpierw zaznaczamy konkretny wiersz.
+     * Dopiero wtedy Edytuj jest aktywny.
+     */
+    await row.click();
+
+    const editButton = confirmations.getByRole("button", {
+      name: "Edytuj",
+      exact: true,
+    });
+
+    await expect(editButton).toBeEnabled();
+
+    await editButton.click();
+
+    /*
+     * Na screenie dialog nadal ma tytuł
+     * "Formularz klubowy".
+     */
+    const form = s.app.dialog("Formularz klubowy");
+
+    await expect(form).toBeVisible();
+
+    /*
+     * Szkoła nadal musi być widoczna.
+     */
+    const schoolRow = form.getByRole("row").filter({
+      hasText: s.schoolName,
+    });
+
+    await expect(schoolRow).toBeVisible();
+
+    /*
+     * Zielona sekcja = nasze.
+     */
+    const ourClasses = form.locator(".green-box");
+
+    const class4 = ourClasses.getByRole("checkbox", {
+      name: initialClass,
+      exact: true,
+    });
+
+    const class5 = ourClasses.getByRole("checkbox", {
+      name: editedClass,
+      exact: true,
+    });
+
+    /*
+     * Przed zmianą klasa 4 musi być zaznaczona.
+     */
+    await expect(class4).toBeChecked();
+
+    /*
+     * Nowa klasa nie może być jeszcze zaznaczona.
+     */
+    await expect(class5).not.toBeChecked();
+
+    /*
+     * 4 → 5
+     */
+    await class4.uncheck();
+
+    await class5.check();
+
+    await expect(class4).not.toBeChecked();
+
+    await expect(class5).toBeChecked();
+
+    /*
+     * Nie wysyłamy wiadomości podczas edycji.
+     */
+    const email = form.getByRole("checkbox", {
+      name: "Wysłać maila do nauczyciela",
+      exact: true,
+    });
+
+    if (await email.isChecked()) {
+      await email.uncheck();
+    }
+
+    await expect(email).not.toBeChecked();
+
+    /*
+     * Po zmianie Save powinien być aktywny.
+     */
+    const save = form.getByRole("button", {
+      name: "Zapisz",
+      exact: true,
+    });
+
+    await expect(save).toBeEnabled();
+
+    await save.click();
+
+    await expect(form).toHaveCount(0);
+
+    await s.record("clubEdited", "true");
+  });
+
+  /*
+   * =====================================================
+   * 5. WERYFIKACJA EDYCJI
+   * =====================================================
+   */
+
+  await test.step("Otwórz nauczyciela ponownie i sprawdź klasę 5", async () => {
+    await s.app.openPanel("teacher", teacherId);
+
+    /*
+     * Formularz powinien mieć ten sam ID.
+     */
+    const row = confirmations.getByRole("row").filter({
+      has: page.getByRole("cell", {
+        name: confirmationId,
+        exact: true,
+      }),
+    });
+
+    await expect(row).toHaveCount(1);
+
+    /*
+     * Dane główne nie zmieniły się.
+     */
+    await expect(
+      row.getByRole("cell", {
+        name: "Matematyka",
+        exact: true,
+      }),
+    ).toBeVisible();
+
+    await expect(
+      row.getByRole("cell", {
+        name: "SP",
+        exact: true,
+      }),
+    ).toBeVisible();
+
+    await expect(
+      row.getByRole("cell", {
+        name: schoolYear,
+        exact: true,
+      }),
+    ).toBeVisible();
+
+    /*
+     * Rozwijamy formularz.
+     */
+    await row
+      .locator("mat-icon")
+      .filter({
+        hasText: "keyboard_arrow_down",
+      })
+      .click();
+
+    const details = confirmations.locator("app-form-clubs-inner-table");
+
+    const detail = details.getByRole("row").filter({
+      has: page.getByRole("cell"),
+    });
+
+    await expect(detail).toHaveCount(1);
+
+    /*
+     * Ta sama szkoła.
+     */
+    await expect(detail.getByRole("cell").nth(1)).toContainText(s.schoolName);
+
+    /*
+     * Ten sam poziom.
+     */
+    await expect(
+      detail.getByRole("cell", {
+        name: "SP",
+        exact: true,
+      }),
+    ).toBeVisible();
+
+    /*
+     * Najważniejsza asercja:
+     * po edycji mamy klasę 5.
+     */
+    await expect(
+      detail.getByRole("cell", {
+        name: editedClass,
+        exact: true,
+      }),
+    ).toBeVisible();
+
+    /*
+     * Klasa 4 nie powinna już występować.
+     */
+    await expect(
+      detail.getByRole("cell", {
+        name: initialClass,
+        exact: true,
+      }),
+    ).toHaveCount(0);
+
+    /*
+     * Status nadal "Nasz".
+     */
     await expect(
       detail.getByRole("cell").last().locator("mat-icon"),
     ).toHaveText("check_circle_outline");
