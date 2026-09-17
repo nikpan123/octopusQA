@@ -2,7 +2,7 @@
 
 Projekt Playwright uruchamia test w prawdziwej przeglądarce Chromium na **dev: https://octopus.gwodev.pl**. Nie potrzebuje kodu źródłowego Octopusa.
 
-Projekt zawiera **16 testów**. Najnowsze rozszerzenie nauczyciela: **5 PASS w pierwszym zestawie i 1 PASS po poprawce danych testu nazwiska**. Nie uruchamiano jeszcze wszystkich 16 przypadków w jednym przebiegu. Szczegóły i wcześniejsze wyniki w [WERYFIKACJA.md](WERYFIKACJA.md); ograniczenie dotyczące wejścia bezpośrednim linkiem do kartoteki opisano w [OCT-OBS-002](OCT-OBS-002.md). Sesje i lokalne raporty nie są częścią repozytorium. Po sklonowaniu skonfiguruj logowanie według instrukcji poniżej.
+Projekt zawiera **18 testów**. Najnowsze dwa scenariusze (zamówienie szkoły i klubowiczostwo nauczyciela) przeszły razem na dev. Nie uruchamiano jeszcze wszystkich 18 przypadków w jednym przebiegu. Szczegóły i wcześniejsze wyniki w [WERYFIKACJA.md](WERYFIKACJA.md); ograniczenie dotyczące wejścia bezpośrednim linkiem do kartoteki opisano w [OCT-OBS-002](OCT-OBS-002.md). Sesje i lokalne raporty nie są częścią repozytorium. Po sklonowaniu skonfiguruj logowanie według instrukcji poniżej.
 
 ## Pierwsze uruchomienie
 
@@ -99,7 +99,7 @@ npm.cmd test -- --grep @search
 
 ### Drugie rozszerzenie: nauczyciel
 
-Łącznie projekt zawiera teraz **16 testów**. Plik `tests/nauczyciel-rozszerzenie.spec.ts` dodaje:
+Rozszerzenie nauczyciela zwiększyło zestaw do 16 testów. Plik `tests/nauczyciel-rozszerzenie.spec.ts` dodaje:
 
 | Test | Sprawdzenie |
 |---|---|
@@ -151,6 +151,21 @@ npm.cmd run check            # kontrola TypeScript, bez zmiany danych
 npm.cmd run test:auth        # mechanizm logowania na przechwyconych formularzach, fikcyjne dane
 npm.cmd test -- --grep @smoke # tylko testy oznaczone @smoke
 ```
+
+## Zamówienia i klubowiczostwo
+
+Plik `tests/zamowienia-klubowiczostwo.spec.ts` dodaje dwa niezależne testy:
+
+- **ORD-01** — własna szkoła testowa, produkt KMLT18, jedna sztuka. Po ponownym otwarciu sprawdza ID zamówienia, tytuł, kod, ilość i adres szkoły. Produkt musi istnieć w katalogu dev.
+- **CLUB-01** — własna szkoła i nauczyciel testowy, matematyka / SP, formularz w Potwierdzeniach dla klasy 4 (nasze) i domyślnego roku szkolnego. Wysyłka e-maila jest wyłączona. Test sprawdza trwałość przedmiotopoziomu, a następnie formularza, szkoły, klasy oraz statusu Nasz.
+
+Uruchomienie tylko nowych testów:
+
+```powershell
+npm.cmd test -- zamowienia-klubowiczostwo.spec.ts
+```
+
+Rekordy pozostają na dev; ich ID i parametry są zapisane w `runs/REG_*.json` i załączone do raportu. Konto wymaga praw do dodawania zamówień, przedmiotopoziomów i formularzy klubowych.
 
 ## Gdy test nie działa
 

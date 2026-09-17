@@ -7,6 +7,8 @@ Aktualizacja: wykonano pierwszy przebieg REG_20260917_01. Wyniki, ID danych i ob
 
 Rozszerzenie: dodano testy TEA-02 (4 warianty), TEA-03, SCH-02, EDIT-02 oraz FIND-04 dla szkół i nauczycieli. Aktualny zestaw liczy 10 przypadków; najnowsze wyniki opisano w WERYFIKACJA.md. Poprawiono przygotowanie wyszukiwania i oczekiwanie na formularz; oba przypadki FIND-04 przeszły. Osobną obserwację dotyczącą wejścia bezpośrednim linkiem do kartoteki opisuje OCT-OBS-002.
 
+Trzecie rozszerzenie: **ORD-01** — zamówienie szkoły i **CLUB-01** — przedmiotopoziom oraz formularz klubowy. Zestaw liczy teraz **18 testów**. Oba nowe scenariusze przeszły razem na dev; szczegóły w WERYFIKACJA.md.
+
 ## Podstawa i ograniczenia
 
 Drugie rozszerzenie: EDIT-03 (nazwisko i historia), TEA-04 (błędny e-mail / telefon), FIND-05 (e-mail / nazwisko), REL-02 (druga szkoła). Łącznie 16 testów. Wszystkie sześć nowych przypadków uzyskało PASS w weryfikacji opisanej w WERYFIKACJA.md; EDIT-03 po poprawieniu danych i osobnym uruchomieniu. Nie wykonywano jeszcze całego zestawu 16 przypadków razem.

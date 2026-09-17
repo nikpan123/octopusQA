@@ -1,5 +1,14 @@
 # Weryfikacja projektu testów
 
+## Zamówienia i klubowiczostwo — 2026-09-17
+
+`npm.cmd test -- zamowienia-klubowiczostwo.spec.ts`: **2 PASS**, 1,1 minuty w jednym przebiegu. ORD-01: 27,3 s; CLUB-01: 34,1 s. Kontrola TypeScript i lista 18 testów w czterech plikach: PASS. Nie wykonywano całego zestawu 18 testów razem.
+
+- ORD-01: szkoła 93095, zamówienie 1019720, produkt KMLT18, ilość 1. Po ponownym otwarciu szkoły potwierdzono ten sam ID zamówienia, jedną pozycję, tytuł, kod, ilość i adres szkoły. Zmiana ilości wymaga kliknięcia edytora AG Grid przed wpisaniem; samo wpisanie do renderera w próbie rozpoznawczej pozostawiło domyślną ilość 10.
+- CLUB-01: szkoła 93096, nauczyciel 532311, potwierdzenie 737024. Matematyka / SP została zapisana i sprawdzona po ponownym otwarciu przed dodaniem formularza. Formularz: rok 2026/2027 (odczytany z domyślnego wyboru), klasa 4 w grupie nasze. Wyłączono wysyłkę e-maila przed zapisem. Po ponownym otwarciu sprawdzono ten sam ID, rok, przedmiot, poziom, szkołę, klasę, oznaczenie Nasz oraz status przedmiotopoziomu.
+
+HTML w `playwright-report` zawiera ten przebieg. Dane: `runs/REG_1789633987836_df66f9.json` i `runs/REG_1789634014655_7ee8e8.json`. Każde uruchomienie tworzy nowe rekordy; dane pozostają na dev. Rozpoznanie formularzy pozostawiło też szkołę 93094, nauczyciela 532310, potwierdzenie 737023 i zamówienie 1019719 (10 sztuk). Tymczasowy skrypt rozpoznawczy został usunięty. Testy nie wysyłają formularza nauczycielowi i nie obsługują dalszej realizacji zamówienia.
+
 ## Rozszerzenie nauczyciela — 2026-09-17
 
 Dodano sześć przypadków w `tests/nauczyciel-rozszerzenie.spec.ts`; projekt wykrywa teraz 16 testów w trzech plikach.
