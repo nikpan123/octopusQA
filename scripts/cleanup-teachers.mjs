@@ -73,12 +73,18 @@ export async function cleanupSuccessfulTeacher(page, run, save) {
   }
 }
 
-async function main() {
-  const args = process.argv.slice(2);
+export function parseCleanupArgs(args) {
   const apply = args.includes('--apply');
-  const files = args.filter(a => a !== '--apply');
-  if (files.some(f => !/^REG_\d+_[a-f0-9]{6}\.json$/.test(f))) throw new Error('Podaj wyłącznie nazwy rejestrów REG_…json z folderu runs.');
-  if (apply && !files.length) throw new Error('--apply wymaga jawnej listy rejestrów.');
+  const all = args.includes('--all');
+  const files = args.filter(a => !['--apply', '--all'].includes(a));
+  if (files.some(f => !/^REG_\d+_[a-f0-9]{6}\.json$/.test(f))) throw new Error('Podaj pełne nazwy plików z kolumny rejestr albo --all. Wykonanie wymaga --apply (z dwoma myślnikami).');
+  if (all && files.length) throw new Error('Wybierz --all albo konkretne nazwy rejestrów, nie oba naraz.');
+  if (apply && !all && !files.length) throw new Error('--apply wymaga listy rejestrów lub --all.');
+  return { apply, all, files };
+}
+
+async function main() {
+  const { apply, files } = parseCleanupArgs(process.argv.slice(2));
   const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
   const dir = path.join(root, 'runs');
   const names = files.length ? [...new Set(files)] : (await readdir(dir)).filter(f => /^REG_\d+_[a-f0-9]{6}\.json$/.test(f));
@@ -91,7 +97,12 @@ async function main() {
     selected.push({ name, run });
   }
   console.table(selected.map(({name,run}) => ({rejestr:name,teacherId:run.teacherId,wynik:run.result})));
-  if (!apply) { console.log('PODGLĄD lokalny. Usunięcie: npm.cmd run cleanup:teachers -- REG_…json --apply'); return; }
+  if (!apply) {
+    console.log('PODGLĄD lokalny — bez usuwania. Lista obejmuje wyłącznie poprawne rejestry PASS.');
+    console.log('Wszystkie pokazane rejestry: npm.cmd run cleanup:teachers -- --all --apply');
+    console.log('Wybrane: npm.cmd run cleanup:teachers -- <pełna nazwa z kolumny rejestr> --apply');
+    return;
+  }
   if (!selected.length) return;
   const auth = await ensureSession();
   const browser = await chromium.launch();

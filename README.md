@@ -195,7 +195,14 @@ Usunięcie nauczyciela z konkretnego rejestru wymaga podania jego rzeczywistej n
 npm.cmd run cleanup:teachers -- REG_123456_abcdef.json --apply
 ```
 
-Przykładową nazwę zastąp nazwą z podglądu. Można podać kilka rejestrów. Nie ma operacji „usuń wszystkich”; rejestry nieudanych testów są odrzucane. Narzędzie ponownie weryfikuje rekord w Octopusie i zatrzymuje się przy pierwszym błędzie. Endpoint działa wyłącznie na dev. Testy zabezpieczeń: `npm.cmd run test:cleanup`.
+Przykładową nazwę zastąp nazwą z podglądu. Można podać kilka rejestrów. Wszystkich nauczycieli z poprawnych lokalnych rejestrów PASS można obsłużyć jednym poleceniem:
+
+```powershell
+npm.cmd run cleanup:teachers -- --all          # podgląd, bez zmian
+npm.cmd run cleanup:teachers -- --all --apply  # wykonanie
+```
+
+`--all` nie obejmuje wszystkich nauczycieli w bazie: wybiera tylko poprawne rejestry udanych testów, których jeszcze nie oznaczono jako posprzątane. Nauczyciele usunięci wcześniej np. przez Excel otrzymują `ALREADY_ABSENT`, bez ponownego DELETE. Rejestry nieudanych testów są pomijane w trybie --all, a odrzucane przy jawnym podaniu pliku. Nie łącz --all z nazwami rejestrów. Narzędzie ponownie weryfikuje każdy rekord w Octopusie i zatrzymuje się przy pierwszym błędzie; ponowne uruchomienie pomija już posprzątane rejestry. Szkoły i zamówienia pozostają. Endpoint działa wyłącznie na dev. Testy zabezpieczeń: `npm.cmd run test:cleanup`.
 
 - Błąd automatycznego logowania: sprawdź cztery wartości w `.env` i wykonaj `npm.cmd run login:auto`. Alternatywnie użyj ręcznego `npm.cmd run login`.
 - Po nieudanym logowaniu kolejne testy w tym samym uruchomieniu nie ponawiają próby hasła. Po poprawieniu danych uruchom zestaw/panel UI ponownie.

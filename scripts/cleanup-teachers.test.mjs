@@ -1,6 +1,18 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { deleteTestTeacher, cleanupSuccessfulTeacher, validateTeacherRun } from './cleanup-teachers.mjs';
+import { deleteTestTeacher, cleanupSuccessfulTeacher, validateTeacherRun, parseCleanupArgs } from './cleanup-teachers.mjs';
+
+test('--all domyślnie pokazuje podgląd; wykonanie wymaga --apply',()=>{
+  assert.deepEqual(parseCleanupArgs(['--all']),{all:true,apply:false,files:[]});
+  assert.deepEqual(parseCleanupArgs(['--all','--apply']),{all:true,apply:true,files:[]});
+  assert.deepEqual(parseCleanupArgs([]),{all:false,apply:false,files:[]});
+});
+test('odrzuca niejednoznaczne lub błędne argumenty',()=>{
+  for(const args of [['--apply'],['apply'],['--all','REG_123456_abcdef.json'],['--al','--apply'],['../REG_123456_abcdef.json']]) {
+    assert.throws(()=>parseCleanupArgs(args));
+  }
+  assert.deepEqual(parseCleanupArgs(['REG_123456_abcdef.json','--apply']),{all:false,apply:true,files:['REG_123456_abcdef.json']});
+});
 
 const run = () => ({ id:'REG_123456_abcdef', teacherId:'123', email:'reg_123456_abcdef@example.invalid', result:'PASS' });
 function pageWith(responses, origin='https://octopus.gwodev.pl') {
