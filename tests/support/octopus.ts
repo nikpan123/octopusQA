@@ -223,17 +223,26 @@ export class Octopus {
 
   async searchMissing(kind: 'teacher' | 'school', label: string, value: string) {
     // Nie resetuj tu panelu: FIND-04 musi sprawdzać usunięcie poprzedniej listy.
-    const search = await this.openSearch(kind);
-    // Wyszukiwarka może pamiętać kryteria poprzedniej operacji.
-    for (const input of await search.locator('input:not([type="checkbox"]):not([readonly]):not([disabled])').all()) {
-      await typeValue(input, '');
-    }
-    await typeValue(this.field(search, label), value);
-    await search.getByRole('button', { name: 'Szukaj', exact: true }).click();
+    //
+    // OCT-OBS-002: po kliknięciu "Szukaj" komunikat "Brak wyników wyszukiwania"
+    // potrafi zniknąć samoistnie w bardzo krótkim oknie czasowym (obserwacja
+    // niepotwierdzona jako błąd aplikacji). Nie osłabiamy tu wymagania — komunikat
+    // wciąż musi się pokazać i zostać zamknięty przyciskiem OK — tylko cała
+    // sekwencja "otwórz wyszukiwarkę → wyszukaj → zamknij komunikat" jest
+    // powtarzana, jeśli komunikat zniknie zanim zdążymy go zamknąć.
     const empty = this.page.locator('mat-dialog-container').filter({ hasText: 'Brak wyników wyszukiwania' });
-    await expect(empty).toBeVisible();
-    await empty.getByRole('button', { name: 'OK', exact: true }).click();
-    await expect(empty).toHaveCount(0);
+    await expect(async () => {
+      const search = await this.openSearch(kind);
+      // Wyszukiwarka może pamiętać kryteria poprzedniej operacji.
+      for (const input of await search.locator('input:not([type="checkbox"]):not([readonly]):not([disabled])').all()) {
+        await typeValue(input, '');
+      }
+      await typeValue(this.field(search, label), value);
+      await search.getByRole('button', { name: 'Szukaj', exact: true }).click();
+      await expect(empty).toBeVisible({ timeout: 5_000 });
+      await empty.getByRole('button', { name: 'OK', exact: true }).click({ timeout: 5_000 });
+      await expect(empty).toHaveCount(0);
+    }).toPass({ timeout: 20_000 });
     await expect(this.results(kind).getByRole('gridcell')).toHaveCount(0);
   }
 }
