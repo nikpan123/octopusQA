@@ -1,0 +1,73 @@
+# Regresja Octopus (dev) — patrz README.md i docs/audyt.
+#
+# WYMAGANE SEKRETY (Settings -> Secrets and variables -> Actions):
+#   GITLAB_USERNAME, GITLAB_PASSWORD, OCTOPUS_USERNAME, OCTOPUS_PASSWORD
+#
+# UWAGA: kazde uruchomienie testuje na zywym https://octopus.gwodev.pl (dev)
+# i tworzy tam prawdziwe rekordy (szkoly, nauczyciele, zamowienia), tak samo
+# jak uruchomienie lokalne - patrz README.md ("Rejestry przebiegow",
+# "Gdy test nie dziala"). Domyslnie workflow odpala sie tylko recznie
+# (workflow_dispatch). Odkomentuj `schedule`, jesli chcesz cykliczne
+# uruchomienia nocne — wtedy kazda noc tworzy nowy komplet danych testowych
+# na dev.
+name: Regresja Octopus (dev)
+
+on:
+  workflow_dispatch: {}
+  # schedule:
+  #   - cron: '0 3 * * *' # 03:00 UTC kazdej nocy — tworzy dane na dev co noc
+
+permissions:
+  contents: read
+
+concurrency:
+  # Testy dzialaja sekwencyjnie na wspolnej sesji/danych (patrz playwright.config.ts:
+  # workers 1, fullyParallel false) - nie odpalamy dwoch przebiegow rownolegle.
+  group: octopus-regression
+  cancel-in-progress: false
+
+jobs:
+  regression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Ustaw Node.js (wersja z .nvmrc)
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+
+      - name: Zainstaluj zaleznosci
+        run: npm ci
+
+      - name: Kontrola typow (tsc --noEmit)
+        run: npm run check
+
+      - name: Lint (ESLint) i formatowanie (Prettier)
+        run: |
+          npm run lint
+          npm run format:check
+
+      - name: Zainstaluj przegladarke Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Uruchom testy regresji (headless, na dev)
+        env:
+          GITLAB_USERNAME: ${{ secrets.GITLAB_USERNAME }}
+          GITLAB_PASSWORD: ${{ secrets.GITLAB_PASSWORD }}
+          OCTOPUS_USERNAME: ${{ secrets.OCTOPUS_USERNAME }}
+          OCTOPUS_PASSWORD: ${{ secrets.OCTOPUS_PASSWORD }}
+        run: npm test
+
+      - name: Zapisz raport Playwright i rejestry przebiegow
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: |
+            playwright-report/
+            runs/
+          retention-days: 14
