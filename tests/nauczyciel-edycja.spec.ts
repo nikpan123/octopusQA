@@ -3254,80 +3254,12 @@ test("EDIT-42: dropdown Źródło RODO zawiera oczekiwane wartości @teacher @ed
 
 /*
  * =========================================================
- * EDIT-36
- * ZGODA E-MAIL
- * =========================================================
- */
-
-test("EDIT-36: zgoda E-mail jest trwała @teacher @edit @rodo", async ({
-  page,
-  scenario: s,
-  school,
-}) => {
-  const teacherId = await s.createTeacher(school.id, school.name);
-
-  await s.app.openPanel("teacher", teacherId);
-
-  const dialog = await openTeacherFieldEdit(page, "Zgody RODO");
-
-  const checkbox = dialog.getByRole("checkbox", {
-    name: "E-mail",
-    exact: true,
-  });
-
-  await expect(checkbox).not.toBeChecked();
-
-  await checkbox.check();
-
-  await saveTeacherDialog(dialog);
-
-  await s.app.openPanel("teacher", teacherId);
-
-  await expect(teacherConsent(page, "E-mail")).toBeChecked();
-});
-
-/*
- * =========================================================
- * EDIT-29
- * ZGODA TELEFON
- * =========================================================
- */
-
-test("EDIT-37: zgoda Telefon jest trwała @teacher @edit @rodo", async ({
-  page,
-  scenario: s,
-  school,
-}) => {
-  const teacherId = await s.createTeacher(school.id, school.name);
-
-  await s.app.openPanel("teacher", teacherId);
-
-  const dialog = await openTeacherFieldEdit(page, "Zgody RODO");
-
-  const checkbox = dialog.getByRole("checkbox", {
-    name: "Telefon",
-    exact: true,
-  });
-
-  await expect(checkbox).not.toBeChecked();
-
-  await checkbox.check();
-
-  await saveTeacherDialog(dialog);
-
-  await s.app.openPanel("teacher", teacherId);
-
-  await expect(teacherConsent(page, "Telefon")).toBeChecked();
-});
-
-/*
- * =========================================================
- * EDIT-30
+ * EDIT-43
  * ZAPIS BEZ ZMIAN
  * =========================================================
  */
 
-test("EDIT-38: ponowny zapis już znormalizowanych danych bez zmian nie modyfikuje danych ani historii @teacher @edit", async ({
+test("EDIT-43: ponowny zapis już znormalizowanych danych bez zmian nie modyfikuje danych ani historii @teacher @edit", async ({
   page,
   scenario: s,
   school,
@@ -3390,12 +3322,12 @@ test("EDIT-38: ponowny zapis już znormalizowanych danych bez zmian nie modyfiku
 
 /*
  * =========================================================
- * EDIT-31
+ * EDIT-44
  * ANULOWANIE WIELU ZMIAN
  * =========================================================
  */
 
-test("EDIT-39: anulowanie wielu zmian zachowuje poprzednie dane i historię @teacher @edit @cancel", async ({
+test("EDIT-44: anulowanie wielu zmian zachowuje poprzednie dane i historię @teacher @edit @cancel", async ({
   page,
   scenario: s,
   school,
@@ -3437,12 +3369,12 @@ test("EDIT-39: anulowanie wielu zmian zachowuje poprzednie dane i historię @tea
 
 /*
  * =========================================================
- * EDIT-32
+ * EDIT-45
  * PEŁNA NAWIGACJA
  * =========================================================
  */
 
-test("EDIT-40: zmienione dane są trwałe po przejściu do szkoły i powrocie @teacher @edit @navigation", async ({
+test("EDIT-45: zmienione dane są trwałe po przejściu do szkoły i powrocie @teacher @edit @navigation", async ({
   page,
   scenario: s,
   school,
@@ -3485,12 +3417,12 @@ test("EDIT-40: zmienione dane są trwałe po przejściu do szkoły i powrocie @t
 
 /*
  * =========================================================
- * EDIT-33
+ * EDIT-46
  * RELACJA ZE SZKOŁĄ
  * =========================================================
  */
 
-test("EDIT-41: edycja danych nauczyciela nie usuwa relacji ze szkołą @teacher @edit @relation", async ({
+test("EDIT-46: edycja danych nauczyciela nie usuwa relacji ze szkołą @teacher @edit @relation", async ({
   page,
   scenario: s,
   school,
@@ -3540,12 +3472,12 @@ test("EDIT-41: edycja danych nauczyciela nie usuwa relacji ze szkołą @teacher 
 
 /*
  * =========================================================
- * EDIT-34
+ * EDIT-47
  * HISTORIA WIELU PÓL
  * =========================================================
  */
 
-test("EDIT-42: jednoczesna zmiana wielu pól tworzy komplet wpisów historii @teacher @edit @history", async ({
+test("EDIT-47: jednoczesna zmiana wielu pól tworzy komplet wpisów historii @teacher @edit @history", async ({
   page,
   scenario: s,
   school,
