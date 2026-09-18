@@ -1,6 +1,6 @@
-import { test, expect } from "./support/shared-school";
+import { test, expect } from './support/shared-school';
 
-import { typeValue } from "./support/octopus";
+import { typeValue } from './support/octopus';
 
 import {
   addTeacherNote,
@@ -58,7 +58,7 @@ import {
   teacherPhoneDeleteButtons,
   teacherRodoCheckbox,
   teacherRodoSourceSelect,
-} from "./support/teacher-edit";
+} from './support/teacher-edit';
 
 /*
  * =========================================================
@@ -67,16 +67,16 @@ import {
  * =========================================================
  */
 
-test("EDIT-04: zmiana imienia jest trwała i widoczna w historii @teacher @edit", async ({
+test('EDIT-04: zmiana imienia jest trwała i widoczna w historii @teacher @edit', async ({
   page,
   scenario: s,
   school,
 }) => {
   const teacherId = await s.createTeacher(school.id, school.name);
 
-  await s.app.openPanel("teacher", teacherId);
+  await s.app.openPanel('teacher', teacherId);
 
-  const newFirstName = "Adam";
+  const newFirstName = 'Adam';
 
   /*
    * Nazwisko zostanie znormalizowane
@@ -86,40 +86,40 @@ test("EDIT-04: zmiana imienia jest trwała i widoczna w historii @teacher @edit"
 
   const form = await openBasicTeacherEdit(page, s.app);
 
-  await expect(form.locator("#firstName")).toHaveValue("Testowy");
+  await expect(form.locator('#firstName')).toHaveValue('Testowy');
 
-  await typeValue(form.locator("#firstName"), newFirstName);
+  await typeValue(form.locator('#firstName'), newFirstName);
 
   await saveBasicTeacherEdit(form);
 
   /*
    * Od razu po zapisie.
    */
-  await expect(s.app.detail("firstName")).toHaveValue(newFirstName);
+  await expect(s.app.detail('firstName')).toHaveValue(newFirstName);
 
   /*
    * Ponowne otwarcie.
    */
-  await s.app.openPanel("teacher", teacherId);
+  await s.app.openPanel('teacher', teacherId);
 
-  await expect(s.app.detail("firstName")).toHaveValue(newFirstName);
+  await expect(s.app.detail('firstName')).toHaveValue(newFirstName);
 
   /*
    * Nazwisko zostało automatycznie
    * znormalizowane przez Octopusa.
    */
-  await expect(s.app.detail("lastName")).toHaveValue(expectedLastName);
+  await expect(s.app.detail('lastName')).toHaveValue(expectedLastName);
 
   /*
    * E-mail pozostaje bez zmian.
    */
-  await expect(s.app.detail("email")).toHaveValue(s.email);
+  await expect(s.app.detail('email')).toHaveValue(s.email);
 
   /*
    * Relacja ze szkołą pozostaje.
    */
   await expect(
-    page.getByRole("row").filter({
+    page.getByRole('row').filter({
       hasText: school.name,
     }),
   ).toHaveCount(1);
@@ -127,7 +127,7 @@ test("EDIT-04: zmiana imienia jest trwała i widoczna w historii @teacher @edit"
   /*
    * Historia zmiany imienia.
    */
-  await expectTeacherHistoryChange(page, "Imię", newFirstName);
+  await expectTeacherHistoryChange(page, 'Imię', newFirstName);
 });
 
 /*
@@ -137,34 +137,34 @@ test("EDIT-04: zmiana imienia jest trwała i widoczna w historii @teacher @edit"
  * =========================================================
  */
 
-test("EDIT-05: zmiana nazwiska jest trwała i widoczna w historii @teacher @edit", async ({
+test('EDIT-05: zmiana nazwiska jest trwała i widoczna w historii @teacher @edit', async ({
   page,
   scenario: s,
   school,
 }) => {
   const teacherId = await s.createTeacher(school.id, school.name);
 
-  const inputLastName = "Nowak";
+  const inputLastName = 'Nowak';
 
   const expectedLastName = normalizeTeacherName(inputLastName);
 
   const form = await openBasicTeacherEdit(page, s.app);
 
-  await expect(form.locator("#lastName")).toHaveValue(s.id);
+  await expect(form.locator('#lastName')).toHaveValue(s.id);
 
-  await typeValue(form.locator("#lastName"), inputLastName);
+  await typeValue(form.locator('#lastName'), inputLastName);
 
   await saveBasicTeacherEdit(form);
 
-  await s.app.openPanel("teacher", teacherId);
+  await s.app.openPanel('teacher', teacherId);
 
-  await expect(s.app.detail("lastName")).toHaveValue(expectedLastName);
+  await expect(s.app.detail('lastName')).toHaveValue(expectedLastName);
 
-  await expect(s.app.detail("firstName")).toHaveValue("Testowy");
+  await expect(s.app.detail('firstName')).toHaveValue('Testowy');
 
-  await expect(s.app.detail("email")).toHaveValue(s.email);
+  await expect(s.app.detail('email')).toHaveValue(s.email);
 
-  await expectTeacherHistoryChange(page, "Nazwisko", expectedLastName);
+  await expectTeacherHistoryChange(page, 'Nazwisko', expectedLastName);
 });
 
 /*
@@ -174,16 +174,16 @@ test("EDIT-05: zmiana nazwiska jest trwała i widoczna w historii @teacher @edit
  * =========================================================
  */
 
-test("EDIT-06: jednoczesna zmiana imienia i nazwiska zapisuje oba pola @teacher @edit", async ({
+test('EDIT-06: jednoczesna zmiana imienia i nazwiska zapisuje oba pola @teacher @edit', async ({
   page,
   scenario: s,
   school,
 }) => {
   const teacherId = await s.createTeacher(school.id, school.name);
 
-  const inputFirstName = "Adam";
+  const inputFirstName = 'Adam';
 
-  const inputLastName = "Nowak";
+  const inputLastName = 'Nowak';
 
   const expectedFirstName = normalizeTeacherName(inputFirstName);
 
@@ -191,28 +191,28 @@ test("EDIT-06: jednoczesna zmiana imienia i nazwiska zapisuje oba pola @teacher 
 
   const form = await openBasicTeacherEdit(page, s.app);
 
-  await typeValue(form.locator("#firstName"), inputFirstName);
+  await typeValue(form.locator('#firstName'), inputFirstName);
 
-  await typeValue(form.locator("#lastName"), inputLastName);
+  await typeValue(form.locator('#lastName'), inputLastName);
 
   await saveBasicTeacherEdit(form);
 
-  await s.app.openPanel("teacher", teacherId);
+  await s.app.openPanel('teacher', teacherId);
 
-  await expect(s.app.detail("firstName")).toHaveValue(expectedFirstName);
+  await expect(s.app.detail('firstName')).toHaveValue(expectedFirstName);
 
-  await expect(s.app.detail("lastName")).toHaveValue(expectedLastName);
+  await expect(s.app.detail('lastName')).toHaveValue(expectedLastName);
 
-  await expectTeacherHistoryChange(page, "Imię", expectedFirstName);
+  await expectTeacherHistoryChange(page, 'Imię', expectedFirstName);
 
   /*
    * Ponowne wejście,
    * żeby wrócić z historii
    * do standardowego panelu.
    */
-  await s.app.openPanel("teacher", teacherId);
+  await s.app.openPanel('teacher', teacherId);
 
-  await expectTeacherHistoryChange(page, "Nazwisko", expectedLastName);
+  await expectTeacherHistoryChange(page, 'Nazwisko', expectedLastName);
 });
 
 /*
@@ -222,34 +222,32 @@ test("EDIT-06: jednoczesna zmiana imienia i nazwiska zapisuje oba pola @teacher 
  * =========================================================
  */
 
-test("EDIT-07: wielkość liter imienia jest normalizowana @teacher @edit @normalization", async ({
+test('EDIT-07: wielkość liter imienia jest normalizowana @teacher @edit @normalization', async ({
   page,
   scenario: s,
   school,
 }) => {
   const teacherId = await s.createTeacher(school.id, school.name);
 
-  const input = "BoŻeNa";
+  const input = 'BoŻeNa';
 
   const expected = normalizeTeacherName(input);
 
   const form = await openBasicTeacherEdit(page, s.app);
 
-  await typeValue(form.locator("#firstName"), input);
+  await typeValue(form.locator('#firstName'), input);
 
   await saveBasicTeacherEdit(form);
 
-  await s.app.openPanel("teacher", teacherId);
+  await s.app.openPanel('teacher', teacherId);
 
-  await expect(s.app.detail("firstName")).toHaveValue(expected);
+  await expect(s.app.detail('firstName')).toHaveValue(expected);
 
   /*
    * Nazwisko również może zostać
    * znormalizowane przy tym samym zapisie.
    */
-  await expect(s.app.detail("lastName")).toHaveValue(
-    normalizeTeacherName(s.id),
-  );
+  await expect(s.app.detail('lastName')).toHaveValue(normalizeTeacherName(s.id));
 });
 
 /*
@@ -259,26 +257,26 @@ test("EDIT-07: wielkość liter imienia jest normalizowana @teacher @edit @norma
  * =========================================================
  */
 
-test("EDIT-08: wielkość liter nazwiska jest normalizowana @teacher @edit @normalization", async ({
+test('EDIT-08: wielkość liter nazwiska jest normalizowana @teacher @edit @normalization', async ({
   page,
   scenario: s,
   school,
 }) => {
   const teacherId = await s.createTeacher(school.id, school.name);
 
-  const input = "nOWAK";
+  const input = 'nOWAK';
 
   const expected = normalizeTeacherName(input);
 
   const form = await openBasicTeacherEdit(page, s.app);
 
-  await typeValue(form.locator("#lastName"), input);
+  await typeValue(form.locator('#lastName'), input);
 
   await saveBasicTeacherEdit(form);
 
-  await s.app.openPanel("teacher", teacherId);
+  await s.app.openPanel('teacher', teacherId);
 
-  await expect(s.app.detail("lastName")).toHaveValue(expected);
+  await expect(s.app.detail('lastName')).toHaveValue(expected);
 });
 
 /*
@@ -288,22 +286,18 @@ test("EDIT-08: wielkość liter nazwiska jest normalizowana @teacher @edit @norm
  * =========================================================
  */
 
-test("EDIT-09: nazwisko z łącznikiem można zapisać @teacher @edit", async ({
-  page,
-  scenario: s,
-  school,
-}) => {
+test('EDIT-09: nazwisko z łącznikiem można zapisać @teacher @edit', async ({ page, scenario: s, school }) => {
   const teacherId = await s.createTeacher(school.id, school.name);
 
-  const lastName = "Nowak-Kowalska";
+  const lastName = 'Nowak-Kowalska';
 
   const form = await openBasicTeacherEdit(page, s.app);
 
-  await typeValue(form.locator("#lastName"), lastName);
+  await typeValue(form.locator('#lastName'), lastName);
 
   await saveBasicTeacherEdit(form);
 
-  await s.app.openPanel("teacher", teacherId);
+  await s.app.openPanel('teacher', teacherId);
 
   /*
    * Nie narzucamy jeszcze sposobu
@@ -313,7 +307,7 @@ test("EDIT-09: nazwisko z łącznikiem można zapisać @teacher @edit", async ({
    * Sprawdzamy wartość bez rozróżniania
    * wielkości liter.
    */
-  await expect(s.app.detail("lastName")).toHaveValue(/^nowak-kowalska$/i);
+  await expect(s.app.detail('lastName')).toHaveValue(/^nowak-kowalska$/i);
 });
 
 /*
@@ -323,23 +317,19 @@ test("EDIT-09: nazwisko z łącznikiem można zapisać @teacher @edit", async ({
  * =========================================================
  */
 
-test("EDIT-10: puste imię blokuje zapis @teacher @edit @validation", async ({
-  page,
-  scenario: s,
-  school,
-}) => {
+test('EDIT-10: puste imię blokuje zapis @teacher @edit @validation', async ({ page, scenario: s, school }) => {
   const teacherId = await s.createTeacher(school.id, school.name);
 
   const form = await openBasicTeacherEdit(page, s.app);
 
-  const firstName = form.locator("#firstName");
+  const firstName = form.locator('#firstName');
 
-  await firstName.fill("");
-  await firstName.press("Tab");
+  await firstName.fill('');
+  await firstName.press('Tab');
 
   await form
-    .getByRole("button", {
-      name: "Zapisz",
+    .getByRole('button', {
+      name: 'Zapisz',
       exact: true,
     })
     .click();
@@ -353,11 +343,11 @@ test("EDIT-10: puste imię blokuje zapis @teacher @edit @validation", async ({
    * więc normalizacja nie powinna
    * zostać zapisana.
    */
-  await s.app.openPanel("teacher", teacherId);
+  await s.app.openPanel('teacher', teacherId);
 
-  await expect(s.app.detail("firstName")).toHaveValue("Testowy");
+  await expect(s.app.detail('firstName')).toHaveValue('Testowy');
 
-  await expect(s.app.detail("lastName")).toHaveValue(s.id);
+  await expect(s.app.detail('lastName')).toHaveValue(s.id);
 });
 
 /*
@@ -367,23 +357,19 @@ test("EDIT-10: puste imię blokuje zapis @teacher @edit @validation", async ({
  * =========================================================
  */
 
-test("EDIT-11: puste nazwisko blokuje zapis @teacher @edit @validation", async ({
-  page,
-  scenario: s,
-  school,
-}) => {
+test('EDIT-11: puste nazwisko blokuje zapis @teacher @edit @validation', async ({ page, scenario: s, school }) => {
   const teacherId = await s.createTeacher(school.id, school.name);
 
   const form = await openBasicTeacherEdit(page, s.app);
 
-  const lastName = form.locator("#lastName");
+  const lastName = form.locator('#lastName');
 
-  await lastName.fill("");
-  await lastName.press("Tab");
+  await lastName.fill('');
+  await lastName.press('Tab');
 
   await form
-    .getByRole("button", {
-      name: "Zapisz",
+    .getByRole('button', {
+      name: 'Zapisz',
       exact: true,
     })
     .click();
@@ -392,14 +378,14 @@ test("EDIT-11: puste nazwisko blokuje zapis @teacher @edit @validation", async (
 
   await cancelTeacherDialog(form);
 
-  await s.app.openPanel("teacher", teacherId);
+  await s.app.openPanel('teacher', teacherId);
 
   /*
    * Nie było poprawnego zapisu,
    * więc nazwisko powinno zostać
    * takie jak przed edycją.
    */
-  await expect(s.app.detail("lastName")).toHaveValue(s.id);
+  await expect(s.app.detail('lastName')).toHaveValue(s.id);
 });
 
 /*
@@ -409,14 +395,14 @@ test("EDIT-11: puste nazwisko blokuje zapis @teacher @edit @validation", async (
  * =========================================================
  */
 
-test("EDIT-12: poprawny e-mail można zmienić i zmiana jest widoczna w historii @teacher @edit", async ({
+test('EDIT-12: poprawny e-mail można zmienić i zmiana jest widoczna w historii @teacher @edit', async ({
   page,
   scenario: s,
   school,
 }) => {
   const teacherId = await s.createTeacher(school.id, school.name);
 
-  await s.app.openPanel("teacher", teacherId);
+  await s.app.openPanel('teacher', teacherId);
 
   const oldEmail = s.email;
 
@@ -428,11 +414,11 @@ test("EDIT-12: poprawny e-mail można zmienić i zmiana jest widoczna w historii
    * =====================================================
    */
 
-  await expect(s.app.detail("email")).toHaveValue(oldEmail);
+  await expect(s.app.detail('email')).toHaveValue(oldEmail);
 
-  await expect(s.app.detail("firstName")).toHaveValue("Testowy");
+  await expect(s.app.detail('firstName')).toHaveValue('Testowy');
 
-  await expect(s.app.detail("lastName")).toHaveValue(s.id);
+  await expect(s.app.detail('lastName')).toHaveValue(s.id);
 
   /*
    * =====================================================
@@ -443,13 +429,13 @@ test("EDIT-12: poprawny e-mail można zmienić i zmiana jest widoczna w historii
   const dialog = await openTeacherEmailEdit(page);
 
   await expect(
-    dialog.getByText("Stary adres", {
+    dialog.getByText('Stary adres', {
       exact: true,
     }),
   ).toBeVisible();
 
   await expect(
-    dialog.getByText("Nowy adres", {
+    dialog.getByText('Nowy adres', {
       exact: true,
     }),
   ).toBeVisible();
@@ -478,7 +464,7 @@ test("EDIT-12: poprawny e-mail można zmienić i zmiana jest widoczna w historii
    */
   await expect(newEmailInput).toBeEnabled();
 
-  await expect(newEmailInput).toHaveValue("");
+  await expect(newEmailInput).toHaveValue('');
 
   /*
    * =====================================================
@@ -496,8 +482,8 @@ test("EDIT-12: poprawny e-mail można zmienić i zmiana jest widoczna w historii
    * =====================================================
    */
 
-  const saveButton = dialog.getByRole("button", {
-    name: "Zapisz",
+  const saveButton = dialog.getByRole('button', {
+    name: 'Zapisz',
     exact: true,
   });
 
@@ -515,7 +501,7 @@ test("EDIT-12: poprawny e-mail można zmienić i zmiana jest widoczna w historii
    * =====================================================
    */
 
-  await expect(s.app.detail("email")).toHaveValue(newEmail);
+  await expect(s.app.detail('email')).toHaveValue(newEmail);
 
   /*
    * =====================================================
@@ -523,25 +509,25 @@ test("EDIT-12: poprawny e-mail można zmienić i zmiana jest widoczna w historii
    * =====================================================
    */
 
-  await s.app.openPanel("teacher", teacherId);
+  await s.app.openPanel('teacher', teacherId);
 
-  await expect(s.app.detail("email")).toHaveValue(newEmail);
+  await expect(s.app.detail('email')).toHaveValue(newEmail);
 
   /*
    * Edycja e-maila jest osobną operacją.
    * Dane podstawowe nie powinny się zmienić.
    */
 
-  await expect(s.app.detail("firstName")).toHaveValue("Testowy");
+  await expect(s.app.detail('firstName')).toHaveValue('Testowy');
 
-  await expect(s.app.detail("lastName")).toHaveValue(s.id);
+  await expect(s.app.detail('lastName')).toHaveValue(s.id);
 
   /*
    * Relacja ze szkołą pozostaje.
    */
 
   await expect(
-    page.getByRole("row").filter({
+    page.getByRole('row').filter({
       hasText: school.name,
     }),
   ).toHaveCount(1);
@@ -560,7 +546,7 @@ test("EDIT-12: poprawny e-mail można zmienić i zmiana jest widoczna w historii
    * Data: YYYY-MM-DD HH:mm
    */
 
-  await expectTeacherHistoryChange(page, "Email", newEmail);
+  await expectTeacherHistoryChange(page, 'Email', newEmail);
 
   /*
    * =====================================================
@@ -568,9 +554,9 @@ test("EDIT-12: poprawny e-mail można zmienić i zmiana jest widoczna w historii
    * =====================================================
    */
 
-  await s.record("oldEmail", oldEmail);
+  await s.record('oldEmail', oldEmail);
 
-  await s.record("editedEmail", newEmail);
+  await s.record('editedEmail', newEmail);
 });
 
 /*
@@ -580,14 +566,10 @@ test("EDIT-12: poprawny e-mail można zmienić i zmiana jest widoczna w historii
  * =========================================================
  */
 
-test("EDIT-13: niepoprawny e-mail blokuje zapis @teacher @edit @validation", async ({
-  page,
-  scenario: s,
-  school,
-}) => {
+test('EDIT-13: niepoprawny e-mail blokuje zapis @teacher @edit @validation', async ({ page, scenario: s, school }) => {
   const teacherId = await s.createTeacher(school.id, school.name);
 
-  await s.app.openPanel("teacher", teacherId);
+  await s.app.openPanel('teacher', teacherId);
 
   const oldEmail = s.email;
 
@@ -597,7 +579,7 @@ test("EDIT-13: niepoprawny e-mail blokuje zapis @teacher @edit @validation", asy
    * =====================================================
    */
 
-  await expect(s.app.detail("email")).toHaveValue(oldEmail);
+  await expect(s.app.detail('email')).toHaveValue(oldEmail);
 
   /*
    * =====================================================
@@ -610,13 +592,13 @@ test("EDIT-13: niepoprawny e-mail blokuje zapis @teacher @edit @validation", asy
   await expect(dialog).toBeVisible();
 
   await expect(
-    dialog.getByText("Stary adres", {
+    dialog.getByText('Stary adres', {
       exact: true,
     }),
   ).toBeVisible();
 
   await expect(
-    dialog.getByText("Nowy adres", {
+    dialog.getByText('Nowy adres', {
       exact: true,
     }),
   ).toBeVisible();
@@ -645,7 +627,7 @@ test("EDIT-13: niepoprawny e-mail blokuje zapis @teacher @edit @validation", asy
    */
   await expect(newEmailInput).toBeEnabled();
 
-  await expect(newEmailInput).toHaveValue("");
+  await expect(newEmailInput).toHaveValue('');
 
   /*
    * =====================================================
@@ -653,16 +635,16 @@ test("EDIT-13: niepoprawny e-mail blokuje zapis @teacher @edit @validation", asy
    * =====================================================
    */
 
-  await newEmailInput.fill("invalid-email");
+  await newEmailInput.fill('invalid-email');
 
-  await newEmailInput.press("Tab");
+  await newEmailInput.press('Tab');
 
-  await expect(newEmailInput).toHaveValue("invalid-email");
+  await expect(newEmailInput).toHaveValue('invalid-email');
 
   /*
    * Angular oznacza pole jako niepoprawne.
    */
-  await expect(newEmailInput).toHaveAttribute("aria-invalid", "true");
+  await expect(newEmailInput).toHaveAttribute('aria-invalid', 'true');
 
   /*
    * =====================================================
@@ -670,8 +652,8 @@ test("EDIT-13: niepoprawny e-mail blokuje zapis @teacher @edit @validation", asy
    * =====================================================
    */
 
-  const saveButton = dialog.getByRole("button", {
-    name: "Zapisz",
+  const saveButton = dialog.getByRole('button', {
+    name: 'Zapisz',
     exact: true,
   });
 
@@ -687,7 +669,7 @@ test("EDIT-13: niepoprawny e-mail blokuje zapis @teacher @edit @validation", asy
   /*
    * Pole nadal ma być oznaczone jako błędne.
    */
-  await expect(newEmailInput).toHaveAttribute("aria-invalid", "true");
+  await expect(newEmailInput).toHaveAttribute('aria-invalid', 'true');
 
   /*
    * =====================================================
@@ -703,32 +685,32 @@ test("EDIT-13: niepoprawny e-mail blokuje zapis @teacher @edit @validation", asy
    * =====================================================
    */
 
-  await s.app.openPanel("teacher", teacherId);
+  await s.app.openPanel('teacher', teacherId);
 
   /*
    * Niepoprawny e-mail nie został zapisany.
    */
-  await expect(s.app.detail("email")).toHaveValue(oldEmail);
+  await expect(s.app.detail('email')).toHaveValue(oldEmail);
 
   /*
    * Pozostałe dane również bez zmian.
    */
-  await expect(s.app.detail("firstName")).toHaveValue("Testowy");
+  await expect(s.app.detail('firstName')).toHaveValue('Testowy');
 
-  await expect(s.app.detail("lastName")).toHaveValue(s.id);
+  await expect(s.app.detail('lastName')).toHaveValue(s.id);
 
   /*
    * Relacja ze szkołą pozostaje.
    */
   await expect(
-    page.getByRole("row").filter({
+    page.getByRole('row').filter({
       hasText: school.name,
     }),
   ).toHaveCount(1);
 
-  await s.record("invalidEmail", "invalid-email");
+  await s.record('invalidEmail', 'invalid-email');
 
-  await s.record("emailAfterFailedEdit", oldEmail);
+  await s.record('emailAfterFailedEdit', oldEmail);
 });
 
 /*
@@ -738,16 +720,12 @@ test("EDIT-13: niepoprawny e-mail blokuje zapis @teacher @edit @validation", asy
  * =========================================================
  */
 
-test("EDIT-14: poprawny telefon można dodać @teacher @edit", async ({
-  page,
-  scenario: s,
-  school,
-}) => {
+test('EDIT-14: poprawny telefon można dodać @teacher @edit', async ({ page, scenario: s, school }) => {
   const teacherId = await s.createTeacher(school.id, school.name);
 
-  await s.app.openPanel("teacher", teacherId);
+  await s.app.openPanel('teacher', teacherId);
 
-  const phone = "500500500";
+  const phone = '500500500';
 
   /*
    * =====================================================
@@ -755,7 +733,7 @@ test("EDIT-14: poprawny telefon można dodać @teacher @edit", async ({
    * =====================================================
    */
 
-  await expect(s.app.detail("email")).toHaveValue(s.email);
+  await expect(s.app.detail('email')).toHaveValue(s.email);
 
   await expectTeacherPhoneNotSaved(page, phone);
 
@@ -773,7 +751,7 @@ test("EDIT-14: poprawny telefon można dodać @teacher @edit", async ({
 
   await newPhoneInput.fill(phone);
 
-  await newPhoneInput.press("Tab");
+  await newPhoneInput.press('Tab');
 
   /*
    * Sprawdzamy tylko, że wpisanie numeru
@@ -784,7 +762,7 @@ test("EDIT-14: poprawny telefon można dodać @teacher @edit", async ({
    */
   const typedValue = await newPhoneInput.inputValue();
 
-  expect(typedValue.replace(/\D/g, "")).toBe(phone);
+  expect(typedValue.replace(/\D/g, '')).toBe(phone);
 
   /*
    * =====================================================
@@ -823,7 +801,7 @@ test("EDIT-14: poprawny telefon można dodać @teacher @edit", async ({
    * =====================================================
    */
 
-  await s.app.openPanel("teacher", teacherId);
+  await s.app.openPanel('teacher', teacherId);
 
   /*
    * Telefon nadal musi istnieć
@@ -837,35 +815,31 @@ test("EDIT-14: poprawny telefon można dodać @teacher @edit", async ({
    * =====================================================
    */
 
-  await expect(s.app.detail("email")).toHaveValue(s.email);
+  await expect(s.app.detail('email')).toHaveValue(s.email);
 
-  await expect(s.app.detail("firstName")).toHaveValue("Testowy");
+  await expect(s.app.detail('firstName')).toHaveValue('Testowy');
 
-  await expect(s.app.detail("lastName")).toHaveValue(s.id);
+  await expect(s.app.detail('lastName')).toHaveValue(s.id);
 
   await expect(
-    page.getByRole("row").filter({
+    page.getByRole('row').filter({
       hasText: school.name,
     }),
   ).toHaveCount(1);
 
-  await s.record("addedPhone", phone);
+  await s.record('addedPhone', phone);
 
-  await expectTeacherPhoneHistoryChange(page, "Dodany numer", phone);
+  await expectTeacherPhoneHistoryChange(page, 'Dodany numer', phone);
 });
 
-test("EDIT-15: można dodać drugi numer telefonu @teacher @edit", async ({
-  page,
-  scenario: s,
-  school,
-}) => {
+test('EDIT-15: można dodać drugi numer telefonu @teacher @edit', async ({ page, scenario: s, school }) => {
   const teacherId = await s.createTeacher(school.id, school.name);
 
-  await s.app.openPanel("teacher", teacherId);
+  await s.app.openPanel('teacher', teacherId);
 
-  const firstPhone = "500500500";
+  const firstPhone = '500500500';
 
-  const secondPhone = "444444444";
+  const secondPhone = '444444444';
 
   /*
    * Pierwszy numer.
@@ -874,7 +848,7 @@ test("EDIT-15: można dodać drugi numer telefonu @teacher @edit", async ({
 
   await newPhoneInput.fill(firstPhone);
 
-  await newPhoneInput.press("Tab");
+  await newPhoneInput.press('Tab');
 
   let addButton = teacherPhoneAddButton(page);
 
@@ -893,7 +867,7 @@ test("EDIT-15: można dodać drugi numer telefonu @teacher @edit", async ({
 
   await newPhoneInput.fill(secondPhone);
 
-  await newPhoneInput.press("Tab");
+  await newPhoneInput.press('Tab');
 
   addButton = teacherPhoneAddButton(page);
 
@@ -910,33 +884,33 @@ test("EDIT-15: można dodać drugi numer telefonu @teacher @edit", async ({
    * Ponowne otwarcie — oba numery
    * muszą być trwałe.
    */
-  await s.app.openPanel("teacher", teacherId);
+  await s.app.openPanel('teacher', teacherId);
 
   await expectSavedTeacherPhones(page, [firstPhone, secondPhone]);
 
-  await s.record("firstPhone", firstPhone);
+  await s.record('firstPhone', firstPhone);
 
-  await s.record("secondPhone", secondPhone);
+  await s.record('secondPhone', secondPhone);
 
-  await expectTeacherPhoneHistoryChange(page, "Dodany numer", firstPhone);
+  await expectTeacherPhoneHistoryChange(page, 'Dodany numer', firstPhone);
 
-  await expectTeacherPhoneHistoryChange(page, "Dodany numer", secondPhone);
+  await expectTeacherPhoneHistoryChange(page, 'Dodany numer', secondPhone);
 });
 
-test("EDIT-16: przy dwóch telefonach nie można dodać trzeciego @teacher @edit", async ({
+test('EDIT-16: przy dwóch telefonach nie można dodać trzeciego @teacher @edit', async ({
   page,
   scenario: s,
   school,
 }) => {
   const teacherId = await s.createTeacher(school.id, school.name);
 
-  await s.app.openPanel("teacher", teacherId);
+  await s.app.openPanel('teacher', teacherId);
 
-  const firstPhone = "500500500";
+  const firstPhone = '500500500';
 
-  const secondPhone = "444444444";
+  const secondPhone = '444444444';
 
-  const thirdPhone = "324322342";
+  const thirdPhone = '324322342';
 
   /*
    * =====================================================
@@ -948,7 +922,7 @@ test("EDIT-16: przy dwóch telefonach nie można dodać trzeciego @teacher @edit
 
   await input.fill(firstPhone);
 
-  await input.press("Tab");
+  await input.press('Tab');
 
   let addButton = teacherPhoneAddButton(page);
 
@@ -966,7 +940,7 @@ test("EDIT-16: przy dwóch telefonach nie można dodać trzeciego @teacher @edit
 
   await input.fill(secondPhone);
 
-  await input.press("Tab");
+  await input.press('Tab');
 
   addButton = teacherPhoneAddButton(page);
 
@@ -984,11 +958,11 @@ test("EDIT-16: przy dwóch telefonach nie można dodać trzeciego @teacher @edit
 
   await input.fill(thirdPhone);
 
-  await input.press("Tab");
+  await input.press('Tab');
 
   const inputValue = await input.inputValue();
 
-  expect(inputValue.replace(/\D/g, "")).toBe(thirdPhone);
+  expect(inputValue.replace(/\D/g, '')).toBe(thirdPhone);
 
   addButton = teacherPhoneAddButton(page);
 
@@ -1010,25 +984,21 @@ test("EDIT-16: przy dwóch telefonach nie można dodać trzeciego @teacher @edit
    */
   await expectTeacherPhoneNotSaved(page, thirdPhone);
 
-  await expectTeacherPhoneHistoryChange(page, "Dodany numer", firstPhone);
+  await expectTeacherPhoneHistoryChange(page, 'Dodany numer', firstPhone);
 
-  await expectTeacherPhoneHistoryChange(page, "Dodany numer", secondPhone);
+  await expectTeacherPhoneHistoryChange(page, 'Dodany numer', secondPhone);
 
-  await expectTeacherPhoneHistoryMissing(page, "Dodany numer", thirdPhone);
+  await expectTeacherPhoneHistoryMissing(page, 'Dodany numer', thirdPhone);
 });
 
-test("EDIT-17: można usunąć zapisany numer telefonu @teacher @edit", async ({
-  page,
-  scenario: s,
-  school,
-}) => {
+test('EDIT-17: można usunąć zapisany numer telefonu @teacher @edit', async ({ page, scenario: s, school }) => {
   const teacherId = await s.createTeacher(school.id, school.name);
 
-  await s.app.openPanel("teacher", teacherId);
+  await s.app.openPanel('teacher', teacherId);
 
-  const firstPhone = "500500500";
-  const secondPhone = "444444444";
-  const thirdPhone = "324322342";
+  const firstPhone = '500500500';
+  const secondPhone = '444444444';
+  const thirdPhone = '324322342';
 
   /*
    * =====================================================
@@ -1039,7 +1009,7 @@ test("EDIT-17: można usunąć zapisany numer telefonu @teacher @edit", async ({
   let input = teacherNewPhoneInput(page);
 
   await input.fill(firstPhone);
-  await input.press("Tab");
+  await input.press('Tab');
 
   await expect(teacherPhoneAddButton(page)).toBeEnabled();
 
@@ -1054,7 +1024,7 @@ test("EDIT-17: można usunąć zapisany numer telefonu @teacher @edit", async ({
   input = teacherNewPhoneInput(page);
 
   await input.fill(secondPhone);
-  await input.press("Tab");
+  await input.press('Tab');
 
   await expect(teacherPhoneAddButton(page)).toBeEnabled();
 
@@ -1097,7 +1067,7 @@ test("EDIT-17: można usunąć zapisany numer telefonu @teacher @edit", async ({
   input = teacherNewPhoneInput(page);
 
   await input.fill(thirdPhone);
-  await input.press("Tab");
+  await input.press('Tab');
 
   /*
    * Po usunięciu jednego numeru
@@ -1121,7 +1091,7 @@ test("EDIT-17: można usunąć zapisany numer telefonu @teacher @edit", async ({
    * =====================================================
    */
 
-  await s.app.openPanel("teacher", teacherId);
+  await s.app.openPanel('teacher', teacherId);
 
   await expectSavedTeacherPhones(page, [secondPhone, thirdPhone]);
 
@@ -1133,13 +1103,13 @@ test("EDIT-17: można usunąć zapisany numer telefonu @teacher @edit", async ({
    * =====================================================
    */
 
-  await expectTeacherPhoneHistoryChange(page, "Dodany numer", firstPhone);
+  await expectTeacherPhoneHistoryChange(page, 'Dodany numer', firstPhone);
 
-  await expectTeacherPhoneHistoryChange(page, "Dodany numer", secondPhone);
+  await expectTeacherPhoneHistoryChange(page, 'Dodany numer', secondPhone);
 
-  await expectTeacherPhoneHistoryChange(page, "Usunięty numer", firstPhone);
+  await expectTeacherPhoneHistoryChange(page, 'Usunięty numer', firstPhone);
 
-  await expectTeacherPhoneHistoryChange(page, "Dodany numer", thirdPhone);
+  await expectTeacherPhoneHistoryChange(page, 'Dodany numer', thirdPhone);
 
   /*
    * =====================================================
@@ -1147,39 +1117,39 @@ test("EDIT-17: można usunąć zapisany numer telefonu @teacher @edit", async ({
    * =====================================================
    */
 
-  await s.app.openPanel("teacher", teacherId);
+  await s.app.openPanel('teacher', teacherId);
 
-  await expect(s.app.detail("email")).toHaveValue(s.email);
+  await expect(s.app.detail('email')).toHaveValue(s.email);
 
-  await expect(s.app.detail("firstName")).toHaveValue("Testowy");
+  await expect(s.app.detail('firstName')).toHaveValue('Testowy');
 
-  await expect(s.app.detail("lastName")).toHaveValue(s.id);
+  await expect(s.app.detail('lastName')).toHaveValue(s.id);
 
   await expect(
-    page.getByRole("row").filter({
+    page.getByRole('row').filter({
       hasText: school.name,
     }),
   ).toHaveCount(1);
 
-  await s.record("removedPhone", firstPhone);
+  await s.record('removedPhone', firstPhone);
 
-  await s.record("remainingPhone", secondPhone);
+  await s.record('remainingPhone', secondPhone);
 
-  await s.record("addedAfterDeletePhone", thirdPhone);
+  await s.record('addedAfterDeletePhone', thirdPhone);
 });
 
-test("EDIT-18: anulowanie usunięcia telefonu nie zmienia danych @teacher @edit", async ({
+test('EDIT-18: anulowanie usunięcia telefonu nie zmienia danych @teacher @edit', async ({
   page,
   scenario: s,
   school,
 }) => {
   const teacherId = await s.createTeacher(school.id, school.name);
 
-  await s.app.openPanel("teacher", teacherId);
+  await s.app.openPanel('teacher', teacherId);
 
-  const firstPhone = "500500500";
+  const firstPhone = '500500500';
 
-  const secondPhone = "444444444";
+  const secondPhone = '444444444';
 
   /*
    * =====================================================
@@ -1191,7 +1161,7 @@ test("EDIT-18: anulowanie usunięcia telefonu nie zmienia danych @teacher @edit"
 
   await input.fill(firstPhone);
 
-  await input.press("Tab");
+  await input.press('Tab');
 
   await expect(teacherPhoneAddButton(page)).toBeEnabled();
 
@@ -1207,7 +1177,7 @@ test("EDIT-18: anulowanie usunięcia telefonu nie zmienia danych @teacher @edit"
 
   await input.fill(secondPhone);
 
-  await input.press("Tab");
+  await input.press('Tab');
 
   await expect(teacherPhoneAddButton(page)).toBeEnabled();
 
@@ -1256,7 +1226,7 @@ test("EDIT-18: anulowanie usunięcia telefonu nie zmienia danych @teacher @edit"
    * Sprawdzamy trwałość stanu po anulowaniu.
    */
 
-  await s.app.openPanel("teacher", teacherId);
+  await s.app.openPanel('teacher', teacherId);
 
   await expectSavedTeacherPhones(page, [firstPhone, secondPhone]);
 
@@ -1264,25 +1234,25 @@ test("EDIT-18: anulowanie usunięcia telefonu nie zmienia danych @teacher @edit"
    * Pozostałe dane nauczyciela
    * również bez zmian.
    */
-  await expect(s.app.detail("email")).toHaveValue(s.email);
+  await expect(s.app.detail('email')).toHaveValue(s.email);
 
-  await expect(s.app.detail("firstName")).toHaveValue("Testowy");
+  await expect(s.app.detail('firstName')).toHaveValue('Testowy');
 
-  await expect(s.app.detail("lastName")).toHaveValue(s.id);
+  await expect(s.app.detail('lastName')).toHaveValue(s.id);
 
   await expect(
-    page.getByRole("row").filter({
+    page.getByRole('row').filter({
       hasText: school.name,
     }),
   ).toHaveCount(1);
 
-  await s.record("phoneDeleteCancelled", firstPhone);
+  await s.record('phoneDeleteCancelled', firstPhone);
 
-  await expectTeacherPhoneHistoryChange(page, "Dodany numer", firstPhone);
+  await expectTeacherPhoneHistoryChange(page, 'Dodany numer', firstPhone);
 
-  await expectTeacherPhoneHistoryChange(page, "Dodany numer", secondPhone);
+  await expectTeacherPhoneHistoryChange(page, 'Dodany numer', secondPhone);
 
-  await expectTeacherPhoneHistoryMissing(page, "Usunięty numer", firstPhone);
+  await expectTeacherPhoneHistoryMissing(page, 'Usunięty numer', firstPhone);
 });
 
 /*
@@ -1292,16 +1262,16 @@ test("EDIT-18: anulowanie usunięcia telefonu nie zmienia danych @teacher @edit"
  * =========================================================
  */
 
-test("EDIT-19: niepoprawny telefon blokuje dodanie @teacher @edit @validation", async ({
+test('EDIT-19: niepoprawny telefon blokuje dodanie @teacher @edit @validation', async ({
   page,
   scenario: s,
   school,
 }) => {
   const teacherId = await s.createTeacher(school.id, school.name);
 
-  await s.app.openPanel("teacher", teacherId);
+  await s.app.openPanel('teacher', teacherId);
 
-  const invalidPhone = "123";
+  const invalidPhone = '123';
 
   const phone = teacherNewPhoneInput(page);
 
@@ -1317,18 +1287,18 @@ test("EDIT-19: niepoprawny telefon blokuje dodanie @teacher @edit @validation", 
 
   await phone.fill(invalidPhone);
 
-  await phone.press("Tab");
+  await phone.press('Tab');
 
   /*
    * Pole jest oznaczone jako niepoprawne.
    */
-  await expect(phone).toHaveAttribute("aria-invalid", "true");
+  await expect(phone).toHaveAttribute('aria-invalid', 'true');
 
   /*
    * Octopus pokazuje komunikat walidacyjny.
    */
   await expect(
-    page.getByText("Wprowadź poprawny numer telefonu", {
+    page.getByText('Wprowadź poprawny numer telefonu', {
       exact: true,
     }),
   ).toBeVisible();
@@ -1361,7 +1331,7 @@ test("EDIT-19: niepoprawny telefon blokuje dodanie @teacher @edit @validation", 
    * być widoczny.
    */
   await expect(
-    page.getByText("Wprowadź poprawny numer telefonu", {
+    page.getByText('Wprowadź poprawny numer telefonu', {
       exact: true,
     }),
   ).toBeVisible();
@@ -1369,7 +1339,7 @@ test("EDIT-19: niepoprawny telefon blokuje dodanie @teacher @edit @validation", 
   /*
    * Pole nadal powinno być niepoprawne.
    */
-  await expect(phone).toHaveAttribute("aria-invalid", "true");
+  await expect(phone).toHaveAttribute('aria-invalid', 'true');
 
   /*
    * =====================================================
@@ -1377,7 +1347,7 @@ test("EDIT-19: niepoprawny telefon blokuje dodanie @teacher @edit @validation", 
    * =====================================================
    */
 
-  await s.app.openPanel("teacher", teacherId);
+  await s.app.openPanel('teacher', teacherId);
 
   /*
    * Numer 123 nie został zapisany.
@@ -1388,7 +1358,7 @@ test("EDIT-19: niepoprawny telefon blokuje dodanie @teacher @edit @validation", 
    * Nieudana próba dodania
    * nie powinna tworzyć wpisu historii.
    */
-  await expectTeacherPhoneHistoryMissing(page, "Dodany numer", invalidPhone);
+  await expectTeacherPhoneHistoryMissing(page, 'Dodany numer', invalidPhone);
 });
 
 /*
@@ -1398,16 +1368,16 @@ test("EDIT-19: niepoprawny telefon blokuje dodanie @teacher @edit @validation", 
  * =========================================================
  */
 
-test("EDIT-20: nauczyciel może pozostać bez e-maila jeśli posiada telefon @teacher @edit", async ({
+test('EDIT-20: nauczyciel może pozostać bez e-maila jeśli posiada telefon @teacher @edit', async ({
   page,
   scenario: s,
   school,
 }) => {
   const teacherId = await s.createTeacher(school.id, school.name);
 
-  await s.app.openPanel("teacher", teacherId);
+  await s.app.openPanel('teacher', teacherId);
 
-  const phone = "500500500";
+  const phone = '500500500';
 
   /*
    * =====================================================
@@ -1419,7 +1389,7 @@ test("EDIT-20: nauczyciel może pozostać bez e-maila jeśli posiada telefon @te
 
   await phoneInput.fill(phone);
 
-  await phoneInput.press("Tab");
+  await phoneInput.press('Tab');
 
   await expect(teacherPhoneAddButton(page)).toBeEnabled();
 
@@ -1435,10 +1405,7 @@ test("EDIT-20: nauczyciel może pozostać bez e-maila jeśli posiada telefon @te
 
   const emailDialog = await openTeacherEmailEdit(page);
 
-  const confirmDialog = await openTeacherEmailDeleteConfirmation(
-    page,
-    emailDialog,
-  );
+  const confirmDialog = await openTeacherEmailDeleteConfirmation(page, emailDialog);
 
   await confirmTeacherEmailDelete(confirmDialog);
 
@@ -1454,7 +1421,7 @@ test("EDIT-20: nauczyciel może pozostać bez e-maila jeśli posiada telefon @te
    * =====================================================
    */
 
-  await expect(s.app.detail("email")).toHaveValue("");
+  await expect(s.app.detail('email')).toHaveValue('');
 
   await expectSavedTeacherPhone(page, phone);
 
@@ -1464,9 +1431,9 @@ test("EDIT-20: nauczyciel może pozostać bez e-maila jeśli posiada telefon @te
    * =====================================================
    */
 
-  await s.app.openPanel("teacher", teacherId);
+  await s.app.openPanel('teacher', teacherId);
 
-  await expect(s.app.detail("email")).toHaveValue("");
+  await expect(s.app.detail('email')).toHaveValue('');
 
   await expectSavedTeacherPhone(page, phone);
 
@@ -1474,7 +1441,7 @@ test("EDIT-20: nauczyciel może pozostać bez e-maila jeśli posiada telefon @te
    * Telefon nadal powinien być
    * zapisany w historii.
    */
-  await expectTeacherPhoneHistoryChange(page, "Dodany numer", phone);
+  await expectTeacherPhoneHistoryChange(page, 'Dodany numer', phone);
 });
 
 /*
@@ -1484,22 +1451,22 @@ test("EDIT-20: nauczyciel może pozostać bez e-maila jeśli posiada telefon @te
  * =========================================================
  */
 
-test("EDIT-21: nauczyciel może istnieć bez telefonu jeśli posiada e-mail @teacher @edit", async ({
+test('EDIT-21: nauczyciel może istnieć bez telefonu jeśli posiada e-mail @teacher @edit', async ({
   page,
   scenario: s,
   school,
 }) => {
   const teacherId = await s.createTeacher(school.id, school.name);
 
-  await s.app.openPanel("teacher", teacherId);
+  await s.app.openPanel('teacher', teacherId);
 
   /*
    * Fixture tworzy nauczyciela
    * z e-mailem i bez telefonu.
    */
-  await expect(s.app.detail("email")).toHaveValue(s.email);
+  await expect(s.app.detail('email')).toHaveValue(s.email);
 
-  await expect(s.app.detail("email")).not.toHaveValue("");
+  await expect(s.app.detail('email')).not.toHaveValue('');
 
   /*
    * Żaden numer nie został zapisany.
@@ -1511,9 +1478,9 @@ test("EDIT-21: nauczyciel może istnieć bez telefonu jeśli posiada e-mail @tea
   /*
    * Ponowne otwarcie.
    */
-  await s.app.openPanel("teacher", teacherId);
+  await s.app.openPanel('teacher', teacherId);
 
-  await expect(s.app.detail("email")).toHaveValue(s.email);
+  await expect(s.app.detail('email')).toHaveValue(s.email);
 
   expect(await getSavedTeacherPhones(page)).toEqual([]);
 });
@@ -1525,14 +1492,14 @@ test("EDIT-21: nauczyciel może istnieć bez telefonu jeśli posiada e-mail @tea
  * =========================================================
  */
 
-test("EDIT-22: brak e-maila i telefonu wymaga dodatkowego potwierdzenia @teacher @edit @validation", async ({
+test('EDIT-22: brak e-maila i telefonu wymaga dodatkowego potwierdzenia @teacher @edit @validation', async ({
   page,
   scenario: s,
   school,
 }) => {
   const teacherId = await s.createTeacher(school.id, school.name);
 
-  await s.app.openPanel("teacher", teacherId);
+  await s.app.openPanel('teacher', teacherId);
 
   const oldEmail = s.email;
 
@@ -1549,10 +1516,7 @@ test("EDIT-22: brak e-maila i telefonu wymaga dodatkowego potwierdzenia @teacher
   /*
    * Klikamy Usuń e-mail.
    */
-  const emailDeleteDialog = await openTeacherEmailDeleteConfirmation(
-    page,
-    emailDialog,
-  );
+  const emailDeleteDialog = await openTeacherEmailDeleteConfirmation(page, emailDialog);
 
   /*
    * Pierwsze potwierdzenie usunięcia.
@@ -1566,7 +1530,7 @@ test("EDIT-22: brak e-maila i telefonu wymaga dodatkowego potwierdzenia @teacher
    */
   const minimalRecordWarning = await openTeacherMinimalRecordWarning(page);
 
-  await expect(minimalRecordWarning).toContainText("Czy na pewno usunąć?");
+  await expect(minimalRecordWarning).toContainText('Czy na pewno usunąć?');
 
   /*
    * W tym teście wybieramy "Nie",
@@ -1577,9 +1541,9 @@ test("EDIT-22: brak e-maila i telefonu wymaga dodatkowego potwierdzenia @teacher
   /*
    * E-mail powinien nadal istnieć.
    */
-  await s.app.openPanel("teacher", teacherId);
+  await s.app.openPanel('teacher', teacherId);
 
-  await expect(s.app.detail("email")).toHaveValue(oldEmail);
+  await expect(s.app.detail('email')).toHaveValue(oldEmail);
 
   /*
    * Nadal brak telefonów.
@@ -1587,14 +1551,14 @@ test("EDIT-22: brak e-maila i telefonu wymaga dodatkowego potwierdzenia @teacher
   expect(await getSavedTeacherPhones(page)).toEqual([]);
 });
 
-test("EDIT-23: można usunąć e-mail bez telefonu po potwierdzeniu ostrzeżenia o rekordzie minimalnym @teacher @edit @validation", async ({
+test('EDIT-23: można usunąć e-mail bez telefonu po potwierdzeniu ostrzeżenia o rekordzie minimalnym @teacher @edit @validation', async ({
   page,
   scenario: s,
   school,
 }) => {
   const teacherId = await s.createTeacher(school.id, school.name);
 
-  await s.app.openPanel("teacher", teacherId);
+  await s.app.openPanel('teacher', teacherId);
 
   const oldEmail = s.email;
 
@@ -1604,7 +1568,7 @@ test("EDIT-23: można usunąć e-mail bez telefonu po potwierdzeniu ostrzeżenia
    * =====================================================
    */
 
-  await expect(s.app.detail("email")).toHaveValue(oldEmail);
+  await expect(s.app.detail('email')).toHaveValue(oldEmail);
 
   /*
    * Nauczyciel nie posiada telefonu.
@@ -1627,10 +1591,7 @@ test("EDIT-23: można usunąć e-mail bez telefonu po potwierdzeniu ostrzeżenia
    * "Czy na pewno chcesz usunąć adres e-mail?"
    */
 
-  const emailDeleteDialog = await openTeacherEmailDeleteConfirmation(
-    page,
-    emailDialog,
-  );
+  const emailDeleteDialog = await openTeacherEmailDeleteConfirmation(page, emailDialog);
 
   await confirmTeacherEmailDelete(emailDeleteDialog);
 
@@ -1647,11 +1608,9 @@ test("EDIT-23: można usunąć e-mail bez telefonu po potwierdzeniu ostrzeżenia
 
   const minimalRecordWarning = await openTeacherMinimalRecordWarning(page);
 
-  await expect(minimalRecordWarning).toContainText(
-    "Rekord nie będzie spełniał wymagań rekordu minimalnego",
-  );
+  await expect(minimalRecordWarning).toContainText('Rekord nie będzie spełniał wymagań rekordu minimalnego');
 
-  await expect(minimalRecordWarning).toContainText("Czy na pewno usunąć?");
+  await expect(minimalRecordWarning).toContainText('Czy na pewno usunąć?');
 
   /*
    * Tym razem potwierdzamy operację.
@@ -1664,7 +1623,7 @@ test("EDIT-23: można usunąć e-mail bez telefonu po potwierdzeniu ostrzeżenia
    * =====================================================
    */
 
-  await expect(s.app.detail("email")).toHaveValue("");
+  await expect(s.app.detail('email')).toHaveValue('');
 
   expect(await getSavedTeacherPhones(page)).toEqual([]);
 
@@ -1674,12 +1633,12 @@ test("EDIT-23: można usunąć e-mail bez telefonu po potwierdzeniu ostrzeżenia
    * =====================================================
    */
 
-  await s.app.openPanel("teacher", teacherId);
+  await s.app.openPanel('teacher', teacherId);
 
   /*
    * E-mail nadal jest usunięty.
    */
-  await expect(s.app.detail("email")).toHaveValue("");
+  await expect(s.app.detail('email')).toHaveValue('');
 
   /*
    * Nadal brak telefonu.
@@ -1692,12 +1651,12 @@ test("EDIT-23: można usunąć e-mail bez telefonu po potwierdzeniu ostrzeżenia
    * =====================================================
    */
 
-  await expect(s.app.detail("firstName")).toHaveValue("Testowy");
+  await expect(s.app.detail('firstName')).toHaveValue('Testowy');
 
-  await expect(s.app.detail("lastName")).toHaveValue(s.id);
+  await expect(s.app.detail('lastName')).toHaveValue(s.id);
 
   await expect(
-    page.getByRole("row").filter({
+    page.getByRole('row').filter({
       hasText: school.name,
     }),
   ).toHaveCount(1);
@@ -1705,9 +1664,9 @@ test("EDIT-23: można usunąć e-mail bez telefonu po potwierdzeniu ostrzeżenia
   /*
    * Zapisujemy informację do danych przebiegu.
    */
-  await s.record("removedEmail", oldEmail);
+  await s.record('removedEmail', oldEmail);
 
-  await s.record("removedEmailWithoutPhone", "true");
+  await s.record('removedEmailWithoutPhone', 'true');
 });
 
 /*
@@ -1717,11 +1676,7 @@ test("EDIT-23: można usunąć e-mail bez telefonu po potwierdzeniu ostrzeżenia
  * =========================================================
  */
 
-test("EDIT-24: poprawna data urodzenia jest trwała @teacher @edit", async ({
-  page,
-  scenario: s,
-  school,
-}) => {
+test('EDIT-24: poprawna data urodzenia jest trwała @teacher @edit', async ({ page, scenario: s, school }) => {
   const teacherId = await s.createTeacher(school.id, school.name);
 
   const form = await openBasicTeacherEdit(page, s.app);
@@ -1730,29 +1685,27 @@ test("EDIT-24: poprawna data urodzenia jest trwała @teacher @edit", async ({
 
   await expect(birthDate).toBeVisible();
 
-  await birthDate.fill("15-05-1990");
+  await birthDate.fill('15-05-1990');
 
-  await birthDate.press("Tab");
+  await birthDate.press('Tab');
 
-  await expect(birthDate).toHaveValue("15-05-1990");
+  await expect(birthDate).toHaveValue('15-05-1990');
 
   await saveBasicTeacherEdit(form);
 
-  await s.app.openPanel("teacher", teacherId);
+  await s.app.openPanel('teacher', teacherId);
 
   /*
    * Przy zapisie danych podstawowych
    * nazwisko zostaje znormalizowane.
    */
-  await expect(s.app.detail("lastName")).toHaveValue(
-    normalizeTeacherName(s.id),
-  );
+  await expect(s.app.detail('lastName')).toHaveValue(normalizeTeacherName(s.id));
 
   /*
    * Data powinna być trwała
    * i prezentowana jako dd-mm-yyyy.
    */
-  await expect(s.app.detail("dateOfBirth")).toHaveValue("15-05-1990");
+  await expect(s.app.detail('dateOfBirth')).toHaveValue('15-05-1990');
 });
 
 /*
@@ -1762,7 +1715,7 @@ test("EDIT-24: poprawna data urodzenia jest trwała @teacher @edit", async ({
  * =========================================================
  */
 
-test("EDIT-25: niepoprawna data urodzenia blokuje zapis @teacher @edit @validation", async ({
+test('EDIT-25: niepoprawna data urodzenia blokuje zapis @teacher @edit @validation', async ({
   page,
   scenario: s,
   school,
@@ -1773,13 +1726,13 @@ test("EDIT-25: niepoprawna data urodzenia blokuje zapis @teacher @edit @validati
 
   const birthDate = teacherBirthDateInput(form);
 
-  await birthDate.fill("2026-99-99");
+  await birthDate.fill('2026-99-99');
 
-  await birthDate.press("Tab");
+  await birthDate.press('Tab');
 
   await form
-    .getByRole("button", {
-      name: "Zapisz",
+    .getByRole('button', {
+      name: 'Zapisz',
       exact: true,
     })
     .click();
@@ -1791,14 +1744,14 @@ test("EDIT-25: niepoprawna data urodzenia blokuje zapis @teacher @edit @validati
 
   await cancelTeacherDialog(form);
 
-  await s.app.openPanel("teacher", teacherId);
+  await s.app.openPanel('teacher', teacherId);
 
   /*
    * Nie było zapisu,
    * więc nazwisko również nie powinno
    * zostać znormalizowane.
    */
-  await expect(s.app.detail("lastName")).toHaveValue(s.id);
+  await expect(s.app.detail('lastName')).toHaveValue(s.id);
 });
 
 /*
@@ -1808,7 +1761,7 @@ test("EDIT-25: niepoprawna data urodzenia blokuje zapis @teacher @edit @validati
  * =========================================================
  */
 
-test("EDIT-26: pełny adres prywatny można dodać i jest zapisany w historii @teacher @edit @history", async ({
+test('EDIT-26: pełny adres prywatny można dodać i jest zapisany w historii @teacher @edit @history', async ({
   page,
   scenario: s,
   school,
@@ -1816,10 +1769,10 @@ test("EDIT-26: pełny adres prywatny można dodać i jest zapisany w historii @t
   const teacherId = await s.createTeacher(school.id, school.name);
 
   const address = {
-    zipCode: "18-312",
-    city: "Górskie Ponikły-Stok",
-    street: "Kartuska",
-    number: "123",
+    zipCode: '18-312',
+    city: 'Górskie Ponikły-Stok',
+    street: 'Kartuska',
+    number: '123',
   };
 
   /*
@@ -1828,18 +1781,11 @@ test("EDIT-26: pełny adres prywatny można dodać i jest zapisany w historii @t
    * =====================================================
    */
 
-  await s.app.openPanel("teacher", teacherId);
+  await s.app.openPanel('teacher', teacherId);
 
   const dialog = await openTeacherPrivateAddressEdit(page);
 
-  await fillTeacherPrivateAddress(
-    page,
-    dialog,
-    address.zipCode,
-    address.city,
-    address.street,
-    address.number,
-  );
+  await fillTeacherPrivateAddress(page, dialog, address.zipCode, address.city, address.street, address.number);
 
   await saveTeacherPrivateAddress(dialog);
 
@@ -1849,13 +1795,13 @@ test("EDIT-26: pełny adres prywatny można dodać i jest zapisany w historii @t
    * =====================================================
    */
 
-  const addressInput = page.locator("mat-form-field#address input");
+  const addressInput = page.locator('mat-form-field#address input');
 
   await expect(addressInput).toHaveValue(new RegExp(address.zipCode));
 
-  await expect(addressInput).toHaveValue(new RegExp(address.city, "i"));
+  await expect(addressInput).toHaveValue(new RegExp(address.city, 'i'));
 
-  await expect(addressInput).toHaveValue(new RegExp(address.street, "i"));
+  await expect(addressInput).toHaveValue(new RegExp(address.street, 'i'));
 
   await expect(addressInput).toHaveValue(new RegExp(address.number));
 
@@ -1865,13 +1811,13 @@ test("EDIT-26: pełny adres prywatny można dodać i jest zapisany w historii @t
    * =====================================================
    */
 
-  await s.app.openPanel("teacher", teacherId);
+  await s.app.openPanel('teacher', teacherId);
 
-  const addressAfterReload = page.locator("mat-form-field#address input");
+  const addressAfterReload = page.locator('mat-form-field#address input');
 
-  await expect(addressAfterReload).toHaveValue(new RegExp(address.city, "i"));
+  await expect(addressAfterReload).toHaveValue(new RegExp(address.city, 'i'));
 
-  await expect(addressAfterReload).toHaveValue(new RegExp(address.street, "i"));
+  await expect(addressAfterReload).toHaveValue(new RegExp(address.street, 'i'));
 
   await expect(addressAfterReload).toHaveValue(new RegExp(address.number));
 
@@ -1884,12 +1830,7 @@ test("EDIT-26: pełny adres prywatny można dodać i jest zapisany w historii @t
   {
     const history = await openTeacherHistory(page);
 
-    await expectTeacherPrivateAddressHistoryChange(
-      page,
-      history,
-      "Numer adres prywatny",
-      address.number,
-    );
+    await expectTeacherPrivateAddressHistoryChange(page, history, 'Numer adres prywatny', address.number);
   }
 
   /*
@@ -1898,7 +1839,7 @@ test("EDIT-26: pełny adres prywatny można dodać i jest zapisany w historii @t
    * =====================================================
    */
 
-  await s.app.openPanel("teacher", teacherId);
+  await s.app.openPanel('teacher', teacherId);
 
   {
     const history = await openTeacherHistory(page);
@@ -1906,7 +1847,7 @@ test("EDIT-26: pełny adres prywatny można dodać i jest zapisany w historii @t
     await expectTeacherPrivateAddressHistoryChange(
       page,
       history,
-      "Miasto adres prywatny",
+      'Miasto adres prywatny',
       `${address.city} ${address.zipCode}`,
     );
   }
@@ -1917,26 +1858,18 @@ test("EDIT-26: pełny adres prywatny można dodać i jest zapisany w historii @t
    * =====================================================
    */
 
-  await s.app.openPanel("teacher", teacherId);
+  await s.app.openPanel('teacher', teacherId);
 
   {
     const history = await openTeacherHistory(page);
 
-    await expectTeacherPrivateAddressHistoryChange(
-      page,
-      history,
-      "Ulica adres prywatny",
-      address.street,
-    );
+    await expectTeacherPrivateAddressHistoryChange(page, history, 'Ulica adres prywatny', address.street);
   }
 
-  await s.record(
-    "privateAddress",
-    `${address.zipCode} ${address.city}, ${address.street} ${address.number}`,
-  );
+  await s.record('privateAddress', `${address.zipCode} ${address.city}, ${address.street} ${address.number}`);
 });
 
-test("EDIT-27: wszystkie dane istniejącego adresu prywatnego można zmienić @teacher @edit @history", async ({
+test('EDIT-27: wszystkie dane istniejącego adresu prywatnego można zmienić @teacher @edit @history', async ({
   page,
   scenario: s,
   school,
@@ -1944,17 +1877,17 @@ test("EDIT-27: wszystkie dane istniejącego adresu prywatnego można zmienić @t
   const teacherId = await s.createTeacher(school.id, school.name);
 
   const firstAddress = {
-    zipCode: "18-312",
-    city: "Górskie Ponikły-Stok",
-    street: "Kartuska",
-    number: "123",
+    zipCode: '18-312',
+    city: 'Górskie Ponikły-Stok',
+    street: 'Kartuska',
+    number: '123',
   };
 
   const secondAddress = {
-    zipCode: "80-395",
-    city: "Gdańsk",
-    street: "Grunwaldzka",
-    number: "567",
+    zipCode: '80-395',
+    city: 'Gdańsk',
+    street: 'Grunwaldzka',
+    number: '567',
   };
 
   /*
@@ -1963,7 +1896,7 @@ test("EDIT-27: wszystkie dane istniejącego adresu prywatnego można zmienić @t
    * =====================================================
    */
 
-  await s.app.openPanel("teacher", teacherId);
+  await s.app.openPanel('teacher', teacherId);
 
   let dialog = await openTeacherPrivateAddressEdit(page);
 
@@ -1984,9 +1917,9 @@ test("EDIT-27: wszystkie dane istniejącego adresu prywatnego można zmienić @t
    * =====================================================
    */
 
-  await s.app.openPanel("teacher", teacherId);
+  await s.app.openPanel('teacher', teacherId);
 
-  let addressInput = page.locator("mat-form-field#address input");
+  let addressInput = page.locator('mat-form-field#address input');
 
   await expect(addressInput).toHaveValue(/18-312/);
 
@@ -2012,11 +1945,11 @@ test("EDIT-27: wszystkie dane istniejącego adresu prywatnego można zmienić @t
    * =====================================================
    */
 
-  await s.app.openPanel("teacher", teacherId);
+  await s.app.openPanel('teacher', teacherId);
 
-  addressInput = page.locator("mat-form-field#address input");
+  addressInput = page.locator('mat-form-field#address input');
 
-  await expect(addressInput).toHaveValue("");
+  await expect(addressInput).toHaveValue('');
 
   /*
    * =====================================================
@@ -2043,7 +1976,7 @@ test("EDIT-27: wszystkie dane istniejącego adresu prywatnego można zmienić @t
    * =====================================================
    */
 
-  addressInput = page.locator("mat-form-field#address input");
+  addressInput = page.locator('mat-form-field#address input');
 
   await expect(addressInput).toHaveValue(/80-395/);
 
@@ -2073,9 +2006,9 @@ test("EDIT-27: wszystkie dane istniejącego adresu prywatnego można zmienić @t
    * =====================================================
    */
 
-  await s.app.openPanel("teacher", teacherId);
+  await s.app.openPanel('teacher', teacherId);
 
-  const addressAfterReload = page.locator("mat-form-field#address input");
+  const addressAfterReload = page.locator('mat-form-field#address input');
 
   await expect(addressAfterReload).toHaveValue(/80-395/);
 
@@ -2097,51 +2030,31 @@ test("EDIT-27: wszystkie dane istniejącego adresu prywatnego można zmienić @t
    * Drugi adres
    */
 
-  await expectTeacherPrivateAddressHistoryChange(
-    page,
-    history,
-    "Numer adres prywatny",
-    secondAddress.number,
-  );
+  await expectTeacherPrivateAddressHistoryChange(page, history, 'Numer adres prywatny', secondAddress.number);
 
   await expectTeacherPrivateAddressHistoryChange(
     page,
     history,
-    "Miasto adres prywatny",
+    'Miasto adres prywatny',
     `${secondAddress.city} ${secondAddress.zipCode}`,
   );
 
-  await expectTeacherPrivateAddressHistoryChange(
-    page,
-    history,
-    "Ulica adres prywatny",
-    secondAddress.street,
-  );
+  await expectTeacherPrivateAddressHistoryChange(page, history, 'Ulica adres prywatny', secondAddress.street);
 
   /*
    * Pierwszy adres
    */
 
-  await expectTeacherPrivateAddressHistoryChange(
-    page,
-    history,
-    "Numer adres prywatny",
-    firstAddress.number,
-  );
+  await expectTeacherPrivateAddressHistoryChange(page, history, 'Numer adres prywatny', firstAddress.number);
 
   await expectTeacherPrivateAddressHistoryChange(
     page,
     history,
-    "Miasto adres prywatny",
+    'Miasto adres prywatny',
     `${firstAddress.city} ${firstAddress.zipCode}`,
   );
 
-  await expectTeacherPrivateAddressHistoryChange(
-    page,
-    history,
-    "Ulica adres prywatny",
-    firstAddress.street,
-  );
+  await expectTeacherPrivateAddressHistoryChange(page, history, 'Ulica adres prywatny', firstAddress.street);
 
   /*
    * =====================================================
@@ -2149,14 +2062,14 @@ test("EDIT-27: wszystkie dane istniejącego adresu prywatnego można zmienić @t
    * =====================================================
    */
 
-  await s.app.openPanel("teacher", teacherId);
+  await s.app.openPanel('teacher', teacherId);
 
-  await expect(s.app.detail("email")).toHaveValue(s.email);
+  await expect(s.app.detail('email')).toHaveValue(s.email);
 
-  await expect(s.app.detail("firstName")).toHaveValue("Testowy");
+  await expect(s.app.detail('firstName')).toHaveValue('Testowy');
 
   await expect(
-    page.getByRole("row").filter({
+    page.getByRole('row').filter({
       hasText: school.name,
     }),
   ).toHaveCount(1);
@@ -2168,12 +2081,12 @@ test("EDIT-27: wszystkie dane istniejącego adresu prywatnego można zmienić @t
    */
 
   await s.record(
-    "privateAddressBeforeEdit",
+    'privateAddressBeforeEdit',
     `${firstAddress.zipCode} ${firstAddress.city}, ${firstAddress.street} ${firstAddress.number}`,
   );
 
   await s.record(
-    "privateAddressAfterEdit",
+    'privateAddressAfterEdit',
     `${secondAddress.zipCode} ${secondAddress.city}, ${secondAddress.street} ${secondAddress.number}`,
   );
 });
@@ -2185,14 +2098,10 @@ test("EDIT-27: wszystkie dane istniejącego adresu prywatnego można zmienić @t
  * =========================================================
  */
 
-test("EDIT-28: uwagi nauczyciela są trwałe @teacher @edit", async ({
-  page,
-  scenario: s,
-  school,
-}) => {
+test('EDIT-28: uwagi nauczyciela są trwałe @teacher @edit', async ({ page, scenario: s, school }) => {
   const teacherId = await s.createTeacher(school.id, school.name);
 
-  const note = "Test automatyczny - uwaga nauczyciela";
+  const note = 'Test automatyczny - uwaga nauczyciela';
 
   /*
    * =====================================================
@@ -2200,7 +2109,7 @@ test("EDIT-28: uwagi nauczyciela są trwałe @teacher @edit", async ({
    * =====================================================
    */
 
-  await s.app.openPanel("teacher", teacherId);
+  await s.app.openPanel('teacher', teacherId);
 
   /*
    * =====================================================
@@ -2219,14 +2128,11 @@ test("EDIT-28: uwagi nauczyciela są trwałe @teacher @edit", async ({
    * używać textarea albo input.
    */
 
-  const textarea = dialog.locator("textarea:not([readonly]):not([disabled])");
+  const textarea = dialog.locator('textarea:not([readonly]):not([disabled])');
 
-  const editableInput = dialog.locator(
-    'input:not([type="checkbox"]):not([readonly]):not([disabled])',
-  );
+  const editableInput = dialog.locator('input:not([type="checkbox"]):not([readonly]):not([disabled])');
 
-  const noteField =
-    (await textarea.count()) > 0 ? textarea.first() : editableInput.first();
+  const noteField = (await textarea.count()) > 0 ? textarea.first() : editableInput.first();
 
   await expect(noteField).toBeVisible();
 
@@ -2238,7 +2144,7 @@ test("EDIT-28: uwagi nauczyciela są trwałe @teacher @edit", async ({
 
   await noteField.fill(note);
 
-  await noteField.press("Tab");
+  await noteField.press('Tab');
 
   await expect(noteField).toHaveValue(note);
 
@@ -2271,7 +2177,7 @@ test("EDIT-28: uwagi nauczyciela są trwałe @teacher @edit", async ({
    * =====================================================
    */
 
-  await s.app.openPanel("teacher", teacherId);
+  await s.app.openPanel('teacher', teacherId);
 
   await expect(teacherNotesInput(page)).toHaveValue(note);
 
@@ -2284,16 +2190,16 @@ test("EDIT-28: uwagi nauczyciela są trwałe @teacher @edit", async ({
    * pozostałych podstawowych danych.
    */
 
-  await expect(s.app.detail("email")).toHaveValue(s.email);
+  await expect(s.app.detail('email')).toHaveValue(s.email);
 
-  await expect(s.app.detail("firstName")).toHaveValue("Testowy");
+  await expect(s.app.detail('firstName')).toHaveValue('Testowy');
 
   /*
    * Relacja ze szkołą również musi pozostać.
    */
 
   await expect(
-    page.getByRole("row").filter({
+    page.getByRole('row').filter({
       hasText: school.name,
     }),
   ).toHaveCount(1);
@@ -2304,19 +2210,15 @@ test("EDIT-28: uwagi nauczyciela są trwałe @teacher @edit", async ({
    * =====================================================
    */
 
-  await s.record("teacherNote", note);
+  await s.record('teacherNote', note);
 });
 
-test("EDIT-29: nauczyciel może posiadać wiele notatek @teacher @edit @notes", async ({
-  page,
-  scenario: s,
-  school,
-}) => {
+test('EDIT-29: nauczyciel może posiadać wiele notatek @teacher @edit @notes', async ({ page, scenario: s, school }) => {
   const teacherId = await s.createTeacher(school.id, school.name);
 
-  const firstNote = "Pierwsza notatka testowa";
+  const firstNote = 'Pierwsza notatka testowa';
 
-  const secondNote = "Druga notatka testowa";
+  const secondNote = 'Druga notatka testowa';
 
   /*
    * =====================================================
@@ -2324,7 +2226,7 @@ test("EDIT-29: nauczyciel może posiadać wiele notatek @teacher @edit @notes", 
    * =====================================================
    */
 
-  await s.app.openPanel("teacher", teacherId);
+  await s.app.openPanel('teacher', teacherId);
 
   await addTeacherNote(page, firstNote);
 
@@ -2342,7 +2244,7 @@ test("EDIT-29: nauczyciel może posiadać wiele notatek @teacher @edit @notes", 
    * =====================================================
    */
 
-  await s.app.openPanel("teacher", teacherId);
+  await s.app.openPanel('teacher', teacherId);
 
   /*
    * Pole na kartotece powinno prezentować
@@ -2365,19 +2267,19 @@ test("EDIT-29: nauczyciel może posiadać wiele notatek @teacher @edit @notes", 
 
   await cancelTeacherNotesEdit(dialog);
 
-  await s.record("teacherNote1", firstNote);
+  await s.record('teacherNote1', firstNote);
 
-  await s.record("teacherNote2", secondNote);
+  await s.record('teacherNote2', secondNote);
 });
 
-test("EDIT-30: notatkę nauczyciela można zarchiwizować @teacher @edit @notes", async ({
+test('EDIT-30: notatkę nauczyciela można zarchiwizować @teacher @edit @notes', async ({
   page,
   scenario: s,
   school,
 }) => {
   const teacherId = await s.createTeacher(school.id, school.name);
 
-  const note = "Notatka przeznaczona do archiwizacji";
+  const note = 'Notatka przeznaczona do archiwizacji';
 
   /*
    * =====================================================
@@ -2385,7 +2287,7 @@ test("EDIT-30: notatkę nauczyciela można zarchiwizować @teacher @edit @notes"
    * =====================================================
    */
 
-  await s.app.openPanel("teacher", teacherId);
+  await s.app.openPanel('teacher', teacherId);
 
   await addTeacherNote(page, note);
 
@@ -2403,7 +2305,7 @@ test("EDIT-30: notatkę nauczyciela można zarchiwizować @teacher @edit @notes"
    * =====================================================
    */
 
-  await s.app.openPanel("teacher", teacherId);
+  await s.app.openPanel('teacher', teacherId);
 
   const dialog = await openTeacherNotesEdit(page);
 
@@ -2411,7 +2313,7 @@ test("EDIT-30: notatkę nauczyciela można zarchiwizować @teacher @edit @notes"
 
   await expect(row).toHaveCount(1);
 
-  const checkbox = row.getByRole("checkbox");
+  const checkbox = row.getByRole('checkbox');
 
   await expect(checkbox).toBeChecked();
 
@@ -2421,7 +2323,7 @@ test("EDIT-30: notatkę nauczyciela można zarchiwizować @teacher @edit @notes"
    */
 
   await expect(
-    row.getByRole("cell", {
+    row.getByRole('cell', {
       name: note,
       exact: true,
     }),
@@ -2429,19 +2331,19 @@ test("EDIT-30: notatkę nauczyciela można zarchiwizować @teacher @edit @notes"
 
   await cancelTeacherNotesEdit(dialog);
 
-  await s.record("archivedTeacherNote", note);
+  await s.record('archivedTeacherNote', note);
 });
 
-test("EDIT-31: anulowanie nie zapisuje nowej notatki nauczyciela @teacher @edit @notes @cancel", async ({
+test('EDIT-31: anulowanie nie zapisuje nowej notatki nauczyciela @teacher @edit @notes @cancel', async ({
   page,
   scenario: s,
   school,
 }) => {
   const teacherId = await s.createTeacher(school.id, school.name);
 
-  const existingNote = "Notatka istniejąca";
+  const existingNote = 'Notatka istniejąca';
 
-  const cancelledNote = "Ta notatka nie powinna zostać zapisana";
+  const cancelledNote = 'Ta notatka nie powinna zostać zapisana';
 
   /*
    * =====================================================
@@ -2449,7 +2351,7 @@ test("EDIT-31: anulowanie nie zapisuje nowej notatki nauczyciela @teacher @edit 
    * =====================================================
    */
 
-  await s.app.openPanel("teacher", teacherId);
+  await s.app.openPanel('teacher', teacherId);
 
   await addTeacherNote(page, existingNote);
 
@@ -2481,7 +2383,7 @@ test("EDIT-31: anulowanie nie zapisuje nowej notatki nauczyciela @teacher @edit 
    * =====================================================
    */
 
-  await s.app.openPanel("teacher", teacherId);
+  await s.app.openPanel('teacher', teacherId);
 
   const checkDialog = await openTeacherNotesEdit(page);
 
@@ -2500,14 +2402,10 @@ test("EDIT-31: anulowanie nie zapisuje nowej notatki nauczyciela @teacher @edit 
   await cancelTeacherNotesEdit(checkDialog);
 });
 
-test("EDIT-32: zapisana notatka posiada autora i datę @teacher @edit @notes", async ({
-  page,
-  scenario: s,
-  school,
-}) => {
+test('EDIT-32: zapisana notatka posiada autora i datę @teacher @edit @notes', async ({ page, scenario: s, school }) => {
   const teacherId = await s.createTeacher(school.id, school.name);
 
-  const note = "Notatka sprawdzająca autora i datę";
+  const note = 'Notatka sprawdzająca autora i datę';
 
   /*
    * =====================================================
@@ -2515,7 +2413,7 @@ test("EDIT-32: zapisana notatka posiada autora i datę @teacher @edit @notes", a
    * =====================================================
    */
 
-  await s.app.openPanel("teacher", teacherId);
+  await s.app.openPanel('teacher', teacherId);
 
   await addTeacherNote(page, note);
 
@@ -2525,7 +2423,7 @@ test("EDIT-32: zapisana notatka posiada autora i datę @teacher @edit @notes", a
    * =====================================================
    */
 
-  await s.app.openPanel("teacher", teacherId);
+  await s.app.openPanel('teacher', teacherId);
 
   const dialog = await openTeacherNotesEdit(page);
 
@@ -2533,7 +2431,7 @@ test("EDIT-32: zapisana notatka posiada autora i datę @teacher @edit @notes", a
 
   await expect(row).toHaveCount(1);
 
-  const cells = row.locator("td");
+  const cells = row.locator('td');
 
   /*
    * Kolumny:
@@ -2558,21 +2456,21 @@ test("EDIT-32: zapisana notatka posiada autora i datę @teacher @edit @notes", a
    * Nie hardkodujemy "npanek",
    * żeby test nie zależał od konta.
    */
-  await expect(cells.nth(3)).not.toHaveText("");
+  await expect(cells.nth(3)).not.toHaveText('');
 
   await cancelTeacherNotesEdit(dialog);
 });
 
-test("EDIT-33: notatka nauczyciela ma limit 220 znaków @teacher @edit @notes @validation", async ({
+test('EDIT-33: notatka nauczyciela ma limit 220 znaków @teacher @edit @notes @validation', async ({
   page,
   scenario: s,
   school,
 }) => {
   const teacherId = await s.createTeacher(school.id, school.name);
 
-  const maxLengthNote = "A".repeat(220);
+  const maxLengthNote = 'A'.repeat(220);
 
-  const tooLongNote = "B".repeat(221);
+  const tooLongNote = 'B'.repeat(221);
 
   /*
    * =====================================================
@@ -2580,7 +2478,7 @@ test("EDIT-33: notatka nauczyciela ma limit 220 znaków @teacher @edit @notes @v
    * =====================================================
    */
 
-  await s.app.openPanel("teacher", teacherId);
+  await s.app.openPanel('teacher', teacherId);
 
   let dialog = await openTeacherNotesEdit(page);
 
@@ -2596,7 +2494,7 @@ test("EDIT-33: notatka nauczyciela ma limit 220 znaków @teacher @edit @notes @v
    * 220 znaków powinno się zapisać.
    */
 
-  await s.app.openPanel("teacher", teacherId);
+  await s.app.openPanel('teacher', teacherId);
 
   dialog = await openTeacherNotesEdit(page);
 
@@ -2622,9 +2520,7 @@ test("EDIT-33: notatka nauczyciela ma limit 220 znaków @teacher @edit @notes @v
    * Pole nie powinno pozwolić zachować
    * wartości dłuższej niż 220.
    */
-  await expect
-    .poll(async () => (await input.inputValue()).length)
-    .toBeLessThanOrEqual(220);
+  await expect.poll(async () => (await input.inputValue()).length).toBeLessThanOrEqual(220);
 
   const actualValue = await input.inputValue();
 
@@ -2633,14 +2529,14 @@ test("EDIT-33: notatka nauczyciela ma limit 220 znaków @teacher @edit @notes @v
   await cancelTeacherNotesEdit(dialog);
 });
 
-test("EDIT-34: pusta notatka nauczyciela nie jest zapisywana @teacher @edit @notes @validation", async ({
+test('EDIT-34: pusta notatka nauczyciela nie jest zapisywana @teacher @edit @notes @validation', async ({
   page,
   scenario: s,
   school,
 }) => {
   const teacherId = await s.createTeacher(school.id, school.name);
 
-  const existingNote = "Notatka kontrolna";
+  const existingNote = 'Notatka kontrolna';
 
   /*
    * =====================================================
@@ -2648,7 +2544,7 @@ test("EDIT-34: pusta notatka nauczyciela nie jest zapisywana @teacher @edit @not
    * =====================================================
    */
 
-  await s.app.openPanel("teacher", teacherId);
+  await s.app.openPanel('teacher', teacherId);
 
   await addTeacherNote(page, existingNote);
 
@@ -2676,10 +2572,10 @@ test("EDIT-34: pusta notatka nauczyciela nie jest zapisywana @teacher @edit @not
 
   const input = teacherNoteInput(dialog);
 
-  await input.fill("");
+  await input.fill('');
 
-  const saveButton = dialog.getByRole("button", {
-    name: "Zapisz",
+  const saveButton = dialog.getByRole('button', {
+    name: 'Zapisz',
     exact: true,
   });
 
@@ -2708,7 +2604,7 @@ test("EDIT-34: pusta notatka nauczyciela nie jest zapisywana @teacher @edit @not
    * =====================================================
    */
 
-  await s.app.openPanel("teacher", teacherId);
+  await s.app.openPanel('teacher', teacherId);
 
   const checkDialog = await openTeacherNotesEdit(page);
 
@@ -2733,14 +2629,10 @@ test("EDIT-34: pusta notatka nauczyciela nie jest zapisywana @teacher @edit @not
  * =========================================================
  */
 
-test("EDIT-35: zgoda Marketing jest trwała @teacher @edit @rodo", async ({
-  page,
-  scenario: s,
-  school,
-}) => {
+test('EDIT-35: zgoda Marketing jest trwała @teacher @edit @rodo', async ({ page, scenario: s, school }) => {
   const teacherId = await s.createTeacher(school.id, school.name);
 
-  await s.app.openPanel("teacher", teacherId);
+  await s.app.openPanel('teacher', teacherId);
 
   await expectTeacherRodoOnCard(page, {
     marketing: false,
@@ -2750,7 +2642,7 @@ test("EDIT-35: zgoda Marketing jest trwała @teacher @edit @rodo", async ({
 
   const dialog = await openTeacherRodoEdit(page);
 
-  await setTeacherRodoConsent(dialog, "Marketing", true);
+  await setTeacherRodoConsent(dialog, 'Marketing', true);
 
   await saveTeacherRodoEdit(dialog);
 
@@ -2760,7 +2652,7 @@ test("EDIT-35: zgoda Marketing jest trwała @teacher @edit @rodo", async ({
     phone: false,
   });
 
-  await s.app.openPanel("teacher", teacherId);
+  await s.app.openPanel('teacher', teacherId);
 
   await expectTeacherRodoOnCard(page, {
     marketing: true,
@@ -2770,21 +2662,21 @@ test("EDIT-35: zgoda Marketing jest trwała @teacher @edit @rodo", async ({
 
   const history = await openTeacherHistory(page);
 
-  await expectTeacherRodoHistoryChange(page, history, "Zgoda Marketing", "Tak");
+  await expectTeacherRodoHistoryChange(page, history, 'Zgoda Marketing', 'Tak');
 
-  await expectTeacherRodoHistoryChange(page, history, "Zgoda Email", "Nie");
+  await expectTeacherRodoHistoryChange(page, history, 'Zgoda Email', 'Nie');
 
-  await expectTeacherRodoHistoryChange(page, history, "Zgoda Telefon", "Nie");
+  await expectTeacherRodoHistoryChange(page, history, 'Zgoda Telefon', 'Nie');
 });
 
-test("EDIT-36: zaznaczenie zgody E-mail automatycznie zaznacza Marketing @teacher @edit @rodo", async ({
+test('EDIT-36: zaznaczenie zgody E-mail automatycznie zaznacza Marketing @teacher @edit @rodo', async ({
   page,
   scenario: s,
   school,
 }) => {
   const teacherId = await s.createTeacher(school.id, school.name);
 
-  await s.app.openPanel("teacher", teacherId);
+  await s.app.openPanel('teacher', teacherId);
 
   await expectTeacherRodoOnCard(page, {
     marketing: false,
@@ -2794,11 +2686,11 @@ test("EDIT-36: zaznaczenie zgody E-mail automatycznie zaznacza Marketing @teache
 
   const dialog = await openTeacherRodoEdit(page);
 
-  const email = teacherRodoCheckbox(dialog, "E-mail");
+  const email = teacherRodoCheckbox(dialog, 'E-mail');
 
-  const marketing = teacherRodoCheckbox(dialog, "Marketing");
+  const marketing = teacherRodoCheckbox(dialog, 'Marketing');
 
-  const phone = teacherRodoCheckbox(dialog, "Telefon");
+  const phone = teacherRodoCheckbox(dialog, 'Telefon');
 
   await email.check();
 
@@ -2820,7 +2712,7 @@ test("EDIT-36: zaznaczenie zgody E-mail automatycznie zaznacza Marketing @teache
     phone: false,
   });
 
-  await s.app.openPanel("teacher", teacherId);
+  await s.app.openPanel('teacher', teacherId);
 
   await expectTeacherRodoOnCard(page, {
     marketing: true,
@@ -2830,21 +2722,21 @@ test("EDIT-36: zaznaczenie zgody E-mail automatycznie zaznacza Marketing @teache
 
   const history = await openTeacherHistory(page);
 
-  await expectTeacherRodoHistoryChange(page, history, "Zgoda Marketing", "Tak");
+  await expectTeacherRodoHistoryChange(page, history, 'Zgoda Marketing', 'Tak');
 
-  await expectTeacherRodoHistoryChange(page, history, "Zgoda Email", "Tak");
+  await expectTeacherRodoHistoryChange(page, history, 'Zgoda Email', 'Tak');
 
-  await expectTeacherRodoHistoryChange(page, history, "Zgoda Telefon", "Nie");
+  await expectTeacherRodoHistoryChange(page, history, 'Zgoda Telefon', 'Nie');
 });
 
-test("EDIT-37: zaznaczenie zgody Telefon automatycznie zaznacza Marketing @teacher @edit @rodo", async ({
+test('EDIT-37: zaznaczenie zgody Telefon automatycznie zaznacza Marketing @teacher @edit @rodo', async ({
   page,
   scenario: s,
   school,
 }) => {
   const teacherId = await s.createTeacher(school.id, school.name);
 
-  await s.app.openPanel("teacher", teacherId);
+  await s.app.openPanel('teacher', teacherId);
 
   await expectTeacherRodoOnCard(page, {
     marketing: false,
@@ -2854,11 +2746,11 @@ test("EDIT-37: zaznaczenie zgody Telefon automatycznie zaznacza Marketing @teach
 
   const dialog = await openTeacherRodoEdit(page);
 
-  const marketing = teacherRodoCheckbox(dialog, "Marketing");
+  const marketing = teacherRodoCheckbox(dialog, 'Marketing');
 
-  const email = teacherRodoCheckbox(dialog, "E-mail");
+  const email = teacherRodoCheckbox(dialog, 'E-mail');
 
-  const phone = teacherRodoCheckbox(dialog, "Telefon");
+  const phone = teacherRodoCheckbox(dialog, 'Telefon');
 
   await phone.check();
 
@@ -2880,7 +2772,7 @@ test("EDIT-37: zaznaczenie zgody Telefon automatycznie zaznacza Marketing @teach
     phone: true,
   });
 
-  await s.app.openPanel("teacher", teacherId);
+  await s.app.openPanel('teacher', teacherId);
 
   await expectTeacherRodoOnCard(page, {
     marketing: true,
@@ -2890,27 +2782,27 @@ test("EDIT-37: zaznaczenie zgody Telefon automatycznie zaznacza Marketing @teach
 
   const history = await openTeacherHistory(page);
 
-  await expectTeacherRodoHistoryChange(page, history, "Zgoda Marketing", "Tak");
+  await expectTeacherRodoHistoryChange(page, history, 'Zgoda Marketing', 'Tak');
 
-  await expectTeacherRodoHistoryChange(page, history, "Zgoda Telefon", "Tak");
+  await expectTeacherRodoHistoryChange(page, history, 'Zgoda Telefon', 'Tak');
 });
 
-test("EDIT-38: wszystkie zgody RODO można zapisać jednocześnie @teacher @edit @rodo", async ({
+test('EDIT-38: wszystkie zgody RODO można zapisać jednocześnie @teacher @edit @rodo', async ({
   page,
   scenario: s,
   school,
 }) => {
   const teacherId = await s.createTeacher(school.id, school.name);
 
-  await s.app.openPanel("teacher", teacherId);
+  await s.app.openPanel('teacher', teacherId);
 
   const dialog = await openTeacherRodoEdit(page);
 
-  await setTeacherRodoConsent(dialog, "Marketing", true);
+  await setTeacherRodoConsent(dialog, 'Marketing', true);
 
-  await setTeacherRodoConsent(dialog, "E-mail", true);
+  await setTeacherRodoConsent(dialog, 'E-mail', true);
 
-  await setTeacherRodoConsent(dialog, "Telefon", true);
+  await setTeacherRodoConsent(dialog, 'Telefon', true);
 
   await saveTeacherRodoEdit(dialog);
 
@@ -2920,7 +2812,7 @@ test("EDIT-38: wszystkie zgody RODO można zapisać jednocześnie @teacher @edit
     phone: true,
   });
 
-  await s.app.openPanel("teacher", teacherId);
+  await s.app.openPanel('teacher', teacherId);
 
   await expectTeacherRodoOnCard(page, {
     marketing: true,
@@ -2930,14 +2822,14 @@ test("EDIT-38: wszystkie zgody RODO można zapisać jednocześnie @teacher @edit
 
   const history = await openTeacherHistory(page);
 
-  await expectTeacherRodoHistoryChange(page, history, "Zgoda Marketing", "Tak");
+  await expectTeacherRodoHistoryChange(page, history, 'Zgoda Marketing', 'Tak');
 
-  await expectTeacherRodoHistoryChange(page, history, "Zgoda Email", "Tak");
+  await expectTeacherRodoHistoryChange(page, history, 'Zgoda Email', 'Tak');
 
-  await expectTeacherRodoHistoryChange(page, history, "Zgoda Telefon", "Tak");
+  await expectTeacherRodoHistoryChange(page, history, 'Zgoda Telefon', 'Tak');
 });
 
-test("EDIT-39: odznaczenie zgody Marketing pokazuje ostrzeżenie @teacher @edit @rodo @validation", async ({
+test('EDIT-39: odznaczenie zgody Marketing pokazuje ostrzeżenie @teacher @edit @rodo @validation', async ({
   page,
   scenario: s,
   school,
@@ -2950,11 +2842,11 @@ test("EDIT-39: odznaczenie zgody Marketing pokazuje ostrzeżenie @teacher @edit 
    * =====================================================
    */
 
-  await s.app.openPanel("teacher", teacherId);
+  await s.app.openPanel('teacher', teacherId);
 
   let dialog = await openTeacherRodoEdit(page);
 
-  await setTeacherRodoConsent(dialog, "Marketing", true);
+  await setTeacherRodoConsent(dialog, 'Marketing', true);
 
   await saveTeacherRodoEdit(dialog);
 
@@ -2972,7 +2864,7 @@ test("EDIT-39: odznaczenie zgody Marketing pokazuje ostrzeżenie @teacher @edit 
 
   dialog = await openTeacherRodoEdit(page);
 
-  const marketing = teacherRodoCheckbox(dialog, "Marketing");
+  const marketing = teacherRodoCheckbox(dialog, 'Marketing');
 
   await expect(marketing).toBeChecked();
 
@@ -3025,7 +2917,7 @@ test("EDIT-39: odznaczenie zgody Marketing pokazuje ostrzeżenie @teacher @edit 
   });
 });
 
-test("EDIT-40: odznaczenie Marketing automatycznie odznacza E-mail i Telefon @teacher @edit @rodo @validation", async ({
+test('EDIT-40: odznaczenie Marketing automatycznie odznacza E-mail i Telefon @teacher @edit @rodo @validation', async ({
   page,
   scenario: s,
   school,
@@ -3038,15 +2930,15 @@ test("EDIT-40: odznaczenie Marketing automatycznie odznacza E-mail i Telefon @te
    * =====================================================
    */
 
-  await s.app.openPanel("teacher", teacherId);
+  await s.app.openPanel('teacher', teacherId);
 
   let dialog = await openTeacherRodoEdit(page);
 
-  await setTeacherRodoConsent(dialog, "Marketing", true);
+  await setTeacherRodoConsent(dialog, 'Marketing', true);
 
-  await setTeacherRodoConsent(dialog, "E-mail", true);
+  await setTeacherRodoConsent(dialog, 'E-mail', true);
 
-  await setTeacherRodoConsent(dialog, "Telefon", true);
+  await setTeacherRodoConsent(dialog, 'Telefon', true);
 
   await saveTeacherRodoEdit(dialog);
 
@@ -3067,11 +2959,11 @@ test("EDIT-40: odznaczenie Marketing automatycznie odznacza E-mail i Telefon @te
 
   dialog = await openTeacherRodoEdit(page);
 
-  const marketing = teacherRodoCheckbox(dialog, "Marketing");
+  const marketing = teacherRodoCheckbox(dialog, 'Marketing');
 
-  const email = teacherRodoCheckbox(dialog, "E-mail");
+  const email = teacherRodoCheckbox(dialog, 'E-mail');
 
-  const phone = teacherRodoCheckbox(dialog, "Telefon");
+  const phone = teacherRodoCheckbox(dialog, 'Telefon');
 
   await expect(marketing).toBeChecked();
 
@@ -3092,7 +2984,7 @@ test("EDIT-40: odznaczenie Marketing automatycznie odznacza E-mail i Telefon @te
    */
   const warning = await expectTeacherMarketingWarning(page);
 
-  await expect(warning).toContainText("Zgoda marketingowa nie jest zaznaczona");
+  await expect(warning).toContainText('Zgoda marketingowa nie jest zaznaczona');
 
   await confirmTeacherMarketingWarning(warning);
 
@@ -3141,7 +3033,7 @@ test("EDIT-40: odznaczenie Marketing automatycznie odznacza E-mail i Telefon @te
    * =====================================================
    */
 
-  await s.app.openPanel("teacher", teacherId);
+  await s.app.openPanel('teacher', teacherId);
 
   await expectTeacherRodoOnCard(page, {
     marketing: true,
@@ -3150,22 +3042,22 @@ test("EDIT-40: odznaczenie Marketing automatycznie odznacza E-mail i Telefon @te
   });
 });
 
-test("EDIT-41: zapis bez żadnej zgody RODO pokazuje ostrzeżenie @teacher @edit @rodo @validation", async ({
+test('EDIT-41: zapis bez żadnej zgody RODO pokazuje ostrzeżenie @teacher @edit @rodo @validation', async ({
   page,
   scenario: s,
   school,
 }) => {
   const teacherId = await s.createTeacher(school.id, school.name);
 
-  await s.app.openPanel("teacher", teacherId);
+  await s.app.openPanel('teacher', teacherId);
 
   const dialog = await openTeacherRodoEdit(page);
 
-  await expect(teacherRodoCheckbox(dialog, "Marketing")).not.toBeChecked();
+  await expect(teacherRodoCheckbox(dialog, 'Marketing')).not.toBeChecked();
 
-  await expect(teacherRodoCheckbox(dialog, "E-mail")).not.toBeChecked();
+  await expect(teacherRodoCheckbox(dialog, 'E-mail')).not.toBeChecked();
 
-  await expect(teacherRodoCheckbox(dialog, "Telefon")).not.toBeChecked();
+  await expect(teacherRodoCheckbox(dialog, 'Telefon')).not.toBeChecked();
 
   /*
    * Źródłem jest domyślnie Karta nauczyciela,
@@ -3173,8 +3065,8 @@ test("EDIT-41: zapis bez żadnej zgody RODO pokazuje ostrzeżenie @teacher @edit
    */
 
   await dialog
-    .getByRole("button", {
-      name: "Zapisz",
+    .getByRole('button', {
+      name: 'Zapisz',
       exact: true,
     })
     .click();
@@ -3200,14 +3092,14 @@ test("EDIT-41: zapis bez żadnej zgody RODO pokazuje ostrzeżenie @teacher @edit
   });
 });
 
-test("EDIT-42: dropdown Źródło RODO zawiera oczekiwane wartości @teacher @edit @rodo", async ({
+test('EDIT-42: dropdown Źródło RODO zawiera oczekiwane wartości @teacher @edit @rodo', async ({
   page,
   scenario: s,
   school,
 }) => {
   const teacherId = await s.createTeacher(school.id, school.name);
 
-  await s.app.openPanel("teacher", teacherId);
+  await s.app.openPanel('teacher', teacherId);
 
   const dialog = await openTeacherRodoEdit(page);
 
@@ -3218,26 +3110,26 @@ test("EDIT-42: dropdown Źródło RODO zawiera oczekiwane wartości @teacher @ed
   /*
    * Domyślna wartość.
    */
-  await expect(sourceSelect).toContainText("Karta nauczyciela");
+  await expect(sourceSelect).toContainText('Karta nauczyciela');
 
   await sourceSelect.click();
 
   const expectedSources = [
-    "Formularz klubowy",
-    "Kontakt BOK",
-    "Karta LS",
-    "Karta nauczyciela",
-    "Kontakt CC",
-    "Kontakt promotor",
-    "Akcja promocyjna",
-    "Strona www",
-    "Dział wysyłkowy",
-    "Karta obecności",
+    'Formularz klubowy',
+    'Kontakt BOK',
+    'Karta LS',
+    'Karta nauczyciela',
+    'Kontakt CC',
+    'Kontakt promotor',
+    'Akcja promocyjna',
+    'Strona www',
+    'Dział wysyłkowy',
+    'Karta obecności',
   ];
 
   for (const source of expectedSources) {
     await expect(
-      page.getByRole("option", {
+      page.getByRole('option', {
         name: source,
         exact: true,
       }),
@@ -3247,15 +3139,15 @@ test("EDIT-42: dropdown Źródło RODO zawiera oczekiwane wartości @teacher @ed
   /*
    * Dodatkowo liczba opcji.
    */
-  await expect(page.getByRole("option")).toHaveCount(expectedSources.length);
+  await expect(page.getByRole('option')).toHaveCount(expectedSources.length);
 
   /*
    * Zamykamy dropdown przez wybór
    * aktualnej wartości.
    */
   await page
-    .getByRole("option", {
-      name: "Karta nauczyciela",
+    .getByRole('option', {
+      name: 'Karta nauczyciela',
       exact: true,
     })
     .click();
@@ -3270,7 +3162,7 @@ test("EDIT-42: dropdown Źródło RODO zawiera oczekiwane wartości @teacher @ed
  * =========================================================
  */
 
-test("EDIT-43: ponowny zapis już znormalizowanych danych bez zmian nie modyfikuje danych ani historii @teacher @edit", async ({
+test('EDIT-43: ponowny zapis już znormalizowanych danych bez zmian nie modyfikuje danych ani historii @teacher @edit', async ({
   page,
   scenario: s,
   school,
@@ -3284,22 +3176,22 @@ test("EDIT-43: ponowny zapis już znormalizowanych danych bez zmian nie modyfiku
 
   await saveBasicTeacherEdit(form);
 
-  await s.app.openPanel("teacher", teacherId);
+  await s.app.openPanel('teacher', teacherId);
 
   const normalizedLastName = normalizeTeacherName(s.id);
 
-  await expect(s.app.detail("lastName")).toHaveValue(normalizedLastName);
+  await expect(s.app.detail('lastName')).toHaveValue(normalizedLastName);
 
   /*
    * Snapshot danych i historii
    * po normalizacji.
    */
   const before = {
-    firstName: await s.app.detail("firstName").inputValue(),
+    firstName: await s.app.detail('firstName').inputValue(),
 
-    lastName: await s.app.detail("lastName").inputValue(),
+    lastName: await s.app.detail('lastName').inputValue(),
 
-    email: await s.app.detail("email").inputValue(),
+    email: await s.app.detail('email').inputValue(),
   };
 
   const historyBefore = await teacherHistorySnapshot(page);
@@ -3307,26 +3199,26 @@ test("EDIT-43: ponowny zapis już znormalizowanych danych bez zmian nie modyfiku
   /*
    * Drugi zapis bez zmian.
    */
-  await s.app.openPanel("teacher", teacherId);
+  await s.app.openPanel('teacher', teacherId);
 
   form = await openBasicTeacherEdit(page, s.app);
 
-  await expect(form.locator("#firstName")).toHaveValue(before.firstName);
+  await expect(form.locator('#firstName')).toHaveValue(before.firstName);
 
-  await expect(form.locator("#lastName")).toHaveValue(before.lastName);
+  await expect(form.locator('#lastName')).toHaveValue(before.lastName);
 
   await saveBasicTeacherEdit(form);
 
   /*
    * Dane i historia pozostają takie same.
    */
-  await s.app.openPanel("teacher", teacherId);
+  await s.app.openPanel('teacher', teacherId);
 
-  await expect(s.app.detail("firstName")).toHaveValue(before.firstName);
+  await expect(s.app.detail('firstName')).toHaveValue(before.firstName);
 
-  await expect(s.app.detail("lastName")).toHaveValue(before.lastName);
+  await expect(s.app.detail('lastName')).toHaveValue(before.lastName);
 
-  await expect(s.app.detail("email")).toHaveValue(before.email);
+  await expect(s.app.detail('email')).toHaveValue(before.email);
 
   await expectTeacherHistorySnapshot(page, historyBefore);
 });
@@ -3338,42 +3230,42 @@ test("EDIT-43: ponowny zapis już znormalizowanych danych bez zmian nie modyfiku
  * =========================================================
  */
 
-test("EDIT-44: anulowanie wielu zmian zachowuje poprzednie dane i historię @teacher @edit @cancel", async ({
+test('EDIT-44: anulowanie wielu zmian zachowuje poprzednie dane i historię @teacher @edit @cancel', async ({
   page,
   scenario: s,
   school,
 }) => {
   const teacherId = await s.createTeacher(school.id, school.name);
 
-  await s.app.openPanel("teacher", teacherId);
+  await s.app.openPanel('teacher', teacherId);
 
   const before = {
-    firstName: await s.app.detail("firstName").inputValue(),
+    firstName: await s.app.detail('firstName').inputValue(),
 
-    lastName: await s.app.detail("lastName").inputValue(),
+    lastName: await s.app.detail('lastName').inputValue(),
 
-    email: await s.app.detail("email").inputValue(),
+    email: await s.app.detail('email').inputValue(),
   };
 
   const historyBefore = await teacherHistorySnapshot(page);
 
-  await s.app.openPanel("teacher", teacherId);
+  await s.app.openPanel('teacher', teacherId);
 
   const form = await openBasicTeacherEdit(page, s.app);
 
-  await typeValue(form.locator("#firstName"), "Adam");
+  await typeValue(form.locator('#firstName'), 'Adam');
 
-  await typeValue(form.locator("#lastName"), "Anulowany");
+  await typeValue(form.locator('#lastName'), 'Anulowany');
 
   await cancelTeacherDialog(form);
 
-  await s.app.openPanel("teacher", teacherId);
+  await s.app.openPanel('teacher', teacherId);
 
-  await expect(s.app.detail("firstName")).toHaveValue(before.firstName);
+  await expect(s.app.detail('firstName')).toHaveValue(before.firstName);
 
-  await expect(s.app.detail("lastName")).toHaveValue(before.lastName);
+  await expect(s.app.detail('lastName')).toHaveValue(before.lastName);
 
-  await expect(s.app.detail("email")).toHaveValue(before.email);
+  await expect(s.app.detail('email')).toHaveValue(before.email);
 
   await expectTeacherHistorySnapshot(page, historyBefore);
 });
@@ -3385,31 +3277,31 @@ test("EDIT-44: anulowanie wielu zmian zachowuje poprzednie dane i historię @tea
  * =========================================================
  */
 
-test("EDIT-45: zmienione dane są trwałe po przejściu do szkoły i powrocie @teacher @edit @navigation", async ({
+test('EDIT-45: zmienione dane są trwałe po przejściu do szkoły i powrocie @teacher @edit @navigation', async ({
   page,
   scenario: s,
   school,
 }) => {
   const teacherId = await s.createTeacher(school.id, school.name);
 
-  const newFirstName = "Adam";
+  const newFirstName = 'Adam';
 
   const expectedLastName = normalizeTeacherName(s.id);
 
   const form = await openBasicTeacherEdit(page, s.app);
 
-  await typeValue(form.locator("#firstName"), newFirstName);
+  await typeValue(form.locator('#firstName'), newFirstName);
 
   await saveBasicTeacherEdit(form);
 
   /*
    * Przejście do szkoły.
    */
-  await s.app.openPanel("school", school.id);
+  await s.app.openPanel('school', school.id);
 
   await expect(
-    page.getByRole("heading", {
-      name: "Dane podstawowe szkoły",
+    page.getByRole('heading', {
+      name: 'Dane podstawowe szkoły',
       exact: true,
     }),
   ).toBeVisible();
@@ -3417,13 +3309,13 @@ test("EDIT-45: zmienione dane są trwałe po przejściu do szkoły i powrocie @t
   /*
    * Powrót do nauczyciela.
    */
-  await s.app.openPanel("teacher", teacherId);
+  await s.app.openPanel('teacher', teacherId);
 
-  await expect(s.app.detail("firstName")).toHaveValue(newFirstName);
+  await expect(s.app.detail('firstName')).toHaveValue(newFirstName);
 
-  await expect(s.app.detail("lastName")).toHaveValue(expectedLastName);
+  await expect(s.app.detail('lastName')).toHaveValue(expectedLastName);
 
-  await expect(s.app.detail("email")).toHaveValue(s.email);
+  await expect(s.app.detail('email')).toHaveValue(s.email);
 });
 
 /*
@@ -3433,18 +3325,18 @@ test("EDIT-45: zmienione dane są trwałe po przejściu do szkoły i powrocie @t
  * =========================================================
  */
 
-test("EDIT-46: edycja danych nauczyciela nie usuwa relacji ze szkołą @teacher @edit @relation", async ({
+test('EDIT-46: edycja danych nauczyciela nie usuwa relacji ze szkołą @teacher @edit @relation', async ({
   page,
   scenario: s,
   school,
 }) => {
   const teacherId = await s.createTeacher(school.id, school.name);
 
-  const newFirstName = "Adam";
+  const newFirstName = 'Adam';
 
   const form = await openBasicTeacherEdit(page, s.app);
 
-  await typeValue(form.locator("#firstName"), newFirstName);
+  await typeValue(form.locator('#firstName'), newFirstName);
 
   await saveBasicTeacherEdit(form);
 
@@ -3452,7 +3344,7 @@ test("EDIT-46: edycja danych nauczyciela nie usuwa relacji ze szkołą @teacher 
    * Relacja widoczna od strony nauczyciela.
    */
   await expect(
-    page.getByRole("row").filter({
+    page.getByRole('row').filter({
       hasText: school.name,
     }),
   ).toHaveCount(1);
@@ -3460,15 +3352,15 @@ test("EDIT-46: edycja danych nauczyciela nie usuwa relacji ze szkołą @teacher 
   /*
    * Relacja widoczna od strony szkoły.
    */
-  await s.app.openPanel("school", school.id);
+  await s.app.openPanel('school', school.id);
 
-  const teachers = page.getByRole("tabpanel", {
-    name: "Nauczyciele",
+  const teachers = page.getByRole('tabpanel', {
+    name: 'Nauczyciele',
     exact: true,
   });
 
-  const teacherRow = teachers.getByRole("row").filter({
-    has: page.getByRole("gridcell", {
+  const teacherRow = teachers.getByRole('row').filter({
+    has: page.getByRole('gridcell', {
       name: teacherId,
       exact: true,
     }),
@@ -3488,16 +3380,16 @@ test("EDIT-46: edycja danych nauczyciela nie usuwa relacji ze szkołą @teacher 
  * =========================================================
  */
 
-test("EDIT-47: jednoczesna zmiana wielu pól tworzy komplet wpisów historii @teacher @edit @history", async ({
+test('EDIT-47: jednoczesna zmiana wielu pól tworzy komplet wpisów historii @teacher @edit @history', async ({
   page,
   scenario: s,
   school,
 }) => {
   const teacherId = await s.createTeacher(school.id, school.name);
 
-  const inputFirstName = "Adam";
+  const inputFirstName = 'Adam';
 
-  const inputLastName = "Nowak";
+  const inputLastName = 'Nowak';
 
   const expectedFirstName = normalizeTeacherName(inputFirstName);
 
@@ -3505,30 +3397,30 @@ test("EDIT-47: jednoczesna zmiana wielu pól tworzy komplet wpisów historii @te
 
   const form = await openBasicTeacherEdit(page, s.app);
 
-  await typeValue(form.locator("#firstName"), inputFirstName);
+  await typeValue(form.locator('#firstName'), inputFirstName);
 
-  await typeValue(form.locator("#lastName"), inputLastName);
+  await typeValue(form.locator('#lastName'), inputLastName);
 
   await saveBasicTeacherEdit(form);
 
-  await s.app.openPanel("teacher", teacherId);
+  await s.app.openPanel('teacher', teacherId);
 
-  await expect(s.app.detail("firstName")).toHaveValue(expectedFirstName);
+  await expect(s.app.detail('firstName')).toHaveValue(expectedFirstName);
 
-  await expect(s.app.detail("lastName")).toHaveValue(expectedLastName);
+  await expect(s.app.detail('lastName')).toHaveValue(expectedLastName);
 
   /*
    * Korzystamy z istniejącego helpera
    * zamiast ręcznie powielać selektory historii.
    */
-  await expectTeacherHistoryChange(page, "Imię", expectedFirstName);
+  await expectTeacherHistoryChange(page, 'Imię', expectedFirstName);
 
   /*
    * Helper ponownie otworzy tab historii,
    * dlatego przed kolejnym wywołaniem
    * wracamy do panelu nauczyciela.
    */
-  await s.app.openPanel("teacher", teacherId);
+  await s.app.openPanel('teacher', teacherId);
 
-  await expectTeacherHistoryChange(page, "Nazwisko", expectedLastName);
+  await expectTeacherHistoryChange(page, 'Nazwisko', expectedLastName);
 });

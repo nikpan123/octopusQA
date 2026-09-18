@@ -11,7 +11,15 @@ test('szkoła → nauczyciel → relacja → wyszukiwanie → nauczyciel → his
   const normalizedLastName = 'Reg' + runId.slice(3).toLowerCase();
   const email = `${runId.toLowerCase()}@example.invalid`;
   const number = String(Date.now()); // Unikalny syntetyczny adres, bez kolizji kolejnych przebiegów.
-  const run: Record<string, string> = { runId, schoolName, lastName, email, number, startedAt: new Date().toISOString(), cleanupBatchId: process.env.OCTOPUS_CLEANUP_BATCH_ID ?? '' };
+  const run: Record<string, string> = {
+    runId,
+    schoolName,
+    lastName,
+    email,
+    number,
+    startedAt: new Date().toISOString(),
+    cleanupBatchId: process.env.OCTOPUS_CLEANUP_BATCH_ID ?? '',
+  };
   await mkdir('runs', { recursive: true });
   const saveRun = () => writeFile(`runs/${runId}.json`, JSON.stringify(run, null, 2));
   await saveRun();
@@ -57,21 +65,26 @@ test('szkoła → nauczyciel → relacja → wyszukiwanie → nauczyciel → his
     await test.step('AUDIT-01: sprawdź wpis edycji i dodanie szkoły', async () => {
       await page.getByRole('tab', { name: 'Historia zmian', exact: true }).click();
       const history = page.getByRole('tabpanel', { name: 'Historia zmian', exact: true });
-      const edit = history.getByRole('row')
+      const edit = history
+        .getByRole('row')
         .filter({ has: page.getByRole('gridcell', { name: 'Imię', exact: true }) })
         .filter({ has: page.getByRole('gridcell', { name: 'Jan', exact: true }) })
         .filter({ has: page.getByRole('gridcell', { name: 'Edycja danych', exact: true }) });
       await expect(edit).toHaveCount(1);
       await expect(edit).toContainText(/\d{4}-\d{2}-\d{2} \d{2}:\d{2}/);
       await expect(edit.getByRole('gridcell').nth(2)).not.toHaveText('');
-      await expect(history.getByRole('row').filter({ hasText: 'Dodana Szkoła' }).filter({ hasText: schoolName })).toHaveCount(1);
+      await expect(
+        history.getByRole('row').filter({ hasText: 'Dodana Szkoła' }).filter({ hasText: schoolName }),
+      ).toHaveCount(1);
     });
 
     await test.step('REL-01: sprawdź tego samego nauczyciela od strony szkoły', async () => {
       await app.openPanel('school', run.schoolId);
       const teachers = page.getByRole('tabpanel', { name: 'Nauczyciele', exact: true });
       await expect(teachers.getByRole('button', { name: 'Nauczyciele: 1', exact: true })).toBeVisible();
-      const row = teachers.getByRole('row').filter({ has: page.getByRole('gridcell', { name: run.teacherId, exact: true }) });
+      const row = teachers
+        .getByRole('row')
+        .filter({ has: page.getByRole('gridcell', { name: run.teacherId, exact: true }) });
       await expect(row).toHaveCount(1);
       await expect(row.getByRole('gridcell', { name: 'Jan', exact: true })).toBeVisible();
       await expect(row.getByRole('gridcell', { name: normalizedLastName, exact: true })).toBeVisible();
@@ -84,6 +97,9 @@ test('szkoła → nauczyciel → relacja → wyszukiwanie → nauczyciel → his
     run.finishedAt = new Date().toISOString();
     if (run.teacherId) run.cleanupStatus = run.result === 'PASS' ? 'PENDING_SUITE_END' : 'KEPT_FAILED_TEST';
     await saveRun();
-    await testInfo.attach('Dane utworzone w tym przebiegu', { body: JSON.stringify(run, null, 2), contentType: 'application/json' });
+    await testInfo.attach('Dane utworzone w tym przebiegu', {
+      body: JSON.stringify(run, null, 2),
+      contentType: 'application/json',
+    });
   }
 });

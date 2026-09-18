@@ -19,14 +19,28 @@ export const test = base.extend<{ scenario: Scenario }>({
     const id = `REG_${Date.now()}_${randomUUID().slice(0, 6)}`;
     const schoolName = `${id} Szkoła testowa`;
     const email = `${id.toLowerCase()}@example.invalid`;
-    const data: Record<string, string> = { id, schoolName, email, title: testInfo.title, result: 'RUNNING', cleanupBatchId: process.env.OCTOPUS_CLEANUP_BATCH_ID ?? '' };
+    const data: Record<string, string> = {
+      id,
+      schoolName,
+      email,
+      title: testInfo.title,
+      result: 'RUNNING',
+      cleanupBatchId: process.env.OCTOPUS_CLEANUP_BATCH_ID ?? '',
+    };
     await mkdir('runs', { recursive: true });
     const save = () => writeFile(`runs/${id}.json`, JSON.stringify(data, null, 2));
-    const record = async (key: string, value: string) => { data[key] = value; await save(); };
+    const record = async (key: string, value: string) => {
+      data[key] = value;
+      await save();
+    };
     await save();
     try {
       await use({
-        app, id, schoolName, email, record,
+        app,
+        id,
+        schoolName,
+        email,
+        record,
         createSchool: async () => {
           const schoolId = await app.createSchool(schoolName, String(Date.now()));
           await record('schoolId', schoolId);
@@ -51,7 +65,10 @@ export const test = base.extend<{ scenario: Scenario }>({
       data.finishedAt = new Date().toISOString();
       if (data.teacherId) data.cleanupStatus = data.result === 'PASS' ? 'PENDING_SUITE_END' : 'KEPT_FAILED_TEST';
       await save();
-      await testInfo.attach('Dane scenariusza', { body: JSON.stringify(data, null, 2), contentType: 'application/json' });
+      await testInfo.attach('Dane scenariusza', {
+        body: JSON.stringify(data, null, 2),
+        contentType: 'application/json',
+      });
     }
   },
 });

@@ -1,6 +1,6 @@
-import { expect, type Locator, type Page } from "@playwright/test";
+import { expect, type Locator, type Page } from '@playwright/test';
 
-import { typeValue } from "./octopus";
+import { typeValue } from './octopus';
 
 type AppWithDialog = {
   dialog: (title: string) => Locator;
@@ -27,16 +27,16 @@ export function normalizeTeacherName(value: string) {
  */
 
 export function teacherHistory(page: Page) {
-  return page.getByRole("tabpanel", {
-    name: "Historia zmian",
+  return page.getByRole('tabpanel', {
+    name: 'Historia zmian',
     exact: true,
   });
 }
 
 export async function openTeacherHistory(page: Page) {
   await page
-    .getByRole("tab", {
-      name: "Historia zmian",
+    .getByRole('tab', {
+      name: 'Historia zmian',
       exact: true,
     })
     .click();
@@ -48,30 +48,26 @@ export async function openTeacherHistory(page: Page) {
   return history;
 }
 
-export async function expectTeacherHistoryChange(
-  page: Page,
-  field: string,
-  value: string,
-) {
+export async function expectTeacherHistoryChange(page: Page, field: string, value: string) {
   const history = await openTeacherHistory(page);
 
   const row = history
-    .getByRole("row")
+    .getByRole('row')
     .filter({
-      has: page.getByRole("gridcell", {
+      has: page.getByRole('gridcell', {
         name: field,
         exact: true,
       }),
     })
     .filter({
-      has: page.getByRole("gridcell", {
+      has: page.getByRole('gridcell', {
         name: value,
         exact: true,
       }),
     })
     .filter({
-      has: page.getByRole("gridcell", {
-        name: "Edycja danych",
+      has: page.getByRole('gridcell', {
+        name: 'Edycja danych',
         exact: true,
       }),
     });
@@ -80,7 +76,7 @@ export async function expectTeacherHistoryChange(
 
   await expect(row).toContainText(/\d{4}-\d{2}-\d{2} \d{2}:\d{2}/);
 
-  await expect(row.getByRole("gridcell").nth(2)).not.toHaveText("");
+  await expect(row.getByRole('gridcell').nth(2)).not.toHaveText('');
 
   return row;
 }
@@ -88,16 +84,13 @@ export async function expectTeacherHistoryChange(
 export async function teacherHistorySnapshot(page: Page) {
   const history = await openTeacherHistory(page);
 
-  return history.getByRole("row").allTextContents();
+  return history.getByRole('row').allTextContents();
 }
 
-export async function expectTeacherHistorySnapshot(
-  page: Page,
-  expectedRows: string[],
-) {
+export async function expectTeacherHistorySnapshot(page: Page, expectedRows: string[]) {
   const history = await openTeacherHistory(page);
 
-  await expect(history.getByRole("row")).toHaveText(expectedRows);
+  await expect(history.getByRole('row')).toHaveText(expectedRows);
 }
 
 /*
@@ -108,13 +101,13 @@ export async function expectTeacherHistorySnapshot(
 
 export async function openBasicTeacherEdit(page: Page, app: AppWithDialog) {
   await page
-    .getByRole("button", {
-      name: "Edycja danych",
+    .getByRole('button', {
+      name: 'Edycja danych',
       exact: true,
     })
     .click();
 
-  const form = app.dialog("Edycja danych podstawowych");
+  const form = app.dialog('Edycja danych podstawowych');
 
   await expect(form).toBeVisible();
 
@@ -122,8 +115,8 @@ export async function openBasicTeacherEdit(page: Page, app: AppWithDialog) {
 }
 
 export async function saveBasicTeacherEdit(form: Locator) {
-  const save = form.getByRole("button", {
-    name: "Zapisz",
+  const save = form.getByRole('button', {
+    name: 'Zapisz',
     exact: true,
   });
 
@@ -137,8 +130,8 @@ export async function saveBasicTeacherEdit(form: Locator) {
 }
 
 export async function cancelTeacherDialog(dialog: Locator) {
-  const cancel = dialog.getByRole("button", {
-    name: "Anuluj",
+  const cancel = dialog.getByRole('button', {
+    name: 'Anuluj',
     exact: true,
   });
 
@@ -150,8 +143,8 @@ export async function cancelTeacherDialog(dialog: Locator) {
 }
 
 export async function saveTeacherDialog(dialog: Locator) {
-  const save = dialog.getByRole("button", {
-    name: "Zapisz",
+  const save = dialog.getByRole('button', {
+    name: 'Zapisz',
     exact: true,
   });
 
@@ -177,13 +170,11 @@ export async function openTeacherFieldEdit(page: Page, label: string) {
 
   await expect(labelElement).toBeVisible();
 
-  const row = labelElement.locator(
-    'xpath=ancestor::*[contains(@class,"info-row")][1]',
-  );
+  const row = labelElement.locator('xpath=ancestor::*[contains(@class,"info-row")][1]');
 
   await expect(row).toBeVisible();
 
-  const editIcon = row.locator("mat-icon").filter({
+  const editIcon = row.locator('mat-icon').filter({
     hasText: /^edit$/,
   });
 
@@ -195,7 +186,7 @@ export async function openTeacherFieldEdit(page: Page, label: string) {
     (element as HTMLElement).click();
   });
 
-  const dialog = page.locator("mat-dialog-container").last();
+  const dialog = page.locator('mat-dialog-container').last();
 
   await expect(dialog).toBeVisible();
 
@@ -203,15 +194,7 @@ export async function openTeacherFieldEdit(page: Page, label: string) {
 }
 
 export function firstEditableTeacherInput(dialog: Locator) {
-  return dialog
-    .locator(
-      [
-        'input:not([type="checkbox"])',
-        ":not([readonly])",
-        ":not([disabled])",
-      ].join(""),
-    )
-    .first();
+  return dialog.locator(['input:not([type="checkbox"])', ':not([readonly])', ':not([disabled])'].join('')).first();
 }
 
 /*
@@ -221,28 +204,26 @@ export function firstEditableTeacherInput(dialog: Locator) {
  */
 
 export async function openTeacherEmailEdit(page: Page) {
-  const spinner = page.locator("#spinner");
+  const spinner = page.locator('#spinner');
 
   await spinner
     .waitFor({
-      state: "hidden",
+      state: 'hidden',
       timeout: 20_000,
     })
     .catch(() => {
       // spinner może nie istnieć
     });
 
-  const emailField = page.locator("mat-form-field#email");
+  const emailField = page.locator('mat-form-field#email');
 
   await expect(emailField).toBeVisible();
 
-  const row = emailField.locator(
-    'xpath=ancestor::*[contains(@class,"info-row")][1]',
-  );
+  const row = emailField.locator('xpath=ancestor::*[contains(@class,"info-row")][1]');
 
   await expect(row).toBeVisible();
 
-  const editIcon = row.locator("mat-icon").filter({
+  const editIcon = row.locator('mat-icon').filter({
     hasText: /^edit$/,
   });
 
@@ -254,9 +235,9 @@ export async function openTeacherEmailEdit(page: Page) {
     (element as HTMLElement).click();
   });
 
-  const dialog = page.locator("mat-dialog-container").filter({
-    has: page.getByRole("heading", {
-      name: "Edycja e-mail",
+  const dialog = page.locator('mat-dialog-container').filter({
+    has: page.getByRole('heading', {
+      name: 'Edycja e-mail',
       exact: true,
     }),
   });
@@ -277,7 +258,7 @@ export function teacherNewEmailInput(dialog: Locator) {
  */
 
 export function teacherContactDetails(page: Page) {
-  return page.locator("app-contact-details");
+  return page.locator('app-contact-details');
 }
 
 /**
@@ -288,17 +269,15 @@ export function teacherContactDetails(page: Page) {
  * mask="000 - 000 - 000"
  */
 export function teacherNewPhoneInput(page: Page) {
-  return teacherContactDetails(page)
-    .locator('input[mask="000 - 000 - 000"]')
-    .last();
+  return teacherContactDetails(page).locator('input[mask="000 - 000 - 000"]').last();
 }
 
 /**
  * Przycisk Dodaj telefonu.
  */
 export function teacherPhoneAddButton(page: Page) {
-  return teacherContactDetails(page).getByRole("button", {
-    name: "Dodaj",
+  return teacherContactDetails(page).getByRole('button', {
+    name: 'Dodaj',
     exact: true,
   });
 }
@@ -315,7 +294,7 @@ export function teacherPhoneAddButton(page: Page) {
  * 500500500
  */
 export function normalizeTeacherPhone(value: string) {
-  return value.replace(/\D/g, "");
+  return value.replace(/\D/g, '');
 }
 
 /**
@@ -337,14 +316,10 @@ export function normalizeTeacherPhone(value: string) {
  */
 export async function getSavedTeacherPhones(page: Page) {
   const values = await teacherContactDetails(page)
-    .locator("input:not([mask])")
-    .evaluateAll((inputs) =>
-      inputs.map((input) => (input as HTMLInputElement).value),
-    );
+    .locator('input:not([mask])')
+    .evaluateAll((inputs) => inputs.map((input) => (input as HTMLInputElement).value));
 
-  return values
-    .map((value) => normalizeTeacherPhone(value))
-    .filter((value) => value.length === 9);
+  return values.map((value) => normalizeTeacherPhone(value)).filter((value) => value.length === 9);
 }
 
 /**
@@ -353,13 +328,8 @@ export async function getSavedTeacherPhones(page: Page) {
  *
  * Kolejność nie ma znaczenia.
  */
-export async function expectSavedTeacherPhones(
-  page: Page,
-  expectedPhones: string[],
-) {
-  const expected = expectedPhones
-    .map((phone) => normalizeTeacherPhone(phone))
-    .sort();
+export async function expectSavedTeacherPhones(page: Page, expectedPhones: string[]) {
+  const expected = expectedPhones.map((phone) => normalizeTeacherPhone(phone)).sort();
 
   await expect
     .poll(
@@ -422,12 +392,9 @@ export async function expectTeacherPhoneNotSaved(page: Page, phone: string) {
     .toBe(false);
 }
 
-export async function openTeacherPhoneDeleteConfirmation(
-  page: Page,
-  index = 0,
-) {
-  const dialog = page.locator("mat-dialog-container").filter({
-    hasText: "Czy na pewno chcesz usunąć telefon?",
+export async function openTeacherPhoneDeleteConfirmation(page: Page, index = 0) {
+  const dialog = page.locator('mat-dialog-container').filter({
+    hasText: 'Czy na pewno chcesz usunąć telefon?',
   });
 
   /*
@@ -459,14 +426,14 @@ export async function openTeacherPhoneDeleteConfirmation(
 
   await expect(dialog).toBeVisible();
 
-  await expect(dialog).toContainText("Czy na pewno chcesz usunąć telefon?");
+  await expect(dialog).toContainText('Czy na pewno chcesz usunąć telefon?');
 
   return dialog;
 }
 
 export async function confirmTeacherPhoneDelete(dialog: Locator) {
-  const confirmButton = dialog.getByRole("button", {
-    name: "Tak",
+  const confirmButton = dialog.getByRole('button', {
+    name: 'Tak',
     exact: true,
   });
 
@@ -480,8 +447,8 @@ export async function confirmTeacherPhoneDelete(dialog: Locator) {
 }
 
 export async function cancelTeacherPhoneDelete(dialog: Locator) {
-  const cancelButton = dialog.getByRole("button", {
-    name: "Nie",
+  const cancelButton = dialog.getByRole('button', {
+    name: 'Nie',
     exact: true,
   });
 
@@ -503,7 +470,7 @@ export async function cancelTeacherPhoneDelete(dialog: Locator) {
  */
 export function teacherPhoneDeleteButtons(page: Page) {
   return teacherContactDetails(page)
-    .locator("mat-icon")
+    .locator('mat-icon')
     .filter({
       hasText: /^delete_outline$/,
     });
@@ -511,7 +478,7 @@ export function teacherPhoneDeleteButtons(page: Page) {
 
 export async function expectTeacherPhoneHistoryChange(
   page: Page,
-  action: "Dodany numer" | "Usunięty numer",
+  action: 'Dodany numer' | 'Usunięty numer',
   phone: string,
 ) {
   const history = await openTeacherHistory(page);
@@ -519,22 +486,22 @@ export async function expectTeacherPhoneHistoryChange(
   const normalizedPhone = normalizeTeacherPhone(phone);
 
   const row = history
-    .getByRole("row")
+    .getByRole('row')
     .filter({
-      has: page.getByRole("gridcell", {
+      has: page.getByRole('gridcell', {
         name: action,
         exact: true,
       }),
     })
     .filter({
-      has: page.getByRole("gridcell", {
+      has: page.getByRole('gridcell', {
         name: normalizedPhone,
         exact: true,
       }),
     })
     .filter({
-      has: page.getByRole("gridcell", {
-        name: "Edycja danych",
+      has: page.getByRole('gridcell', {
+        name: 'Edycja danych',
         exact: true,
       }),
     });
@@ -543,14 +510,14 @@ export async function expectTeacherPhoneHistoryChange(
 
   await expect(row).toContainText(/\d{4}-\d{2}-\d{2} \d{2}:\d{2}/);
 
-  await expect(row.getByRole("gridcell").nth(2)).not.toHaveText("");
+  await expect(row.getByRole('gridcell').nth(2)).not.toHaveText('');
 
   return row;
 }
 
 export async function expectTeacherPhoneHistoryMissing(
   page: Page,
-  action: "Dodany numer" | "Usunięty numer",
+  action: 'Dodany numer' | 'Usunięty numer',
   phone: string,
 ) {
   const history = await openTeacherHistory(page);
@@ -558,15 +525,15 @@ export async function expectTeacherPhoneHistoryMissing(
   const normalizedPhone = normalizeTeacherPhone(phone);
 
   const row = history
-    .getByRole("row")
+    .getByRole('row')
     .filter({
-      has: page.getByRole("gridcell", {
+      has: page.getByRole('gridcell', {
         name: action,
         exact: true,
       }),
     })
     .filter({
-      has: page.getByRole("gridcell", {
+      has: page.getByRole('gridcell', {
         name: normalizedPhone,
         exact: true,
       }),
@@ -575,12 +542,9 @@ export async function expectTeacherPhoneHistoryMissing(
   await expect(row).toHaveCount(0);
 }
 
-export async function openTeacherEmailDeleteConfirmation(
-  page: Page,
-  emailDialog: Locator,
-) {
-  const deleteButton = emailDialog.getByRole("button", {
-    name: "Usuń e-mail",
+export async function openTeacherEmailDeleteConfirmation(page: Page, emailDialog: Locator) {
+  const deleteButton = emailDialog.getByRole('button', {
+    name: 'Usuń e-mail',
     exact: true,
   });
 
@@ -590,8 +554,8 @@ export async function openTeacherEmailDeleteConfirmation(
 
   await deleteButton.click();
 
-  const confirmDialog = page.locator("mat-dialog-container").filter({
-    hasText: "Czy na pewno chcesz usunąć adres e-mail?",
+  const confirmDialog = page.locator('mat-dialog-container').filter({
+    hasText: 'Czy na pewno chcesz usunąć adres e-mail?',
   });
 
   await expect(confirmDialog).toBeVisible();
@@ -600,8 +564,8 @@ export async function openTeacherEmailDeleteConfirmation(
 }
 
 export async function confirmTeacherEmailDelete(dialog: Locator) {
-  const confirmButton = dialog.getByRole("button", {
-    name: "Tak",
+  const confirmButton = dialog.getByRole('button', {
+    name: 'Tak',
     exact: true,
   });
 
@@ -615,8 +579,8 @@ export async function confirmTeacherEmailDelete(dialog: Locator) {
 }
 
 export async function cancelTeacherEmailDelete(dialog: Locator) {
-  const cancelButton = dialog.getByRole("button", {
-    name: "Nie",
+  const cancelButton = dialog.getByRole('button', {
+    name: 'Nie',
     exact: true,
   });
 
@@ -628,8 +592,8 @@ export async function cancelTeacherEmailDelete(dialog: Locator) {
 }
 
 export async function openTeacherMinimalRecordWarning(page: Page) {
-  const dialog = page.locator("mat-dialog-container").filter({
-    hasText: "Rekord nie będzie spełniał wymagań rekordu minimalnego",
+  const dialog = page.locator('mat-dialog-container').filter({
+    hasText: 'Rekord nie będzie spełniał wymagań rekordu minimalnego',
   });
 
   await expect(dialog).toBeVisible();
@@ -638,8 +602,8 @@ export async function openTeacherMinimalRecordWarning(page: Page) {
 }
 
 export async function confirmTeacherMinimalRecordWarning(dialog: Locator) {
-  const confirmButton = dialog.getByRole("button", {
-    name: "Tak",
+  const confirmButton = dialog.getByRole('button', {
+    name: 'Tak',
     exact: true,
   });
 
@@ -653,8 +617,8 @@ export async function confirmTeacherMinimalRecordWarning(dialog: Locator) {
 }
 
 export async function cancelTeacherMinimalRecordWarning(dialog: Locator) {
-  const cancelButton = dialog.getByRole("button", {
-    name: "Nie",
+  const cancelButton = dialog.getByRole('button', {
+    name: 'Nie',
     exact: true,
   });
 
@@ -677,9 +641,9 @@ export async function openTeacherPrivateAddressEdit(page: Page) {
    * istnieje, nie klikamy ponownie ikony przez
    * evaluate(), bo moglibyśmy otworzyć drugi.
    */
-  const existingDialogs = page.locator("mat-dialog-container").filter({
-    has: page.getByRole("heading", {
-      name: "Edycja adresu",
+  const existingDialogs = page.locator('mat-dialog-container').filter({
+    has: page.getByRole('heading', {
+      name: 'Edycja adresu',
       exact: true,
     }),
   });
@@ -694,15 +658,13 @@ export async function openTeacherPrivateAddressEdit(page: Page) {
     }
   }
 
-  const addressField = page.locator("mat-form-field#address");
+  const addressField = page.locator('mat-form-field#address');
 
   await expect(addressField).toBeVisible();
 
-  const row = addressField.locator(
-    'xpath=ancestor::*[contains(@class,"info-row")][1]',
-  );
+  const row = addressField.locator('xpath=ancestor::*[contains(@class,"info-row")][1]');
 
-  const editIcon = row.locator("mat-icon").filter({
+  const editIcon = row.locator('mat-icon').filter({
     hasText: /^edit$/,
   });
 
@@ -719,10 +681,10 @@ export async function openTeacherPrivateAddressEdit(page: Page) {
    * nie dostać strict mode violation.
    */
   const dialog = page
-    .locator("mat-dialog-container")
+    .locator('mat-dialog-container')
     .filter({
-      has: page.getByRole("heading", {
-        name: "Edycja adresu",
+      has: page.getByRole('heading', {
+        name: 'Edycja adresu',
         exact: true,
       }),
     })
@@ -734,16 +696,16 @@ export async function openTeacherPrivateAddressEdit(page: Page) {
 }
 
 export function teacherAddressStreetResults(dialog: Locator) {
-  return dialog.locator("table.mat-mdc-table");
+  return dialog.locator('table.mat-mdc-table');
 }
 
 export function teacherAddressStreetRow(dialog: Locator, street: string) {
   return dialog
-    .locator("td.mat-column-street")
+    .locator('td.mat-column-street')
     .filter({
-      hasText: new RegExp(`^${street}$`, "i"),
+      hasText: new RegExp(`^${street}$`, 'i'),
     })
-    .locator("xpath=ancestor::tr[1]");
+    .locator('xpath=ancestor::tr[1]');
 }
 
 export async function fillTeacherPrivateAddress(
@@ -760,11 +722,11 @@ export async function fillTeacherPrivateAddress(
 
   await zipCodeInput.click();
 
-  await zipCodeInput.press("Control+A");
+  await zipCodeInput.press('Control+A');
 
-  await zipCodeInput.press("Backspace");
+  await zipCodeInput.press('Backspace');
 
-  const zipDigits = zipCode.replace(/\D/g, "");
+  const zipDigits = zipCode.replace(/\D/g, '');
 
   await zipCodeInput.pressSequentially(zipDigits, {
     delay: 150,
@@ -775,7 +737,7 @@ export async function fillTeacherPrivateAddress(
   /*
    * Wybieramy podpowiedź kodu.
    */
-  const zipOption = page.getByRole("option", {
+  const zipOption = page.getByRole('option', {
     name: zipCode,
     exact: true,
   });
@@ -788,7 +750,7 @@ export async function fillTeacherPrivateAddress(
    * Miasto
    */
   const cityRow = dialog
-    .getByRole("row")
+    .getByRole('row')
     .filter({
       hasText: zipCode,
     })
@@ -804,29 +766,29 @@ export async function fillTeacherPrivateAddress(
    * Ulica
    */
   const streetSearch = dialog
-    .getByText("Ulica:", {
+    .getByText('Ulica:', {
       exact: true,
     })
-    .locator("xpath=ancestor::*[.//input][1]")
-    .locator("input")
+    .locator('xpath=ancestor::*[.//input][1]')
+    .locator('input')
     .first();
 
   await expect(streetSearch).toBeVisible();
 
   await streetSearch.fill(streetName);
 
-  await streetSearch.press("End");
+  await streetSearch.press('End');
 
-  await streetSearch.press("Tab");
+  await streetSearch.press('Tab');
 
-  const streetCell = dialog.getByRole("cell", {
+  const streetCell = dialog.getByRole('cell', {
     name: streetName,
     exact: true,
   });
 
   await expect(streetCell).toHaveCount(1);
 
-  await streetCell.locator("xpath=ancestor::tr[1]").click();
+  await streetCell.locator('xpath=ancestor::tr[1]').click();
 
   /*
    * Numer
@@ -839,8 +801,8 @@ export async function fillTeacherPrivateAddress(
 }
 
 export async function saveTeacherPrivateAddress(dialog: Locator) {
-  const saveButton = dialog.getByRole("button", {
-    name: "Zapisz",
+  const saveButton = dialog.getByRole('button', {
+    name: 'Zapisz',
     exact: true,
   });
 
@@ -854,8 +816,8 @@ export async function saveTeacherPrivateAddress(dialog: Locator) {
 }
 
 export async function deleteTeacherPrivateAddress(page: Page, dialog: Locator) {
-  const deleteButton = dialog.getByRole("button", {
-    name: "Usuń adres",
+  const deleteButton = dialog.getByRole('button', {
+    name: 'Usuń adres',
     exact: true,
   });
 
@@ -865,21 +827,19 @@ export async function deleteTeacherPrivateAddress(page: Page, dialog: Locator) {
 
   await deleteButton.click();
 
-  const confirmDialog = page.locator("mat-dialog-container").filter({
-    has: page.getByRole("heading", {
-      name: "Usuwanie adresu",
+  const confirmDialog = page.locator('mat-dialog-container').filter({
+    has: page.getByRole('heading', {
+      name: 'Usuwanie adresu',
       exact: true,
     }),
   });
 
   await expect(confirmDialog).toBeVisible();
 
-  await expect(confirmDialog).toContainText(
-    "Czy na pewno chcesz usunąć adres szkoły?",
-  );
+  await expect(confirmDialog).toContainText('Czy na pewno chcesz usunąć adres szkoły?');
 
-  const confirmButton = confirmDialog.getByRole("button", {
-    name: "Tak",
+  const confirmButton = confirmDialog.getByRole('button', {
+    name: 'Tak',
     exact: true,
   });
 
@@ -906,15 +866,15 @@ export async function fillTeacherPrivateAddressFromZip(
 
   await zipCodeInput.fill(zipCode);
 
-  await zipCodeInput.press("End");
-  await zipCodeInput.press("Tab");
+  await zipCodeInput.press('End');
+  await zipCodeInput.press('Tab');
 
   /*
    * Pierwszy wynik miejscowości
    * dla podanego kodu.
    */
   const cityRow = dialog
-    .getByRole("row")
+    .getByRole('row')
     .filter({
       hasText: zipCode,
     })
@@ -922,7 +882,7 @@ export async function fillTeacherPrivateAddressFromZip(
 
   await expect(cityRow).toBeVisible();
 
-  const cityCells = cityRow.getByRole("cell");
+  const cityCells = cityRow.getByRole('cell');
 
   /*
    * Zakładamy układ:
@@ -933,33 +893,33 @@ export async function fillTeacherPrivateAddressFromZip(
   await cityRow.click();
 
   const streetSearch = dialog
-    .getByText("Ulica:", {
+    .getByText('Ulica:', {
       exact: true,
     })
-    .locator("xpath=ancestor::*[.//input][1]")
-    .locator("input")
+    .locator('xpath=ancestor::*[.//input][1]')
+    .locator('input')
     .first();
 
   await streetSearch.fill(streetName.toLowerCase());
 
-  await streetSearch.press("End");
-  await streetSearch.press("Tab");
+  await streetSearch.press('End');
+  await streetSearch.press('Tab');
 
-  const streetCell = dialog.getByRole("cell", {
+  const streetCell = dialog.getByRole('cell', {
     name: streetName,
     exact: true,
   });
 
   await expect(streetCell).toBeVisible();
 
-  await streetCell.locator("xpath=ancestor::tr[1]").click();
+  await streetCell.locator('xpath=ancestor::tr[1]').click();
 
   const numberInput = dialog.locator('input[id="number"]');
 
   await numberInput.fill(number);
 
-  await numberInput.press("End");
-  await numberInput.press("Tab");
+  await numberInput.press('End');
+  await numberInput.press('Tab');
 
   return {
     zipCode,
@@ -979,7 +939,7 @@ export async function fillTeacherPrivateAddressFromZip(
  * Otwiera okno "Edycja Uwag".
  */
 export async function openTeacherNotesEdit(page: Page) {
-  const notesLabel = page.getByText("Uwagi", {
+  const notesLabel = page.getByText('Uwagi', {
     exact: true,
   });
 
@@ -989,14 +949,12 @@ export async function openTeacherNotesEdit(page: Page) {
    * Szukamy najbliższego kontenera,
    * który zawiera ikonę edycji.
    */
-  const container = notesLabel.locator(
-    'xpath=ancestor::*[.//mat-icon[normalize-space()="edit"]][1]',
-  );
+  const container = notesLabel.locator('xpath=ancestor::*[.//mat-icon[normalize-space()="edit"]][1]');
 
   await expect(container).toBeVisible();
 
   const editIcon = container
-    .locator("mat-icon")
+    .locator('mat-icon')
     .filter({
       hasText: /^edit$/,
     })
@@ -1009,9 +967,9 @@ export async function openTeacherNotesEdit(page: Page) {
   });
 
   const dialog = page
-    .locator("mat-dialog-container")
+    .locator('mat-dialog-container')
     .filter({
-      has: page.getByText("Edycja Uwag", {
+      has: page.getByText('Edycja Uwag', {
         exact: true,
       }),
     })
@@ -1037,10 +995,10 @@ export function teacherNoteInput(dialog: Locator) {
  */
 export function teacherNotesInput(page: Page) {
   return page
-    .getByText("Uwagi", {
+    .getByText('Uwagi', {
       exact: true,
     })
-    .locator("xpath=following::input[1]");
+    .locator('xpath=following::input[1]');
 }
 
 /**
@@ -1051,7 +1009,7 @@ export function teacherNoteRow(dialog: Locator, note: string) {
     .getByText(note, {
       exact: true,
     })
-    .locator("xpath=ancestor::tr[1]");
+    .locator('xpath=ancestor::tr[1]');
 }
 
 /**
@@ -1061,15 +1019,15 @@ export function teacherNoteRow(dialog: Locator, note: string) {
  */
 
 export function teacherNoteRows(dialog: Locator) {
-  return dialog.locator("tbody tr");
+  return dialog.locator('tbody tr');
 }
 
 /**
  * Zapisuje okno notatek.
  */
 export async function saveTeacherNotesEdit(dialog: Locator) {
-  const saveButton = dialog.getByRole("button", {
-    name: "Zapisz",
+  const saveButton = dialog.getByRole('button', {
+    name: 'Zapisz',
     exact: true,
   });
 
@@ -1086,8 +1044,8 @@ export async function saveTeacherNotesEdit(dialog: Locator) {
  * Anuluje zmiany w oknie notatek.
  */
 export async function cancelTeacherNotesEdit(dialog: Locator) {
-  const cancelButton = dialog.getByRole("button", {
-    name: "Anuluj",
+  const cancelButton = dialog.getByRole('button', {
+    name: 'Anuluj',
     exact: true,
   });
 
@@ -1150,7 +1108,7 @@ export async function archiveTeacherNote(page: Page, note: string) {
 
   await expect(row).toHaveCount(1);
 
-  const checkbox = row.getByRole("checkbox");
+  const checkbox = row.getByRole('checkbox');
 
   await expect(checkbox).toBeVisible();
 
@@ -1170,36 +1128,33 @@ export async function archiveTeacherNote(page: Page, note: string) {
 export async function expectTeacherPrivateAddressHistoryChange(
   page: Page,
   history: Locator,
-  field:
-    | "Miasto adres prywatny"
-    | "Numer adres prywatny"
-    | "Ulica adres prywatny",
+  field: 'Miasto adres prywatny' | 'Numer adres prywatny' | 'Ulica adres prywatny',
   value: string,
 ) {
   const row = history
-    .getByRole("row")
+    .getByRole('row')
     .filter({
-      has: page.getByRole("gridcell", {
+      has: page.getByRole('gridcell', {
         name: field,
         exact: true,
       }),
     })
     .filter({
-      has: page.getByRole("gridcell", {
+      has: page.getByRole('gridcell', {
         name: value,
         exact: true,
       }),
     })
     .filter({
-      has: page.getByRole("gridcell", {
-        name: "Edycja danych",
+      has: page.getByRole('gridcell', {
+        name: 'Edycja danych',
         exact: true,
       }),
     });
 
   await expect(row).toHaveCount(1);
 
-  const cells = row.getByRole("gridcell");
+  const cells = row.getByRole('gridcell');
 
   /*
    * 0 - Pole
@@ -1211,9 +1166,9 @@ export async function expectTeacherPrivateAddressHistoryChange(
 
   await expect(cells.nth(1)).toHaveText(value);
 
-  await expect(cells.nth(2)).not.toHaveText("");
+  await expect(cells.nth(2)).not.toHaveText('');
 
-  await expect(cells.nth(3)).toHaveText("Edycja danych");
+  await expect(cells.nth(3)).toHaveText('Edycja danych');
 
   await expect(cells.nth(4)).toHaveText(/\d{4}-\d{2}-\d{2} \d{2}:\d{2}/);
 
@@ -1226,11 +1181,8 @@ export async function expectTeacherPrivateAddressHistoryChange(
  * =========================================================
  */
 
-export function teacherConsent(
-  page: Page,
-  name: "Marketing" | "E-mail" | "Telefon",
-) {
-  return page.getByRole("checkbox", {
+export function teacherConsent(page: Page, name: 'Marketing' | 'E-mail' | 'Telefon') {
+  return page.getByRole('checkbox', {
     name,
     exact: true,
   });
@@ -1243,7 +1195,7 @@ export function teacherConsent(
  */
 
 export async function openTeacherRodoEdit(page: Page) {
-  const rodoLabel = page.getByText("Zgody RODO", {
+  const rodoLabel = page.getByText('Zgody RODO', {
     exact: true,
   });
 
@@ -1256,14 +1208,12 @@ export async function openTeacherRodoEdit(page: Page) {
    * Szukamy najbliższego kontenera zawierającego
    * ikonę edit.
    */
-  const container = rodoLabel.locator(
-    'xpath=ancestor::*[.//mat-icon[normalize-space()="edit"]][1]',
-  );
+  const container = rodoLabel.locator('xpath=ancestor::*[.//mat-icon[normalize-space()="edit"]][1]');
 
   await expect(container).toBeVisible();
 
   const editIcon = container
-    .locator("mat-icon")
+    .locator('mat-icon')
     .filter({
       hasText: /^edit$/,
     })
@@ -1276,9 +1226,9 @@ export async function openTeacherRodoEdit(page: Page) {
   });
 
   const dialog = page
-    .locator("mat-dialog-container")
+    .locator('mat-dialog-container')
     .filter({
-      has: page.getByText("Edycja Zgód RODO", {
+      has: page.getByText('Edycja Zgód RODO', {
         exact: true,
       }),
     })
@@ -1292,11 +1242,8 @@ export async function openTeacherRodoEdit(page: Page) {
 /*
  * Checkbox zgody wewnątrz okna edycji RODO.
  */
-export function teacherRodoCheckbox(
-  dialog: Locator,
-  name: "Marketing" | "E-mail" | "Telefon",
-) {
-  return dialog.getByRole("checkbox", {
+export function teacherRodoCheckbox(dialog: Locator, name: 'Marketing' | 'E-mail' | 'Telefon') {
+  return dialog.getByRole('checkbox', {
     name,
     exact: true,
   });
@@ -1305,11 +1252,8 @@ export function teacherRodoCheckbox(
 /*
  * Checkbox zgody widoczny na głównej kartotece.
  */
-export function teacherRodoCheckboxOnCard(
-  page: Page,
-  name: "Marketing" | "E-mail" | "Telefon",
-) {
-  return page.getByRole("checkbox", {
+export function teacherRodoCheckboxOnCard(page: Page, name: 'Marketing' | 'E-mail' | 'Telefon') {
+  return page.getByRole('checkbox', {
     name,
     exact: true,
   });
@@ -1319,8 +1263,8 @@ export function teacherRodoCheckboxOnCard(
  * Zapisuje okno RODO.
  */
 export async function saveTeacherRodoEdit(dialog: Locator) {
-  const saveButton = dialog.getByRole("button", {
-    name: "Zapisz",
+  const saveButton = dialog.getByRole('button', {
+    name: 'Zapisz',
     exact: true,
   });
 
@@ -1334,8 +1278,8 @@ export async function saveTeacherRodoEdit(dialog: Locator) {
 }
 
 export async function cancelTeacherRodoEdit(dialog: Locator) {
-  const cancelButton = dialog.getByRole("button", {
-    name: "Anuluj",
+  const cancelButton = dialog.getByRole('button', {
+    name: 'Anuluj',
     exact: true,
   });
 
@@ -1348,9 +1292,9 @@ export async function cancelTeacherRodoEdit(dialog: Locator) {
 
 export async function expectTeacherMarketingWarning(page: Page) {
   const warning = page
-    .locator("mat-dialog-container")
+    .locator('mat-dialog-container')
     .filter({
-      has: page.getByText("Zgoda marketingowa nie jest zaznaczona", {
+      has: page.getByText('Zgoda marketingowa nie jest zaznaczona', {
         exact: true,
       }),
     })
@@ -1358,13 +1302,13 @@ export async function expectTeacherMarketingWarning(page: Page) {
 
   await expect(warning).toBeVisible();
 
-  await expect(warning).toContainText("Zgoda marketingowa nie jest zaznaczona");
+  await expect(warning).toContainText('Zgoda marketingowa nie jest zaznaczona');
 
   return warning;
 }
 
 export async function confirmTeacherMarketingWarning(warning: Locator) {
-  const okButton = warning.getByRole("button", {
+  const okButton = warning.getByRole('button', {
     name: /^ok$/i,
   });
 
@@ -1377,7 +1321,7 @@ export async function confirmTeacherMarketingWarning(warning: Locator) {
 
 export async function setTeacherRodoConsent(
   dialog: Locator,
-  name: "Marketing" | "E-mail" | "Telefon",
+  name: 'Marketing' | 'E-mail' | 'Telefon',
   checked: boolean,
 ) {
   const checkbox = teacherRodoCheckbox(dialog, name);
@@ -1403,11 +1347,11 @@ export async function expectTeacherRodoOnCard(
     phone: boolean;
   },
 ) {
-  const marketing = teacherRodoCheckboxOnCard(page, "Marketing");
+  const marketing = teacherRodoCheckboxOnCard(page, 'Marketing');
 
-  const email = teacherRodoCheckboxOnCard(page, "E-mail");
+  const email = teacherRodoCheckboxOnCard(page, 'E-mail');
 
-  const phone = teacherRodoCheckboxOnCard(page, "Telefon");
+  const phone = teacherRodoCheckboxOnCard(page, 'Telefon');
 
   if (expected.marketing) {
     await expect(marketing).toBeChecked();
@@ -1430,14 +1374,11 @@ export async function expectTeacherRodoOnCard(
 
 export async function expectTeacherNoConsentWarning(page: Page) {
   const warning = page
-    .locator("mat-dialog-container")
+    .locator('mat-dialog-container')
     .filter({
-      has: page.getByText(
-        "Dla źródeł danych innych niż karta LS oczekuje się minimum jednej zgody rodo",
-        {
-          exact: true,
-        },
-      ),
+      has: page.getByText('Dla źródeł danych innych niż karta LS oczekuje się minimum jednej zgody rodo', {
+        exact: true,
+      }),
     })
     .last();
 
@@ -1447,7 +1388,7 @@ export async function expectTeacherNoConsentWarning(page: Page) {
 }
 
 export async function confirmTeacherNoConsentWarning(warning: Locator) {
-  const okButton = warning.getByRole("button", {
+  const okButton = warning.getByRole('button', {
     name: /^ok$/i,
   });
 
@@ -1459,36 +1400,36 @@ export async function confirmTeacherNoConsentWarning(warning: Locator) {
 }
 
 export function teacherRodoSourceSelect(dialog: Locator) {
-  return dialog.getByRole("combobox");
+  return dialog.getByRole('combobox');
 }
 
 export async function teacherRodoSourceOptions(page: Page) {
-  return page.getByRole("option");
+  return page.getByRole('option');
 }
 
 export async function expectTeacherRodoHistoryChange(
   page: Page,
   history: Locator,
-  field: "Zgoda Marketing" | "Zgoda Email" | "Zgoda Telefon",
-  value: "Tak" | "Nie",
-  source = "Karta nauczyciela",
+  field: 'Zgoda Marketing' | 'Zgoda Email' | 'Zgoda Telefon',
+  value: 'Tak' | 'Nie',
+  source = 'Karta nauczyciela',
 ) {
   const row = history
-    .getByRole("row")
+    .getByRole('row')
     .filter({
-      has: page.getByRole("gridcell", {
+      has: page.getByRole('gridcell', {
         name: field,
         exact: true,
       }),
     })
     .filter({
-      has: page.getByRole("gridcell", {
+      has: page.getByRole('gridcell', {
         name: value,
         exact: true,
       }),
     })
     .filter({
-      has: page.getByRole("gridcell", {
+      has: page.getByRole('gridcell', {
         name: source,
         exact: true,
       }),
@@ -1496,7 +1437,7 @@ export async function expectTeacherRodoHistoryChange(
 
   await expect(row).toHaveCount(1);
 
-  const cells = row.getByRole("gridcell");
+  const cells = row.getByRole('gridcell');
 
   /*
    * 0 - Pole
@@ -1510,7 +1451,7 @@ export async function expectTeacherRodoHistoryChange(
 
   await expect(cells.nth(1)).toHaveText(value);
 
-  await expect(cells.nth(2)).not.toHaveText("");
+  await expect(cells.nth(2)).not.toHaveText('');
 
   await expect(cells.nth(3)).toHaveText(source);
 
@@ -1527,10 +1468,10 @@ export async function expectTeacherRodoHistoryChange(
 
 export function teacherBirthDateInput(form: Locator) {
   return form
-    .getByText("Data urodzenia", {
+    .getByText('Data urodzenia', {
       exact: true,
     })
-    .locator("xpath=ancestor::*[.//input][1]")
-    .locator("input")
+    .locator('xpath=ancestor::*[.//input][1]')
+    .locator('input')
     .first();
 }

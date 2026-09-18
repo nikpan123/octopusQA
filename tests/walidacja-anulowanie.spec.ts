@@ -28,7 +28,11 @@ for (const missing of ['imię', 'nazwisko', 'szkoła', 'kontakt'] as const) {
       await form.getByRole('button', { name: 'Anuluj', exact: true }).click();
       await expect(form).toHaveCount(0);
       await s.app.openPanel('teacher');
-      await s.app.searchMissing('teacher', missing === 'kontakt' ? 'Nazwisko' : 'Email', missing === 'kontakt' ? s.id : s.email);
+      await s.app.searchMissing(
+        'teacher',
+        missing === 'kontakt' ? 'Nazwisko' : 'Email',
+        missing === 'kontakt' ? s.id : s.email,
+      );
     });
   });
 }
@@ -95,8 +99,11 @@ for (const kind of ['teacher', 'school'] as const) {
     }
     await expect(s.app.results(kind).getByRole('gridcell')).not.toHaveCount(0);
     await expect(page.getByRole('heading', { name: 'Rekordów: 1', exact: true })).toBeVisible();
-    await s.app.searchMissing(kind, kind === 'teacher' ? 'Email' : 'Nazwa szkoły',
-      kind === 'teacher' ? `absent_${s.email}` : `ABSENT_${s.id}`);
+    await s.app.searchMissing(
+      kind,
+      kind === 'teacher' ? 'Email' : 'Nazwa szkoły',
+      kind === 'teacher' ? `absent_${s.email}` : `ABSENT_${s.id}`,
+    );
     await expect(page.getByRole('heading', { name: 'Rekordów: 1', exact: true })).toHaveCount(0);
   });
 }

@@ -21,31 +21,45 @@ export class Octopus {
   // Etykiety w tej aplikacji nie zawsze są HTML label. Szukamy najbliższego
   // wspólnego kontenera etykiety i pola zamiast używać zmiennych ID mat-input.
   field(scope: Locator, label: string) {
-    return scope.getByText(label, { exact: true })
+    return scope
+      .getByText(label, { exact: true })
       .locator('xpath=ancestor::*[.//input[not(@type="checkbox")]][1]')
       .locator('input:not([type="checkbox"])');
   }
 
-  detail(id: string) { return this.page.locator(`mat-form-field[id="${id}"] input`); }
+  detail(id: string) {
+    return this.page.locator(`mat-form-field[id="${id}"] input`);
+  }
 
   async openPanel(kind: 'teacher' | 'school', id?: string) {
     await this.page.goto(`/${kind}/${kind}-panel${id ? `/${id}` : ''}`);
-    await expect(this.page.getByRole('heading', {
-      name: kind === 'school' ? 'Dane podstawowe szkoły' : 'Dane podstawowe', exact: true,
-    })).toBeVisible();
+    await expect(
+      this.page.getByRole('heading', {
+        name: kind === 'school' ? 'Dane podstawowe szkoły' : 'Dane podstawowe',
+        exact: true,
+      }),
+    ).toBeVisible();
     if (id) {
-      await expect(this.page.locator('.info-row').filter({
-        has: this.page.getByText('ID', { exact: true }),
-      }).locator('input[type="text"]')).toHaveValue(id);
+      await expect(
+        this.page
+          .locator('.info-row')
+          .filter({
+            has: this.page.getByText('ID', { exact: true }),
+          })
+          .locator('input[type="text"]'),
+      ).toHaveValue(id);
       await expect(this.page.getByRole('button', { name: 'Edycja danych', exact: true })).toBeVisible();
     }
   }
 
   async prepareSchool(name: string, number: string) {
     await this.openPanel('school');
-    await this.page.getByRole('button', { name: 'Dodaj', exact: true }).filter({
-      has: this.page.getByText('school', { exact: true }),
-    }).click();
+    await this.page
+      .getByRole('button', { name: 'Dodaj', exact: true })
+      .filter({
+        has: this.page.getByText('school', { exact: true }),
+      })
+      .click();
     const form = this.dialog('Dodaj nową szkołę');
     await typeValue(this.field(form, '* Nazwa'), name);
     await form.getByRole('combobox').click();
@@ -76,7 +90,7 @@ export class Octopus {
     // Flaga doczytuje się osobnym żądaniem. Nie zaznaczaj jej w trakcie
     // inicjalizacji, ani nie opuszczaj strony przed zakończeniem zapisu.
     const kind = this.page.url().includes('/teacher/') ? 'Teacher' : 'School';
-    const loaded = this.page.waitForResponse(r => new URL(r.url()).pathname === `/api/${kind}/Get${kind}IsTested`);
+    const loaded = this.page.waitForResponse((r) => new URL(r.url()).pathname === `/api/${kind}/Get${kind}IsTested`);
     await this.page.reload();
     const initial = await loaded;
     expect(initial.ok()).toBeTruthy();
@@ -84,9 +98,12 @@ export class Octopus {
     const checkbox = this.page.getByRole('checkbox', { name: 'Testowy', exact: true });
     await expect(checkbox).toBeEnabled();
     if (!(await checkbox.isChecked())) {
-      const saved = this.page.waitForResponse(r =>
-        new URL(r.url()).pathname.startsWith(`/api/${kind}/`) &&
-        new URL(r.url()).pathname.includes('Test') && r.request().method() === 'POST');
+      const saved = this.page.waitForResponse(
+        (r) =>
+          new URL(r.url()).pathname.startsWith(`/api/${kind}/`) &&
+          new URL(r.url()).pathname.includes('Test') &&
+          r.request().method() === 'POST',
+      );
       await checkbox.check();
       const response = await saved;
       expect(response.ok(), 'Zapis flagi Testowy musi zakończyć się powodzeniem').toBeTruthy();
@@ -118,9 +135,15 @@ export class Octopus {
     const form = this.dialog('Dodaj nowego nauczyciela');
     await typeValue(this.field(form, '*Nazwisko'), lastName);
     await typeValue(this.field(form, '*Imię'), 'Testowy');
-    await typeValue(form.locator('.new-teacher__personal-input').filter({
-      has: this.page.getByText('E-mail', { exact: true }),
-    }).locator('input'), email);
+    await typeValue(
+      form
+        .locator('.new-teacher__personal-input')
+        .filter({
+          has: this.page.getByText('E-mail', { exact: true }),
+        })
+        .locator('input'),
+      email,
+    );
     if (schoolId && schoolName) await this.attachSchool(form, schoolId, schoolName);
     return form;
   }
@@ -178,7 +201,8 @@ export class Octopus {
   results(kind: 'teacher' | 'school') {
     return this.page.getByRole('treegrid').filter({
       has: this.page.getByRole('columnheader', {
-        name: kind === 'teacher' ? 'Osoba' : 'Nazwa z SIO', exact: true,
+        name: kind === 'teacher' ? 'Osoba' : 'Nazwa z SIO',
+        exact: true,
       }),
     });
   }
