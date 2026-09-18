@@ -2,11 +2,11 @@
 
 Projekt Playwright uruchamia test w prawdziwej przeglądarce Chromium na **dev: https://octopus.gwodev.pl**. Nie potrzebuje kodu źródłowego Octopusa.
 
-Projekt zawiera **18 testów**. Najnowsze dwa scenariusze (zamówienie szkoły i klubowiczostwo nauczyciela) przeszły razem na dev. Nie uruchamiano jeszcze wszystkich 18 przypadków w jednym przebiegu. Szczegóły i wcześniejsze wyniki w [WERYFIKACJA.md](WERYFIKACJA.md); ograniczenie dotyczące wejścia bezpośrednim linkiem do kartoteki opisano w [OCT-OBS-002](OCT-OBS-002.md). Sesje i lokalne raporty nie są częścią repozytorium. Po sklonowaniu skonfiguruj logowanie według instrukcji poniżej.
+Projekt zawiera **77 testów** w 5 plikach (`tests/*.spec.ts`). Najnowsze dwa scenariusze (zamówienie szkoły i klubowiczostwo nauczyciela) przeszły razem na dev. Nie uruchamiano jeszcze wszystkich przypadków w jednym przebiegu. Szczegóły i wcześniejsze wyniki w [WERYFIKACJA.md](WERYFIKACJA.md); ograniczenie dotyczące wejścia bezpośrednim linkiem do kartoteki opisano w [OCT-OBS-002](OCT-OBS-002.md). Sesje i lokalne raporty nie są częścią repozytorium. Po sklonowaniu skonfiguruj logowanie według instrukcji poniżej.
 
 ## Pierwsze uruchomienie
 
-Otwórz PowerShell w katalogu sklonowanego repozytorium (tym, który zawiera `package.json`). Wymagany jest Node.js 22 lub nowszy.
+Otwórz PowerShell w katalogu sklonowanego repozytorium (tym, który zawiera `package.json`). Wymagany jest Node.js 22 lub nowszy. Wersja jest przypięta w `.nvmrc`; z nvm/nvm-windows uruchom `nvm use`.
 
 ```powershell
 npm.cmd ci
@@ -54,6 +54,10 @@ Wybierz test i kliknij przycisk uruchomienia. Panel pokazuje kroki i ich wyniki.
 - `tests/szkola-nauczyciel.spec.ts` — scenariusz i oczekiwane wyniki, opisane przez `test.step`.
 - `tests/walidacja-anulowanie.spec.ts` — 9 przypadków walidacji, anulowania i pustych wyników.
 - `tests/nauczyciel-rozszerzenie.spec.ts` — 6 przypadków zapisu nazwiska, walidacji kontaktu, wyszukiwania i drugiej szkoły.
+- `tests/nauczyciel-edycja.spec.ts` — 44 przypadki edycji danych nauczyciela (EDIT-04…EDIT-47): imię/nazwisko i normalizacja, e-mail, telefony, data urodzenia, adres prywatny, notatki, zgody RODO, trwałość i anulowanie.
+- `tests/zamowienia-klubowiczostwo.spec.ts` — zamówienia szkoły (ORD) i formularze klubowe nauczyciela (CLUB), patrz [Zamówienia i klubowiczostwo](#zamówienia-i-klubowiczostwo).
+- `tests/support/teacher-edit.ts` — pomocnicze funkcje edycji nauczyciela używane przez `nauczyciel-edycja.spec.ts` (historia zmian, kontakt, adres, notatki, RODO).
+- `tests/support/club.ts` — pomocnicze funkcje formularza klubowego używane przez `zamowienia-klubowiczostwo.spec.ts`.
 - `tests/support/shared-school.ts` — szkoła przygotowywana raz na proces wykonawczy nowych testów.
 - `tests/support/scenario.ts` — osobne dane i rejestr przebiegu każdego nowego przypadku.
 - `tests/support/octopus.ts` — obsługa formularzy i selektory elementów aplikacji.
