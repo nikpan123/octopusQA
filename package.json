@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "description": "Testy regresji Octopus dev przez interfejs przeglądarki",
+  "type": "module",
   "scripts": {
     "login": "node scripts/login.mjs",
     "auth:check": "node scripts/check-auth.mjs",
@@ -24,5 +25,7 @@
     "@types/node": "^22.0.0",
     "typescript": "~5.9.3"
   },
-  "engines": { "node": ">=22" }
+  "engines": {
+    "node": ">=22"
+  }
 }
