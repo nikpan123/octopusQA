@@ -1,5 +1,7 @@
 import { expect, type Locator, type Page } from '@playwright/test';
 
+import { normalizeTeacherName } from './teacher-dialog';
+
 // fill wpisuje całość atomowo; End emituje keyup wymagany m.in. przez adres.
 // Długie pressSequentially koliduje z automatycznym ustawianiem fokusu dialogu.
 export async function typeValue(input: Locator, value: string) {
@@ -189,13 +191,16 @@ export class Octopus {
     await expect(this.page.getByRole('heading', { name: 'Rekordów: 1', exact: true })).toBeVisible();
   }
 
-  async editFirstName(value: string) {
+  // `expected` domyślnie liczy się z tej samej normalizacji, którą stosuje
+  // aplikacja (wielka pierwsza litera, reszta mała) — patrz audyt P1-5:
+  // poprzednio asercja była na sztywno 'Jan', co działało tylko dla 'JaN'.
+  async editFirstName(value: string, expected: string = normalizeTeacherName(value)) {
     await this.page.getByRole('button', { name: 'Edycja danych', exact: true }).click();
     const form = this.dialog('Edycja danych podstawowych');
     await typeValue(form.locator('input[id="firstName"]'), value);
     await form.getByRole('button', { name: 'Zapisz', exact: true }).click();
     await expect(form).toHaveCount(0);
-    await expect(this.detail('firstName')).toHaveValue('Jan');
+    await expect(this.detail('firstName')).toHaveValue(expected);
   }
 
   results(kind: 'teacher' | 'school') {
