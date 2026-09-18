@@ -2,7 +2,7 @@
 
 Projekt Playwright uruchamia test w prawdziwej przeglądarce Chromium na **dev: https://octopus.gwodev.pl**. Nie potrzebuje kodu źródłowego Octopusa.
 
-Projekt zawiera **77 testów** w 5 plikach (`tests/*.spec.ts`). Najnowsze dwa scenariusze (zamówienie szkoły i klubowiczostwo nauczyciela) przeszły razem na dev. Nie uruchamiano jeszcze wszystkich przypadków w jednym przebiegu. Szczegóły i wcześniejsze wyniki w [WERYFIKACJA.md](WERYFIKACJA.md); ograniczenie dotyczące wejścia bezpośrednim linkiem do kartoteki opisano w [OCT-OBS-002](OCT-OBS-002.md). Sesje i lokalne raporty nie są częścią repozytorium. Po sklonowaniu skonfiguruj logowanie według instrukcji poniżej.
+Projekt zawiera **77 testów** w 5 plikach (`tests/*.spec.ts`). Najnowsze dwa scenariusze (zamówienie szkoły i klubowiczostwo nauczyciela) przeszły razem na dev. Nie uruchamiano jeszcze wszystkich przypadków w jednym przebiegu. Szczegóły i wcześniejsze wyniki w [WERYFIKACJA.md](docs/WERYFIKACJA.md); ograniczenie dotyczące wejścia bezpośrednim linkiem do kartoteki opisano w [OCT-OBS-002](docs/OCT-OBS-002.md). Sesje i lokalne raporty nie są częścią repozytorium. Po sklonowaniu skonfiguruj logowanie według instrukcji poniżej.
 
 ## Pierwsze uruchomienie
 
