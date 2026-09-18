@@ -1,9 +1,8 @@
-import { test, expect } from "./support/scenario";
+import { test, expect } from './support/scenario';
 import {
   MATH_SP_CLASSES,
   addMathSp,
   cancelClubForm,
-  clubForm,
   confirmDeleteIfShown,
   confirmationDetails,
   confirmationRow,
@@ -18,147 +17,126 @@ import {
   saveClubEdit,
   saveClubForm,
   selectSchool,
-} from "./support/club";
+} from './support/club';
 
-test("ORD-01: zamówienie szkoły zachowuje produkt i ilość po ponownym otwarciu @school @order", async ({
+test('ORD-01: zamówienie szkoły zachowuje produkt i ilość po ponownym otwarciu @school @order', async ({
   page,
   scenario: s,
 }) => {
   const schoolId = await s.createSchool();
   // Jawny produkt z katalogu dev: brak produktu ma ujawnić zmianę danych referencyjnych.
-  const code = "KMLT18";
-  await s.record("productCode", code);
-  await s.record("quantity", "1");
-  const orders = page
-    .getByRole("tabpanel", { name: "Zamówienia", exact: true })
-    .last();
-  let title = "";
-  let orderId = "";
-  await test.step("Znajdź produkt i dodaj jedną sztukę do zamówienia", async () => {
-    await page.getByRole("tab", { name: "Zamówienia", exact: true }).click();
-    await orders.getByRole("button", { name: "Dodaj", exact: true }).click();
-    const form = s.app.dialog("Dodaj zamówienie");
-    await form.getByPlaceholder("Wpisz", { exact: true }).fill(code);
-    await form.getByRole("button", { name: "Szukaj", exact: true }).click();
-    const available = form.getByRole("treegrid").filter({
-      has: page.getByRole("columnheader", { name: "Dodaj", exact: true }),
+  const code = 'KMLT18';
+  await s.record('productCode', code);
+  await s.record('quantity', '1');
+  const orders = page.getByRole('tabpanel', { name: 'Zamówienia', exact: true }).last();
+  let title = '';
+  let orderId = '';
+  await test.step('Znajdź produkt i dodaj jedną sztukę do zamówienia', async () => {
+    await page.getByRole('tab', { name: 'Zamówienia', exact: true }).click();
+    await orders.getByRole('button', { name: 'Dodaj', exact: true }).click();
+    const form = s.app.dialog('Dodaj zamówienie');
+    await form.getByPlaceholder('Wpisz', { exact: true }).fill(code);
+    await form.getByRole('button', { name: 'Szukaj', exact: true }).click();
+    const available = form.getByRole('treegrid').filter({
+      has: page.getByRole('columnheader', { name: 'Dodaj', exact: true }),
     });
-    const product = available
-      .getByRole("row")
-      .filter({ has: page.getByRole("gridcell", { name: code, exact: true }) });
+    const product = available.getByRole('row').filter({ has: page.getByRole('gridcell', { name: code, exact: true }) });
     await expect(product).toHaveCount(1);
-    title = (await product.getByRole("gridcell").nth(3).innerText()).trim();
-    expect(title).not.toBe("");
-    await s.record("productTitle", title);
-    await product.getByRole("checkbox").check();
+    title = (await product.getByRole('gridcell').nth(3).innerText()).trim();
+    expect(title).not.toBe('');
+    await s.record('productTitle', title);
+    await product.getByRole('checkbox').check();
     await form
-      .getByRole("button")
+      .getByRole('button')
       .filter({
-        has: page.locator("mat-icon").filter({ hasText: /^arrow_right$/ }),
+        has: page.locator('mat-icon').filter({ hasText: /^arrow_right$/ }),
       })
       .click();
-    const selected = form.getByRole("treegrid").filter({
-      has: page.getByRole("columnheader", { name: "Ilość", exact: true }),
+    const selected = form.getByRole('treegrid').filter({
+      has: page.getByRole('columnheader', { name: 'Ilość', exact: true }),
     });
-    await expect(
-      selected.getByRole("row").filter({ has: page.getByRole("gridcell") }),
-    ).toHaveCount(1);
-    await expect(
-      selected.getByRole("gridcell", { name: code, exact: true }),
-    ).toBeVisible();
+    await expect(selected.getByRole('row').filter({ has: page.getByRole('gridcell') })).toHaveCount(1);
+    await expect(selected.getByRole('gridcell', { name: code, exact: true })).toBeVisible();
     // Kliknięcie uruchamia edytor AG Grid; samo fill na rendererze nie zapisuje wartości.
-    await selected.getByRole("spinbutton").click();
-    await selected.getByRole("spinbutton").fill("1");
-    await selected.getByRole("spinbutton").press("Tab");
-    await expect(selected.getByRole("spinbutton")).toHaveValue("1");
-    await form.getByRole("button", { name: "Zapisz", exact: true }).click();
+    await selected.getByRole('spinbutton').click();
+    await selected.getByRole('spinbutton').fill('1');
+    await selected.getByRole('spinbutton').press('Tab');
+    await expect(selected.getByRole('spinbutton')).toHaveValue('1');
+    await form.getByRole('button', { name: 'Zapisz', exact: true }).click();
     await expect(form).toHaveCount(0);
-    const saved = orders.locator("td.mat-column-id");
+    const saved = orders.locator('td.mat-column-id');
     await expect(saved).toHaveCount(1);
     orderId = (await saved.innerText()).trim();
     expect(orderId).toMatch(/^\d+$/);
-    await s.record("orderId", orderId);
+    await s.record('orderId', orderId);
   });
-  await test.step("Otwórz ponownie szkołę i sprawdź szczegóły tego samego zamówienia", async () => {
-    await s.app.openPanel("school", schoolId);
-    await page.getByRole("tab", { name: "Zamówienia", exact: true }).click();
-    const row = orders
-      .getByRole("row")
-      .filter({ has: page.getByRole("cell", { name: orderId, exact: true }) });
+  await test.step('Otwórz ponownie szkołę i sprawdź szczegóły tego samego zamówienia', async () => {
+    await s.app.openPanel('school', schoolId);
+    await page.getByRole('tab', { name: 'Zamówienia', exact: true }).click();
+    const row = orders.getByRole('row').filter({ has: page.getByRole('cell', { name: orderId, exact: true }) });
     await expect(row).toHaveCount(1);
-    await row
-      .locator("mat-icon")
-      .filter({ hasText: "keyboard_arrow_down" })
-      .click();
+    await row.locator('mat-icon').filter({ hasText: 'keyboard_arrow_down' }).click();
     const items = orders
-      .getByRole("table")
+      .getByRole('table')
       .filter({
-        has: page.getByRole("columnheader", { name: "Ilość", exact: true }),
+        has: page.getByRole('columnheader', { name: 'Ilość', exact: true }),
       })
       .last();
-    const item = items
-      .getByRole("row")
-      .filter({ has: page.getByRole("cell", { name: code, exact: true }) });
-    await expect(
-      items.getByRole("row").filter({ has: page.getByRole("cell") }),
-    ).toHaveCount(1);
-    await expect(item.getByRole("cell").nth(0)).toHaveText(title);
-    await expect(item.getByRole("cell").nth(4)).toHaveText("1");
-    await expect(
-      orders.getByText("Adres " + s.schoolName, { exact: false }),
-    ).toBeVisible();
+    const item = items.getByRole('row').filter({ has: page.getByRole('cell', { name: code, exact: true }) });
+    await expect(items.getByRole('row').filter({ has: page.getByRole('cell') })).toHaveCount(1);
+    await expect(item.getByRole('cell').nth(0)).toHaveText(title);
+    await expect(item.getByRole('cell').nth(4)).toHaveText('1');
+    await expect(orders.getByText('Adres ' + s.schoolName, { exact: false })).toBeVisible();
   });
 });
 
-test("ORD-02: zamówienie szkoły z dwoma produktami zachowuje produkty i ilości po ponownym otwarciu @school @order", async ({
+test('ORD-02: zamówienie szkoły z dwoma produktami zachowuje produkty i ilości po ponownym otwarciu @school @order', async ({
   page,
   scenario: s,
 }) => {
   const schoolId = await s.createSchool();
 
-  const code1 = "KMLT18";
-  const code2 = "4P-2";
+  const code1 = 'KMLT18';
+  const code2 = '4P-2';
 
-  const quantity1 = "1";
-  const quantity2 = "2";
+  const quantity1 = '1';
+  const quantity2 = '2';
 
-  await s.record("productCode1", code1);
-  await s.record("productCode2", code2);
-  await s.record("quantity1", quantity1);
-  await s.record("quantity2", quantity2);
+  await s.record('productCode1', code1);
+  await s.record('productCode2', code2);
+  await s.record('quantity1', quantity1);
+  await s.record('quantity2', quantity2);
 
-  const orders = page
-    .getByRole("tabpanel", { name: "Zamówienia", exact: true })
-    .last();
+  const orders = page.getByRole('tabpanel', { name: 'Zamówienia', exact: true }).last();
 
-  let title1 = "";
-  let title2 = "";
-  let orderId = "";
+  let title1 = '';
+  let title2 = '';
+  let orderId = '';
 
-  await test.step("Otwórz formularz dodawania zamówienia", async () => {
-    await page.getByRole("tab", { name: "Zamówienia", exact: true }).click();
+  await test.step('Otwórz formularz dodawania zamówienia', async () => {
+    await page.getByRole('tab', { name: 'Zamówienia', exact: true }).click();
 
-    await orders.getByRole("button", { name: "Dodaj", exact: true }).click();
+    await orders.getByRole('button', { name: 'Dodaj', exact: true }).click();
   });
 
-  await test.step("Dodaj pierwszy produkt do zamówienia", async () => {
-    const form = s.app.dialog("Dodaj zamówienie");
+  await test.step('Dodaj pierwszy produkt do zamówienia', async () => {
+    const form = s.app.dialog('Dodaj zamówienie');
 
-    const searchInput = form.getByPlaceholder("Wpisz", { exact: true });
+    const searchInput = form.getByPlaceholder('Wpisz', { exact: true });
 
     await searchInput.fill(code1);
 
-    await form.getByRole("button", { name: "Szukaj", exact: true }).click();
+    await form.getByRole('button', { name: 'Szukaj', exact: true }).click();
 
-    const available = form.getByRole("treegrid").filter({
-      has: page.getByRole("columnheader", {
-        name: "Dodaj",
+    const available = form.getByRole('treegrid').filter({
+      has: page.getByRole('columnheader', {
+        name: 'Dodaj',
         exact: true,
       }),
     });
 
-    const product = available.getByRole("row").filter({
-      has: page.getByRole("gridcell", {
+    const product = available.getByRole('row').filter({
+      has: page.getByRole('gridcell', {
         name: code1,
         exact: true,
       }),
@@ -166,40 +144,40 @@ test("ORD-02: zamówienie szkoły z dwoma produktami zachowuje produkty i ilośc
 
     await expect(product).toHaveCount(1);
 
-    title1 = (await product.getByRole("gridcell").nth(3).innerText()).trim();
+    title1 = (await product.getByRole('gridcell').nth(3).innerText()).trim();
 
-    expect(title1).not.toBe("");
+    expect(title1).not.toBe('');
 
-    await s.record("productTitle1", title1);
+    await s.record('productTitle1', title1);
 
-    await product.getByRole("checkbox").check();
+    await product.getByRole('checkbox').check();
 
     await form
-      .getByRole("button")
+      .getByRole('button')
       .filter({
-        has: page.locator("mat-icon").filter({ hasText: /^arrow_right$/ }),
+        has: page.locator('mat-icon').filter({ hasText: /^arrow_right$/ }),
       })
       .click();
   });
 
-  await test.step("Dodaj drugi produkt do zamówienia", async () => {
-    const form = s.app.dialog("Dodaj zamówienie");
+  await test.step('Dodaj drugi produkt do zamówienia', async () => {
+    const form = s.app.dialog('Dodaj zamówienie');
 
-    const searchInput = form.getByPlaceholder("Wpisz", { exact: true });
+    const searchInput = form.getByPlaceholder('Wpisz', { exact: true });
 
     await searchInput.fill(code2);
 
-    await form.getByRole("button", { name: "Szukaj", exact: true }).click();
+    await form.getByRole('button', { name: 'Szukaj', exact: true }).click();
 
-    const available = form.getByRole("treegrid").filter({
-      has: page.getByRole("columnheader", {
-        name: "Dodaj",
+    const available = form.getByRole('treegrid').filter({
+      has: page.getByRole('columnheader', {
+        name: 'Dodaj',
         exact: true,
       }),
     });
 
-    const product = available.getByRole("row").filter({
-      has: page.getByRole("gridcell", {
+    const product = available.getByRole('row').filter({
+      has: page.getByRole('gridcell', {
         name: code2,
         exact: true,
       }),
@@ -207,47 +185,45 @@ test("ORD-02: zamówienie szkoły z dwoma produktami zachowuje produkty i ilośc
 
     await expect(product).toHaveCount(1);
 
-    title2 = (await product.getByRole("gridcell").nth(3).innerText()).trim();
+    title2 = (await product.getByRole('gridcell').nth(3).innerText()).trim();
 
-    expect(title2).not.toBe("");
+    expect(title2).not.toBe('');
 
-    await s.record("productTitle2", title2);
+    await s.record('productTitle2', title2);
 
-    await product.getByRole("checkbox").check();
+    await product.getByRole('checkbox').check();
 
     await form
-      .getByRole("button")
+      .getByRole('button')
       .filter({
-        has: page.locator("mat-icon").filter({ hasText: /^arrow_right$/ }),
+        has: page.locator('mat-icon').filter({ hasText: /^arrow_right$/ }),
       })
       .click();
   });
 
-  await test.step("Ustaw ilości obu produktów i zapisz zamówienie", async () => {
-    const form = s.app.dialog("Dodaj zamówienie");
+  await test.step('Ustaw ilości obu produktów i zapisz zamówienie', async () => {
+    const form = s.app.dialog('Dodaj zamówienie');
 
-    const selected = form.getByRole("treegrid").filter({
-      has: page.getByRole("columnheader", {
-        name: "Ilość",
+    const selected = form.getByRole('treegrid').filter({
+      has: page.getByRole('columnheader', {
+        name: 'Ilość',
         exact: true,
       }),
     });
 
-    const selectedRows = selected
-      .getByRole("row")
-      .filter({ has: page.getByRole("gridcell") });
+    const selectedRows = selected.getByRole('row').filter({ has: page.getByRole('gridcell') });
 
     await expect(selectedRows).toHaveCount(2);
 
-    const product1Row = selected.getByRole("row").filter({
-      has: page.getByRole("gridcell", {
+    const product1Row = selected.getByRole('row').filter({
+      has: page.getByRole('gridcell', {
         name: code1,
         exact: true,
       }),
     });
 
-    const product2Row = selected.getByRole("row").filter({
-      has: page.getByRole("gridcell", {
+    const product2Row = selected.getByRole('row').filter({
+      has: page.getByRole('gridcell', {
         name: code2,
         exact: true,
       }),
@@ -257,27 +233,27 @@ test("ORD-02: zamówienie szkoły z dwoma produktami zachowuje produkty i ilośc
     await expect(product2Row).toHaveCount(1);
 
     // AG Grid — kliknięcie uruchamia edytor ilości.
-    const quantityInput1 = product1Row.getByRole("spinbutton");
+    const quantityInput1 = product1Row.getByRole('spinbutton');
 
     await quantityInput1.click();
     await quantityInput1.fill(quantity1);
-    await quantityInput1.press("Tab");
+    await quantityInput1.press('Tab');
 
-    const quantityInput2 = product2Row.getByRole("spinbutton");
+    const quantityInput2 = product2Row.getByRole('spinbutton');
 
     await quantityInput2.click();
     await quantityInput2.fill(quantity2);
-    await quantityInput2.press("Tab");
+    await quantityInput2.press('Tab');
 
-    await expect(product1Row.getByRole("spinbutton")).toHaveValue(quantity1);
+    await expect(product1Row.getByRole('spinbutton')).toHaveValue(quantity1);
 
-    await expect(product2Row.getByRole("spinbutton")).toHaveValue(quantity2);
+    await expect(product2Row.getByRole('spinbutton')).toHaveValue(quantity2);
 
-    await form.getByRole("button", { name: "Zapisz", exact: true }).click();
+    await form.getByRole('button', { name: 'Zapisz', exact: true }).click();
 
     await expect(form).toHaveCount(0);
 
-    const saved = orders.locator("td.mat-column-id");
+    const saved = orders.locator('td.mat-column-id');
 
     await expect(saved).toHaveCount(1);
 
@@ -285,16 +261,16 @@ test("ORD-02: zamówienie szkoły z dwoma produktami zachowuje produkty i ilośc
 
     expect(orderId).toMatch(/^\d+$/);
 
-    await s.record("orderId", orderId);
+    await s.record('orderId', orderId);
   });
 
-  await test.step("Otwórz ponownie szkołę i sprawdź oba produkty", async () => {
-    await s.app.openPanel("school", schoolId);
+  await test.step('Otwórz ponownie szkołę i sprawdź oba produkty', async () => {
+    await s.app.openPanel('school', schoolId);
 
-    await page.getByRole("tab", { name: "Zamówienia", exact: true }).click();
+    await page.getByRole('tab', { name: 'Zamówienia', exact: true }).click();
 
-    const row = orders.getByRole("row").filter({
-      has: page.getByRole("cell", {
+    const row = orders.getByRole('row').filter({
+      has: page.getByRole('cell', {
         name: orderId,
         exact: true,
       }),
@@ -302,82 +278,75 @@ test("ORD-02: zamówienie szkoły z dwoma produktami zachowuje produkty i ilośc
 
     await expect(row).toHaveCount(1);
 
-    await row
-      .locator("mat-icon")
-      .filter({ hasText: "keyboard_arrow_down" })
-      .click();
+    await row.locator('mat-icon').filter({ hasText: 'keyboard_arrow_down' }).click();
 
     const items = orders
-      .getByRole("table")
+      .getByRole('table')
       .filter({
-        has: page.getByRole("columnheader", {
-          name: "Ilość",
+        has: page.getByRole('columnheader', {
+          name: 'Ilość',
           exact: true,
         }),
       })
       .last();
 
-    const product1 = items.getByRole("row").filter({
-      has: page.getByRole("cell", {
+    const product1 = items.getByRole('row').filter({
+      has: page.getByRole('cell', {
         name: code1,
         exact: true,
       }),
     });
 
-    const product2 = items.getByRole("row").filter({
-      has: page.getByRole("cell", {
+    const product2 = items.getByRole('row').filter({
+      has: page.getByRole('cell', {
         name: code2,
         exact: true,
       }),
     });
 
     // Zamówienie musi zawierać dokładnie dwa produkty.
-    await expect(
-      items.getByRole("row").filter({ has: page.getByRole("cell") }),
-    ).toHaveCount(2);
+    await expect(items.getByRole('row').filter({ has: page.getByRole('cell') })).toHaveCount(2);
 
     // Produkt 1.
     await expect(product1).toHaveCount(1);
-    await expect(product1.getByRole("cell").nth(0)).toHaveText(title1);
-    await expect(product1.getByRole("cell").nth(4)).toHaveText(quantity1);
+    await expect(product1.getByRole('cell').nth(0)).toHaveText(title1);
+    await expect(product1.getByRole('cell').nth(4)).toHaveText(quantity1);
 
     // Produkt 2.
     await expect(product2).toHaveCount(1);
-    await expect(product2.getByRole("cell").nth(0)).toHaveText(title2);
-    await expect(product2.getByRole("cell").nth(4)).toHaveText(quantity2);
+    await expect(product2.getByRole('cell').nth(0)).toHaveText(title2);
+    await expect(product2.getByRole('cell').nth(4)).toHaveText(quantity2);
 
     // Zamówienie nadal należy do właściwej szkoły.
-    await expect(
-      orders.getByText("Adres " + s.schoolName, { exact: false }),
-    ).toBeVisible();
+    await expect(orders.getByText('Adres ' + s.schoolName, { exact: false })).toBeVisible();
   });
 });
 
-test("ORD-03: edycja ilości dwóch produktów w zamówieniu i usunięcie zamówienia @school @order", async ({
+test('ORD-03: edycja ilości dwóch produktów w zamówieniu i usunięcie zamówienia @school @order', async ({
   page,
   scenario: s,
 }) => {
   const schoolId = await s.createSchool();
 
-  const code1 = "KMLT18";
-  const code2 = "4P-2";
+  const code1 = 'KMLT18';
+  const code2 = '4P-2';
 
-  const initialQuantity1 = "1";
-  const initialQuantity2 = "2";
+  const initialQuantity1 = '1';
+  const initialQuantity2 = '2';
 
-  const editedQuantity1 = "3";
-  const editedQuantity2 = "5";
+  const editedQuantity1 = '3';
+  const editedQuantity2 = '5';
 
   const orders = page
-    .getByRole("tabpanel", {
-      name: "Zamówienia",
+    .getByRole('tabpanel', {
+      name: 'Zamówienia',
       exact: true,
     })
     .last();
 
-  let title1 = "";
-  let title2 = "";
-  let orderId = "";
+  let title1 = '';
+  let title2 = '';
+  let orderId = '';
 
   /*
    * Jeżeli główny test zakończy się błędem, zapamiętujemy go.
@@ -386,16 +355,16 @@ test("ORD-03: edycja ilości dwóch produktów w zamówieniu i usunięcie zamów
    */
   let scenarioError: unknown;
 
-  await s.record("productCode1", code1);
-  await s.record("productCode2", code2);
+  await s.record('productCode1', code1);
+  await s.record('productCode2', code2);
 
-  await s.record("initialQuantity1", initialQuantity1);
+  await s.record('initialQuantity1', initialQuantity1);
 
-  await s.record("initialQuantity2", initialQuantity2);
+  await s.record('initialQuantity2', initialQuantity2);
 
-  await s.record("editedQuantity1", editedQuantity1);
+  await s.record('editedQuantity1', editedQuantity1);
 
-  await s.record("editedQuantity2", editedQuantity2);
+  await s.record('editedQuantity2', editedQuantity2);
 
   try {
     /*
@@ -404,28 +373,28 @@ test("ORD-03: edycja ilości dwóch produktów w zamówieniu i usunięcie zamów
      * =====================================================
      */
 
-    await test.step("Utwórz zamówienie z dwoma produktami", async () => {
+    await test.step('Utwórz zamówienie z dwoma produktami', async () => {
       await page
-        .getByRole("tab", {
-          name: "Zamówienia",
+        .getByRole('tab', {
+          name: 'Zamówienia',
           exact: true,
         })
         .click();
 
       await orders
-        .getByRole("button", {
-          name: "Dodaj",
+        .getByRole('button', {
+          name: 'Dodaj',
           exact: true,
         })
         .click();
 
-      const form = s.app.dialog("Dodaj zamówienie");
+      const form = s.app.dialog('Dodaj zamówienie');
 
-      const searchInput = form.getByPlaceholder("Wpisz", { exact: true });
+      const searchInput = form.getByPlaceholder('Wpisz', { exact: true });
 
-      const available = form.getByRole("treegrid").filter({
-        has: page.getByRole("columnheader", {
-          name: "Dodaj",
+      const available = form.getByRole('treegrid').filter({
+        has: page.getByRole('columnheader', {
+          name: 'Dodaj',
           exact: true,
         }),
       });
@@ -439,14 +408,14 @@ test("ORD-03: edycja ilości dwóch produktów w zamówieniu i usunięcie zamów
       await searchInput.fill(code1);
 
       await form
-        .getByRole("button", {
-          name: "Szukaj",
+        .getByRole('button', {
+          name: 'Szukaj',
           exact: true,
         })
         .click();
 
-      const product1 = available.getByRole("row").filter({
-        has: page.getByRole("gridcell", {
+      const product1 = available.getByRole('row').filter({
+        has: page.getByRole('gridcell', {
           name: code1,
           exact: true,
         }),
@@ -454,18 +423,18 @@ test("ORD-03: edycja ilości dwóch produktów w zamówieniu i usunięcie zamów
 
       await expect(product1).toHaveCount(1);
 
-      title1 = (await product1.getByRole("gridcell").nth(3).innerText()).trim();
+      title1 = (await product1.getByRole('gridcell').nth(3).innerText()).trim();
 
-      expect(title1).not.toBe("");
+      expect(title1).not.toBe('');
 
-      await s.record("productTitle1", title1);
+      await s.record('productTitle1', title1);
 
-      await product1.getByRole("checkbox").check();
+      await product1.getByRole('checkbox').check();
 
       await form
-        .getByRole("button")
+        .getByRole('button')
         .filter({
-          has: page.locator("mat-icon").filter({
+          has: page.locator('mat-icon').filter({
             hasText: /^arrow_right$/,
           }),
         })
@@ -480,14 +449,14 @@ test("ORD-03: edycja ilości dwóch produktów w zamówieniu i usunięcie zamów
       await searchInput.fill(code2);
 
       await form
-        .getByRole("button", {
-          name: "Szukaj",
+        .getByRole('button', {
+          name: 'Szukaj',
           exact: true,
         })
         .click();
 
-      const product2 = available.getByRole("row").filter({
-        has: page.getByRole("gridcell", {
+      const product2 = available.getByRole('row').filter({
+        has: page.getByRole('gridcell', {
           name: code2,
           exact: true,
         }),
@@ -495,18 +464,18 @@ test("ORD-03: edycja ilości dwóch produktów w zamówieniu i usunięcie zamów
 
       await expect(product2).toHaveCount(1);
 
-      title2 = (await product2.getByRole("gridcell").nth(3).innerText()).trim();
+      title2 = (await product2.getByRole('gridcell').nth(3).innerText()).trim();
 
-      expect(title2).not.toBe("");
+      expect(title2).not.toBe('');
 
-      await s.record("productTitle2", title2);
+      await s.record('productTitle2', title2);
 
-      await product2.getByRole("checkbox").check();
+      await product2.getByRole('checkbox').check();
 
       await form
-        .getByRole("button")
+        .getByRole('button')
         .filter({
-          has: page.locator("mat-icon").filter({
+          has: page.locator('mat-icon').filter({
             hasText: /^arrow_right$/,
           }),
         })
@@ -518,15 +487,15 @@ test("ORD-03: edycja ilości dwóch produktów w zamówieniu i usunięcie zamów
        * ---------------------------------------------
        */
 
-      const selected = form.getByRole("treegrid").filter({
-        has: page.getByRole("columnheader", {
-          name: "Ilość",
+      const selected = form.getByRole('treegrid').filter({
+        has: page.getByRole('columnheader', {
+          name: 'Ilość',
           exact: true,
         }),
       });
 
-      const selectedRows = selected.getByRole("row").filter({
-        has: page.getByRole("gridcell"),
+      const selectedRows = selected.getByRole('row').filter({
+        has: page.getByRole('gridcell'),
       });
 
       await expect(selectedRows).toHaveCount(2);
@@ -535,8 +504,8 @@ test("ORD-03: edycja ilości dwóch produktów w zamówieniu i usunięcie zamów
        * Produkt 1
        */
 
-      const selectedProduct1 = selected.getByRole("row").filter({
-        has: page.getByRole("gridcell", {
+      const selectedProduct1 = selected.getByRole('row').filter({
+        has: page.getByRole('gridcell', {
           name: code1,
           exact: true,
         }),
@@ -544,7 +513,7 @@ test("ORD-03: edycja ilości dwóch produktów w zamówieniu i usunięcie zamów
 
       await expect(selectedProduct1).toHaveCount(1);
 
-      const quantity1 = selectedProduct1.getByRole("spinbutton");
+      const quantity1 = selectedProduct1.getByRole('spinbutton');
 
       /*
        * AG Grid:
@@ -554,14 +523,14 @@ test("ORD-03: edycja ilości dwóch produktów w zamówieniu i usunięcie zamów
 
       await quantity1.fill(initialQuantity1);
 
-      await quantity1.press("Tab");
+      await quantity1.press('Tab');
 
       /*
        * Produkt 2
        */
 
-      const selectedProduct2 = selected.getByRole("row").filter({
-        has: page.getByRole("gridcell", {
+      const selectedProduct2 = selected.getByRole('row').filter({
+        has: page.getByRole('gridcell', {
           name: code2,
           exact: true,
         }),
@@ -569,33 +538,29 @@ test("ORD-03: edycja ilości dwóch produktów w zamówieniu i usunięcie zamów
 
       await expect(selectedProduct2).toHaveCount(1);
 
-      const quantity2 = selectedProduct2.getByRole("spinbutton");
+      const quantity2 = selectedProduct2.getByRole('spinbutton');
 
       await quantity2.click();
 
       await quantity2.fill(initialQuantity2);
 
-      await quantity2.press("Tab");
+      await quantity2.press('Tab');
 
       /*
        * Kontrola przed zapisem.
        */
 
-      await expect(selectedProduct1.getByRole("spinbutton")).toHaveValue(
-        initialQuantity1,
-      );
+      await expect(selectedProduct1.getByRole('spinbutton')).toHaveValue(initialQuantity1);
 
-      await expect(selectedProduct2.getByRole("spinbutton")).toHaveValue(
-        initialQuantity2,
-      );
+      await expect(selectedProduct2.getByRole('spinbutton')).toHaveValue(initialQuantity2);
 
       /*
        * Zapis zamówienia.
        */
 
       await form
-        .getByRole("button", {
-          name: "Zapisz",
+        .getByRole('button', {
+          name: 'Zapisz',
           exact: true,
         })
         .click();
@@ -606,7 +571,7 @@ test("ORD-03: edycja ilości dwóch produktów w zamówieniu i usunięcie zamów
        * Pobranie ID utworzonego zamówienia.
        */
 
-      const saved = orders.locator("td.mat-column-id");
+      const saved = orders.locator('td.mat-column-id');
 
       await expect(saved).toHaveCount(1);
 
@@ -614,7 +579,7 @@ test("ORD-03: edycja ilości dwóch produktów w zamówieniu i usunięcie zamów
 
       expect(orderId).toMatch(/^\d+$/);
 
-      await s.record("orderId", orderId);
+      await s.record('orderId', orderId);
     });
 
     /*
@@ -623,18 +588,18 @@ test("ORD-03: edycja ilości dwóch produktów w zamówieniu i usunięcie zamów
      * =====================================================
      */
 
-    await test.step("Otwórz ponownie szkołę i sprawdź początkowe ilości produktów", async () => {
-      await s.app.openPanel("school", schoolId);
+    await test.step('Otwórz ponownie szkołę i sprawdź początkowe ilości produktów', async () => {
+      await s.app.openPanel('school', schoolId);
 
       await page
-        .getByRole("tab", {
-          name: "Zamówienia",
+        .getByRole('tab', {
+          name: 'Zamówienia',
           exact: true,
         })
         .click();
 
-      const orderRow = orders.getByRole("row").filter({
-        has: page.getByRole("cell", {
+      const orderRow = orders.getByRole('row').filter({
+        has: page.getByRole('cell', {
           name: orderId,
           exact: true,
         }),
@@ -647,37 +612,37 @@ test("ORD-03: edycja ilości dwóch produktów w zamówieniu i usunięcie zamów
        */
 
       await orderRow
-        .locator("mat-icon")
+        .locator('mat-icon')
         .filter({
-          hasText: "keyboard_arrow_down",
+          hasText: 'keyboard_arrow_down',
         })
         .click();
 
       const items = orders
-        .getByRole("table")
+        .getByRole('table')
         .filter({
-          has: page.getByRole("columnheader", {
-            name: "Ilość",
+          has: page.getByRole('columnheader', {
+            name: 'Ilość',
             exact: true,
           }),
         })
         .last();
 
-      const itemRows = items.getByRole("row").filter({
-        has: page.getByRole("cell"),
+      const itemRows = items.getByRole('row').filter({
+        has: page.getByRole('cell'),
       });
 
       await expect(itemRows).toHaveCount(2);
 
-      const item1 = items.getByRole("row").filter({
-        has: page.getByRole("cell", {
+      const item1 = items.getByRole('row').filter({
+        has: page.getByRole('cell', {
           name: code1,
           exact: true,
         }),
       });
 
-      const item2 = items.getByRole("row").filter({
-        has: page.getByRole("cell", {
+      const item2 = items.getByRole('row').filter({
+        has: page.getByRole('cell', {
           name: code2,
           exact: true,
         }),
@@ -691,17 +656,17 @@ test("ORD-03: edycja ilości dwóch produktów w zamówieniu i usunięcie zamów
        * Nazwy produktów.
        */
 
-      await expect(item1.getByRole("cell").nth(0)).toHaveText(title1);
+      await expect(item1.getByRole('cell').nth(0)).toHaveText(title1);
 
-      await expect(item2.getByRole("cell").nth(0)).toHaveText(title2);
+      await expect(item2.getByRole('cell').nth(0)).toHaveText(title2);
 
       /*
        * Początkowe ilości.
        */
 
-      await expect(item1.getByRole("cell").nth(4)).toHaveText(initialQuantity1);
+      await expect(item1.getByRole('cell').nth(4)).toHaveText(initialQuantity1);
 
-      await expect(item2.getByRole("cell").nth(4)).toHaveText(initialQuantity2);
+      await expect(item2.getByRole('cell').nth(4)).toHaveText(initialQuantity2);
     });
 
     /*
@@ -710,22 +675,22 @@ test("ORD-03: edycja ilości dwóch produktów w zamówieniu i usunięcie zamów
      * =====================================================
      */
 
-    await test.step("Edytuj ilości obu produktów", async () => {
+    await test.step('Edytuj ilości obu produktów', async () => {
       /*
        * Ponownie otwieramy panel.
        * Dzięki temu pracujemy na świeżych danych.
        */
-      await s.app.openPanel("school", schoolId);
+      await s.app.openPanel('school', schoolId);
 
       await page
-        .getByRole("tab", {
-          name: "Zamówienia",
+        .getByRole('tab', {
+          name: 'Zamówienia',
           exact: true,
         })
         .click();
 
-      const orderRow = orders.getByRole("row").filter({
-        has: page.getByRole("cell", {
+      const orderRow = orders.getByRole('row').filter({
+        has: page.getByRole('cell', {
           name: orderId,
           exact: true,
         }),
@@ -756,22 +721,22 @@ test("ORD-03: edycja ilości dwóch produktów w zamówieniu i usunięcie zamów
        * dialogu edycji, dlatego pobieramy
        * aktualnie otwarty mat-dialog.
        */
-      const form = page.locator("mat-dialog-container").last();
+      const form = page.locator('mat-dialog-container').last();
 
       await expect(form).toBeVisible();
 
       /*
        * Tabela produktów w edycji.
        */
-      const selected = form.getByRole("treegrid").filter({
-        has: page.getByRole("columnheader", {
-          name: "Ilość",
+      const selected = form.getByRole('treegrid').filter({
+        has: page.getByRole('columnheader', {
+          name: 'Ilość',
           exact: true,
         }),
       });
 
-      const selectedRows = selected.getByRole("row").filter({
-        has: page.getByRole("gridcell"),
+      const selectedRows = selected.getByRole('row').filter({
+        has: page.getByRole('gridcell'),
       });
 
       await expect(selectedRows).toHaveCount(2);
@@ -782,8 +747,8 @@ test("ORD-03: edycja ilości dwóch produktów w zamówieniu i usunięcie zamów
        * ---------------------------------------------
        */
 
-      const product1Row = selected.getByRole("row").filter({
-        has: page.getByRole("gridcell", {
+      const product1Row = selected.getByRole('row').filter({
+        has: page.getByRole('gridcell', {
           name: code1,
           exact: true,
         }),
@@ -791,13 +756,13 @@ test("ORD-03: edycja ilości dwóch produktów w zamówieniu i usunięcie zamów
 
       await expect(product1Row).toHaveCount(1);
 
-      const quantity1 = product1Row.getByRole("spinbutton");
+      const quantity1 = product1Row.getByRole('spinbutton');
 
       await quantity1.click();
 
       await quantity1.fill(editedQuantity1);
 
-      await quantity1.press("Tab");
+      await quantity1.press('Tab');
 
       /*
        * ---------------------------------------------
@@ -805,8 +770,8 @@ test("ORD-03: edycja ilości dwóch produktów w zamówieniu i usunięcie zamów
        * ---------------------------------------------
        */
 
-      const product2Row = selected.getByRole("row").filter({
-        has: page.getByRole("gridcell", {
+      const product2Row = selected.getByRole('row').filter({
+        has: page.getByRole('gridcell', {
           name: code2,
           exact: true,
         }),
@@ -814,41 +779,37 @@ test("ORD-03: edycja ilości dwóch produktów w zamówieniu i usunięcie zamów
 
       await expect(product2Row).toHaveCount(1);
 
-      const quantity2 = product2Row.getByRole("spinbutton");
+      const quantity2 = product2Row.getByRole('spinbutton');
 
       await quantity2.click();
 
       await quantity2.fill(editedQuantity2);
 
-      await quantity2.press("Tab");
+      await quantity2.press('Tab');
 
       /*
        * Kontrola wartości w formularzu
        * przed zapisem.
        */
 
-      await expect(product1Row.getByRole("spinbutton")).toHaveValue(
-        editedQuantity1,
-      );
+      await expect(product1Row.getByRole('spinbutton')).toHaveValue(editedQuantity1);
 
-      await expect(product2Row.getByRole("spinbutton")).toHaveValue(
-        editedQuantity2,
-      );
+      await expect(product2Row.getByRole('spinbutton')).toHaveValue(editedQuantity2);
 
       /*
        * Zapis zmian.
        */
 
       await form
-        .getByRole("button", {
-          name: "Zapisz",
+        .getByRole('button', {
+          name: 'Zapisz',
           exact: true,
         })
         .click();
 
       await expect(form).toHaveCount(0);
 
-      await s.record("orderEdited", "true");
+      await s.record('orderEdited', 'true');
     });
 
     /*
@@ -857,18 +818,18 @@ test("ORD-03: edycja ilości dwóch produktów w zamówieniu i usunięcie zamów
      * =====================================================
      */
 
-    await test.step("Otwórz szkołę ponownie i sprawdź zmienione ilości", async () => {
-      await s.app.openPanel("school", schoolId);
+    await test.step('Otwórz szkołę ponownie i sprawdź zmienione ilości', async () => {
+      await s.app.openPanel('school', schoolId);
 
       await page
-        .getByRole("tab", {
-          name: "Zamówienia",
+        .getByRole('tab', {
+          name: 'Zamówienia',
           exact: true,
         })
         .click();
 
-      const orderRow = orders.getByRole("row").filter({
-        has: page.getByRole("cell", {
+      const orderRow = orders.getByRole('row').filter({
+        has: page.getByRole('cell', {
           name: orderId,
           exact: true,
         }),
@@ -881,17 +842,17 @@ test("ORD-03: edycja ilości dwóch produktów w zamówieniu i usunięcie zamów
        */
 
       await orderRow
-        .locator("mat-icon")
+        .locator('mat-icon')
         .filter({
-          hasText: "keyboard_arrow_down",
+          hasText: 'keyboard_arrow_down',
         })
         .click();
 
       const items = orders
-        .getByRole("table")
+        .getByRole('table')
         .filter({
-          has: page.getByRole("columnheader", {
-            name: "Ilość",
+          has: page.getByRole('columnheader', {
+            name: 'Ilość',
             exact: true,
           }),
         })
@@ -903,20 +864,20 @@ test("ORD-03: edycja ilości dwóch produktów w zamówieniu i usunięcie zamów
        */
 
       await expect(
-        items.getByRole("row").filter({
-          has: page.getByRole("cell"),
+        items.getByRole('row').filter({
+          has: page.getByRole('cell'),
         }),
       ).toHaveCount(2);
 
-      const item1 = items.getByRole("row").filter({
-        has: page.getByRole("cell", {
+      const item1 = items.getByRole('row').filter({
+        has: page.getByRole('cell', {
           name: code1,
           exact: true,
         }),
       });
 
-      const item2 = items.getByRole("row").filter({
-        has: page.getByRole("cell", {
+      const item2 = items.getByRole('row').filter({
+        has: page.getByRole('cell', {
           name: code2,
           exact: true,
         }),
@@ -930,9 +891,9 @@ test("ORD-03: edycja ilości dwóch produktów w zamówieniu i usunięcie zamów
        * Produkty nie powinny się zmienić.
        */
 
-      await expect(item1.getByRole("cell").nth(0)).toHaveText(title1);
+      await expect(item1.getByRole('cell').nth(0)).toHaveText(title1);
 
-      await expect(item2.getByRole("cell").nth(0)).toHaveText(title2);
+      await expect(item2.getByRole('cell').nth(0)).toHaveText(title2);
 
       /*
        * Najważniejsza asercja:
@@ -940,9 +901,9 @@ test("ORD-03: edycja ilości dwóch produktów w zamówieniu i usunięcie zamów
        * po ponownym pobraniu danych.
        */
 
-      await expect(item1.getByRole("cell").nth(4)).toHaveText(editedQuantity1);
+      await expect(item1.getByRole('cell').nth(4)).toHaveText(editedQuantity1);
 
-      await expect(item2.getByRole("cell").nth(4)).toHaveText(editedQuantity2);
+      await expect(item2.getByRole('cell').nth(4)).toHaveText(editedQuantity2);
 
       /*
        * Zamówienie nadal należy
@@ -950,7 +911,7 @@ test("ORD-03: edycja ilości dwóch produktów w zamówieniu i usunięcie zamów
        */
 
       await expect(
-        orders.getByText("Adres " + s.schoolName, {
+        orders.getByText('Adres ' + s.schoolName, {
           exact: false,
         }),
       ).toBeVisible();
@@ -975,18 +936,18 @@ test("ORD-03: edycja ilości dwóch produktów w zamówieniu i usunięcie zamów
 
     if (orderId) {
       try {
-        await test.step("Cleanup: usuń utworzone zamówienie", async () => {
-          await s.app.openPanel("school", schoolId);
+        await test.step('Cleanup: usuń utworzone zamówienie', async () => {
+          await s.app.openPanel('school', schoolId);
 
           await page
-            .getByRole("tab", {
-              name: "Zamówienia",
+            .getByRole('tab', {
+              name: 'Zamówienia',
               exact: true,
             })
             .click();
 
-          const orderRow = orders.getByRole("row").filter({
-            has: page.getByRole("cell", {
+          const orderRow = orders.getByRole('row').filter({
+            has: page.getByRole('cell', {
               name: orderId,
               exact: true,
             }),
@@ -998,7 +959,7 @@ test("ORD-03: edycja ilości dwóch produktów w zamówieniu i usunięcie zamów
            * za zakończony.
            */
           if ((await orderRow.count()) === 0) {
-            await s.record("orderCleanup", "ALREADY_ABSENT");
+            await s.record('orderCleanup', 'ALREADY_ABSENT');
 
             return;
           }
@@ -1014,8 +975,8 @@ test("ORD-03: edycja ilości dwóch produktów w zamówieniu i usunięcie zamów
            */
           await orderRow.click();
 
-          const deleteButton = orders.getByRole("button", {
-            name: "Usuń",
+          const deleteButton = orders.getByRole('button', {
+            name: 'Usuń',
             exact: true,
           });
 
@@ -1033,7 +994,7 @@ test("ORD-03: edycja ilości dwóch produktów w zamówieniu i usunięcie zamów
            * nazw przycisku potwierdzającego.
            */
 
-          const confirmation = page.locator("mat-dialog-container").last();
+          const confirmation = page.locator('mat-dialog-container').last();
 
           /*
            * Dajemy krótki czas na pojawienie
@@ -1044,14 +1005,14 @@ test("ORD-03: edycja ilości dwóch produktów w zamówieniu i usunięcie zamów
            */
           const dialogAppeared = await confirmation
             .waitFor({
-              state: "visible",
+              state: 'visible',
               timeout: 1500,
             })
             .then(() => true)
             .catch(() => false);
 
           if (dialogAppeared) {
-            const confirmButton = confirmation.getByRole("button", {
+            const confirmButton = confirmation.getByRole('button', {
               name: /^(Tak|Usuń|OK)$/,
             });
 
@@ -1069,18 +1030,18 @@ test("ORD-03: edycja ilości dwóch produktów w zamówieniu i usunięcie zamów
            */
 
           await expect(
-            orders.getByRole("row").filter({
-              has: page.getByRole("cell", {
+            orders.getByRole('row').filter({
+              has: page.getByRole('cell', {
                 name: orderId,
                 exact: true,
               }),
             }),
           ).toHaveCount(0);
 
-          await s.record("orderCleanup", "DELETED");
+          await s.record('orderCleanup', 'DELETED');
         });
       } catch (cleanupError) {
-        await s.record("orderCleanup", "FAILED");
+        await s.record('orderCleanup', 'FAILED');
 
         /*
          * Jeżeli sam scenariusz był poprawny,
@@ -1091,206 +1052,167 @@ test("ORD-03: edycja ilości dwóch produktów w zamówieniu i usunięcie zamów
          * błędem sprzątania.
          */
         if (!scenarioError) {
+          // Celowe: scenariusz przeszedł, więc błąd sprzątania MUSI
+          // wywalić test — nie przykrywamy tu żadnego wcześniejszego
+          // wyjątku (ten catch jest ostatnim blokiem w finally).
+          // eslint-disable-next-line no-unsafe-finally
           throw cleanupError;
         }
 
-        console.error(
-          `Cleanup zamówienia ${orderId} nie powiódł się:`,
-          cleanupError,
-        );
+        console.error(`Cleanup zamówienia ${orderId} nie powiódł się:`, cleanupError);
       }
     }
   }
 });
 
-test("CLUB-01: przedmiotopoziom i formularz klubowy nauczyciela są trwałe @teacher @club", async ({
+test('CLUB-01: przedmiotopoziom i formularz klubowy nauczyciela są trwałe @teacher @club', async ({
   page,
   scenario: s,
 }) => {
   const schoolId = await s.createSchool();
   const teacherId = await s.createTeacher(schoolId);
-  const subjects = page.locator("app-teacher-subjects");
-  const subjectRow = subjects.getByRole("row").filter({
-    has: page.getByRole("cell", { name: "Matematyka", exact: true }),
+  const subjects = page.locator('app-teacher-subjects');
+  const subjectRow = subjects.getByRole('row').filter({
+    has: page.getByRole('cell', { name: 'Matematyka', exact: true }),
   });
-  const confirmations = page.getByRole("tabpanel", {
-    name: "Potwierdzenia",
+  const confirmations = page.getByRole('tabpanel', {
+    name: 'Potwierdzenia',
     exact: true,
   });
-  let schoolYear = "";
-  let confirmationId = "";
-  await test.step("Dodaj matematykę na poziomie szkoły podstawowej", async () => {
-    await subjects.getByRole("combobox").nth(0).click();
-    await page.getByRole("option", { name: "Matematyka", exact: true }).click();
-    await subjects.getByRole("combobox").nth(1).click();
-    await page
-      .getByRole("option", { name: "Szkoła Podstawowa", exact: true })
-      .click();
-    await subjects.getByRole("button", { name: "Dodaj", exact: true }).click();
-    await expect(
-      subjectRow.getByRole("cell", { name: "SP", exact: true }),
-    ).toBeVisible();
-    await s.app.openPanel("teacher", teacherId);
-    await expect(
-      subjectRow.getByRole("cell", { name: "SP", exact: true }),
-    ).toBeVisible();
+  let schoolYear = '';
+  let confirmationId = '';
+  await test.step('Dodaj matematykę na poziomie szkoły podstawowej', async () => {
+    await subjects.getByRole('combobox').nth(0).click();
+    await page.getByRole('option', { name: 'Matematyka', exact: true }).click();
+    await subjects.getByRole('combobox').nth(1).click();
+    await page.getByRole('option', { name: 'Szkoła Podstawowa', exact: true }).click();
+    await subjects.getByRole('button', { name: 'Dodaj', exact: true }).click();
+    await expect(subjectRow.getByRole('cell', { name: 'SP', exact: true })).toBeVisible();
+    await s.app.openPanel('teacher', teacherId);
+    await expect(subjectRow.getByRole('cell', { name: 'SP', exact: true })).toBeVisible();
   });
-  await test.step("Dodaj formularz klubowy dla klasy 4 bez wysyłki e-maila", async () => {
-    await confirmations
-      .getByRole("button", { name: "Dodaj formularz", exact: true })
-      .click();
-    const form = s.app.dialog("Formularz klubowy");
+  await test.step('Dodaj formularz klubowy dla klasy 4 bez wysyłki e-maila', async () => {
+    await confirmations.getByRole('button', { name: 'Dodaj formularz', exact: true }).click();
+    const form = s.app.dialog('Formularz klubowy');
     schoolYear = (
       await form
-        .locator("mat-radio-button")
-        .filter({ has: page.getByRole("radio", { checked: true }) })
+        .locator('mat-radio-button')
+        .filter({ has: page.getByRole('radio', { checked: true }) })
         .innerText()
     ).trim();
     expect(schoolYear).toMatch(/^\d{4}\/\d{4}$/);
-    await s.record("schoolYear", schoolYear);
-    await s.record("subject", "Matematyka");
-    await s.record("level", "SP");
-    await s.record("class", "4");
-    await expect(form.getByRole("combobox")).toHaveText("Matematyka");
-    await form
-      .getByRole("row")
-      .filter({ hasText: s.schoolName })
-      .getByRole("checkbox")
-      .check();
-    await form
-      .locator(".green-box")
-      .getByRole("checkbox", { name: "4", exact: true })
-      .check();
-    const email = form.getByRole("checkbox", {
-      name: "Wysłać maila do nauczyciela",
+    await s.record('schoolYear', schoolYear);
+    await s.record('subject', 'Matematyka');
+    await s.record('level', 'SP');
+    await s.record('class', '4');
+    await expect(form.getByRole('combobox')).toHaveText('Matematyka');
+    await form.getByRole('row').filter({ hasText: s.schoolName }).getByRole('checkbox').check();
+    await form.locator('.green-box').getByRole('checkbox', { name: '4', exact: true }).check();
+    const email = form.getByRole('checkbox', {
+      name: 'Wysłać maila do nauczyciela',
       exact: true,
     });
     await email.uncheck();
     await expect(email).not.toBeChecked();
-    await s.record("sendEmail", "false");
-    await form.getByRole("button", { name: "Zapisz", exact: true }).click();
+    await s.record('sendEmail', 'false');
+    await form.getByRole('button', { name: 'Zapisz', exact: true }).click();
     await expect(form).toHaveCount(0);
-    const row = confirmations.getByRole("row").filter({
-      has: page.getByRole("cell", { name: "Matematyka", exact: true }),
+    const row = confirmations.getByRole('row').filter({
+      has: page.getByRole('cell', { name: 'Matematyka', exact: true }),
     });
     await expect(row).toHaveCount(1);
-    confirmationId = (await row.getByRole("cell").nth(1).innerText()).trim();
+    confirmationId = (await row.getByRole('cell').nth(1).innerText()).trim();
     expect(confirmationId).toMatch(/^\d+$/);
-    await s.record("confirmationId", confirmationId);
+    await s.record('confirmationId', confirmationId);
   });
-  await test.step("Sprawdź zapisany formularz, szkołę, klasę i status Nasz", async () => {
-    await s.app.openPanel("teacher", teacherId);
-    await expect(
-      subjectRow.getByRole("cell", { name: "Nasz", exact: true }),
-    ).toBeVisible();
-    const row = confirmations.getByRole("row").filter({
-      has: page.getByRole("cell", { name: confirmationId, exact: true }),
+  await test.step('Sprawdź zapisany formularz, szkołę, klasę i status Nasz', async () => {
+    await s.app.openPanel('teacher', teacherId);
+    await expect(subjectRow.getByRole('cell', { name: 'Nasz', exact: true })).toBeVisible();
+    const row = confirmations.getByRole('row').filter({
+      has: page.getByRole('cell', { name: confirmationId, exact: true }),
     });
     await expect(row).toHaveCount(1);
-    await expect(
-      row.getByRole("cell", { name: "Matematyka", exact: true }),
-    ).toBeVisible();
-    await expect(
-      row.getByRole("cell", { name: "SP", exact: true }),
-    ).toBeVisible();
-    await expect(
-      row.getByRole("cell", { name: schoolYear, exact: true }),
-    ).toBeVisible();
-    await row
-      .locator("mat-icon")
-      .filter({ hasText: "keyboard_arrow_down" })
-      .click();
-    const details = confirmations.locator("app-form-clubs-inner-table");
-    const detail = details
-      .getByRole("row")
-      .filter({ has: page.getByRole("cell") });
+    await expect(row.getByRole('cell', { name: 'Matematyka', exact: true })).toBeVisible();
+    await expect(row.getByRole('cell', { name: 'SP', exact: true })).toBeVisible();
+    await expect(row.getByRole('cell', { name: schoolYear, exact: true })).toBeVisible();
+    await row.locator('mat-icon').filter({ hasText: 'keyboard_arrow_down' }).click();
+    const details = confirmations.locator('app-form-clubs-inner-table');
+    const detail = details.getByRole('row').filter({ has: page.getByRole('cell') });
     await expect(detail).toHaveCount(1);
-    await expect(detail.getByRole("cell").nth(1)).toContainText(s.schoolName);
-    await expect(
-      detail.getByRole("cell", { name: "SP", exact: true }),
-    ).toBeVisible();
-    await expect(
-      detail.getByRole("cell", { name: "4", exact: true }),
-    ).toBeVisible();
-    await expect(
-      detail.getByRole("cell").last().locator("mat-icon"),
-    ).toHaveText("check_circle_outline");
+    await expect(detail.getByRole('cell').nth(1)).toContainText(s.schoolName);
+    await expect(detail.getByRole('cell', { name: 'SP', exact: true })).toBeVisible();
+    await expect(detail.getByRole('cell', { name: '4', exact: true })).toBeVisible();
+    await expect(detail.getByRole('cell').last().locator('mat-icon')).toHaveText('check_circle_outline');
   });
 });
 
-test("CLUB-02: edycja klasy 4 na 5 dla Matematyka/SP jest trwała @teacher @club", async ({
-  page,
-  scenario: s,
-}) => {
+test('CLUB-02: edycja klasy 4 na 5 dla Matematyka/SP jest trwała @teacher @club', async ({ page, scenario: s }) => {
   const schoolId = await s.createSchool();
   const teacherId = await s.createTeacher(schoolId);
 
   await addMathSp(page);
 
-  await s.app.openPanel("teacher", teacherId);
+  await s.app.openPanel('teacher', teacherId);
 
   const { form, schoolYear } = await openNewClubForm(page);
 
   await selectSchool(form, s.schoolName);
 
-  await ownClass(form, "4").check();
+  await ownClass(form, '4').check();
 
   await disableTeacherEmail(form);
 
   const confirmationId = await saveClubForm(page, form);
 
-  await s.record("confirmationId", confirmationId);
-  await s.record("schoolYear", schoolYear);
-  await s.record("initialClass", "4");
-  await s.record("editedClass", "5");
+  await s.record('confirmationId', confirmationId);
+  await s.record('schoolYear', schoolYear);
+  await s.record('initialClass', '4');
+  await s.record('editedClass', '5');
 
-  await test.step("Edytuj klasę 4 na 5", async () => {
-    await s.app.openPanel("teacher", teacherId);
+  await test.step('Edytuj klasę 4 na 5', async () => {
+    await s.app.openPanel('teacher', teacherId);
 
     const editForm = await openClubEdit(page, confirmationId);
 
-    await expect(ownClass(editForm, "4")).toBeChecked();
-    await expect(ownClass(editForm, "5")).not.toBeChecked();
+    await expect(ownClass(editForm, '4')).toBeChecked();
+    await expect(ownClass(editForm, '5')).not.toBeChecked();
 
-    await ownClass(editForm, "4").uncheck();
-    await ownClass(editForm, "5").check();
+    await ownClass(editForm, '4').uncheck();
+    await ownClass(editForm, '5').check();
 
     await saveClubEdit(editForm);
   });
 
-  await test.step("Sprawdź trwałość klasy 5 po ponownym otwarciu", async () => {
-    await s.app.openPanel("teacher", teacherId);
+  await test.step('Sprawdź trwałość klasy 5 po ponownym otwarciu', async () => {
+    await s.app.openPanel('teacher', teacherId);
 
     await expect(confirmationRow(page, confirmationId)).toHaveCount(1);
 
     const detail = await confirmationDetails(page, confirmationId);
 
     await expect(
-      detail.getByRole("cell", {
-        name: "5",
+      detail.getByRole('cell', {
+        name: '5',
         exact: true,
       }),
     ).toBeVisible();
 
     await expect(
-      detail.getByRole("cell", {
-        name: "4",
+      detail.getByRole('cell', {
+        name: '4',
         exact: true,
       }),
     ).toHaveCount(0);
   });
 });
 
-test("CLUB-03: Matematyka/SP udostępnia wyłącznie klasy 4-8 @teacher @club", async ({
-  page,
-  scenario: s,
-}) => {
+test('CLUB-03: Matematyka/SP udostępnia wyłącznie klasy 4-8 @teacher @club', async ({ page, scenario: s }) => {
   const schoolId = await s.createSchool();
   const teacherId = await s.createTeacher(schoolId);
 
   await addMathSp(page);
 
-  await s.app.openPanel("teacher", teacherId);
+  await s.app.openPanel('teacher', teacherId);
 
   const { form } = await openNewClubForm(page);
 
@@ -1299,16 +1221,16 @@ test("CLUB-03: Matematyka/SP udostępnia wyłącznie klasy 4-8 @teacher @club", 
    */
   await selectSchool(form, s.schoolName);
 
-  await expect(form.locator(".green-box")).toBeVisible();
+  await expect(form.locator('.green-box')).toBeVisible();
 
-  await test.step("Sprawdź klasy 4-8", async () => {
+  await test.step('Sprawdź klasy 4-8', async () => {
     for (const classNumber of MATH_SP_CLASSES) {
       await expect(ownClass(form, classNumber)).toBeVisible();
     }
   });
 
-  await test.step("Sprawdź brak klas 0-3", async () => {
-    for (const classNumber of ["0", "1", "2", "3"]) {
+  await test.step('Sprawdź brak klas 0-3', async () => {
+    for (const classNumber of ['0', '1', '2', '3']) {
       await expect(ownClass(form, classNumber)).toHaveCount(0);
     }
   });
@@ -1316,22 +1238,19 @@ test("CLUB-03: Matematyka/SP udostępnia wyłącznie klasy 4-8 @teacher @club", 
   await cancelClubForm(form);
 });
 
-test("CLUB-04: formularz klubowy zachowuje kilka klas 4,5,6 @teacher @club", async ({
-  page,
-  scenario: s,
-}) => {
+test('CLUB-04: formularz klubowy zachowuje kilka klas 4,5,6 @teacher @club', async ({ page, scenario: s }) => {
   const schoolId = await s.createSchool();
   const teacherId = await s.createTeacher(schoolId);
 
   await addMathSp(page);
 
-  await s.app.openPanel("teacher", teacherId);
+  await s.app.openPanel('teacher', teacherId);
 
   const { form } = await openNewClubForm(page);
 
   await selectSchool(form, s.schoolName);
 
-  for (const classNumber of ["4", "5", "6"]) {
+  for (const classNumber of ['4', '5', '6']) {
     await ownClass(form, classNumber).check();
   }
 
@@ -1339,41 +1258,38 @@ test("CLUB-04: formularz klubowy zachowuje kilka klas 4,5,6 @teacher @club", asy
 
   const confirmationId = await saveClubForm(page, form);
 
-  await s.record("confirmationId", confirmationId);
-  await s.record("classes", "4,5,6");
+  await s.record('confirmationId', confirmationId);
+  await s.record('classes', '4,5,6');
 
-  await s.app.openPanel("teacher", teacherId);
+  await s.app.openPanel('teacher', teacherId);
 
   const editForm = await openClubEdit(page, confirmationId);
 
-  for (const classNumber of ["4", "5", "6"]) {
+  for (const classNumber of ['4', '5', '6']) {
     await expect(ownClass(editForm, classNumber)).toBeChecked();
   }
 
-  for (const classNumber of ["7", "8"]) {
+  for (const classNumber of ['7', '8']) {
     await expect(ownClass(editForm, classNumber)).not.toBeChecked();
   }
 
   await cancelClubForm(editForm);
 });
 
-test("CLUB-05: zaznaczenie wszystkich klas Matematyka/SP wybiera 4-8 @teacher @club", async ({
-  page,
-  scenario: s,
-}) => {
+test('CLUB-05: zaznaczenie wszystkich klas Matematyka/SP wybiera 4-8 @teacher @club', async ({ page, scenario: s }) => {
   const schoolId = await s.createSchool();
   const teacherId = await s.createTeacher(schoolId);
 
   await addMathSp(page);
 
-  await s.app.openPanel("teacher", teacherId);
+  await s.app.openPanel('teacher', teacherId);
 
   const { form } = await openNewClubForm(page);
 
   await selectSchool(form, s.schoolName);
 
-  const selectAll = ownClasses(form).getByRole("checkbox", {
-    name: "Zaznacz wszystkie możliwe (nasze)",
+  const selectAll = ownClasses(form).getByRole('checkbox', {
+    name: 'Zaznacz wszystkie możliwe (nasze)',
     exact: true,
   });
 
@@ -1387,10 +1303,10 @@ test("CLUB-05: zaznaczenie wszystkich klas Matematyka/SP wybiera 4-8 @teacher @c
 
   const confirmationId = await saveClubForm(page, form);
 
-  await s.record("confirmationId", confirmationId);
-  await s.record("classes", "4,5,6,7,8");
+  await s.record('confirmationId', confirmationId);
+  await s.record('classes', '4,5,6,7,8');
 
-  await s.app.openPanel("teacher", teacherId);
+  await s.app.openPanel('teacher', teacherId);
 
   const editForm = await openClubEdit(page, confirmationId);
 
@@ -1401,22 +1317,19 @@ test("CLUB-05: zaznaczenie wszystkich klas Matematyka/SP wybiera 4-8 @teacher @c
   await cancelClubForm(editForm);
 });
 
-test("CLUB-06: edycja usuwa tylko wskazaną klasę 5 z zestawu 4,5,6 @teacher @club", async ({
-  page,
-  scenario: s,
-}) => {
+test('CLUB-06: edycja usuwa tylko wskazaną klasę 5 z zestawu 4,5,6 @teacher @club', async ({ page, scenario: s }) => {
   const schoolId = await s.createSchool();
   const teacherId = await s.createTeacher(schoolId);
 
   await addMathSp(page);
 
-  await s.app.openPanel("teacher", teacherId);
+  await s.app.openPanel('teacher', teacherId);
 
   const { form } = await openNewClubForm(page);
 
   await selectSchool(form, s.schoolName);
 
-  for (const classNumber of ["4", "5", "6"]) {
+  for (const classNumber of ['4', '5', '6']) {
     await ownClass(form, classNumber).check();
   }
 
@@ -1424,26 +1337,26 @@ test("CLUB-06: edycja usuwa tylko wskazaną klasę 5 z zestawu 4,5,6 @teacher @c
 
   const confirmationId = await saveClubForm(page, form);
 
-  await s.app.openPanel("teacher", teacherId);
+  await s.app.openPanel('teacher', teacherId);
 
   const editForm = await openClubEdit(page, confirmationId);
 
-  await ownClass(editForm, "5").uncheck();
+  await ownClass(editForm, '5').uncheck();
 
   await saveClubEdit(editForm);
 
-  await s.app.openPanel("teacher", teacherId);
+  await s.app.openPanel('teacher', teacherId);
 
   const verifyForm = await openClubEdit(page, confirmationId);
 
-  await expect(ownClass(verifyForm, "4")).toBeChecked();
-  await expect(ownClass(verifyForm, "5")).not.toBeChecked();
-  await expect(ownClass(verifyForm, "6")).toBeChecked();
+  await expect(ownClass(verifyForm, '4')).toBeChecked();
+  await expect(ownClass(verifyForm, '5')).not.toBeChecked();
+  await expect(ownClass(verifyForm, '6')).toBeChecked();
 
   await cancelClubForm(verifyForm);
 });
 
-test("CLUB-07: formularz klubowy dotyczy tylko wybranej szkoły nauczyciela @teacher @club", async ({
+test('CLUB-07: formularz klubowy dotyczy tylko wybranej szkoły nauczyciela @teacher @club', async ({
   page,
   scenario: s,
 }) => {
@@ -1451,52 +1364,45 @@ test("CLUB-07: formularz klubowy dotyczy tylko wybranej szkoły nauczyciela @tea
 
   const secondSchoolName = `${s.id} Druga szkoła`;
 
-  const secondSchoolId = await s.app.createSchool(
-    secondSchoolName,
-    String(Date.now() + 1),
-  );
+  const secondSchoolId = await s.app.createSchool(secondSchoolName, String(Date.now() + 1));
 
-  await s.record("secondSchoolId", secondSchoolId);
-  await s.record("secondSchoolName", secondSchoolName);
+  await s.record('secondSchoolId', secondSchoolId);
+  await s.record('secondSchoolName', secondSchoolName);
 
   await s.app.markTestRecord();
 
   const teacherId = await s.createTeacher(firstSchoolId);
 
-  await s.app.attachSchool(
-    page.locator("body"),
-    secondSchoolId,
-    secondSchoolName,
-  );
+  await s.app.attachSchool(page.locator('body'), secondSchoolId, secondSchoolName);
 
   await addMathSp(page);
 
-  await s.app.openPanel("teacher", teacherId);
+  await s.app.openPanel('teacher', teacherId);
 
   const { form } = await openNewClubForm(page);
 
-  const firstSchool = form.getByRole("row").filter({
+  const firstSchool = form.getByRole('row').filter({
     hasText: s.schoolName,
   });
 
-  const secondSchool = form.getByRole("row").filter({
+  const secondSchool = form.getByRole('row').filter({
     hasText: secondSchoolName,
   });
 
   await expect(firstSchool).toBeVisible();
   await expect(secondSchool).toBeVisible();
 
-  await firstSchool.getByRole("checkbox").check();
+  await firstSchool.getByRole('checkbox').check();
 
-  await expect(secondSchool.getByRole("checkbox")).not.toBeChecked();
+  await expect(secondSchool.getByRole('checkbox')).not.toBeChecked();
 
-  await ownClass(form, "4").check();
+  await ownClass(form, '4').check();
 
   await disableTeacherEmail(form);
 
   const confirmationId = await saveClubForm(page, form);
 
-  await s.app.openPanel("teacher", teacherId);
+  await s.app.openPanel('teacher', teacherId);
 
   const detail = await confirmationDetails(page, confirmationId);
 
@@ -1505,10 +1411,7 @@ test("CLUB-07: formularz klubowy dotyczy tylko wybranej szkoły nauczyciela @tea
   await expect(detail).not.toContainText(secondSchoolName);
 });
 
-test("CLUB-08: formularz klubowy obsługuje dwie szkoły nauczyciela @teacher @club", async ({
-  page,
-  scenario: s,
-}) => {
+test('CLUB-08: formularz klubowy obsługuje dwie szkoły nauczyciela @teacher @club', async ({ page, scenario: s }) => {
   /*
    * =====================================================
    * PRZYGOTOWANIE DWÓCH SZKÓŁ
@@ -1520,17 +1423,14 @@ test("CLUB-08: formularz klubowy obsługuje dwie szkoły nauczyciela @teacher @c
 
   const secondSchoolName = `${s.id} Druga szkoła`;
 
-  const secondSchoolId = await s.app.createSchool(
-    secondSchoolName,
-    String(Date.now() + 1),
-  );
+  const secondSchoolId = await s.app.createSchool(secondSchoolName, String(Date.now() + 1));
 
   await s.app.markTestRecord();
 
-  await s.record("firstSchoolId", firstSchoolId);
-  await s.record("firstSchoolName", firstSchoolName);
-  await s.record("secondSchoolId", secondSchoolId);
-  await s.record("secondSchoolName", secondSchoolName);
+  await s.record('firstSchoolId', firstSchoolId);
+  await s.record('firstSchoolName', firstSchoolName);
+  await s.record('secondSchoolId', secondSchoolId);
+  await s.record('secondSchoolName', secondSchoolName);
 
   /*
    * =====================================================
@@ -1543,11 +1443,7 @@ test("CLUB-08: formularz klubowy obsługuje dwie szkoły nauczyciela @teacher @c
   /*
    * Dodajemy drugą szkołę.
    */
-  await s.app.attachSchool(
-    page.locator("body"),
-    secondSchoolId,
-    secondSchoolName,
-  );
+  await s.app.attachSchool(page.locator('body'), secondSchoolId, secondSchoolName);
 
   /*
    * =====================================================
@@ -1557,7 +1453,7 @@ test("CLUB-08: formularz klubowy obsługuje dwie szkoły nauczyciela @teacher @c
 
   await addMathSp(page);
 
-  await s.app.openPanel("teacher", teacherId);
+  await s.app.openPanel('teacher', teacherId);
 
   /*
    * =====================================================
@@ -1567,27 +1463,27 @@ test("CLUB-08: formularz klubowy obsługuje dwie szkoły nauczyciela @teacher @c
 
   const { form, schoolYear } = await openNewClubForm(page);
 
-  await s.record("schoolYear", schoolYear);
-  await s.record("subject", "Matematyka");
-  await s.record("level", "SP");
+  await s.record('schoolYear', schoolYear);
+  await s.record('subject', 'Matematyka');
+  await s.record('level', 'SP');
 
   /*
    * Obie szkoły powinny być dostępne.
    */
-  const firstSchoolRow = form.getByRole("row").filter({
+  const firstSchoolRow = form.getByRole('row').filter({
     hasText: firstSchoolName,
   });
 
-  const secondSchoolRow = form.getByRole("row").filter({
+  const secondSchoolRow = form.getByRole('row').filter({
     hasText: secondSchoolName,
   });
 
   await expect(firstSchoolRow).toBeVisible();
   await expect(secondSchoolRow).toBeVisible();
 
-  const firstSchoolCheckbox = firstSchoolRow.getByRole("checkbox");
+  const firstSchoolCheckbox = firstSchoolRow.getByRole('checkbox');
 
-  const secondSchoolCheckbox = secondSchoolRow.getByRole("checkbox");
+  const secondSchoolCheckbox = secondSchoolRow.getByRole('checkbox');
 
   /*
    * =====================================================
@@ -1613,7 +1509,7 @@ test("CLUB-08: formularz klubowy obsługuje dwie szkoły nauczyciela @teacher @c
   /*
    * Powinny istnieć dwa osobne zestawy klas.
    */
-  const classBoxes = form.locator(".green-box");
+  const classBoxes = form.locator('.green-box');
 
   await expect(classBoxes).toHaveCount(2);
 
@@ -1626,16 +1522,16 @@ test("CLUB-08: formularz klubowy obsługuje dwie szkoły nauczyciela @teacher @c
    * =====================================================
    */
 
-  for (const classNumber of ["4", "5", "6", "7", "8"]) {
+  for (const classNumber of ['4', '5', '6', '7', '8']) {
     await expect(
-      firstSchoolClasses.getByRole("checkbox", {
+      firstSchoolClasses.getByRole('checkbox', {
         name: classNumber,
         exact: true,
       }),
     ).toBeVisible();
 
     await expect(
-      secondSchoolClasses.getByRole("checkbox", {
+      secondSchoolClasses.getByRole('checkbox', {
         name: classNumber,
         exact: true,
       }),
@@ -1648,8 +1544,8 @@ test("CLUB-08: formularz klubowy obsługuje dwie szkoły nauczyciela @teacher @c
    * =====================================================
    */
 
-  const firstSchoolClass4 = firstSchoolClasses.getByRole("checkbox", {
-    name: "4",
+  const firstSchoolClass4 = firstSchoolClasses.getByRole('checkbox', {
+    name: '4',
     exact: true,
   });
 
@@ -1665,8 +1561,8 @@ test("CLUB-08: formularz klubowy obsługuje dwie szkoły nauczyciela @teacher @c
    * =====================================================
    */
 
-  const secondSchoolClass5 = secondSchoolClasses.getByRole("checkbox", {
-    name: "5",
+  const secondSchoolClass5 = secondSchoolClasses.getByRole('checkbox', {
+    name: '5',
     exact: true,
   });
 
@@ -1691,8 +1587,8 @@ test("CLUB-08: formularz klubowy obsługuje dwie szkoły nauczyciela @teacher @c
    * 5 = NIE
    */
   await expect(
-    firstSchoolClasses.getByRole("checkbox", {
-      name: "5",
+    firstSchoolClasses.getByRole('checkbox', {
+      name: '5',
       exact: true,
     }),
   ).not.toBeChecked();
@@ -1703,8 +1599,8 @@ test("CLUB-08: formularz klubowy obsługuje dwie szkoły nauczyciela @teacher @c
    * 5 = TAK
    */
   await expect(
-    secondSchoolClasses.getByRole("checkbox", {
-      name: "4",
+    secondSchoolClasses.getByRole('checkbox', {
+      name: '4',
       exact: true,
     }),
   ).not.toBeChecked();
@@ -1724,8 +1620,8 @@ test("CLUB-08: formularz klubowy obsługuje dwie szkoły nauczyciela @teacher @c
    */
 
   await form
-    .getByRole("button", {
-      name: "Zapisz",
+    .getByRole('button', {
+      name: 'Zapisz',
       exact: true,
     })
     .click();
@@ -1737,10 +1633,10 @@ test("CLUB-08: formularz klubowy obsługuje dwie szkoły nauczyciela @teacher @c
    * dla Matematyki.
    */
   const confirmationRows = confirmations(page)
-    .getByRole("row")
+    .getByRole('row')
     .filter({
-      has: page.getByRole("cell", {
-        name: "Matematyka",
+      has: page.getByRole('cell', {
+        name: 'Matematyka',
         exact: true,
       }),
     });
@@ -1753,9 +1649,7 @@ test("CLUB-08: formularz klubowy obsługuje dwie szkoły nauczyciela @teacher @c
   const confirmationIds: string[] = [];
 
   for (let i = 0; i < 2; i++) {
-    const confirmationId = (
-      await confirmationRows.nth(i).getByRole("cell").nth(1).innerText()
-    ).trim();
+    const confirmationId = (await confirmationRows.nth(i).getByRole('cell').nth(1).innerText()).trim();
 
     expect(confirmationId).toMatch(/^\d+$/);
 
@@ -1769,11 +1663,11 @@ test("CLUB-08: formularz klubowy obsługuje dwie szkoły nauczyciela @teacher @c
    */
   expect(confirmationIds[0]).not.toBe(confirmationIds[1]);
 
-  await s.record("confirmationIds", confirmationIds.join(","));
+  await s.record('confirmationIds', confirmationIds.join(','));
 
-  await s.record("firstSchoolClass", "4");
+  await s.record('firstSchoolClass', '4');
 
-  await s.record("secondSchoolClass", "5");
+  await s.record('secondSchoolClass', '5');
 
   /*
    * =====================================================
@@ -1781,7 +1675,7 @@ test("CLUB-08: formularz klubowy obsługuje dwie szkoły nauczyciela @teacher @c
    * =====================================================
    */
 
-  await s.app.openPanel("teacher", teacherId);
+  await s.app.openPanel('teacher', teacherId);
 
   /*
    * Oba potwierdzenia nadal istnieją.
@@ -1803,8 +1697,8 @@ test("CLUB-08: formularz klubowy obsługuje dwie szkoły nauczyciela @teacher @c
    * Sprawdzamy faktyczne szczegóły.
    */
 
-  let firstSchoolConfirmationId = "";
-  let secondSchoolConfirmationId = "";
+  let firstSchoolConfirmationId = '';
+  let secondSchoolConfirmationId = '';
 
   for (const confirmationId of confirmationIds) {
     const row = confirmationRow(page, confirmationId);
@@ -1815,28 +1709,28 @@ test("CLUB-08: formularz klubowy obsługuje dwie szkoły nauczyciela @teacher @c
      * Główne dane potwierdzenia.
      */
     await expect(
-      row.getByRole("cell", {
+      row.getByRole('cell', {
         name: confirmationId,
         exact: true,
       }),
     ).toBeVisible();
 
     await expect(
-      row.getByRole("cell", {
-        name: "Matematyka",
+      row.getByRole('cell', {
+        name: 'Matematyka',
         exact: true,
       }),
     ).toBeVisible();
 
     await expect(
-      row.getByRole("cell", {
-        name: "SP",
+      row.getByRole('cell', {
+        name: 'SP',
         exact: true,
       }),
     ).toBeVisible();
 
     await expect(
-      row.getByRole("cell", {
+      row.getByRole('cell', {
         name: schoolYear,
         exact: true,
       }),
@@ -1863,8 +1757,8 @@ test("CLUB-08: formularz klubowy obsługuje dwie szkoły nauczyciela @teacher @c
       await expect(details).toContainText(firstSchoolName);
 
       await expect(
-        details.getByRole("cell", {
-          name: "SP",
+        details.getByRole('cell', {
+          name: 'SP',
           exact: true,
         }),
       ).toBeVisible();
@@ -1873,8 +1767,8 @@ test("CLUB-08: formularz klubowy obsługuje dwie szkoły nauczyciela @teacher @c
        * Powinna mieć klasę 4.
        */
       await expect(
-        details.getByRole("cell", {
-          name: "4",
+        details.getByRole('cell', {
+          name: '4',
           exact: true,
         }),
       ).toBeVisible();
@@ -1883,8 +1777,8 @@ test("CLUB-08: formularz klubowy obsługuje dwie szkoły nauczyciela @teacher @c
        * Nie powinna mieć klasy 5.
        */
       await expect(
-        details.getByRole("cell", {
-          name: "5",
+        details.getByRole('cell', {
+          name: '5',
           exact: true,
         }),
       ).toHaveCount(0);
@@ -1902,8 +1796,8 @@ test("CLUB-08: formularz klubowy obsługuje dwie szkoły nauczyciela @teacher @c
       await expect(details).toContainText(secondSchoolName);
 
       await expect(
-        details.getByRole("cell", {
-          name: "SP",
+        details.getByRole('cell', {
+          name: 'SP',
           exact: true,
         }),
       ).toBeVisible();
@@ -1912,8 +1806,8 @@ test("CLUB-08: formularz klubowy obsługuje dwie szkoły nauczyciela @teacher @c
        * Powinna mieć klasę 5.
        */
       await expect(
-        details.getByRole("cell", {
-          name: "5",
+        details.getByRole('cell', {
+          name: '5',
           exact: true,
         }),
       ).toBeVisible();
@@ -1922,8 +1816,8 @@ test("CLUB-08: formularz klubowy obsługuje dwie szkoły nauczyciela @teacher @c
        * Nie powinna mieć klasy 4.
        */
       await expect(
-        details.getByRole("cell", {
-          name: "4",
+        details.getByRole('cell', {
+          name: '4',
           exact: true,
         }),
       ).toHaveCount(0);
@@ -1932,8 +1826,8 @@ test("CLUB-08: formularz klubowy obsługuje dwie szkoły nauczyciela @teacher @c
     /*
      * Zwijamy aktualny wiersz przed sprawdzeniem kolejnego.
      */
-    const arrowUp = row.locator("mat-icon").filter({
-      hasText: "keyboard_arrow_up",
+    const arrowUp = row.locator('mat-icon').filter({
+      hasText: 'keyboard_arrow_up',
     });
 
     if (await arrowUp.count()) {
@@ -1947,27 +1841,21 @@ test("CLUB-08: formularz klubowy obsługuje dwie szkoły nauczyciela @teacher @c
    * =====================================================
    */
 
-  expect(
-    firstSchoolConfirmationId,
-    "Nie znaleziono potwierdzenia dla pierwszej szkoły",
-  ).not.toBe("");
+  expect(firstSchoolConfirmationId, 'Nie znaleziono potwierdzenia dla pierwszej szkoły').not.toBe('');
 
-  expect(
-    secondSchoolConfirmationId,
-    "Nie znaleziono potwierdzenia dla drugiej szkoły",
-  ).not.toBe("");
+  expect(secondSchoolConfirmationId, 'Nie znaleziono potwierdzenia dla drugiej szkoły').not.toBe('');
 
   /*
    * Każda szkoła ma własne potwierdzenie.
    */
   expect(firstSchoolConfirmationId).not.toBe(secondSchoolConfirmationId);
 
-  await s.record("firstSchoolConfirmationId", firstSchoolConfirmationId);
+  await s.record('firstSchoolConfirmationId', firstSchoolConfirmationId);
 
-  await s.record("secondSchoolConfirmationId", secondSchoolConfirmationId);
+  await s.record('secondSchoolConfirmationId', secondSchoolConfirmationId);
 });
 
-test("CLUB-09: anulowanie dodawania formularza nie tworzy potwierdzenia @teacher @club @cancel", async ({
+test('CLUB-09: anulowanie dodawania formularza nie tworzy potwierdzenia @teacher @club @cancel', async ({
   page,
   scenario: s,
 }) => {
@@ -1976,82 +1864,76 @@ test("CLUB-09: anulowanie dodawania formularza nie tworzy potwierdzenia @teacher
 
   await addMathSp(page);
 
-  await s.app.openPanel("teacher", teacherId);
+  await s.app.openPanel('teacher', teacherId);
 
   const { form } = await openNewClubForm(page);
 
   await selectSchool(form, s.schoolName);
 
-  await ownClass(form, "4").check();
+  await ownClass(form, '4').check();
 
   await disableTeacherEmail(form);
 
   await cancelClubForm(form);
 
-  await s.app.openPanel("teacher", teacherId);
+  await s.app.openPanel('teacher', teacherId);
 
   await expect(
     confirmations(page)
-      .getByRole("row")
+      .getByRole('row')
       .filter({
-        has: page.getByRole("cell", {
-          name: "Matematyka",
+        has: page.getByRole('cell', {
+          name: 'Matematyka',
           exact: true,
         }),
       }),
   ).toHaveCount(0);
 });
 
-test("CLUB-10: anulowanie edycji zachowuje klasę 4 @teacher @club @cancel", async ({
-  page,
-  scenario: s,
-}) => {
+test('CLUB-10: anulowanie edycji zachowuje klasę 4 @teacher @club @cancel', async ({ page, scenario: s }) => {
   const schoolId = await s.createSchool();
   const teacherId = await s.createTeacher(schoolId);
 
   await addMathSp(page);
 
-  await s.app.openPanel("teacher", teacherId);
+  await s.app.openPanel('teacher', teacherId);
 
   const { form } = await openNewClubForm(page);
 
   await selectSchool(form, s.schoolName);
 
-  await ownClass(form, "4").check();
+  await ownClass(form, '4').check();
 
   await disableTeacherEmail(form);
 
   const confirmationId = await saveClubForm(page, form);
 
-  await s.app.openPanel("teacher", teacherId);
+  await s.app.openPanel('teacher', teacherId);
 
   const editForm = await openClubEdit(page, confirmationId);
 
-  await ownClass(editForm, "4").uncheck();
-  await ownClass(editForm, "5").check();
+  await ownClass(editForm, '4').uncheck();
+  await ownClass(editForm, '5').check();
 
-  await expect(ownClass(editForm, "4")).not.toBeChecked();
-  await expect(ownClass(editForm, "5")).toBeChecked();
+  await expect(ownClass(editForm, '4')).not.toBeChecked();
+  await expect(ownClass(editForm, '5')).toBeChecked();
 
   /*
    * Nie zapisujemy.
    */
   await cancelClubForm(editForm);
 
-  await s.app.openPanel("teacher", teacherId);
+  await s.app.openPanel('teacher', teacherId);
 
   const verifyForm = await openClubEdit(page, confirmationId);
 
-  await expect(ownClass(verifyForm, "4")).toBeChecked();
-  await expect(ownClass(verifyForm, "5")).not.toBeChecked();
+  await expect(ownClass(verifyForm, '4')).toBeChecked();
+  await expect(ownClass(verifyForm, '5')).not.toBeChecked();
 
   await cancelClubForm(verifyForm);
 });
 
-test("CLUB-11: formularz klubowy można usunąć @teacher @club @delete", async ({
-  page,
-  scenario: s,
-}) => {
+test('CLUB-11: formularz klubowy można usunąć @teacher @club @delete', async ({ page, scenario: s }) => {
   /*
    * =====================================================
    * PRZYGOTOWANIE DANYCH
@@ -2062,9 +1944,9 @@ test("CLUB-11: formularz klubowy można usunąć @teacher @club @delete", async 
 
   const teacherId = await s.createTeacher(schoolId);
 
-  await s.record("subject", "Matematyka");
-  await s.record("level", "SP");
-  await s.record("class", "4");
+  await s.record('subject', 'Matematyka');
+  await s.record('level', 'SP');
+  await s.record('class', '4');
 
   /*
    * Dodajemy nauczycielowi przedmioto-poziom:
@@ -2076,7 +1958,7 @@ test("CLUB-11: formularz klubowy można usunąć @teacher @club @delete", async 
    * Otwieramy nauczyciela ponownie,
    * żeby formularz klubowy tworzyć na świeżym widoku.
    */
-  await s.app.openPanel("teacher", teacherId);
+  await s.app.openPanel('teacher', teacherId);
 
   /*
    * =====================================================
@@ -2086,7 +1968,7 @@ test("CLUB-11: formularz klubowy można usunąć @teacher @club @delete", async 
 
   const { form, schoolYear } = await openNewClubForm(page);
 
-  await s.record("schoolYear", schoolYear);
+  await s.record('schoolYear', schoolYear);
 
   /*
    * Wybieramy szkołę nauczyciela.
@@ -2096,7 +1978,7 @@ test("CLUB-11: formularz klubowy można usunąć @teacher @club @delete", async 
   /*
    * Matematyka / SP → klasa 4.
    */
-  const class4 = ownClass(form, "4");
+  const class4 = ownClass(form, '4');
 
   await expect(class4).toBeVisible();
 
@@ -2114,7 +1996,7 @@ test("CLUB-11: formularz klubowy można usunąć @teacher @club @delete", async 
    */
   const confirmationId = await saveClubForm(page, form);
 
-  await s.record("confirmationId", confirmationId);
+  await s.record('confirmationId', confirmationId);
 
   /*
    * =====================================================
@@ -2122,36 +2004,36 @@ test("CLUB-11: formularz klubowy można usunąć @teacher @club @delete", async 
    * =====================================================
    */
 
-  await test.step("Sprawdź utworzony formularz przed usunięciem", async () => {
-    await s.app.openPanel("teacher", teacherId);
+  await test.step('Sprawdź utworzony formularz przed usunięciem', async () => {
+    await s.app.openPanel('teacher', teacherId);
 
     const row = confirmationRow(page, confirmationId);
 
     await expect(row).toHaveCount(1);
 
     await expect(
-      row.getByRole("cell", {
+      row.getByRole('cell', {
         name: confirmationId,
         exact: true,
       }),
     ).toBeVisible();
 
     await expect(
-      row.getByRole("cell", {
-        name: "Matematyka",
+      row.getByRole('cell', {
+        name: 'Matematyka',
         exact: true,
       }),
     ).toBeVisible();
 
     await expect(
-      row.getByRole("cell", {
-        name: "SP",
+      row.getByRole('cell', {
+        name: 'SP',
         exact: true,
       }),
     ).toBeVisible();
 
     await expect(
-      row.getByRole("cell", {
+      row.getByRole('cell', {
         name: schoolYear,
         exact: true,
       }),
@@ -2164,8 +2046,8 @@ test("CLUB-11: formularz klubowy można usunąć @teacher @club @delete", async 
    * =====================================================
    */
 
-  await test.step("Usuń formularz klubowy", async () => {
-    await s.app.openPanel("teacher", teacherId);
+  await test.step('Usuń formularz klubowy', async () => {
+    await s.app.openPanel('teacher', teacherId);
 
     const row = confirmationRow(page, confirmationId);
 
@@ -2177,8 +2059,8 @@ test("CLUB-11: formularz klubowy można usunąć @teacher @club @delete", async 
      */
     await row.click();
 
-    const deleteButton = confirmations(page).getByRole("button", {
-      name: "Usuń",
+    const deleteButton = confirmations(page).getByRole('button', {
+      name: 'Usuń',
       exact: true,
     });
 
@@ -2192,7 +2074,7 @@ test("CLUB-11: formularz klubowy można usunąć @teacher @club @delete", async 
      */
     await confirmDeleteIfShown(page);
 
-    await s.record("deleteClicked", "true");
+    await s.record('deleteClicked', 'true');
   });
 
   /*
@@ -2201,8 +2083,8 @@ test("CLUB-11: formularz klubowy można usunąć @teacher @club @delete", async 
    * =====================================================
    */
 
-  await test.step("Sprawdź oznaczenie formularza jako usunięty", async () => {
-    await s.app.openPanel("teacher", teacherId);
+  await test.step('Sprawdź oznaczenie formularza jako usunięty', async () => {
+    await s.app.openPanel('teacher', teacherId);
 
     const deletedRow = confirmationRow(page, confirmationId);
 
@@ -2215,7 +2097,7 @@ test("CLUB-11: formularz klubowy można usunąć @teacher @club @delete", async 
      * Nadal jest to ten sam formularz.
      */
     await expect(
-      deletedRow.getByRole("cell", {
+      deletedRow.getByRole('cell', {
         name: confirmationId,
         exact: true,
       }),
@@ -2227,7 +2109,7 @@ test("CLUB-11: formularz klubowy można usunąć @teacher @club @delete", async 
      * 1 - Potw. ID
      * 2 - Usunięte
      */
-    const deletedCell = deletedRow.getByRole("cell").nth(2);
+    const deletedCell = deletedRow.getByRole('cell').nth(2);
 
     await expect(deletedCell).toBeVisible();
 
@@ -2235,19 +2117,19 @@ test("CLUB-11: formularz klubowy można usunąć @teacher @club @delete", async 
      * Octopus oznacza usunięty formularz
      * ikoną Material "backspace".
      */
-    const deletedIcon = deletedCell.locator("mat-icon");
+    const deletedIcon = deletedCell.locator('mat-icon');
 
     await expect(deletedIcon).toHaveCount(1);
 
-    await expect(deletedIcon).toHaveText("backspace");
+    await expect(deletedIcon).toHaveText('backspace');
 
-    await s.record("deletedStateIcon", "backspace");
+    await s.record('deletedStateIcon', 'backspace');
 
-    await s.record("clubDeleted", "true");
+    await s.record('clubDeleted', 'true');
   });
 });
 
-test("CLUB-12A: brak szkoły blokuje utworzenie formularza klubowego @teacher @club @validation", async ({
+test('CLUB-12A: brak szkoły blokuje utworzenie formularza klubowego @teacher @club @validation', async ({
   page,
   scenario: s,
 }) => {
@@ -2262,17 +2144,17 @@ test("CLUB-12A: brak szkoły blokuje utworzenie formularza klubowego @teacher @c
 
   await addMathSp(page);
 
-  await s.app.openPanel("teacher", teacherId);
+  await s.app.openPanel('teacher', teacherId);
 
   /*
    * Na początku nie może istnieć żadne potwierdzenie
    * Matematyki.
    */
   const mathConfirmations = confirmations(page)
-    .getByRole("row")
+    .getByRole('row')
     .filter({
-      has: page.getByRole("cell", {
-        name: "Matematyka",
+      has: page.getByRole('cell', {
+        name: 'Matematyka',
         exact: true,
       }),
     });
@@ -2291,13 +2173,13 @@ test("CLUB-12A: brak szkoły blokuje utworzenie formularza klubowego @teacher @c
    * Nie zaznaczamy szkoły.
    */
 
-  const schoolRow = form.getByRole("row").filter({
+  const schoolRow = form.getByRole('row').filter({
     hasText: s.schoolName,
   });
 
   await expect(schoolRow).toBeVisible();
 
-  const schoolCheckbox = schoolRow.getByRole("checkbox");
+  const schoolCheckbox = schoolRow.getByRole('checkbox');
 
   await expect(schoolCheckbox).not.toBeChecked();
 
@@ -2305,8 +2187,8 @@ test("CLUB-12A: brak szkoły blokuje utworzenie formularza klubowego @teacher @c
    * Przycisk Zapisz jest aktywny mimo braku szkoły.
    * To potwierdziliśmy wykonaniem testu.
    */
-  const saveButton = form.getByRole("button", {
-    name: "Zapisz",
+  const saveButton = form.getByRole('button', {
+    name: 'Zapisz',
     exact: true,
   });
 
@@ -2326,7 +2208,7 @@ test("CLUB-12A: brak szkoły blokuje utworzenie formularza klubowego @teacher @c
    */
   await expect(form).toBeVisible();
 
-  await s.record("validationCase", "missing-school");
+  await s.record('validationCase', 'missing-school');
 
   /*
    * Nie próbujemy klikać Anuluj.
@@ -2336,7 +2218,7 @@ test("CLUB-12A: brak szkoły blokuje utworzenie formularza klubowego @teacher @c
    *
    * Pełne przejście do nauczyciela daje nam czysty stan.
    */
-  await s.app.openPanel("teacher", teacherId);
+  await s.app.openPanel('teacher', teacherId);
 
   /*
    * =====================================================
@@ -2345,20 +2227,20 @@ test("CLUB-12A: brak szkoły blokuje utworzenie formularza klubowego @teacher @c
    */
 
   const afterSaveAttempt = confirmations(page)
-    .getByRole("row")
+    .getByRole('row')
     .filter({
-      has: page.getByRole("cell", {
-        name: "Matematyka",
+      has: page.getByRole('cell', {
+        name: 'Matematyka',
         exact: true,
       }),
     });
 
   await expect(afterSaveAttempt).toHaveCount(0);
 
-  await s.record("clubCreated", "false");
+  await s.record('clubCreated', 'false');
 });
 
-test("CLUB-12B: brak klasy blokuje utworzenie formularza klubowego @teacher @club @validation", async ({
+test('CLUB-12B: brak klasy blokuje utworzenie formularza klubowego @teacher @club @validation', async ({
   page,
   scenario: s,
 }) => {
@@ -2373,17 +2255,17 @@ test("CLUB-12B: brak klasy blokuje utworzenie formularza klubowego @teacher @clu
 
   await addMathSp(page);
 
-  await s.app.openPanel("teacher", teacherId);
+  await s.app.openPanel('teacher', teacherId);
 
   /*
    * Przed próbą zapisu nie ma żadnego formularza
    * Matematyki.
    */
   const mathConfirmations = confirmations(page)
-    .getByRole("row")
+    .getByRole('row')
     .filter({
-      has: page.getByRole("cell", {
-        name: "Matematyka",
+      has: page.getByRole('cell', {
+        name: 'Matematyka',
         exact: true,
       }),
     });
@@ -2414,7 +2296,7 @@ test("CLUB-12B: brak klasy blokuje utworzenie formularza klubowego @teacher @clu
    * Żadnej nie zaznaczamy.
    */
 
-  for (const classNumber of ["4", "5", "6", "7", "8"]) {
+  for (const classNumber of ['4', '5', '6', '7', '8']) {
     const checkbox = ownClass(form, classNumber);
 
     await expect(checkbox).toBeVisible();
@@ -2425,8 +2307,8 @@ test("CLUB-12B: brak klasy blokuje utworzenie formularza klubowego @teacher @clu
   /*
    * Przycisk jest aktywny mimo braku klasy.
    */
-  const saveButton = form.getByRole("button", {
-    name: "Zapisz",
+  const saveButton = form.getByRole('button', {
+    name: 'Zapisz',
     exact: true,
   });
 
@@ -2445,14 +2327,14 @@ test("CLUB-12B: brak klasy blokuje utworzenie formularza klubowego @teacher @clu
    */
   await expect(form).toBeVisible();
 
-  await s.record("validationCase", "missing-class");
+  await s.record('validationCase', 'missing-class');
 
   /*
    * Pełne ponowne wejście zamiast Anuluj.
    * Dzięki temu test nie zależy od tego, czy aplikacja
    * pokazuje dodatkowy modal/komunikat walidacyjny.
    */
-  await s.app.openPanel("teacher", teacherId);
+  await s.app.openPanel('teacher', teacherId);
 
   /*
    * =====================================================
@@ -2461,29 +2343,26 @@ test("CLUB-12B: brak klasy blokuje utworzenie formularza klubowego @teacher @clu
    */
 
   const afterSaveAttempt = confirmations(page)
-    .getByRole("row")
+    .getByRole('row')
     .filter({
-      has: page.getByRole("cell", {
-        name: "Matematyka",
+      has: page.getByRole('cell', {
+        name: 'Matematyka',
         exact: true,
       }),
     });
 
   await expect(afterSaveAttempt).toHaveCount(0);
 
-  await s.record("clubCreated", "false");
+  await s.record('clubCreated', 'false');
 });
 
-test("CLUB-13: formularz klubowy zachowuje klasę obcą i wydawnictwo @teacher @club", async ({
-  page,
-  scenario: s,
-}) => {
+test('CLUB-13: formularz klubowy zachowuje klasę obcą i wydawnictwo @teacher @club', async ({ page, scenario: s }) => {
   const schoolId = await s.createSchool();
   const teacherId = await s.createTeacher(schoolId);
 
   await addMathSp(page);
 
-  await s.app.openPanel("teacher", teacherId);
+  await s.app.openPanel('teacher', teacherId);
 
   const { form } = await openNewClubForm(page);
 
@@ -2492,20 +2371,20 @@ test("CLUB-13: formularz klubowy zachowuje klasę obcą i wydawnictwo @teacher @
   /*
    * Czerwona sekcja = obce.
    */
-  await foreignClass(form, "4").check();
+  await foreignClass(form, '4').check();
 
-  await expect(foreignClass(form, "4")).toBeChecked();
+  await expect(foreignClass(form, '4')).toBeChecked();
 
-  await expect(ownClass(form, "4")).not.toBeChecked();
+  await expect(ownClass(form, '4')).not.toBeChecked();
 
   const foreign = foreignClasses(form);
 
-  const publisher = foreign.getByRole("combobox");
+  const publisher = foreign.getByRole('combobox');
 
   await publisher.click();
 
   const option = page
-    .getByRole("option")
+    .getByRole('option')
     .filter({
       hasNotText: /^wybierz$/i,
     })
@@ -2515,32 +2394,30 @@ test("CLUB-13: formularz klubowy zachowuje klasę obcą i wydawnictwo @teacher @
 
   const publisherName = (await option.innerText()).trim();
 
-  expect(publisherName).not.toBe("");
+  expect(publisherName).not.toBe('');
 
   await option.click();
 
-  await s.record("foreignPublisher", publisherName);
+  await s.record('foreignPublisher', publisherName);
 
   await disableTeacherEmail(form);
 
   const confirmationId = await saveClubForm(page, form);
 
-  await s.record("confirmationId", confirmationId);
+  await s.record('confirmationId', confirmationId);
 
   /*
    * Pełne ponowne wejście.
    */
-  await s.app.openPanel("teacher", teacherId);
+  await s.app.openPanel('teacher', teacherId);
 
   const editForm = await openClubEdit(page, confirmationId);
 
-  await expect(foreignClass(editForm, "4")).toBeChecked();
+  await expect(foreignClass(editForm, '4')).toBeChecked();
 
-  await expect(ownClass(editForm, "4")).not.toBeChecked();
+  await expect(ownClass(editForm, '4')).not.toBeChecked();
 
-  await expect(foreignClasses(editForm).getByRole("combobox")).toContainText(
-    publisherName,
-  );
+  await expect(foreignClasses(editForm).getByRole('combobox')).toContainText(publisherName);
 
   await cancelClubForm(editForm);
 });

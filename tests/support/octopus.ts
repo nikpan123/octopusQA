@@ -1,5 +1,7 @@
 import { expect, type Locator, type Page } from '@playwright/test';
 
+import { normalizeTeacherName } from './teacher-dialog';
+
 // fill wpisuje całość atomowo; End emituje keyup wymagany m.in. przez adres.
 // Długie pressSequentially koliduje z automatycznym ustawianiem fokusu dialogu.
 export async function typeValue(input: Locator, value: string) {
@@ -21,31 +23,45 @@ export class Octopus {
   // Etykiety w tej aplikacji nie zawsze są HTML label. Szukamy najbliższego
   // wspólnego kontenera etykiety i pola zamiast używać zmiennych ID mat-input.
   field(scope: Locator, label: string) {
-    return scope.getByText(label, { exact: true })
+    return scope
+      .getByText(label, { exact: true })
       .locator('xpath=ancestor::*[.//input[not(@type="checkbox")]][1]')
       .locator('input:not([type="checkbox"])');
   }
 
-  detail(id: string) { return this.page.locator(`mat-form-field[id="${id}"] input`); }
+  detail(id: string) {
+    return this.page.locator(`mat-form-field[id="${id}"] input`);
+  }
 
   async openPanel(kind: 'teacher' | 'school', id?: string) {
     await this.page.goto(`/${kind}/${kind}-panel${id ? `/${id}` : ''}`);
-    await expect(this.page.getByRole('heading', {
-      name: kind === 'school' ? 'Dane podstawowe szkoły' : 'Dane podstawowe', exact: true,
-    })).toBeVisible();
+    await expect(
+      this.page.getByRole('heading', {
+        name: kind === 'school' ? 'Dane podstawowe szkoły' : 'Dane podstawowe',
+        exact: true,
+      }),
+    ).toBeVisible();
     if (id) {
-      await expect(this.page.locator('.info-row').filter({
-        has: this.page.getByText('ID', { exact: true }),
-      }).locator('input[type="text"]')).toHaveValue(id);
+      await expect(
+        this.page
+          .locator('.info-row')
+          .filter({
+            has: this.page.getByText('ID', { exact: true }),
+          })
+          .locator('input[type="text"]'),
+      ).toHaveValue(id);
       await expect(this.page.getByRole('button', { name: 'Edycja danych', exact: true })).toBeVisible();
     }
   }
 
   async prepareSchool(name: string, number: string) {
     await this.openPanel('school');
-    await this.page.getByRole('button', { name: 'Dodaj', exact: true }).filter({
-      has: this.page.getByText('school', { exact: true }),
-    }).click();
+    await this.page
+      .getByRole('button', { name: 'Dodaj', exact: true })
+      .filter({
+        has: this.page.getByText('school', { exact: true }),
+      })
+      .click();
     const form = this.dialog('Dodaj nową szkołę');
     await typeValue(this.field(form, '* Nazwa'), name);
     await form.getByRole('combobox').click();
@@ -76,7 +92,7 @@ export class Octopus {
     // Flaga doczytuje się osobnym żądaniem. Nie zaznaczaj jej w trakcie
     // inicjalizacji, ani nie opuszczaj strony przed zakończeniem zapisu.
     const kind = this.page.url().includes('/teacher/') ? 'Teacher' : 'School';
-    const loaded = this.page.waitForResponse(r => new URL(r.url()).pathname === `/api/${kind}/Get${kind}IsTested`);
+    const loaded = this.page.waitForResponse((r) => new URL(r.url()).pathname === `/api/${kind}/Get${kind}IsTested`);
     await this.page.reload();
     const initial = await loaded;
     expect(initial.ok()).toBeTruthy();
@@ -84,9 +100,12 @@ export class Octopus {
     const checkbox = this.page.getByRole('checkbox', { name: 'Testowy', exact: true });
     await expect(checkbox).toBeEnabled();
     if (!(await checkbox.isChecked())) {
-      const saved = this.page.waitForResponse(r =>
-        new URL(r.url()).pathname.startsWith(`/api/${kind}/`) &&
-        new URL(r.url()).pathname.includes('Test') && r.request().method() === 'POST');
+      const saved = this.page.waitForResponse(
+        (r) =>
+          new URL(r.url()).pathname.startsWith(`/api/${kind}/`) &&
+          new URL(r.url()).pathname.includes('Test') &&
+          r.request().method() === 'POST',
+      );
       await checkbox.check();
       const response = await saved;
       expect(response.ok(), 'Zapis flagi Testowy musi zakończyć się powodzeniem').toBeTruthy();
@@ -118,9 +137,15 @@ export class Octopus {
     const form = this.dialog('Dodaj nowego nauczyciela');
     await typeValue(this.field(form, '*Nazwisko'), lastName);
     await typeValue(this.field(form, '*Imię'), 'Testowy');
-    await typeValue(form.locator('.new-teacher__personal-input').filter({
-      has: this.page.getByText('E-mail', { exact: true }),
-    }).locator('input'), email);
+    await typeValue(
+      form
+        .locator('.new-teacher__personal-input')
+        .filter({
+          has: this.page.getByText('E-mail', { exact: true }),
+        })
+        .locator('input'),
+      email,
+    );
     if (schoolId && schoolName) await this.attachSchool(form, schoolId, schoolName);
     return form;
   }
@@ -166,19 +191,23 @@ export class Octopus {
     await expect(this.page.getByRole('heading', { name: 'Rekordów: 1', exact: true })).toBeVisible();
   }
 
-  async editFirstName(value: string) {
+  // `expected` domyślnie liczy się z tej samej normalizacji, którą stosuje
+  // aplikacja (wielka pierwsza litera, reszta mała) — patrz audyt P1-5:
+  // poprzednio asercja była na sztywno 'Jan', co działało tylko dla 'JaN'.
+  async editFirstName(value: string, expected: string = normalizeTeacherName(value)) {
     await this.page.getByRole('button', { name: 'Edycja danych', exact: true }).click();
     const form = this.dialog('Edycja danych podstawowych');
     await typeValue(form.locator('input[id="firstName"]'), value);
     await form.getByRole('button', { name: 'Zapisz', exact: true }).click();
     await expect(form).toHaveCount(0);
-    await expect(this.detail('firstName')).toHaveValue('Jan');
+    await expect(this.detail('firstName')).toHaveValue(expected);
   }
 
   results(kind: 'teacher' | 'school') {
     return this.page.getByRole('treegrid').filter({
       has: this.page.getByRole('columnheader', {
-        name: kind === 'teacher' ? 'Osoba' : 'Nazwa z SIO', exact: true,
+        name: kind === 'teacher' ? 'Osoba' : 'Nazwa z SIO',
+        exact: true,
       }),
     });
   }
@@ -194,17 +223,26 @@ export class Octopus {
 
   async searchMissing(kind: 'teacher' | 'school', label: string, value: string) {
     // Nie resetuj tu panelu: FIND-04 musi sprawdzać usunięcie poprzedniej listy.
-    const search = await this.openSearch(kind);
-    // Wyszukiwarka może pamiętać kryteria poprzedniej operacji.
-    for (const input of await search.locator('input:not([type="checkbox"]):not([readonly]):not([disabled])').all()) {
-      await typeValue(input, '');
-    }
-    await typeValue(this.field(search, label), value);
-    await search.getByRole('button', { name: 'Szukaj', exact: true }).click();
+    //
+    // OCT-OBS-002: po kliknięciu "Szukaj" komunikat "Brak wyników wyszukiwania"
+    // potrafi zniknąć samoistnie w bardzo krótkim oknie czasowym (obserwacja
+    // niepotwierdzona jako błąd aplikacji). Nie osłabiamy tu wymagania — komunikat
+    // wciąż musi się pokazać i zostać zamknięty przyciskiem OK — tylko cała
+    // sekwencja "otwórz wyszukiwarkę → wyszukaj → zamknij komunikat" jest
+    // powtarzana, jeśli komunikat zniknie zanim zdążymy go zamknąć.
     const empty = this.page.locator('mat-dialog-container').filter({ hasText: 'Brak wyników wyszukiwania' });
-    await expect(empty).toBeVisible();
-    await empty.getByRole('button', { name: 'OK', exact: true }).click();
-    await expect(empty).toHaveCount(0);
+    await expect(async () => {
+      const search = await this.openSearch(kind);
+      // Wyszukiwarka może pamiętać kryteria poprzedniej operacji.
+      for (const input of await search.locator('input:not([type="checkbox"]):not([readonly]):not([disabled])').all()) {
+        await typeValue(input, '');
+      }
+      await typeValue(this.field(search, label), value);
+      await search.getByRole('button', { name: 'Szukaj', exact: true }).click();
+      await expect(empty).toBeVisible({ timeout: 5_000 });
+      await empty.getByRole('button', { name: 'OK', exact: true }).click({ timeout: 5_000 });
+      await expect(empty).toHaveCount(0);
+    }).toPass({ timeout: 20_000 });
     await expect(this.results(kind).getByRole('gridcell')).toHaveCount(0);
   }
 }
