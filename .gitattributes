@@ -1,0 +1,8 @@
+# Repozytorium historycznie przechowuje pliki tekstowe z końcami linii CRLF
+# (narzędzia PowerShell/npm.cmd). Ta reguła tylko PRZYPINA istniejącą
+# konwencję, żeby kontrybutor spoza Windows przypadkiem nie wprowadził LF —
+# nie normalizuje niczego wstecznie (brak realnej zmiany w historii).
+* text=auto eol=crlf
+*.png -text
+*.jpg -text
+*.zip -text
