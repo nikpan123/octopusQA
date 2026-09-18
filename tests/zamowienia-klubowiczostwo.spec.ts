@@ -3,7 +3,6 @@ import {
   MATH_SP_CLASSES,
   addMathSp,
   cancelClubForm,
-  clubForm,
   confirmDeleteIfShown,
   confirmationDetails,
   confirmationRow,
@@ -1091,6 +1090,10 @@ test("ORD-03: edycja ilości dwóch produktów w zamówieniu i usunięcie zamów
          * błędem sprzątania.
          */
         if (!scenarioError) {
+          // Celowe: scenariusz przeszedł, więc błąd sprzątania MUSI
+          // wywalić test — nie przykrywamy tu żadnego wcześniejszego
+          // wyjątku (ten catch jest ostatnim blokiem w finally).
+          // eslint-disable-next-line no-unsafe-finally
           throw cleanupError;
         }
 

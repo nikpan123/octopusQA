@@ -6,7 +6,7 @@ import {
   addTeacherNote,
   archiveTeacherNote,
   cancelTeacherDialog,
-  cancelTeacherEmailDelete,
+  cancelTeacherMinimalRecordWarning,
   cancelTeacherNotesEdit,
   cancelTeacherPhoneDelete,
   cancelTeacherRodoEdit,
@@ -30,13 +30,11 @@ import {
   expectTeacherRodoHistoryChange,
   expectTeacherRodoOnCard,
   fillTeacherPrivateAddress,
-  firstEditableTeacherInput,
   getSavedTeacherPhones,
   normalizeTeacherName,
   openBasicTeacherEdit,
   openTeacherEmailDeleteConfirmation,
   openTeacherEmailEdit,
-  openTeacherFieldEdit,
   openTeacherHistory,
   openTeacherMinimalRecordWarning,
   openTeacherNotesEdit,
@@ -50,9 +48,7 @@ import {
   saveTeacherRodoEdit,
   setTeacherRodoConsent,
   teacherBirthDateInput,
-  teacherConsent,
   teacherHistorySnapshot,
-  teacherNewEmailInput,
   teacherNewPhoneInput,
   teacherNoteInput,
   teacherNoteRow,
@@ -61,7 +57,6 @@ import {
   teacherPhoneAddButton,
   teacherPhoneDeleteButtons,
   teacherRodoCheckbox,
-  teacherRodoCheckboxOnCard,
   teacherRodoSourceSelect,
 } from "./support/teacher-edit";
 
@@ -1838,6 +1833,7 @@ test("EDIT-26: pełny adres prywatny można dodać i jest zapisany w historii @t
   const dialog = await openTeacherPrivateAddressEdit(page);
 
   await fillTeacherPrivateAddress(
+    page,
     dialog,
     address.zipCode,
     address.city,
@@ -1885,11 +1881,16 @@ test("EDIT-26: pełny adres prywatny można dodać i jest zapisany w historii @t
    * =====================================================
    */
 
-  await expectTeacherPrivateAddressHistoryChange(
-    page,
-    "Numer adres prywatny",
-    address.number,
-  );
+  {
+    const history = await openTeacherHistory(page);
+
+    await expectTeacherPrivateAddressHistoryChange(
+      page,
+      history,
+      "Numer adres prywatny",
+      address.number,
+    );
+  }
 
   /*
    * =====================================================
@@ -1899,11 +1900,16 @@ test("EDIT-26: pełny adres prywatny można dodać i jest zapisany w historii @t
 
   await s.app.openPanel("teacher", teacherId);
 
-  await expectTeacherPrivateAddressHistoryChange(
-    page,
-    "Miasto adres prywatny",
-    `${address.city} ${address.zipCode}`,
-  );
+  {
+    const history = await openTeacherHistory(page);
+
+    await expectTeacherPrivateAddressHistoryChange(
+      page,
+      history,
+      "Miasto adres prywatny",
+      `${address.city} ${address.zipCode}`,
+    );
+  }
 
   /*
    * =====================================================
@@ -1913,11 +1919,16 @@ test("EDIT-26: pełny adres prywatny można dodać i jest zapisany w historii @t
 
   await s.app.openPanel("teacher", teacherId);
 
-  await expectTeacherPrivateAddressHistoryChange(
-    page,
-    "Ulica adres prywatny",
-    address.street,
-  );
+  {
+    const history = await openTeacherHistory(page);
+
+    await expectTeacherPrivateAddressHistoryChange(
+      page,
+      history,
+      "Ulica adres prywatny",
+      address.street,
+    );
+  }
 
   await s.record(
     "privateAddress",
