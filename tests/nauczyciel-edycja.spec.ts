@@ -1828,47 +1828,25 @@ test.describe('Edycja danych nauczyciela @teacher @edit', () => {
 
     /*
      * =====================================================
-     * HISTORIA - NUMER
+     * HISTORIA
      * =====================================================
      */
 
-    {
+    const historyChecks: {
+      field: 'Numer adres prywatny' | 'Miasto adres prywatny' | 'Ulica adres prywatny';
+      value: string;
+    }[] = [
+      { field: 'Numer adres prywatny', value: address.number },
+      { field: 'Miasto adres prywatny', value: `${address.city} ${address.zipCode}` },
+      { field: 'Ulica adres prywatny', value: address.street },
+    ];
+
+    for (const check of historyChecks) {
+      await s.app.openPanel('teacher', teacherId);
+
       const history = await openTeacherHistory(page);
 
-      await expectTeacherPrivateAddressHistoryChange(page, history, 'Numer adres prywatny', address.number);
-    }
-
-    /*
-     * =====================================================
-     * HISTORIA - MIASTO
-     * =====================================================
-     */
-
-    await s.app.openPanel('teacher', teacherId);
-
-    {
-      const history = await openTeacherHistory(page);
-
-      await expectTeacherPrivateAddressHistoryChange(
-        page,
-        history,
-        'Miasto adres prywatny',
-        `${address.city} ${address.zipCode}`,
-      );
-    }
-
-    /*
-     * =====================================================
-     * HISTORIA - ULICA
-     * =====================================================
-     */
-
-    await s.app.openPanel('teacher', teacherId);
-
-    {
-      const history = await openTeacherHistory(page);
-
-      await expectTeacherPrivateAddressHistoryChange(page, history, 'Ulica adres prywatny', address.street);
+      await expectTeacherPrivateAddressHistoryChange(page, history, check.field, check.value);
     }
 
     await s.record('privateAddress', `${address.zipCode} ${address.city}, ${address.street} ${address.number}`);
@@ -2031,35 +2009,21 @@ test.describe('Edycja danych nauczyciela @teacher @edit', () => {
 
     const history = await openTeacherHistory(page);
 
-    /*
-     * Drugi adres
-     */
+    const historyChecks: {
+      field: 'Numer adres prywatny' | 'Miasto adres prywatny' | 'Ulica adres prywatny';
+      value: string;
+    }[] = [
+      { field: 'Numer adres prywatny', value: secondAddress.number },
+      { field: 'Miasto adres prywatny', value: `${secondAddress.city} ${secondAddress.zipCode}` },
+      { field: 'Ulica adres prywatny', value: secondAddress.street },
+      { field: 'Numer adres prywatny', value: firstAddress.number },
+      { field: 'Miasto adres prywatny', value: `${firstAddress.city} ${firstAddress.zipCode}` },
+      { field: 'Ulica adres prywatny', value: firstAddress.street },
+    ];
 
-    await expectTeacherPrivateAddressHistoryChange(page, history, 'Numer adres prywatny', secondAddress.number);
-
-    await expectTeacherPrivateAddressHistoryChange(
-      page,
-      history,
-      'Miasto adres prywatny',
-      `${secondAddress.city} ${secondAddress.zipCode}`,
-    );
-
-    await expectTeacherPrivateAddressHistoryChange(page, history, 'Ulica adres prywatny', secondAddress.street);
-
-    /*
-     * Pierwszy adres
-     */
-
-    await expectTeacherPrivateAddressHistoryChange(page, history, 'Numer adres prywatny', firstAddress.number);
-
-    await expectTeacherPrivateAddressHistoryChange(
-      page,
-      history,
-      'Miasto adres prywatny',
-      `${firstAddress.city} ${firstAddress.zipCode}`,
-    );
-
-    await expectTeacherPrivateAddressHistoryChange(page, history, 'Ulica adres prywatny', firstAddress.street);
+    for (const check of historyChecks) {
+      await expectTeacherPrivateAddressHistoryChange(page, history, check.field, check.value);
+    }
 
     /*
      * =====================================================
