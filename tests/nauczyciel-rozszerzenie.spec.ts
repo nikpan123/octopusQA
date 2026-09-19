@@ -1,6 +1,11 @@
 import { test, expect } from './support/shared-school';
 import { typeValue } from './support/octopus';
-import { teacherBirthDateInput, teacherRodoCheckbox, teacherRodoCheckboxOnCard } from './support/teacher-edit';
+import {
+  teacherBirthDateInput,
+  teacherRodoCheckbox,
+  teacherRodoCheckboxOnCard,
+  expectSavedTeacherPhone,
+} from './support/teacher-edit';
 
 test.describe('Rozszerzenie nauczyciela @teacher', () => {
   test('EDIT-03: zapis nazwiska jest trwały i widoczny w historii @teacher @edit', async ({
@@ -288,6 +293,38 @@ test.describe('Rozszerzenie nauczyciela @teacher', () => {
       await form.getByRole('button', { name: 'Anuluj', exact: true }).click();
       await expect(form).toHaveCount(0);
       await s.app.searchMissing('teacher', 'Nazwisko', s.id);
+    });
+  });
+
+  test('TEA-09: nauczyciela można utworzyć z samym telefonem, bez e-maila @teacher', async ({
+    page,
+    scenario: s,
+    school,
+  }) => {
+    const phone = '500500500';
+    const form = await s.app.prepareTeacher(s.id, '', school.id, school.name);
+
+    await test.step('Wypełnij telefon zamiast e-maila i zapisz', async () => {
+      await form.getByPlaceholder('___-___-___', { exact: true }).fill(phone);
+      await form.getByRole('button', { name: 'Zapisz', exact: true }).click();
+      const warning = s.app.dialog('Uwaga');
+      await expect(warning).toContainText('Nie dodałeś przedmioto-poziomu');
+      await warning.getByRole('button', { name: 'Tak', exact: true }).click();
+      await expect(form).toHaveCount(0);
+      await expect(page).toHaveURL(/\/teacher\/teacher-panel\/\d+$/);
+    });
+
+    const teacherId = page.url().split('/').pop()!;
+
+    await test.step('Sprawdź brak e-maila i zapisany telefon', async () => {
+      await expect(s.app.detail('email')).toHaveValue('');
+      await expectSavedTeacherPhone(page, phone);
+    });
+
+    await test.step('Sprawdź trwałość po ponownym otwarciu', async () => {
+      await s.app.openPanel('teacher', teacherId);
+      await expect(s.app.detail('email')).toHaveValue('');
+      await expectSavedTeacherPhone(page, phone);
     });
   });
 });
