@@ -11,6 +11,7 @@ test.describe('Rozszerzenie nauczyciela @teacher', () => {
     // Edycja nazwiska dopuszcza litery i łącznik; identyfikujemy rekord przez ID.
     const lastName = 'Nowak';
     await s.record('editedLastName', lastName);
+
     await test.step('Zmień wyłącznie nazwisko i zapisz', async () => {
       await page.getByRole('button', { name: 'Edycja danych', exact: true }).click();
       const form = s.app.dialog('Edycja danych podstawowych');
@@ -20,6 +21,7 @@ test.describe('Rozszerzenie nauczyciela @teacher', () => {
       await expect(form).toHaveCount(0);
       await expect(s.app.detail('lastName')).toHaveValue(lastName);
     });
+
     await test.step('Otwórz ponownie; sprawdź dane, relację i historię', async () => {
       await s.app.openPanel('teacher', teacherId);
       await expect(s.app.detail('lastName')).toHaveValue(lastName);
@@ -51,6 +53,7 @@ test.describe('Rozszerzenie nauczyciela @teacher', () => {
         school.id,
         school.name,
       );
+
       await test.step('Sprawdź błędne pole i komunikat przy próbie zapisu', async () => {
         const field =
           kind === 'email'
@@ -73,6 +76,7 @@ test.describe('Rozszerzenie nauczyciela @teacher', () => {
         await expect(form).toBeVisible();
         await expect(page).toHaveURL(/\/teacher\/teacher-panel$/);
       });
+
       await test.step('Po anulowaniu potwierdź brak utworzonego rekordu', async () => {
         await form.getByRole('button', { name: 'Anuluj', exact: true }).click();
         await expect(form).toHaveCount(0);
@@ -113,10 +117,12 @@ test.describe('Rozszerzenie nauczyciela @teacher', () => {
     const secondId = await s.createSchool();
     await s.record('secondSchoolId', secondId);
     const teacherId = await s.createTeacher(school.id, school.name);
+
     await test.step('Dodaj drugą szkołę istniejącemu nauczycielowi', async () => {
       await s.app.attachSchool(page.locator('body'), secondId, s.schoolName);
       await expect(page.getByRole('row').filter({ hasText: school.name })).toHaveCount(1);
     });
+
     await test.step('Potwierdź trwałość dokładnie dwóch powiązań', async () => {
       await s.app.openPanel('teacher', teacherId);
       const schools = page
@@ -127,6 +133,7 @@ test.describe('Rozszerzenie nauczyciela @teacher', () => {
         await expect(schools.getByRole('gridcell', { name: id, exact: true })).toHaveCount(1);
       }
     });
+
     await test.step('Znajdź tego samego nauczyciela w obu kartotekach szkół', async () => {
       for (const id of [school.id, secondId]) {
         await s.app.openPanel('school', id);
@@ -137,6 +144,72 @@ test.describe('Rozszerzenie nauczyciela @teacher', () => {
         await expect(row).toHaveCount(1);
         await expect(row.getByRole('gridcell', { name: s.id, exact: true })).toBeVisible();
         await expect(row.getByRole('gridcell', { name: 'Testowy', exact: true })).toBeVisible();
+      }
+    });
+  });
+
+  test('TEA-05: dodanie przedmioto-poziomu podczas tworzenia nauczyciela pomija ostrzeżenie o jego braku @teacher', async ({
+    page,
+    scenario: s,
+    school,
+  }) => {
+    const form = await s.app.prepareTeacher(s.id, s.email, school.id, school.name);
+
+    // Sekcja przedmioto-poziomów wewnątrz dialogu "Dodaj nowego nauczyciela" jest
+    // odrębną instancją komponentu app-teacher-subjects od tej w tle (pusta karta
+    // nauczyciela) — dlatego skopowanie do `form`, a nie do całej strony.
+    const subjectsSection = form.locator('app-teacher-subjects');
+
+    await test.step('Dodaj przedmioto-poziom przed zapisem', async () => {
+      await subjectsSection.getByRole('combobox').nth(0).click();
+      await page.getByRole('option', { name: 'Matematyka', exact: true }).click();
+      await subjectsSection.getByRole('combobox').nth(1).click();
+      await page.getByRole('option', { name: 'Szkoła Podstawowa', exact: true }).click();
+      await subjectsSection.getByRole('button', { name: 'Dodaj', exact: true }).click();
+      const row = subjectsSection.getByRole('row').filter({
+        has: page.getByRole('cell', { name: 'Matematyka', exact: true }),
+      });
+      await expect(row.getByRole('cell', { name: 'SP', exact: true })).toBeVisible();
+    });
+
+    await test.step('Zapisz — ostrzeżenie o braku przedmioto-poziomu nie powinno się pojawić', async () => {
+      await form.getByRole('button', { name: 'Zapisz', exact: true }).click();
+      await expect(form).toHaveCount(0);
+      await expect(page).toHaveURL(/\/teacher\/teacher-panel\/\d+$/);
+    });
+  });
+
+  test('TEA-06: nauczyciela można utworzyć od razu z dwiema szkołami @teacher @relation', async ({
+    page,
+    scenario: s,
+    school,
+  }) => {
+    const secondId = await s.createSchool();
+    await s.record('secondSchoolId', secondId);
+
+    const form = await s.app.prepareTeacher(s.id, s.email);
+
+    await test.step('Dodaj obie szkoły przed zapisem', async () => {
+      await s.app.attachSchool(form, school.id, school.name);
+      await s.app.attachSchool(form, secondId, s.schoolName);
+    });
+
+    await test.step('Zapisz (potwierdź ostrzeżenie o braku przedmioto-poziomu)', async () => {
+      await form.getByRole('button', { name: 'Zapisz', exact: true }).click();
+      const warning = s.app.dialog('Uwaga');
+      await expect(warning).toContainText('Nie dodałeś przedmioto-poziomu');
+      await warning.getByRole('button', { name: 'Tak', exact: true }).click();
+      await expect(form).toHaveCount(0);
+      await expect(page).toHaveURL(/\/teacher\/teacher-panel\/\d+$/);
+    });
+
+    await test.step('Potwierdź dokładnie dwa powiązania ze szkołami', async () => {
+      const schools = page
+        .getByRole('treegrid')
+        .filter({ has: page.getByRole('columnheader', { name: 'Nazwa szkoły', exact: true }) });
+      await expect(schools.getByRole('row').filter({ has: page.getByRole('gridcell') })).toHaveCount(2);
+      for (const id of [school.id, secondId]) {
+        await expect(schools.getByRole('gridcell', { name: id, exact: true })).toHaveCount(1);
       }
     });
   });
