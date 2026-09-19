@@ -1,5 +1,6 @@
 import { test, expect } from './support/shared-school';
 import { typeValue } from './support/octopus';
+import { teacherBirthDateInput, teacherRodoCheckbox, teacherRodoCheckboxOnCard } from './support/teacher-edit';
 
 test.describe('Rozszerzenie nauczyciela @teacher', () => {
   test('EDIT-03: zapis nazwiska jest trwały i widoczny w historii @teacher @edit', async ({
@@ -211,6 +212,82 @@ test.describe('Rozszerzenie nauczyciela @teacher', () => {
       for (const id of [school.id, secondId]) {
         await expect(schools.getByRole('gridcell', { name: id, exact: true })).toHaveCount(1);
       }
+    });
+  });
+
+  test('TEA-07: formularz dodawania nauczyciela zapisuje wszystkie wypełnione pola @teacher', async ({
+    page,
+    scenario: s,
+    school,
+  }) => {
+    const form = await s.app.prepareTeacher(s.id, s.email, school.id, school.name);
+    const birthDate = teacherBirthDateInput(form);
+
+    // Sekcja przedmioto-poziomów w dialogu "Dodaj nowego nauczyciela" jest
+    // odrębną instancją app-teacher-subjects od tej w tle karty — patrz TEA-05.
+    const subjectsSection = form.locator('app-teacher-subjects');
+
+    await test.step('Wypełnij datę urodzenia, zgodę RODO i przedmioto-poziom przed zapisem', async () => {
+      await birthDate.fill('15-05-1990');
+      await birthDate.press('Tab');
+      await expect(birthDate).toHaveValue('15-05-1990');
+
+      await teacherRodoCheckbox(form, 'Marketing').check();
+      await expect(teacherRodoCheckbox(form, 'Marketing')).toBeChecked();
+
+      await subjectsSection.getByRole('combobox').nth(0).click();
+      await page.getByRole('option', { name: 'Matematyka', exact: true }).click();
+      await subjectsSection.getByRole('combobox').nth(1).click();
+      await page.getByRole('option', { name: 'Szkoła Podstawowa', exact: true }).click();
+      await subjectsSection.getByRole('button', { name: 'Dodaj', exact: true }).click();
+    });
+
+    await test.step('Zapisz — przedmioto-poziom już dodany, więc bez ostrzeżenia', async () => {
+      await form.getByRole('button', { name: 'Zapisz', exact: true }).click();
+      await expect(form).toHaveCount(0);
+      await expect(page).toHaveURL(/\/teacher\/teacher-panel\/\d+$/);
+    });
+
+    const teacherId = page.url().split('/').pop()!;
+    await s.record('teacherId', teacherId);
+
+    await test.step('Sprawdź wszystkie pola na karcie bezpośrednio po zapisie', async () => {
+      await expect(s.app.detail('lastName')).toHaveValue(s.id);
+      await expect(s.app.detail('firstName')).toHaveValue('Testowy');
+      await expect(s.app.detail('email')).toHaveValue(s.email);
+      await expect(s.app.detail('dateOfBirth')).toHaveValue('15-05-1990');
+      await expect(teacherRodoCheckboxOnCard(page, 'Marketing')).toBeChecked();
+      await expect(page.getByRole('row').filter({ hasText: school.name })).toHaveCount(1);
+    });
+
+    await test.step('Sprawdź trwałość wszystkich pól po ponownym otwarciu', async () => {
+      await s.app.openPanel('teacher', teacherId);
+      await expect(s.app.detail('lastName')).toHaveValue(s.id);
+      await expect(s.app.detail('email')).toHaveValue(s.email);
+      await expect(s.app.detail('dateOfBirth')).toHaveValue('15-05-1990');
+      await expect(teacherRodoCheckboxOnCard(page, 'Marketing')).toBeChecked();
+    });
+  });
+
+  test('TEA-08: niepoprawna data urodzenia blokuje utworzenie nauczyciela @teacher @validation', async ({
+    scenario: s,
+    school,
+  }) => {
+    const form = await s.app.prepareTeacher(s.id, s.email, school.id, school.name);
+    const birthDate = teacherBirthDateInput(form);
+
+    await test.step('Wpisz niepoprawną datę urodzenia i spróbuj zapisać', async () => {
+      await birthDate.fill('2026-99-99');
+      await birthDate.press('Tab');
+      await form.getByRole('button', { name: 'Zapisz', exact: true }).click();
+      // Formularz nie może się zamknąć — wzorem EDIT-25 dla edycji.
+      await expect(form).toBeVisible();
+    });
+
+    await test.step('Po anulowaniu potwierdź brak utworzonego rekordu', async () => {
+      await form.getByRole('button', { name: 'Anuluj', exact: true }).click();
+      await expect(form).toHaveCount(0);
+      await s.app.searchMissing('teacher', 'Nazwisko', s.id);
     });
   });
 });
