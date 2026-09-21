@@ -39,6 +39,7 @@ import {
   openTeacherFieldEdit,
   openTeacherHistory,
   openTeacherMinimalRecordWarning,
+  cancelTeacherMinimalRecordWarning,
   openTeacherNotesEdit,
   openTeacherPhoneDeleteConfirmation,
   openTeacherPrivateAddressEdit,
@@ -1829,7 +1830,7 @@ test("EDIT-26: pełny adres prywatny można dodać i jest zapisany w historii @t
 
   /*
    * =====================================================
-   * DODANIE ADRESU
+   * 1. DODANIE ADRESU
    * =====================================================
    */
 
@@ -1838,6 +1839,7 @@ test("EDIT-26: pełny adres prywatny można dodać i jest zapisany w historii @t
   const dialog = await openTeacherPrivateAddressEdit(page);
 
   await fillTeacherPrivateAddress(
+    page,
     dialog,
     address.zipCode,
     address.city,
@@ -1849,7 +1851,18 @@ test("EDIT-26: pełny adres prywatny można dodać i jest zapisany w historii @t
 
   /*
    * =====================================================
-   * WERYFIKACJA W KARCIE
+   * 2. PONOWNE OTWARCIE NAUCZYCIELA
+   * =====================================================
+   *
+   * Po zapisaniu adresu karta nauczyciela
+   * nie odświeża pola adresu automatycznie.
+   */
+
+  await s.app.openPanel("teacher", teacherId);
+
+  /*
+   * =====================================================
+   * 3. WERYFIKACJA ZAPISANEGO ADRESU
    * =====================================================
    */
 
@@ -1865,13 +1878,15 @@ test("EDIT-26: pełny adres prywatny można dodać i jest zapisany w historii @t
 
   /*
    * =====================================================
-   * TRWAŁOŚĆ
+   * 4. TRWAŁOŚĆ PO KOLEJNYM OTWARCIU
    * =====================================================
    */
 
   await s.app.openPanel("teacher", teacherId);
 
   const addressAfterReload = page.locator("mat-form-field#address input");
+
+  await expect(addressAfterReload).toHaveValue(new RegExp(address.zipCode));
 
   await expect(addressAfterReload).toHaveValue(new RegExp(address.city, "i"));
 
@@ -1881,43 +1896,38 @@ test("EDIT-26: pełny adres prywatny można dodać i jest zapisany w historii @t
 
   /*
    * =====================================================
-   * HISTORIA - NUMER
+   * 5. HISTORIA ZMIAN
    * =====================================================
    */
 
+  const history = await openTeacherHistory(page);
+
   await expectTeacherPrivateAddressHistoryChange(
     page,
+    history,
     "Numer adres prywatny",
     address.number,
   );
 
-  /*
-   * =====================================================
-   * HISTORIA - MIASTO
-   * =====================================================
-   */
-
-  await s.app.openPanel("teacher", teacherId);
-
   await expectTeacherPrivateAddressHistoryChange(
     page,
+    history,
     "Miasto adres prywatny",
     `${address.city} ${address.zipCode}`,
   );
 
-  /*
-   * =====================================================
-   * HISTORIA - ULICA
-   * =====================================================
-   */
-
-  await s.app.openPanel("teacher", teacherId);
-
   await expectTeacherPrivateAddressHistoryChange(
     page,
+    history,
     "Ulica adres prywatny",
     address.street,
   );
+
+  /*
+   * =====================================================
+   * 6. DANE SCENARIUSZA
+   * =====================================================
+   */
 
   await s.record(
     "privateAddress",
@@ -2500,7 +2510,7 @@ test("EDIT-32: zapisana notatka posiada autora i datę @teacher @edit @notes", a
 
   /*
    * =====================================================
-   * 1. DODANIE
+   * 1. DODANIE NOTATKI
    * =====================================================
    */
 
@@ -2538,16 +2548,16 @@ test("EDIT-32: zapisana notatka posiada autora i datę @teacher @edit @notes", a
   /*
    * Data w UI:
    * YYYY-MM-DD
+   *
+   * Komórka może zawierać dodatkowe
+   * białe znaki na początku i końcu.
    */
-  await expect(cells.nth(2)).toHaveText(/^\d{4}-\d{2}-\d{2}$/);
+  await expect(cells.nth(2)).toHaveText(/^\s*\d{4}-\d{2}-\d{2}\s*$/);
 
   /*
    * Autor nie może być pusty.
-   *
-   * Nie hardkodujemy "npanek",
-   * żeby test nie zależał od konta.
    */
-  await expect(cells.nth(3)).not.toHaveText("");
+  await expect(cells.nth(3)).not.toHaveText(/^\s*$/);
 
   await cancelTeacherNotesEdit(dialog);
 });
@@ -2633,7 +2643,7 @@ test("EDIT-34: pusta notatka nauczyciela nie jest zapisywana @teacher @edit @not
 
   /*
    * =====================================================
-   * 1. DODAJ JEDNĄ POPRAWNĄ NOTATKĘ
+   * 1. DODAJ POPRAWNĄ NOTATKĘ
    * =====================================================
    */
 
@@ -2665,7 +2675,11 @@ test("EDIT-34: pusta notatka nauczyciela nie jest zapisywana @teacher @edit @not
 
   const input = teacherNoteInput(dialog);
 
+  await expect(input).toBeVisible();
+
   await input.fill("");
+
+  await expect(input).toHaveValue("");
 
   const saveButton = dialog.getByRole("button", {
     name: "Zapisz",
@@ -2677,29 +2691,44 @@ test("EDIT-34: pusta notatka nauczyciela nie jest zapisywana @teacher @edit @not
   await saveButton.click();
 
   /*
-   * Aplikacja może:
+   * Aplikacja może zamknąć dialog
+   * automatycznie po kliknięciu Zapisz.
    *
-   * 1. pozostawić dialog otwarty,
-   * 2. albo zamknąć go bez utworzenia notatki.
-   *
-   * Obsługujemy oba poprawne warianty,
-   * a sprawdzamy właściwy efekt:
-   * liczba notatek nie może wzrosnąć.
+   * Dajemy jej chwilę na zakończenie
+   * animacji zamykania.
    */
+  await dialog
+    .waitFor({
+      state: "detached",
+      timeout: 2_000,
+    })
+    .catch(() => {
+      /*
+       * Jeżeli dialog nie został zamknięty,
+       * przechodzimy dalej i zamkniemy go
+       * przez helper.
+       */
+    });
 
-  if (await dialog.isVisible().catch(() => false)) {
+  if ((await dialog.count()) > 0) {
     await cancelTeacherNotesEdit(dialog);
   }
 
   /*
    * =====================================================
-   * 4. SPRAWDZENIE LICZBY NOTATEK
+   * 4. PONOWNE OTWARCIE
    * =====================================================
    */
 
   await s.app.openPanel("teacher", teacherId);
 
   const checkDialog = await openTeacherNotesEdit(page);
+
+  /*
+   * =====================================================
+   * 5. LICZBA NOTATEK NIE WZROSŁA
+   * =====================================================
+   */
 
   const afterCount = await teacherNoteRows(checkDialog).count();
 
@@ -2709,8 +2738,13 @@ test("EDIT-34: pusta notatka nauczyciela nie jest zapisywana @teacher @edit @not
    * Istniejąca poprawna notatka
    * nadal musi być obecna.
    */
-
   await expect(teacherNoteRow(checkDialog, existingNote)).toHaveCount(1);
+
+  /*
+   * =====================================================
+   * 6. ZAMKNIĘCIE
+   * =====================================================
+   */
 
   await cancelTeacherNotesEdit(checkDialog);
 });
@@ -3266,22 +3300,42 @@ test("EDIT-43: ponowny zapis już znormalizowanych danych bez zmian nie modyfiku
 }) => {
   const teacherId = await s.createTeacher(school.id, school.name);
 
-  /*
-   * Pierwszy zapis normalizuje nazwisko.
-   */
-  let form = await openBasicTeacherEdit(page, s.app);
+  const inputLastName = "nOWAK";
 
-  await saveBasicTeacherEdit(form);
+  const normalizedLastName = normalizeTeacherName(inputLastName);
+
+  /*
+   * =====================================================
+   * 1. DOPROWADZENIE DANYCH DO STANU ZNORMALIZOWANEGO
+   * =====================================================
+   */
 
   await s.app.openPanel("teacher", teacherId);
 
-  const normalizedLastName = normalizeTeacherName(s.id);
+  let form = await openBasicTeacherEdit(page, s.app);
+
+  /*
+   * Wprowadzamy wartość wymagającą normalizacji:
+   *
+   * nOWAK -> Nowak
+   */
+  await typeValue(form.locator("#lastName"), inputLastName);
+
+  await saveBasicTeacherEdit(form);
+
+  /*
+   * =====================================================
+   * 2. SPRAWDZENIE NORMALIZACJI
+   * =====================================================
+   */
+
+  await s.app.openPanel("teacher", teacherId);
 
   await expect(s.app.detail("lastName")).toHaveValue(normalizedLastName);
 
   /*
-   * Snapshot danych i historii
-   * po normalizacji.
+   * Zapamiętujemy stan po pierwszym,
+   * rzeczywistym zapisie.
    */
   const before = {
     firstName: await s.app.detail("firstName").inputValue(),
@@ -3291,24 +3345,43 @@ test("EDIT-43: ponowny zapis już znormalizowanych danych bez zmian nie modyfiku
     email: await s.app.detail("email").inputValue(),
   };
 
+  /*
+   * =====================================================
+   * 3. SNAPSHOT HISTORII
+   * =====================================================
+   */
+
   const historyBefore = await teacherHistorySnapshot(page);
 
   /*
-   * Drugi zapis bez zmian.
+   * =====================================================
+   * 4. DRUGI ZAPIS - BEZ ŻADNEJ ZMIANY
+   * =====================================================
    */
+
   await s.app.openPanel("teacher", teacherId);
 
   form = await openBasicTeacherEdit(page, s.app);
 
+  /*
+   * Formularz już powinien zawierać
+   * znormalizowane dane.
+   */
   await expect(form.locator("#firstName")).toHaveValue(before.firstName);
 
   await expect(form.locator("#lastName")).toHaveValue(before.lastName);
 
+  /*
+   * Nie dotykamy żadnego pola.
+   */
   await saveBasicTeacherEdit(form);
 
   /*
-   * Dane i historia pozostają takie same.
+   * =====================================================
+   * 5. DANE NIE ZMIENIŁY SIĘ
+   * =====================================================
    */
+
   await s.app.openPanel("teacher", teacherId);
 
   await expect(s.app.detail("firstName")).toHaveValue(before.firstName);
@@ -3316,6 +3389,12 @@ test("EDIT-43: ponowny zapis już znormalizowanych danych bez zmian nie modyfiku
   await expect(s.app.detail("lastName")).toHaveValue(before.lastName);
 
   await expect(s.app.detail("email")).toHaveValue(before.email);
+
+  /*
+   * =====================================================
+   * 6. HISTORIA NIE ZMIENIŁA SIĘ
+   * =====================================================
+   */
 
   await expectTeacherHistorySnapshot(page, historyBefore);
 });
