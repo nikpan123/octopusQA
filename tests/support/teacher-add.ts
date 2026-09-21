@@ -480,6 +480,36 @@ export async function closeEmailAlreadyInUseWarning(warning: Locator) {
   await expect(warning).toHaveCount(0);
 }
 
+export async function expectDuplicateTeacherSubjectWarning(page: Page) {
+  const warning = page
+    .locator("mat-dialog-container")
+    .filter({
+      hasText: "Wybrany przedmiot istnieje na liście przedmiotów nauczyciela",
+    })
+    .last();
+
+  await expect(warning).toBeVisible();
+
+  await expect(warning).toContainText(
+    "Wybrany przedmiot istnieje na liście przedmiotów nauczyciela",
+  );
+
+  return warning;
+}
+
+export async function closeDuplicateTeacherSubjectWarning(warning: Locator) {
+  const okButton = warning.getByRole("button", {
+    name: "OK",
+    exact: true,
+  });
+
+  await expect(okButton).toBeVisible();
+
+  await okButton.click();
+
+  await expect(warning).toHaveCount(0);
+}
+
 /*
  * =========================================================
  * HISTORIA

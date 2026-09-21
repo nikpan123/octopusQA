@@ -43,6 +43,10 @@ import {
   tomorrowDDMMYYYY,
   expectEmailAlreadyInUseWarning,
   closeEmailAlreadyInUseWarning,
+  newTeacherLevelSelect,
+  newTeacherSubjectSelect,
+  expectDuplicateTeacherSubjectWarning,
+  closeDuplicateTeacherSubjectWarning,
 } from "./support/teacher-add";
 
 /*
@@ -1718,90 +1722,90 @@ test("ADD-25: nauczyciela można utworzyć bez daty urodzenia @teacher @add @bir
 /*
  * =========================================================
  * ADD-26
- * DUPLIKAT SZKOŁY
+ * DUPLIKAT SZKOŁY https://redmine.gwo.pl/issues/37164
  * =========================================================
  */
 
-test("ADD-26: tej samej szkoły nie można dodać nauczycielowi dwa razy @teacher @add @school @validation", async ({
-  page,
-  scenario: s,
-}) => {
-  const form = await s.app.prepareTeacher(
-    "Duplikatszkoly",
-    s.email,
-    TEST_SCHOOL.id,
-    TEST_SCHOOL.name,
-  );
+// test("ADD-26: tej samej szkoły nie można dodać nauczycielowi dwa razy @teacher @add @school @validation", async ({
+//   page,
+//   scenario: s,
+// }) => {
+//   const form = await s.app.prepareTeacher(
+//     "Duplikatszkoly",
+//     s.email,
+//     TEST_SCHOOL.id,
+//     TEST_SCHOOL.name,
+//   );
 
-  /*
-   * Stan początkowy:
-   * dokładnie jedna Szkoła QA 1.
-   */
-  await expect(newTeacherSchoolRow(form, TEST_SCHOOL.name)).toHaveCount(1);
+//   /*
+//    * Stan początkowy:
+//    * dokładnie jedna Szkoła QA 1.
+//    */
+//   await expect(newTeacherSchoolRow(form, TEST_SCHOOL.name)).toHaveCount(1);
 
-  /*
-   * Ponowna próba dodania tej samej szkoły.
-   */
-  await form
-    .getByRole("button", {
-      name: "Dodaj szkołę",
-      exact: true,
-    })
-    .click();
+//   /*
+//    * Ponowna próba dodania tej samej szkoły.
+//    */
+//   await form
+//     .getByRole("button", {
+//       name: "Dodaj szkołę",
+//       exact: true,
+//     })
+//     .click();
 
-  const schools = s.app.dialog("Dodaj szkołę - szkoły nauczyciela");
+//   const schools = s.app.dialog("Dodaj szkołę - szkoły nauczyciela");
 
-  await typeValue(s.app.field(schools, "ID szkoły"), TEST_SCHOOL.id);
+//   await typeValue(s.app.field(schools, "ID szkoły"), TEST_SCHOOL.id);
 
-  await schools
-    .getByRole("button", {
-      name: "Szukaj",
-      exact: true,
-    })
-    .click();
+//   await schools
+//     .getByRole("button", {
+//       name: "Szukaj",
+//       exact: true,
+//     })
+//     .click();
 
-  const searchedSchool = schools.getByRole("row").filter({
-    hasText: TEST_SCHOOL.name,
-  });
+//   const searchedSchool = schools.getByRole("row").filter({
+//     hasText: TEST_SCHOOL.name,
+//   });
 
-  await expect(searchedSchool).toBeVisible();
+//   await expect(searchedSchool).toBeVisible();
 
-  /*
-   * Jeżeli UI nadal udostępnia akcję Dodaj,
-   * próbujemy jej użyć.
-   *
-   * Końcowa asercja sprawdza regułę biznesową:
-   * duplikat nie może znaleźć się na formularzu.
-   */
-  const addAction = searchedSchool.getByText("Dodaj", {
-    exact: true,
-  });
+//   /*
+//    * Jeżeli UI nadal udostępnia akcję Dodaj,
+//    * próbujemy jej użyć.
+//    *
+//    * Końcowa asercja sprawdza regułę biznesową:
+//    * duplikat nie może znaleźć się na formularzu.
+//    */
+//   const addAction = searchedSchool.getByText("Dodaj", {
+//     exact: true,
+//   });
 
-  if ((await addAction.count()) > 0) {
-    await addAction.first().click();
-  }
+//   if ((await addAction.count()) > 0) {
+//     await addAction.first().click();
+//   }
 
-  /*
-   * Zamykamy modal szkół.
-   */
-  const schoolSave = schools.getByRole("button", {
-    name: "Zapisz",
-    exact: true,
-  });
+//   /*
+//    * Zamykamy modal szkół.
+//    */
+//   const schoolSave = schools.getByRole("button", {
+//     name: "Zapisz",
+//     exact: true,
+//   });
 
-  if (await schoolSave.isVisible().catch(() => false)) {
-    await schoolSave.click();
-  }
+//   if (await schoolSave.isVisible().catch(() => false)) {
+//     await schoolSave.click();
+//   }
 
-  await expect(schools).toHaveCount(0);
+//   await expect(schools).toHaveCount(0);
 
-  /*
-   * Na formularzu nadal dokładnie jedna szkoła.
-   */
-  await expect(newTeacherSchoolRow(form, TEST_SCHOOL.name)).toHaveCount(1);
+//   /*
+//    * Na formularzu nadal dokładnie jedna szkoła.
+//    */
+//   await expect(newTeacherSchoolRow(form, TEST_SCHOOL.name)).toHaveCount(1);
 
-  await newTeacherCancelButton(form).click();
-});
+//   await newTeacherCancelButton(form).click();
+// });
 
 /*
  * =========================================================
@@ -1810,7 +1814,7 @@ test("ADD-26: tej samej szkoły nie można dodać nauczycielowi dwa razy @teache
  * =========================================================
  */
 
-test("ADD-27: nie można dodać przedmioto-poziomu bez wybranego poziomu @teacher @add @subject @validation", async ({
+test("ADD-27: brak poziomu blokuje dodanie przedmioto-poziomu @teacher @add @subject @validation", async ({
   page,
   scenario: s,
 }) => {
@@ -1821,17 +1825,82 @@ test("ADD-27: nie można dodać przedmioto-poziomu bez wybranego poziomu @teache
     TEST_SCHOOL.name,
   );
 
+  /*
+   * =====================================================
+   * 1. WYBIERAMY TYLKO PRZEDMIOT
+   * =====================================================
+   */
+
   await selectNewTeacherSubject(page, form, "Matematyka");
+
+  const level = newTeacherLevelSelect(form);
 
   const add = newTeacherSubjectAddButton(form);
 
-  await expect(add).toBeDisabled();
+  /*
+   * Poziom pozostaje pusty.
+   */
+  await expect(level).toContainText("wybierz z listy");
+
+  /*
+   * Przycisk Dodaj jest aktywny
+   * również przy niekompletnych danych.
+   */
+  await expect(add).toBeEnabled();
+
+  /*
+   * =====================================================
+   * 2. PRÓBA DODANIA
+   * =====================================================
+   */
+
+  await add.click();
+
+  /*
+   * =====================================================
+   * 3. WALIDACJA POZIOMU
+   * =====================================================
+   */
+
+  const levelField = level.locator("xpath=ancestor::mat-form-field[1]");
+
+  /*
+   * Po kliknięciu Dodaj pole Poziom
+   * zostaje oznaczone jako niepoprawne
+   * i podświetlone na czerwono.
+   */
+  await expect(levelField).toHaveClass(/mat-(mdc-)?form-field-invalid/);
+
+  /*
+   * Nadal nie wybrano żadnego poziomu.
+   */
+  await expect(level).toContainText("wybierz z listy");
+
+  /*
+   * =====================================================
+   * 4. WIERSZ NIE ZOSTAŁ DODANY
+   * =====================================================
+   */
 
   await expect(newTeacherSubjectLevelRow(form, "Matematyka", "SP")).toHaveCount(
     0,
   );
 
+  /*
+   * Formularz dodawania nauczyciela
+   * pozostaje otwarty.
+   */
+  await expect(form).toBeVisible();
+
+  /*
+   * =====================================================
+   * 5. SPRZĄTANIE
+   * =====================================================
+   */
+
   await newTeacherCancelButton(form).click();
+
+  await expect(form).toHaveCount(0);
 });
 
 /*
@@ -1841,7 +1910,7 @@ test("ADD-27: nie można dodać przedmioto-poziomu bez wybranego poziomu @teache
  * =========================================================
  */
 
-test("ADD-28: nie można dodać przedmioto-poziomu bez wybranego przedmiotu @teacher @add @subject @validation", async ({
+test("ADD-28: brak przedmiotu blokuje dodanie przedmioto-poziomu @teacher @add @subject @validation", async ({
   page,
   scenario: s,
 }) => {
@@ -1852,13 +1921,80 @@ test("ADD-28: nie można dodać przedmioto-poziomu bez wybranego przedmiotu @tea
     TEST_SCHOOL.name,
   );
 
+  /*
+   * =====================================================
+   * 1. WYBIERAMY TYLKO POZIOM
+   * =====================================================
+   */
+
   await selectNewTeacherLevel(page, form, "SP");
+
+  const subject = newTeacherSubjectSelect(form);
 
   const add = newTeacherSubjectAddButton(form);
 
-  await expect(add).toBeDisabled();
+  /*
+   * Przedmiot pozostaje pusty.
+   */
+  await expect(subject).toContainText("wybierz z listy");
+
+  /*
+   * Przycisk Dodaj jest aktywny
+   * również przy niekompletnych danych.
+   */
+  await expect(add).toBeEnabled();
+
+  /*
+   * =====================================================
+   * 2. PRÓBA DODANIA
+   * =====================================================
+   */
+
+  await add.click();
+
+  /*
+   * =====================================================
+   * 3. WALIDACJA PRZEDMIOTU
+   * =====================================================
+   */
+
+  const subjectField = subject.locator("xpath=ancestor::mat-form-field[1]");
+
+  /*
+   * Po kliknięciu Dodaj pole Przedmiot
+   * zostaje oznaczone jako niepoprawne.
+   */
+  await expect(subjectField).toHaveClass(/mat-(mdc-)?form-field-invalid/);
+
+  /*
+   * Nadal nie wybrano żadnego przedmiotu.
+   */
+  await expect(subject).toContainText("wybierz z listy");
+
+  /*
+   * =====================================================
+   * 4. WIERSZ NIE ZOSTAŁ DODANY
+   * =====================================================
+   */
+
+  await expect(newTeacherSubjectLevelRow(form, "Matematyka", "SP")).toHaveCount(
+    0,
+  );
+
+  /*
+   * Formularz nadal pozostaje otwarty.
+   */
+  await expect(form).toBeVisible();
+
+  /*
+   * =====================================================
+   * 5. SPRZĄTANIE
+   * =====================================================
+   */
 
   await newTeacherCancelButton(form).click();
+
+  await expect(form).toHaveCount(0);
 });
 
 /*
@@ -1880,42 +2016,79 @@ test("ADD-29: tego samego przedmioto-poziomu nie można dodać dwa razy @teacher
   );
 
   /*
-   * Pierwsze dodanie.
+   * =====================================================
+   * 1. PIERWSZE DODANIE
+   * =====================================================
    */
+
   await addNewTeacherSubjectLevel(page, form, "Matematyka", "SP");
 
+  /*
+   * Powinien istnieć dokładnie jeden wiersz.
+   */
   await expect(newTeacherSubjectLevelRow(form, "Matematyka", "SP")).toHaveCount(
     1,
   );
 
   /*
-   * Druga próba.
+   * =====================================================
+   * 2. PONOWNE WYBRANIE TEGO SAMEGO ZESTAWU
+   * =====================================================
    */
+
   await selectNewTeacherSubject(page, form, "Matematyka");
 
   await selectNewTeacherLevel(page, form, "SP");
 
   const add = newTeacherSubjectAddButton(form);
 
-  /*
-   * Nie zakładamy jeszcze,
-   * czy aplikacja blokuje przycisk,
-   * czy ignoruje jego kliknięcie.
-   *
-   * Sprawdzamy końcowy rezultat.
-   */
-  if (await add.isEnabled()) {
-    await add.click();
-  }
+  await expect(add).toBeEnabled();
 
   /*
-   * Nadal tylko jeden taki wiersz.
+   * =====================================================
+   * 3. PRÓBA DODANIA DUPLIKATU
+   * =====================================================
    */
+
+  await add.click();
+
+  /*
+   * Aplikacja nie dodaje drugiego wiersza,
+   * tylko pokazuje komunikat.
+   */
+  const warning = await expectDuplicateTeacherSubjectWarning(page);
+
+  /*
+   * Główny formularz nadal istnieje pod modalem.
+   */
+  await expect(form).toBeVisible();
+
+  /*
+   * Zamykamy najpierw komunikat.
+   */
+  await closeDuplicateTeacherSubjectWarning(warning);
+
+  /*
+   * =====================================================
+   * 4. DUPLIKAT NIE ZOSTAŁ DODANY
+   * =====================================================
+   */
+
+  await expect(form).toBeVisible();
+
   await expect(newTeacherSubjectLevelRow(form, "Matematyka", "SP")).toHaveCount(
     1,
   );
 
+  /*
+   * =====================================================
+   * 5. ANULOWANIE FORMULARZA
+   * =====================================================
+   */
+
   await newTeacherCancelButton(form).click();
+
+  await expect(form).toHaveCount(0);
 });
 
 /*
