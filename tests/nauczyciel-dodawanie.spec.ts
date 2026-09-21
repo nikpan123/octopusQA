@@ -323,12 +323,28 @@ test("ADD-02: nauczyciela można utworzyć z telefonem bez e-maila @teacher @add
 }) => {
   const phone = "500500500";
 
+  const lastName = "Telefonowy";
+
+  /*
+   * =====================================================
+   * 1. PRZYGOTOWANIE FORMULARZA
+   * =====================================================
+   *
+   * Celowo nie podajemy e-maila.
+   */
+
   const form = await s.app.prepareTeacher(
-    "Telefonowy",
+    lastName,
     "",
     TEST_SCHOOL.id,
     TEST_SCHOOL.name,
   );
+
+  /*
+   * =====================================================
+   * 2. TELEFON
+   * =====================================================
+   */
 
   const phoneInput = newTeacherPhoneInput(form);
 
@@ -336,24 +352,69 @@ test("ADD-02: nauczyciela można utworzyć z telefonem bez e-maila @teacher @add
 
   await phoneInput.press("Tab");
 
+  /*
+   * Poprawny 9-cyfrowy numer
+   * nie powinien być oznaczony jako błędny.
+   */
+  await expect(phoneInput).toHaveAttribute("aria-invalid", "false");
+
+  /*
+   * =====================================================
+   * 3. ZAPIS BEZ PRZEDMIOTO-POZIOMU
+   * =====================================================
+   */
+
   const teacherId = await saveNewTeacherWithoutSubjectLevel(page, form);
 
   await registerCreatedTeacher(s, teacherId);
 
+  /*
+   * =====================================================
+   * 4. E-MAIL POZOSTAJE PUSTY
+   * =====================================================
+   */
+
   await expect(s.app.detail("email")).toHaveValue("");
+
+  /*
+   * =====================================================
+   * 5. TELEFON ZOSTAŁ ZAPISANY
+   * =====================================================
+   */
 
   await expectSavedTeacherPhone(page, phone);
 
   /*
-   * Trwałość.
+   * =====================================================
+   * 6. SZKOŁA ZOSTAŁA PRZYPISANA
+   * =====================================================
+   *
+   * Sprawdzamy relację od strony nauczyciela.
    */
+
+  await expect(
+    page.getByRole("row").filter({
+      hasText: TEST_SCHOOL.name,
+    }),
+  ).toHaveCount(1);
+
+  /*
+   * =====================================================
+   * 7. TRWAŁOŚĆ PO PONOWNYM OTWARCIU
+   * =====================================================
+   */
+
   await s.app.openPanel("teacher", teacherId);
 
   await expect(s.app.detail("email")).toHaveValue("");
 
   await expectSavedTeacherPhone(page, phone);
 
-  await expectTeacherInSchool(page, s, TEST_SCHOOL.id, teacherId);
+  await expect(
+    page.getByRole("row").filter({
+      hasText: TEST_SCHOOL.name,
+    }),
+  ).toHaveCount(1);
 });
 
 /*
