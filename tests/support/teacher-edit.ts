@@ -1086,14 +1086,43 @@ export async function saveTeacherNotesEdit(dialog: Locator) {
  * Anuluje zmiany w oknie notatek.
  */
 export async function cancelTeacherNotesEdit(dialog: Locator) {
+  /*
+   * Dialog mógł już zostać zamknięty
+   * przez poprzednią operację.
+   */
+  if ((await dialog.count()) === 0) {
+    return;
+  }
+
   const cancelButton = dialog.getByRole("button", {
     name: "Anuluj",
     exact: true,
   });
 
-  await expect(cancelButton).toBeVisible();
+  /*
+   * Angular może być właśnie w trakcie
+   * zamykania dialogu.
+   */
+  try {
+    await expect(cancelButton).toBeVisible({
+      timeout: 2_000,
+    });
 
-  await cancelButton.click();
+    await cancelButton.click();
+  } catch (error) {
+    /*
+     * Jeśli dialog w międzyczasie zniknął,
+     * wszystko jest OK.
+     *
+     * Jeżeli nadal istnieje, wtedy rzeczywiście
+     * mamy problem i rzucamy pierwotny błąd.
+     */
+    if ((await dialog.count()) === 0) {
+      return;
+    }
+
+    throw error;
+  }
 
   await expect(dialog).toHaveCount(0);
 }
