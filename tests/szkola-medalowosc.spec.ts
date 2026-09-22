@@ -1,28 +1,30 @@
 import { test, expect } from "./support/fixtures";
-import { Octopus, typeValue } from "./support/octopus";
+import { Octopus } from "./support/octopus";
 
-const GOLD_SCHOOL = {
-  id: "57616",
-  name: "Szkoła Podstawowa nr 5",
-} as const;
-
-const SILVER_SCHOOL = {
-  id: "85263",
-  name: "Szkoła Podstawowa nr 379",
-  city: "Warszawa",
-} as const;
-
-const BRONZE_SCHOOL = {
-  id: "66109",
-  name: "Szkoła Podstawowa w Raszkowie",
-  city: "Raszków",
-} as const;
-
-const NO_MEDAL_SCHOOL = {
-  id: "92928",
-  name: "Szkoła Podstawowa nr 403",
-  city: "Warszawa",
-} as const;
+import {
+  GOLD_SCHOOL,
+  SILVER_SCHOOL,
+  BRONZE_SCHOOL,
+  NO_MEDAL_SCHOOL,
+  expectSchoolMedal,
+  expectMedalReadOnly,
+  expectMedalTooltip,
+  expectNoMedalTooltip,
+  openMedalSchool,
+  searchSchoolById,
+  openSchoolHistory,
+  medalHistoryRows,
+  medalHistoryRowByValue,
+  historyFieldCell,
+  historyValueCell,
+  historyAuthorCell,
+  historySourceCell,
+  historyDateCell,
+  searchSchoolsByMedal,
+  searchSchoolsByMedals,
+  expectSchoolResultsMedals,
+  getSchoolMedalApiData,
+} from "./support/school-medal";
 
 test.describe("Medalowość szkoły", () => {
   test("MED-01: szkoła ze złotym medalem wyświetla wartość Złoto w danych podstawowych", async ({
@@ -30,40 +32,20 @@ test.describe("Medalowość szkoły", () => {
   }) => {
     const app = new Octopus(page);
 
-    await app.openPanel("school", GOLD_SCHOOL.id);
+    await openMedalSchool(app, GOLD_SCHOOL);
 
-    await expect(app.detail("name")).toHaveValue(GOLD_SCHOOL.name);
-
-    const medalInput = page
-      .locator(".info-row")
-      .filter({
-        has: page.getByText("Medal", { exact: true }),
-      })
-      .locator('input[type="text"]')
-      .last();
-
-    await expect(medalInput).toHaveValue("Złoto");
+    await expectSchoolMedal(page, "Złoto");
   });
 
-  test("MED-02: pole Medal w danych podstawowych szkoły jest nieedytowalne", async ({
+  test("MED-02: pole Medal dla szkoły ze złotym medalem jest nieedytowalne", async ({
     page,
   }) => {
     const app = new Octopus(page);
 
-    await app.openPanel("school", GOLD_SCHOOL.id);
+    await openMedalSchool(app, GOLD_SCHOOL);
 
-    await expect(app.detail("name")).toHaveValue(GOLD_SCHOOL.name);
-
-    const medalInput = page
-      .locator(".info-row")
-      .filter({
-        has: page.getByText("Medal", { exact: true }),
-      })
-      .locator('input[type="text"]')
-      .last();
-
-    await expect(medalInput).toHaveValue("Złoto");
-    await expect(medalInput).toBeDisabled();
+    await expectSchoolMedal(page, "Złoto");
+    await expectMedalReadOnly(page);
   });
 
   test("MED-03: najechanie na złoty medal wyświetla informację o przedmiotach składających się na medal", async ({
@@ -71,27 +53,10 @@ test.describe("Medalowość szkoły", () => {
   }) => {
     const app = new Octopus(page);
 
-    await app.openPanel("school", GOLD_SCHOOL.id);
+    await openMedalSchool(app, GOLD_SCHOOL);
 
-    await expect(app.detail("name")).toHaveValue(GOLD_SCHOOL.name);
-
-    const medalInput = page
-      .locator(".info-row")
-      .filter({
-        has: page.getByText("Medal", { exact: true }),
-      })
-      .locator('input[type="text"]')
-      .last();
-
-    await expect(medalInput).toHaveValue("Złoto");
-
-    await medalInput.hover();
-
-    const tooltip = page.locator(".mat-mdc-tooltip-surface").filter({
-      hasText: "Na medal składają się",
-    });
-
-    await expect(tooltip).toBeVisible();
+    await expectSchoolMedal(page, "Złoto");
+    await expectMedalTooltip(page);
   });
 
   test("MED-04: tooltip złotego medalu wyświetla przedmioty składające się na medal", async ({
@@ -99,31 +64,17 @@ test.describe("Medalowość szkoły", () => {
   }) => {
     const app = new Octopus(page);
 
-    await app.openPanel("school", GOLD_SCHOOL.id);
+    await openMedalSchool(app, GOLD_SCHOOL);
 
-    await expect(app.detail("name")).toHaveValue(GOLD_SCHOOL.name);
+    await expectSchoolMedal(page, "Złoto");
 
-    const medalInput = page
-      .locator(".info-row")
-      .filter({
-        has: page.getByText("Medal", { exact: true }),
-      })
-      .locator('input[type="text"]')
-      .last();
-
-    await expect(medalInput).toHaveValue("Złoto");
-
-    await medalInput.hover();
-
-    const tooltip = page.locator(".mat-mdc-tooltip-surface").filter({
-      hasText: "Na medal składają się",
-    });
-
-    await expect(tooltip).toBeVisible();
-
-    await expect(tooltip).toContainText("Matematyka");
-    await expect(tooltip).toContainText("Język polski");
-    await expect(tooltip).toContainText("Historia");
+    await expectMedalTooltip(page, [
+      "Matematyka",
+      "Język polski",
+      "Historia",
+      "Fizyka",
+      "Edukacja wczesnoszkolna",
+    ]);
   });
 
   test("MED-05: złoty medal jest widoczny w wynikach wyszukiwania szkół", async ({
@@ -131,26 +82,8 @@ test.describe("Medalowość szkoły", () => {
   }) => {
     const app = new Octopus(page);
 
-    await app.openPanel("school");
+    const schoolRow = await searchSchoolById(app, GOLD_SCHOOL);
 
-    const search = await app.openSearch("school");
-
-    await typeValue(app.field(search, "ID szkoły"), GOLD_SCHOOL.id);
-
-    await search.getByRole("button", { name: "Szukaj", exact: true }).click();
-
-    await expect(search).toHaveCount(0);
-
-    const results = app.results("school");
-
-    const schoolRow = results.getByRole("row").filter({
-      has: page.getByRole("gridcell", {
-        name: GOLD_SCHOOL.id,
-        exact: true,
-      }),
-    });
-
-    await expect(schoolRow).toHaveCount(1);
     await expect(schoolRow).toContainText(GOLD_SCHOOL.name);
     await expect(schoolRow).toContainText("Złoto");
   });
@@ -160,19 +93,9 @@ test.describe("Medalowość szkoły", () => {
   }) => {
     const app = new Octopus(page);
 
-    await app.openPanel("school", SILVER_SCHOOL.id);
+    await openMedalSchool(app, SILVER_SCHOOL);
 
-    await expect(app.detail("name")).toHaveValue(SILVER_SCHOOL.name);
-
-    const medalInput = page
-      .locator(".info-row")
-      .filter({
-        has: page.getByText("Medal", { exact: true }),
-      })
-      .locator('input[type="text"]')
-      .last();
-
-    await expect(medalInput).toHaveValue("Srebro");
+    await expectSchoolMedal(page, "Srebro");
   });
 
   test("MED-07: pole Medal dla szkoły ze srebrnym medalem jest nieedytowalne", async ({
@@ -180,20 +103,10 @@ test.describe("Medalowość szkoły", () => {
   }) => {
     const app = new Octopus(page);
 
-    await app.openPanel("school", SILVER_SCHOOL.id);
+    await openMedalSchool(app, SILVER_SCHOOL);
 
-    await expect(app.detail("name")).toHaveValue(SILVER_SCHOOL.name);
-
-    const medalInput = page
-      .locator(".info-row")
-      .filter({
-        has: page.getByText("Medal", { exact: true }),
-      })
-      .locator('input[type="text"]')
-      .last();
-
-    await expect(medalInput).toHaveValue("Srebro");
-    await expect(medalInput).toBeDisabled();
+    await expectSchoolMedal(page, "Srebro");
+    await expectMedalReadOnly(page);
   });
 
   test("MED-08: najechanie na srebrny medal wyświetla informację o przedmiotach składających się na medal", async ({
@@ -201,27 +114,10 @@ test.describe("Medalowość szkoły", () => {
   }) => {
     const app = new Octopus(page);
 
-    await app.openPanel("school", SILVER_SCHOOL.id);
+    await openMedalSchool(app, SILVER_SCHOOL);
 
-    await expect(app.detail("name")).toHaveValue(SILVER_SCHOOL.name);
-
-    const medalInput = page
-      .locator(".info-row")
-      .filter({
-        has: page.getByText("Medal", { exact: true }),
-      })
-      .locator('input[type="text"]')
-      .last();
-
-    await expect(medalInput).toHaveValue("Srebro");
-
-    await medalInput.hover();
-
-    const tooltip = page.locator(".mat-mdc-tooltip-surface").filter({
-      hasText: "Na medal składają się",
-    });
-
-    await expect(tooltip).toBeVisible();
+    await expectSchoolMedal(page, "Srebro");
+    await expectMedalTooltip(page);
   });
 
   test("MED-09: tooltip srebrnego medalu wyświetla przedmioty składające się na medal", async ({
@@ -229,30 +125,11 @@ test.describe("Medalowość szkoły", () => {
   }) => {
     const app = new Octopus(page);
 
-    await app.openPanel("school", SILVER_SCHOOL.id);
+    await openMedalSchool(app, SILVER_SCHOOL);
 
-    await expect(app.detail("name")).toHaveValue(SILVER_SCHOOL.name);
+    await expectSchoolMedal(page, "Srebro");
 
-    const medalInput = page
-      .locator(".info-row")
-      .filter({
-        has: page.getByText("Medal", { exact: true }),
-      })
-      .locator('input[type="text"]')
-      .last();
-
-    await expect(medalInput).toHaveValue("Srebro");
-
-    await medalInput.hover();
-
-    const tooltip = page.locator(".mat-mdc-tooltip-surface").filter({
-      hasText: "Na medal składają się",
-    });
-
-    await expect(tooltip).toBeVisible();
-
-    await expect(tooltip).toContainText("Matematyka");
-    await expect(tooltip).toContainText("Geografia");
+    await expectMedalTooltip(page, ["Matematyka", "Geografia"]);
   });
 
   test("MED-10: srebrny medal jest widoczny w wynikach wyszukiwania szkół", async ({
@@ -260,26 +137,8 @@ test.describe("Medalowość szkoły", () => {
   }) => {
     const app = new Octopus(page);
 
-    await app.openPanel("school");
+    const schoolRow = await searchSchoolById(app, SILVER_SCHOOL);
 
-    const search = await app.openSearch("school");
-
-    await typeValue(app.field(search, "ID szkoły"), SILVER_SCHOOL.id);
-
-    await search.getByRole("button", { name: "Szukaj", exact: true }).click();
-
-    await expect(search).toHaveCount(0);
-
-    const results = app.results("school");
-
-    const schoolRow = results.getByRole("row").filter({
-      has: page.getByRole("gridcell", {
-        name: SILVER_SCHOOL.id,
-        exact: true,
-      }),
-    });
-
-    await expect(schoolRow).toHaveCount(1);
     await expect(schoolRow).toContainText(SILVER_SCHOOL.name);
     await expect(schoolRow).toContainText("Srebro");
   });
@@ -289,19 +148,9 @@ test.describe("Medalowość szkoły", () => {
   }) => {
     const app = new Octopus(page);
 
-    await app.openPanel("school", BRONZE_SCHOOL.id);
+    await openMedalSchool(app, BRONZE_SCHOOL);
 
-    await expect(app.detail("name")).toHaveValue(BRONZE_SCHOOL.name);
-
-    const medalInput = page
-      .locator(".info-row")
-      .filter({
-        has: page.getByText("Medal", { exact: true }),
-      })
-      .locator('input[type="text"]')
-      .last();
-
-    await expect(medalInput).toHaveValue("Brąz");
+    await expectSchoolMedal(page, "Brąz");
   });
 
   test("MED-12: pole Medal dla szkoły z brązowym medalem jest nieedytowalne", async ({
@@ -309,20 +158,10 @@ test.describe("Medalowość szkoły", () => {
   }) => {
     const app = new Octopus(page);
 
-    await app.openPanel("school", BRONZE_SCHOOL.id);
+    await openMedalSchool(app, BRONZE_SCHOOL);
 
-    await expect(app.detail("name")).toHaveValue(BRONZE_SCHOOL.name);
-
-    const medalInput = page
-      .locator(".info-row")
-      .filter({
-        has: page.getByText("Medal", { exact: true }),
-      })
-      .locator('input[type="text"]')
-      .last();
-
-    await expect(medalInput).toHaveValue("Brąz");
-    await expect(medalInput).toBeDisabled();
+    await expectSchoolMedal(page, "Brąz");
+    await expectMedalReadOnly(page);
   });
 
   test("MED-13: najechanie na brązowy medal wyświetla informację o przedmiotach składających się na medal", async ({
@@ -330,27 +169,10 @@ test.describe("Medalowość szkoły", () => {
   }) => {
     const app = new Octopus(page);
 
-    await app.openPanel("school", BRONZE_SCHOOL.id);
+    await openMedalSchool(app, BRONZE_SCHOOL);
 
-    await expect(app.detail("name")).toHaveValue(BRONZE_SCHOOL.name);
-
-    const medalInput = page
-      .locator(".info-row")
-      .filter({
-        has: page.getByText("Medal", { exact: true }),
-      })
-      .locator('input[type="text"]')
-      .last();
-
-    await expect(medalInput).toHaveValue("Brąz");
-
-    await medalInput.hover();
-
-    const tooltip = page.locator(".mat-mdc-tooltip-surface").filter({
-      hasText: "Na medal składają się",
-    });
-
-    await expect(tooltip).toBeVisible();
+    await expectSchoolMedal(page, "Brąz");
+    await expectMedalTooltip(page);
   });
 
   test("MED-14: tooltip brązowego medalu wyświetla przedmiot składający się na medal", async ({
@@ -358,28 +180,11 @@ test.describe("Medalowość szkoły", () => {
   }) => {
     const app = new Octopus(page);
 
-    await app.openPanel("school", BRONZE_SCHOOL.id);
+    await openMedalSchool(app, BRONZE_SCHOOL);
 
-    await expect(app.detail("name")).toHaveValue(BRONZE_SCHOOL.name);
+    await expectSchoolMedal(page, "Brąz");
 
-    const medalInput = page
-      .locator(".info-row")
-      .filter({
-        has: page.getByText("Medal", { exact: true }),
-      })
-      .locator('input[type="text"]')
-      .last();
-
-    await expect(medalInput).toHaveValue("Brąz");
-
-    await medalInput.hover();
-
-    const tooltip = page.locator(".mat-mdc-tooltip-surface").filter({
-      hasText: "Na medal składają się",
-    });
-
-    await expect(tooltip).toBeVisible();
-    await expect(tooltip).toContainText("Matematyka");
+    await expectMedalTooltip(page, ["Matematyka"]);
   });
 
   test("MED-15: brązowy medal jest widoczny w wynikach wyszukiwania szkół", async ({
@@ -387,26 +192,8 @@ test.describe("Medalowość szkoły", () => {
   }) => {
     const app = new Octopus(page);
 
-    await app.openPanel("school");
+    const schoolRow = await searchSchoolById(app, BRONZE_SCHOOL);
 
-    const search = await app.openSearch("school");
-
-    await typeValue(app.field(search, "ID szkoły"), BRONZE_SCHOOL.id);
-
-    await search.getByRole("button", { name: "Szukaj", exact: true }).click();
-
-    await expect(search).toHaveCount(0);
-
-    const results = app.results("school");
-
-    const schoolRow = results.getByRole("row").filter({
-      has: page.getByRole("gridcell", {
-        name: BRONZE_SCHOOL.id,
-        exact: true,
-      }),
-    });
-
-    await expect(schoolRow).toHaveCount(1);
     await expect(schoolRow).toContainText(BRONZE_SCHOOL.name);
     await expect(schoolRow).toContainText("Brąz");
   });
@@ -416,19 +203,9 @@ test.describe("Medalowość szkoły", () => {
   }) => {
     const app = new Octopus(page);
 
-    await app.openPanel("school", NO_MEDAL_SCHOOL.id);
+    await openMedalSchool(app, NO_MEDAL_SCHOOL);
 
-    await expect(app.detail("name")).toHaveValue(NO_MEDAL_SCHOOL.name);
-
-    const medalInput = page
-      .locator(".info-row")
-      .filter({
-        has: page.getByText("Medal", { exact: true }),
-      })
-      .locator('input[type="text"]')
-      .last();
-
-    await expect(medalInput).toHaveValue("Brak");
+    await expectSchoolMedal(page, "Brak");
   });
 
   test("MED-17: pole Medal dla szkoły bez medalu jest nieedytowalne", async ({
@@ -436,20 +213,10 @@ test.describe("Medalowość szkoły", () => {
   }) => {
     const app = new Octopus(page);
 
-    await app.openPanel("school", NO_MEDAL_SCHOOL.id);
+    await openMedalSchool(app, NO_MEDAL_SCHOOL);
 
-    await expect(app.detail("name")).toHaveValue(NO_MEDAL_SCHOOL.name);
-
-    const medalInput = page
-      .locator(".info-row")
-      .filter({
-        has: page.getByText("Medal", { exact: true }),
-      })
-      .locator('input[type="text"]')
-      .last();
-
-    await expect(medalInput).toHaveValue("Brak");
-    await expect(medalInput).toBeDisabled();
+    await expectSchoolMedal(page, "Brak");
+    await expectMedalReadOnly(page);
   });
 
   test("MED-18: najechanie na wartość Brak nie wyświetla tooltipa z przedmiotami", async ({
@@ -457,31 +224,10 @@ test.describe("Medalowość szkoły", () => {
   }) => {
     const app = new Octopus(page);
 
-    await app.openPanel("school", NO_MEDAL_SCHOOL.id);
+    await openMedalSchool(app, NO_MEDAL_SCHOOL);
 
-    await expect(app.detail("name")).toHaveValue(NO_MEDAL_SCHOOL.name);
-
-    const medalInput = page
-      .locator(".info-row")
-      .filter({
-        has: page.getByText("Medal", { exact: true }),
-      })
-      .locator('input[type="text"]')
-      .last();
-
-    await expect(medalInput).toHaveValue("Brak");
-
-    await medalInput.hover();
-
-    // Dajemy czas odpowiadający normalnemu pojawieniu się tooltipa,
-    // żeby asercja nie przeszła tylko dlatego, że sprawdziliśmy za wcześnie.
-    await page.waitForTimeout(1000);
-
-    const tooltip = page.locator(".mat-mdc-tooltip-surface").filter({
-      hasText: "Na medal składają się",
-    });
-
-    await expect(tooltip).toHaveCount(0);
+    await expectSchoolMedal(page, "Brak");
+    await expectNoMedalTooltip(page);
   });
 
   test("MED-19: wartość Brak jest widoczna w wynikach wyszukiwania szkół", async ({
@@ -489,27 +235,236 @@ test.describe("Medalowość szkoły", () => {
   }) => {
     const app = new Octopus(page);
 
-    await app.openPanel("school");
+    const schoolRow = await searchSchoolById(app, NO_MEDAL_SCHOOL);
 
-    const search = await app.openSearch("school");
-
-    await typeValue(app.field(search, "ID szkoły"), NO_MEDAL_SCHOOL.id);
-
-    await search.getByRole("button", { name: "Szukaj", exact: true }).click();
-
-    await expect(search).toHaveCount(0);
-
-    const results = app.results("school");
-
-    const schoolRow = results.getByRole("row").filter({
-      has: page.getByRole("gridcell", {
-        name: NO_MEDAL_SCHOOL.id,
-        exact: true,
-      }),
-    });
-
-    await expect(schoolRow).toHaveCount(1);
     await expect(schoolRow).toContainText(NO_MEDAL_SCHOOL.name);
     await expect(schoolRow).toContainText("Brak");
+  });
+
+  test("MED-20: historia zmian szkoły zawiera wpis dotyczący złotego medalu", async ({
+    page,
+  }) => {
+    const app = new Octopus(page);
+
+    await openMedalSchool(app, GOLD_SCHOOL);
+
+    const history = await openSchoolHistory(page);
+
+    const medalRow = medalHistoryRowByValue(history, "2025/2026 Złoto");
+
+    await expect(medalRow).toHaveCount(1);
+
+    await expect(historyFieldCell(medalRow)).toHaveText("Medal");
+
+    await expect(historyValueCell(medalRow)).toHaveText("2025/2026 Złoto");
+
+    await expect(historyAuthorCell(medalRow)).toHaveText("automat");
+
+    await expect(historySourceCell(medalRow)).toHaveText("Formularz klubowy");
+
+    await expect(historyDateCell(medalRow)).toHaveText("2026-10-01 00:00");
+  });
+
+  test("MED-21: historia zawiera tylko jeden wpis medalowy dla danego roku szkolnego", async ({
+    page,
+  }) => {
+    const app = new Octopus(page);
+
+    await openMedalSchool(app, GOLD_SCHOOL);
+
+    const history = await openSchoolHistory(page);
+
+    const medalRowsForSeason = medalHistoryRows(history).filter({
+      hasText: "2025/2026",
+    });
+
+    await expect(medalRowsForSeason).toHaveCount(1);
+  });
+
+  test("MED-22: wartość wpisu medalowego ma format RRRR/RRRR Medal", async ({
+    page,
+  }) => {
+    const app = new Octopus(page);
+
+    await openMedalSchool(app, GOLD_SCHOOL);
+
+    const history = await openSchoolHistory(page);
+
+    const medalRows = medalHistoryRows(history);
+
+    await expect(medalRows.first()).toBeVisible();
+
+    await expect(historyValueCell(medalRows.first())).toHaveText(
+      /^\d{4}\/\d{4} (Złoto|Srebro|Brąz|Brak)$/,
+    );
+  });
+
+  test("MED-23: wpisy medalowe w historii mają źródło Formularz klubowy", async ({
+    page,
+  }) => {
+    const app = new Octopus(page);
+
+    await openMedalSchool(app, GOLD_SCHOOL);
+
+    const history = await openSchoolHistory(page);
+
+    const medalRows = medalHistoryRows(history);
+
+    await expect(medalRows.first()).toBeVisible();
+
+    const count = await medalRows.count();
+
+    for (let i = 0; i < count; i++) {
+      await expect(historySourceCell(medalRows.nth(i))).toHaveText(
+        "Formularz klubowy",
+      );
+    }
+  });
+
+  test("MED-24: wpisy medalowe w historii mają uzupełnionego autora", async ({
+    page,
+  }) => {
+    const app = new Octopus(page);
+
+    await openMedalSchool(app, GOLD_SCHOOL);
+
+    const history = await openSchoolHistory(page);
+
+    const medalRows = medalHistoryRows(history);
+
+    await expect(medalRows.first()).toBeVisible();
+
+    const count = await medalRows.count();
+
+    for (let i = 0; i < count; i++) {
+      await expect(historyAuthorCell(medalRows.nth(i))).not.toHaveText("");
+    }
+  });
+
+  test("MED-25: wpisy medalowe w historii są zapisane z datą 1 października", async ({
+    page,
+  }) => {
+    const app = new Octopus(page);
+
+    await openMedalSchool(app, GOLD_SCHOOL);
+
+    const history = await openSchoolHistory(page);
+
+    const medalRows = medalHistoryRows(history);
+
+    await expect(medalRows.first()).toBeVisible();
+
+    const count = await medalRows.count();
+
+    for (let i = 0; i < count; i++) {
+      await expect(historyDateCell(medalRows.nth(i))).toHaveText(
+        /^\d{4}-10-01 \d{2}:\d{2}$/,
+      );
+    }
+  });
+
+  test("MED-26: wpisy medalowe w historii są posortowane od najnowszego sezonu do najstarszego", async ({
+    page,
+  }) => {
+    const app = new Octopus(page);
+
+    await openMedalSchool(app, GOLD_SCHOOL);
+
+    const history = await openSchoolHistory(page);
+
+    const medalRows = medalHistoryRows(history);
+
+    await expect(medalRows.first()).toBeVisible();
+
+    const count = await medalRows.count();
+
+    expect(count).toBeGreaterThan(1);
+
+    const seasons: number[] = [];
+
+    for (let i = 0; i < count; i++) {
+      const value = await historyValueCell(medalRows.nth(i)).innerText();
+
+      const match = value.match(/^(\d{4})\/\d{4}/);
+
+      expect(
+        match,
+        `Nie udało się odczytać roku szkolnego z wartości: "${value}"`,
+      ).not.toBeNull();
+
+      seasons.push(Number(match![1]));
+    }
+
+    const expectedOrder = [...seasons].sort((a, b) => b - a);
+
+    expect(seasons).toEqual(expectedOrder);
+  });
+
+  test("MED-27: wyszukiwanie po Medal = Złoto zwraca tylko szkoły ze złotym medalem", async ({
+    page,
+  }) => {
+    const app = new Octopus(page);
+
+    const results = await searchSchoolsByMedal(app, "Złoto");
+
+    await expectSchoolResultsMedals(results, ["Złoto"]);
+  });
+
+  test("MED-28: wyszukiwanie po Medal = Srebro zwraca tylko szkoły ze srebrnym medalem", async ({
+    page,
+  }) => {
+    const app = new Octopus(page);
+
+    const results = await searchSchoolsByMedal(app, "Srebro");
+
+    await expectSchoolResultsMedals(results, ["Srebro"]);
+  });
+
+  test("MED-29: wyszukiwanie po Medal = Brąz zwraca tylko szkoły z brązowym medalem", async ({
+    page,
+  }) => {
+    const app = new Octopus(page);
+
+    const results = await searchSchoolsByMedal(app, "Brąz");
+
+    await expectSchoolResultsMedals(results, ["Brąz"]);
+  });
+
+  test("MED-30: wyszukiwanie po Medal = Brak zwraca tylko szkoły bez medalu", async ({
+    page,
+  }) => {
+    const app = new Octopus(page);
+
+    const results = await searchSchoolsByMedal(app, "Brak");
+
+    await expectSchoolResultsMedals(results, ["Brak"]);
+  });
+
+  test("MED-31: wyszukiwanie po Medal = Złoto i Srebro zwraca szkoły z oboma wybranymi medalami", async ({
+    page,
+  }) => {
+    const app = new Octopus(page);
+
+    const results = await searchSchoolsByMedals(app, ["Złoto", "Srebro"]);
+
+    await expectSchoolResultsMedals(results, ["Złoto", "Srebro"]);
+  });
+
+  test("MED-32: API zwraca złoty medal i właściwe przedmioty dla szkoły", async ({
+    page,
+  }) => {
+    const app = new Octopus(page);
+
+    const medalData = await getSchoolMedalApiData(app, GOLD_SCHOOL);
+
+    expect(medalData.medalCategoryName).toBe("Złoto");
+
+    expect(medalData.subjectNames).toEqual([
+      "Matematyka",
+      "Język polski",
+      "Historia",
+      "Fizyka",
+      "Edukacja wczesnoszkolna",
+    ]);
   });
 });
