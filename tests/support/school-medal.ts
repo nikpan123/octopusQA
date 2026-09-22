@@ -400,3 +400,250 @@ export async function getSchoolMedalApiData(
     subjectNames: schoolData.informationAboutMedalCategory?.subjectNames ?? [],
   };
 }
+
+/**
+ * Odczytuje listę przedmiotów wyświetlaną
+ * w tooltipie medalu w danych podstawowych szkoły.
+ */
+export async function getMedalTooltipSubjects(page: Page): Promise<string[]> {
+  await medalInput(page).hover();
+
+  const tooltip = medalTooltip(page);
+
+  await expect(tooltip).toBeVisible();
+
+  const text = await tooltip.innerText();
+
+  return text
+    .split("\n")
+    .map((line) => line.trim())
+    .filter((line) => line.startsWith("-"))
+    .map((line) => line.replace(/^-\s*/, "").trim());
+}
+
+/**
+ * Zwraca aktualną wartość pola Medal
+ * wyświetlaną w danych podstawowych szkoły.
+ */
+export async function getSchoolMedalValue(page: Page): Promise<SchoolMedal> {
+  const value = await medalInput(page).inputValue();
+
+  expect(
+    ["Złoto", "Srebro", "Brąz", "Brak"],
+    `Nieznana wartość medalu w UI: "${value}"`,
+  ).toContain(value);
+
+  return value as SchoolMedal;
+}
+
+/**
+ * Sprawdza zgodność liczby przedmiotów z wyliczonym medalem.
+ *
+ * Brak   -> 0
+ * Brąz   -> 1
+ * Srebro -> 2
+ * Złoto  -> 3 lub więcej
+ */
+export function expectMedalMatchesSubjectCount(
+  medal: SchoolMedal | null,
+  subjectNames: string[],
+): void {
+  switch (medal) {
+    case "Brak":
+      expect(subjectNames).toHaveLength(0);
+      break;
+
+    case "Brąz":
+      expect(subjectNames).toHaveLength(1);
+      break;
+
+    case "Srebro":
+      expect(subjectNames).toHaveLength(2);
+      break;
+
+    case "Złoto":
+      expect(subjectNames.length).toBeGreaterThanOrEqual(3);
+      break;
+
+    default:
+      throw new Error(`Nieobsługiwana wartość medalu: "${medal}"`);
+  }
+}
+
+export function expectUniqueMedalSubjects(subjectNames: string[]): void {
+  const uniqueSubjects = new Set(subjectNames);
+
+  expect(
+    uniqueSubjects.size,
+    `Lista przedmiotów medalowych zawiera duplikaty: ${subjectNames.join(", ")}`,
+  ).toBe(subjectNames.length);
+}
+
+export function schoolTeachersBySubject(
+  page: Page,
+  subjectLevel: string,
+): Locator {
+  const teachers = page.getByRole("tabpanel", {
+    name: "Nauczyciele",
+    exact: true,
+  });
+
+  return teachers.getByRole("row").filter({
+    has: page.getByRole("gridcell", {
+      name: subjectLevel,
+      exact: true,
+    }),
+  });
+}
+
+export async function getLatestMedalHistoryValue(
+  history: Locator,
+): Promise<string> {
+  const rows = medalHistoryRows(history);
+
+  await expect(rows.first()).toBeVisible();
+
+  const count = await rows.count();
+
+  let latestStartYear = -1;
+  let latestValue = "";
+
+  for (let i = 0; i < count; i++) {
+    const value = (await historyValueCell(rows.nth(i)).innerText()).trim();
+
+    const match = value.match(/^(\d{4})\/(\d{4}) (Złoto|Srebro|Brąz|Brak)$/);
+
+    expect(
+      match,
+      `Nieprawidłowy format wpisu historii medalu: "${value}"`,
+    ).not.toBeNull();
+
+    const startYear = Number(match![1]);
+
+    if (startYear > latestStartYear) {
+      latestStartYear = startYear;
+      latestValue = value;
+    }
+  }
+
+  expect(latestValue, "Nie znaleziono wpisu historii medalowości").not.toBe("");
+
+  return latestValue;
+}
+
+export async function prepareSchoolSearchByIdAndMedal(
+  app: Octopus,
+  schoolId: string,
+  medal: SchoolMedal,
+): Promise<Locator> {
+  await app.openPanel("school");
+
+  const search = await app.openSearch("school");
+
+  await typeValue(app.field(search, "ID szkoły"), schoolId);
+
+  const medalSelect = search
+    .getByText("Medal", { exact: true })
+    .locator('xpath=ancestor::*[.//*[@role="combobox"]][1]')
+    .getByRole("combobox");
+
+  await medalSelect.click();
+
+  const allMedals: SchoolMedal[] = ["Złoto", "Srebro", "Brąz", "Brak"];
+
+  // Wyszukiwarka zapamiętuje poprzednie kryteria.
+  // Najpierw czyścimy wszystkie zaznaczone medale.
+  for (const medalOption of allMedals) {
+    const option = app.page.getByRole("option", {
+      name: medalOption,
+      exact: true,
+    });
+
+    const selected = await option.getAttribute("aria-selected");
+
+    if (selected === "true") {
+      await option.click();
+    }
+  }
+
+  // Ustawiamy tylko medal wymagany przez bieżące wyszukiwanie.
+  await app.page
+    .getByRole("option", {
+      name: medal,
+      exact: true,
+    })
+    .click();
+
+  await app.page.keyboard.press("Escape");
+
+  return search;
+}
+
+export async function searchSchoolsByMedalsWithApi(
+  app: Octopus,
+  medals: SchoolMedal[],
+): Promise<{
+  results: Locator;
+  filterModel: Record<string, any>;
+  schools: any[];
+}> {
+  const responsePromise = app.page.waitForResponse((response) => {
+    const url = new URL(response.url());
+
+    if (
+      url.pathname !== "/api/InstitutionBrowser/GetInstitutions" ||
+      response.request().method() !== "GET"
+    ) {
+      return false;
+    }
+
+    const rawFilterModel = url.searchParams.get("filterModel");
+
+    if (!rawFilterModel) {
+      return false;
+    }
+
+    try {
+      const filterModel = JSON.parse(rawFilterModel);
+
+      const hasExpectedMedalCount =
+        Array.isArray(filterModel.medal) &&
+        filterModel.medal.length === medals.length;
+
+      const hasNoSchoolId =
+        !Array.isArray(filterModel.institutionIds) ||
+        filterModel.institutionIds.length === 0;
+
+      return hasExpectedMedalCount && hasNoSchoolId;
+    } catch {
+      return false;
+    }
+  });
+
+  const results = await searchSchoolsByMedals(app, medals);
+
+  const response = await responsePromise;
+
+  expect(
+    response.ok(),
+    `Wyszukiwanie po medalach ${medals.join(", ")} powinno zakończyć się poprawną odpowiedzią API`,
+  ).toBeTruthy();
+
+  const url = new URL(response.url());
+
+  const rawFilterModel = url.searchParams.get("filterModel");
+
+  expect(
+    rawFilterModel,
+    "Żądanie wyszukiwania powinno zawierać filterModel",
+  ).not.toBeNull();
+
+  const filterModel = JSON.parse(rawFilterModel!);
+  const body = await response.json();
+
+  return {
+    results,
+    filterModel,
+    schools: body.data ?? [],
+  };
+}
