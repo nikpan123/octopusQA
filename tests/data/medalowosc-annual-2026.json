@@ -1,0 +1,82 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-09-22T10:50:49.518Z",
+  "targetProcessDate": "2026-10-01",
+  "schools": [
+    {
+      "school": {
+        "id": "57616",
+        "name": "Szkoła Podstawowa nr 5",
+        "city": "Lębork"
+      },
+      "currentMedal": "Złoto",
+      "currentSubjectNames": [
+        "Matematyka",
+        "Język polski",
+        "Historia",
+        "Fizyka",
+        "Edukacja wczesnoszkolna"
+      ],
+      "qualifyingSubjectLevels": [
+        "EW SP",
+        "FIZ SP",
+        "HIS SP",
+        "JPL SP",
+        "MAT SP",
+        "PRZ SP"
+      ],
+      "expectedMedal": "Złoto",
+      "supportingTeachersExcluded": [
+        "342492"
+      ]
+    },
+    {
+      "school": {
+        "id": "85263",
+        "name": "Szkoła Podstawowa nr 379",
+        "city": "Warszawa"
+      },
+      "currentMedal": "Srebro",
+      "currentSubjectNames": [
+        "Matematyka",
+        "Geografia"
+      ],
+      "qualifyingSubjectLevels": [
+        "GEO SP",
+        "JPL SP",
+        "MAT SP"
+      ],
+      "expectedMedal": "Złoto",
+      "supportingTeachersExcluded": []
+    },
+    {
+      "school": {
+        "id": "66109",
+        "name": "Szkoła Podstawowa w Raszkowie",
+        "city": "Raszków"
+      },
+      "currentMedal": "Brąz",
+      "currentSubjectNames": [
+        "Matematyka"
+      ],
+      "qualifyingSubjectLevels": [
+        "GEO SP",
+        "MAT SP"
+      ],
+      "expectedMedal": "Srebro",
+      "supportingTeachersExcluded": []
+    },
+    {
+      "school": {
+        "id": "92928",
+        "name": "Szkoła Podstawowa nr 403",
+        "city": "Warszawa"
+      },
+      "currentMedal": "Brak",
+      "currentSubjectNames": [],
+      "qualifyingSubjectLevels": [],
+      "expectedMedal": "Brak",
+      "supportingTeachersExcluded": []
+    }
+  ]
+}
