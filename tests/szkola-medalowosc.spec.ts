@@ -32,6 +32,7 @@ import {
   getLatestMedalHistoryValue,
   prepareSchoolSearchByIdAndMedal,
   searchSchoolsByMedalsWithApi,
+  waitForSchoolTeachersLoaded,
 } from "./support/school-medal";
 
 test.describe("Medalowość szkoły", () => {
@@ -808,7 +809,9 @@ test.describe("Medalowość szkoły", () => {
   }) => {
     const app = new Octopus(page);
 
-    const medalData = await getSchoolMedalApiData(app, BRONZE_SCHOOL);
+    await openMedalSchool(app, BRONZE_SCHOOL);
+
+    await waitForSchoolTeachersLoaded(page);
 
     const mathTeachers = schoolTeachersBySubject(page, "MAT SP");
 
@@ -822,6 +825,8 @@ test.describe("Medalowość szkoły", () => {
     const polishCount = await polishTeachers.count();
     const historyCount = await historyTeachers.count();
     const physicsCount = await physicsTeachers.count();
+
+    const medalData = await getSchoolMedalApiData(app, BRONZE_SCHOOL);
 
     console.log(
       `MED-48: szkoła ${BRONZE_SCHOOL.id} "${BRONZE_SCHOOL.name}". ` +
@@ -854,24 +859,14 @@ test.describe("Medalowość szkoły", () => {
       "W szkole powinien istnieć co najmniej jeden nauczyciel FIZ SP",
     ).toBeGreaterThan(0);
 
-    expect(medalData.medalCategoryName).toBe("Brąz");
-
-    expect(medalData.subjectNames).toEqual(["Matematyka"]);
-
-    expect(
-      medalData.subjectNames,
-      "Język polski nie powinien być zaliczony do medalowości tej szkoły",
-    ).not.toContain("Język polski");
+    expect(medalData.medalCategoryName, "Szkoła powinna mieć medal Brąz").toBe(
+      "Brąz",
+    );
 
     expect(
       medalData.subjectNames,
-      "Historia nie powinna być zaliczona do medalowości tej szkoły",
-    ).not.toContain("Historia");
-
-    expect(
-      medalData.subjectNames,
-      "Fizyka nie powinna być zaliczona do medalowości tej szkoły",
-    ).not.toContain("Fizyka");
+      "Do medalowości powinien być zaliczony tylko kwalifikowany przedmiot",
+    ).toEqual(["Matematyka"]);
   });
 
   test("MED-49: najnowszy wpis historii medalu jest zgodny z aktualną wartością zwracaną przez API", async ({

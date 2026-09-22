@@ -647,3 +647,29 @@ export async function searchSchoolsByMedalsWithApi(
     schools: body.data ?? [],
   };
 }
+
+export async function waitForSchoolTeachersLoaded(page: Page): Promise<void> {
+  const teachers = page.getByRole("tabpanel", {
+    name: "Nauczyciele",
+    exact: true,
+  });
+
+  await expect(teachers).toBeVisible();
+
+  await expect(
+    teachers.getByRole("button", {
+      name: /^Nauczyciele:\s*\d+$/,
+    }),
+    "Sekcja nauczycieli powinna zakończyć ładowanie",
+  ).toBeVisible();
+
+  await expect(
+    teachers
+      .getByRole("row")
+      .filter({
+        has: page.getByRole("gridcell"),
+      })
+      .first(),
+    "Tabela nauczycieli powinna zawierać co najmniej jeden wiersz danych",
+  ).toBeVisible();
+}
