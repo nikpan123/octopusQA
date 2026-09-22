@@ -17,11 +17,16 @@
     "test:cleanup": "node --test scripts/cleanup-teachers.test.mjs",
     "report": "playwright show-report",
     "check": "tsc --noEmit",
-    "install:browser": "playwright install chromium"
+    "install:browser": "playwright install chromium",
+    "test:dev": "cross-env OCTOPUS_ENV=dev playwright test",
+    "test:test": "cross-env OCTOPUS_ENV=test playwright test",
+    "test:ui:dev": "cross-env OCTOPUS_ENV=dev playwright test --ui",
+    "test:ui:test": "cross-env OCTOPUS_ENV=test playwright test --ui"
   },
   "devDependencies": {
     "@playwright/test": "1.63.0",
     "@types/node": "^22.20.4",
+    "cross-env": "^10.1.0",
     "typescript": "~5.9.3"
   },
   "engines": {

@@ -3,6 +3,7 @@ import { mkdir, writeFile } from "node:fs/promises";
 import { test as base, expect } from "./scenario";
 import { Octopus } from "./octopus";
 import { restoreSession } from "../../scripts/auth.mjs";
+import { OCTOPUS_BASE_URL } from "./environment";
 
 export const test = base.extend<{
   school: {
@@ -12,19 +13,16 @@ export const test = base.extend<{
 }>({
   school: async ({ browser, authSession }, use) => {
     const run = `REG_SHARED_${Date.now()}_${randomUUID().slice(0, 6)}`;
-
     const name = `${run} Szkoła testowa`;
 
     const context = await browser.newContext({
       storageState: authSession.storageState,
-
-      baseURL: "https://octopus.gwodev.pl",
+      baseURL: OCTOPUS_BASE_URL,
     });
 
     await restoreSession(context, authSession.session);
 
     const page = await context.newPage();
-
     const app = new Octopus(page);
 
     try {
@@ -41,7 +39,6 @@ export const test = base.extend<{
             id,
             name,
             kind: "shared-school",
-
             createdAt: new Date().toISOString(),
           },
           null,

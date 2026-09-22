@@ -1,17 +1,31 @@
 import { test as base, expect } from "@playwright/test";
+
 import {
   ensureSession,
   restoreSession,
   type AuthSession,
 } from "../../scripts/auth.mjs";
 
+import { OCTOPUS_BASE_URL, OCTOPUS_ENV } from "./environment";
+
+function escapeRegExp(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+const teacherUrlPattern = new RegExp(
+  `^${escapeRegExp(OCTOPUS_BASE_URL)}/teacher/`,
+);
+
 export const test = base.extend<{
   authSession: AuthSession;
 }>({
+  // Sesja jest sprawdzana przed każdym testem.
+  // ensureSession() najpierw próbuje wykorzystać
+  // zapisaną sesję właściwego środowiska.
   authSession: async ({}, use) => {
-    const session = await ensureSession();
+    const authSession = await ensureSession();
 
-    await use(session);
+    await use(authSession);
   },
 
   storageState: async ({ authSession }, use) => {
@@ -28,12 +42,15 @@ export const test = base.extend<{
         name: "Wyloguj",
         exact: true,
       }),
-      "Brak dostępu do Octopusa po przygotowaniu sesji. Sprawdź npm.cmd run auth:check.",
+      `Brak dostępu do Octopusa na środowisku ${OCTOPUS_ENV.toUpperCase()} (${OCTOPUS_BASE_URL}).`,
     ).toBeVisible({
       timeout: 30_000,
     });
 
-    await expect(page).toHaveURL(/^https:\/\/octopus\.gwodev\.pl\/teacher\//);
+    await expect(
+      page,
+      `Po przygotowaniu sesji powinien być otwarty panel nauczyciela na ${OCTOPUS_BASE_URL}`,
+    ).toHaveURL(teacherUrlPattern);
 
     await use(page);
   },
