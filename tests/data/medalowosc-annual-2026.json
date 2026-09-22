@@ -1,7 +1,13 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-09-22T10:50:49.518Z",
+  "generatedAt": "2026-09-22T11:27:04.060Z",
   "targetProcessDate": "2026-10-01",
+  "selection": {
+    "referenceSchoolCount": 4,
+    "randomSchoolCount": 50,
+    "totalSchoolCount": 54,
+    "randomSelection": true
+  },
   "schools": [
     {
       "school": {
@@ -70,6 +76,666 @@
       "school": {
         "id": "92928",
         "name": "Szkoła Podstawowa nr 403",
+        "city": "Warszawa"
+      },
+      "currentMedal": "Brak",
+      "currentSubjectNames": [],
+      "qualifyingSubjectLevels": [],
+      "expectedMedal": "Brak",
+      "supportingTeachersExcluded": []
+    },
+    {
+      "school": {
+        "id": "92601",
+        "name": "Przedszkole Niepubliczne „Great Eight”",
+        "city": "Warszawa"
+      },
+      "currentMedal": "Brak",
+      "currentSubjectNames": [],
+      "qualifyingSubjectLevels": [],
+      "expectedMedal": "Brak",
+      "supportingTeachersExcluded": []
+    },
+    {
+      "school": {
+        "id": "91917",
+        "name": "Moracz - Prywatna Szkoła Podstawowa",
+        "city": "Warszawa"
+      },
+      "currentMedal": "Brak",
+      "currentSubjectNames": [],
+      "qualifyingSubjectLevels": [
+        "MAT SP"
+      ],
+      "expectedMedal": "Brąz",
+      "supportingTeachersExcluded": []
+    },
+    {
+      "school": {
+        "id": "92489",
+        "name": "Integracyjne Przedszkole Niepubliczne Przyjaciel",
+        "city": "Warszawa"
+      },
+      "currentMedal": "Brak",
+      "currentSubjectNames": [],
+      "qualifyingSubjectLevels": [],
+      "expectedMedal": "Brak",
+      "supportingTeachersExcluded": []
+    },
+    {
+      "school": {
+        "id": "92039",
+        "name": "Liceum Ogólnokształcące DobraTU",
+        "city": "Warszawa"
+      },
+      "currentMedal": "Brak",
+      "currentSubjectNames": [],
+      "qualifyingSubjectLevels": [
+        "JPL SŚ",
+        "MAT SŚ"
+      ],
+      "expectedMedal": "Srebro",
+      "supportingTeachersExcluded": []
+    },
+    {
+      "school": {
+        "id": "92503",
+        "name": "Przedszkole nr 424",
+        "city": "Warszawa"
+      },
+      "currentMedal": "Brak",
+      "currentSubjectNames": [],
+      "qualifyingSubjectLevels": [],
+      "expectedMedal": "Brak",
+      "supportingTeachersExcluded": []
+    },
+    {
+      "school": {
+        "id": "91965",
+        "name": "Niepubliczne Liceum Sztuk Plastycznych Cosinus",
+        "city": "Warszawa"
+      },
+      "currentMedal": "Brak",
+      "currentSubjectNames": [],
+      "qualifyingSubjectLevels": [
+        "MAT SŚ"
+      ],
+      "expectedMedal": "Brąz",
+      "supportingTeachersExcluded": []
+    },
+    {
+      "school": {
+        "id": "91980",
+        "name": "Społeczna Szkoła Podstawowa nr 26 STO",
+        "city": "Warszawa"
+      },
+      "currentMedal": "Brak",
+      "currentSubjectNames": [],
+      "qualifyingSubjectLevels": [
+        "MAT SP"
+      ],
+      "expectedMedal": "Brąz",
+      "supportingTeachersExcluded": []
+    },
+    {
+      "school": {
+        "id": "92799",
+        "name": "EDUKACJA AKTYWNA.PL",
+        "city": "Warszawa"
+      },
+      "currentMedal": "Brak",
+      "currentSubjectNames": [],
+      "qualifyingSubjectLevels": [],
+      "expectedMedal": "Brak",
+      "supportingTeachersExcluded": []
+    },
+    {
+      "school": {
+        "id": "92122",
+        "name": "Bednarska Szkoła Podstawowa",
+        "city": "Warszawa"
+      },
+      "currentMedal": "Brak",
+      "currentSubjectNames": [],
+      "qualifyingSubjectLevels": [
+        "JPL SP"
+      ],
+      "expectedMedal": "Brąz",
+      "supportingTeachersExcluded": []
+    },
+    {
+      "school": {
+        "id": "92783",
+        "name": "Szkoła Podstawowa nr 407",
+        "city": "Warszawa"
+      },
+      "currentMedal": "Brak",
+      "currentSubjectNames": [],
+      "qualifyingSubjectLevels": [],
+      "expectedMedal": "Brak",
+      "supportingTeachersExcluded": []
+    },
+    {
+      "school": {
+        "id": "92349",
+        "name": "Niepubliczne Technikum Programistyczne Techni Schools",
+        "city": "Warszawa"
+      },
+      "currentMedal": "Brak",
+      "currentSubjectNames": [],
+      "qualifyingSubjectLevels": [],
+      "expectedMedal": "Brak",
+      "supportingTeachersExcluded": []
+    },
+    {
+      "school": {
+        "id": "92311",
+        "name": "Liceum Edukacji Wielojęzycznej",
+        "city": "Warszawa"
+      },
+      "currentMedal": "Brak",
+      "currentSubjectNames": [],
+      "qualifyingSubjectLevels": [
+        "HIS SŚ",
+        "MAT SŚ"
+      ],
+      "expectedMedal": "Srebro",
+      "supportingTeachersExcluded": []
+    },
+    {
+      "school": {
+        "id": "92359",
+        "name": "Korczakowskie Liceum Ogólnokształcące w Warszawie",
+        "city": "Warszawa"
+      },
+      "currentMedal": "Brak",
+      "currentSubjectNames": [],
+      "qualifyingSubjectLevels": [
+        "JPL SŚ"
+      ],
+      "expectedMedal": "Brąz",
+      "supportingTeachersExcluded": []
+    },
+    {
+      "school": {
+        "id": "92960",
+        "name": "Niepubliczna Szkoła Podstawowa Promitis",
+        "city": "Warszawa"
+      },
+      "currentMedal": "Brak",
+      "currentSubjectNames": [],
+      "qualifyingSubjectLevels": [],
+      "expectedMedal": "Brak",
+      "supportingTeachersExcluded": []
+    },
+    {
+      "school": {
+        "id": "92891",
+        "name": "Niepubliczna Szkoła Podstawowa \"Beztroski Czas\"",
+        "city": "Warszawa"
+      },
+      "currentMedal": "Brak",
+      "currentSubjectNames": [],
+      "qualifyingSubjectLevels": [],
+      "expectedMedal": "Brak",
+      "supportingTeachersExcluded": []
+    },
+    {
+      "school": {
+        "id": "92105",
+        "name": "Bednarska Szkoła Realna",
+        "city": "Warszawa"
+      },
+      "currentMedal": "Brak",
+      "currentSubjectNames": [],
+      "qualifyingSubjectLevels": [],
+      "expectedMedal": "Brak",
+      "supportingTeachersExcluded": []
+    },
+    {
+      "school": {
+        "id": "92908",
+        "name": "Niepubliczne Liceum Ogólnokształcące Bezpieczna Przystań",
+        "city": "Warszawa"
+      },
+      "currentMedal": "Brak",
+      "currentSubjectNames": [],
+      "qualifyingSubjectLevels": [],
+      "expectedMedal": "Brak",
+      "supportingTeachersExcluded": []
+    },
+    {
+      "school": {
+        "id": "92312",
+        "name": "Polsko-Angielskie Liceum Ogólnokształcące Edison",
+        "city": "Warszawa"
+      },
+      "currentMedal": "Brak",
+      "currentSubjectNames": [],
+      "qualifyingSubjectLevels": [],
+      "expectedMedal": "Brak",
+      "supportingTeachersExcluded": []
+    },
+    {
+      "school": {
+        "id": "92677",
+        "name": "Liceum Ogólnokształcące z Oddziałami Dwujęzycznymi Fundacji Szkolnej w Warszawie",
+        "city": "Warszawa"
+      },
+      "currentMedal": "Brak",
+      "currentSubjectNames": [],
+      "qualifyingSubjectLevels": [],
+      "expectedMedal": "Brak",
+      "supportingTeachersExcluded": []
+    },
+    {
+      "school": {
+        "id": "92927",
+        "name": "Liceum Ogólnokształcące \"Multimedia\"",
+        "city": "Warszawa"
+      },
+      "currentMedal": "Brak",
+      "currentSubjectNames": [],
+      "qualifyingSubjectLevels": [],
+      "expectedMedal": "Brak",
+      "supportingTeachersExcluded": []
+    },
+    {
+      "school": {
+        "id": "92906",
+        "name": "Niepubliczne Specjalne Liceum Ogólnokształcące Wspierania Rozwoju",
+        "city": "Warszawa"
+      },
+      "currentMedal": "Brak",
+      "currentSubjectNames": [],
+      "qualifyingSubjectLevels": [
+        "HIS SŚ"
+      ],
+      "expectedMedal": "Brąz",
+      "supportingTeachersExcluded": []
+    },
+    {
+      "school": {
+        "id": "92027",
+        "name": "Niepubliczna Polsko-Angielska Szkoła Podstawowa \"Vancouver Schools\"",
+        "city": "Warszawa"
+      },
+      "currentMedal": "Brak",
+      "currentSubjectNames": [],
+      "qualifyingSubjectLevels": [],
+      "expectedMedal": "Brak",
+      "supportingTeachersExcluded": []
+    },
+    {
+      "school": {
+        "id": "92681",
+        "name": "Niepubliczna Szkoła Podstawowa Indygo",
+        "city": "Warszawa"
+      },
+      "currentMedal": "Brak",
+      "currentSubjectNames": [],
+      "qualifyingSubjectLevels": [],
+      "expectedMedal": "Brak",
+      "supportingTeachersExcluded": []
+    },
+    {
+      "school": {
+        "id": "92303",
+        "name": "Szkoła Podstawowa Joy Primary School",
+        "city": "Warszawa"
+      },
+      "currentMedal": "Brak",
+      "currentSubjectNames": [],
+      "qualifyingSubjectLevels": [
+        "FIZ SP",
+        "JPL SP",
+        "MAT SP"
+      ],
+      "expectedMedal": "Złoto",
+      "supportingTeachersExcluded": []
+    },
+    {
+      "school": {
+        "id": "92180",
+        "name": "Przedszkole Terapeutyczne Effectis",
+        "city": "Warszawa"
+      },
+      "currentMedal": "Brak",
+      "currentSubjectNames": [],
+      "qualifyingSubjectLevels": [],
+      "expectedMedal": "Brak",
+      "supportingTeachersExcluded": []
+    },
+    {
+      "school": {
+        "id": "92323",
+        "name": "Liceum Ogólnokształcące Johna A. Stevensona",
+        "city": "Warszawa"
+      },
+      "currentMedal": "Brak",
+      "currentSubjectNames": [],
+      "qualifyingSubjectLevels": [
+        "JPL SŚ",
+        "MAT SŚ"
+      ],
+      "expectedMedal": "Srebro",
+      "supportingTeachersExcluded": []
+    },
+    {
+      "school": {
+        "id": "92081",
+        "name": "Filia Szkoły Podstawowej nr 258",
+        "city": "Warszawa"
+      },
+      "currentMedal": "Brak",
+      "currentSubjectNames": [],
+      "qualifyingSubjectLevels": [],
+      "expectedMedal": "Brak",
+      "supportingTeachersExcluded": []
+    },
+    {
+      "school": {
+        "id": "92909",
+        "name": "Niepubliczna Szkoła Podstawowa Bezpieczna Przystań",
+        "city": "Warszawa"
+      },
+      "currentMedal": "Brak",
+      "currentSubjectNames": [],
+      "qualifyingSubjectLevels": [],
+      "expectedMedal": "Brak",
+      "supportingTeachersExcluded": []
+    },
+    {
+      "school": {
+        "id": "92822",
+        "name": "Integracyjne Przedszkole Nipubliczne HiKids",
+        "city": "Warszawa"
+      },
+      "currentMedal": "Brak",
+      "currentSubjectNames": [],
+      "qualifyingSubjectLevels": [],
+      "expectedMedal": "Brak",
+      "supportingTeachersExcluded": []
+    },
+    {
+      "school": {
+        "id": "92315",
+        "name": "Szkoła Podstawowa nr 405",
+        "city": "Warszawa"
+      },
+      "currentMedal": "Brąz",
+      "currentSubjectNames": [],
+      "qualifyingSubjectLevels": [
+        "EW SP"
+      ],
+      "expectedMedal": "Brąz",
+      "supportingTeachersExcluded": []
+    },
+    {
+      "school": {
+        "id": "92061",
+        "name": "Niebieska Szkoła Podstawowa",
+        "city": "Warszawa"
+      },
+      "currentMedal": "Brak",
+      "currentSubjectNames": [],
+      "qualifyingSubjectLevels": [
+        "HIS SP",
+        "JPL SP",
+        "MAT SP"
+      ],
+      "expectedMedal": "Złoto",
+      "supportingTeachersExcluded": []
+    },
+    {
+      "school": {
+        "id": "91868",
+        "name": "Integracyjna Podstawowa Szkoła Montessori Elipsoida",
+        "city": "Warszawa"
+      },
+      "currentMedal": "Brak",
+      "currentSubjectNames": [],
+      "qualifyingSubjectLevels": [
+        "EW SP",
+        "JPL SP",
+        "MAT SP",
+        "PRZ SP"
+      ],
+      "expectedMedal": "Złoto",
+      "supportingTeachersExcluded": [
+        "524978",
+        "525090",
+        "524979",
+        "524980"
+      ]
+    },
+    {
+      "school": {
+        "id": "92602",
+        "name": "Przedszkole nr 436",
+        "city": "Warszawa"
+      },
+      "currentMedal": "Brak",
+      "currentSubjectNames": [],
+      "qualifyingSubjectLevels": [],
+      "expectedMedal": "Brak",
+      "supportingTeachersExcluded": []
+    },
+    {
+      "school": {
+        "id": "92314",
+        "name": "Liceum Ogólnokształcące Teb Edukacja",
+        "city": "Warszawa"
+      },
+      "currentMedal": "Brak",
+      "currentSubjectNames": [],
+      "qualifyingSubjectLevels": [
+        "HIS SŚ"
+      ],
+      "expectedMedal": "Brąz",
+      "supportingTeachersExcluded": []
+    },
+    {
+      "school": {
+        "id": "92181",
+        "name": "Niepubliczne Przedszkole Pluszowa Akademia",
+        "city": "Warszawa"
+      },
+      "currentMedal": "Brak",
+      "currentSubjectNames": [],
+      "qualifyingSubjectLevels": [],
+      "expectedMedal": "Brak",
+      "supportingTeachersExcluded": []
+    },
+    {
+      "school": {
+        "id": "92802",
+        "name": "Przedszkole Niepubliczne Baśniowa Dolina",
+        "city": "Warszawa"
+      },
+      "currentMedal": "Brak",
+      "currentSubjectNames": [],
+      "qualifyingSubjectLevels": [],
+      "expectedMedal": "Brak",
+      "supportingTeachersExcluded": []
+    },
+    {
+      "school": {
+        "id": "92878",
+        "name": "Szkoła Podstawowa Mistrzostwa Sportowego Legii Warszawa",
+        "city": "Warszawa"
+      },
+      "currentMedal": "Brak",
+      "currentSubjectNames": [],
+      "qualifyingSubjectLevels": [
+        "MAT SP"
+      ],
+      "expectedMedal": "Brąz",
+      "supportingTeachersExcluded": []
+    },
+    {
+      "school": {
+        "id": "91970",
+        "name": "Szkoła Podstawowa nr 396",
+        "city": "Warszawa"
+      },
+      "currentMedal": "Brak",
+      "currentSubjectNames": [],
+      "qualifyingSubjectLevels": [
+        "MAT SP"
+      ],
+      "expectedMedal": "Brąz",
+      "supportingTeachersExcluded": []
+    },
+    {
+      "school": {
+        "id": "92905",
+        "name": "Liceum Sztuk Plastycznych Cosinus",
+        "city": "Warszawa"
+      },
+      "currentMedal": "Brak",
+      "currentSubjectNames": [],
+      "qualifyingSubjectLevels": [
+        "MAT SŚ"
+      ],
+      "expectedMedal": "Brąz",
+      "supportingTeachersExcluded": []
+    },
+    {
+      "school": {
+        "id": "92216",
+        "name": "Przedszkole nr 443",
+        "city": "Warszawa"
+      },
+      "currentMedal": "Brak",
+      "currentSubjectNames": [],
+      "qualifyingSubjectLevels": [],
+      "expectedMedal": "Brak",
+      "supportingTeachersExcluded": []
+    },
+    {
+      "school": {
+        "id": "92635",
+        "name": "Szkoła Podstawowa nr 406",
+        "city": "Warszawa"
+      },
+      "currentMedal": "Brak",
+      "currentSubjectNames": [],
+      "qualifyingSubjectLevels": [
+        "HIS SP",
+        "MAT SP"
+      ],
+      "expectedMedal": "Srebro",
+      "supportingTeachersExcluded": []
+    },
+    {
+      "school": {
+        "id": "92904",
+        "name": "Liceum Chocimska",
+        "city": "Warszawa"
+      },
+      "currentMedal": "Brak",
+      "currentSubjectNames": [],
+      "qualifyingSubjectLevels": [],
+      "expectedMedal": "Brak",
+      "supportingTeachersExcluded": []
+    },
+    {
+      "school": {
+        "id": "92685",
+        "name": "Nowatorska Szkoła Podstawowa",
+        "city": "Warszawa"
+      },
+      "currentMedal": "Brak",
+      "currentSubjectNames": [],
+      "qualifyingSubjectLevels": [],
+      "expectedMedal": "Brak",
+      "supportingTeachersExcluded": []
+    },
+    {
+      "school": {
+        "id": "91817",
+        "name": "Szkoła Podstawowa Zakonu Pijarów",
+        "city": "Warszawa"
+      },
+      "currentMedal": "Brak",
+      "currentSubjectNames": [],
+      "qualifyingSubjectLevels": [],
+      "expectedMedal": "Brak",
+      "supportingTeachersExcluded": []
+    },
+    {
+      "school": {
+        "id": "92641",
+        "name": "Niepubliczna Szkoła Podstawowa – Uniwersytet Młodego Człowieka",
+        "city": "Warszawa"
+      },
+      "currentMedal": "Brak",
+      "currentSubjectNames": [],
+      "qualifyingSubjectLevels": [
+        "MAT SP"
+      ],
+      "expectedMedal": "Brąz",
+      "supportingTeachersExcluded": []
+    },
+    {
+      "school": {
+        "id": "92901",
+        "name": "Liceum Ogólnokształcące dla Dorosłych \"PASCAL\" w Warszawie",
+        "city": "Warszawa"
+      },
+      "currentMedal": "Brak",
+      "currentSubjectNames": [],
+      "qualifyingSubjectLevels": [],
+      "expectedMedal": "Brak",
+      "supportingTeachersExcluded": []
+    },
+    {
+      "school": {
+        "id": "92084",
+        "name": "CXXVIII Liceum Ogólnokształcące dla Dorosłych CKZiU",
+        "city": "Warszawa"
+      },
+      "currentMedal": "Brak",
+      "currentSubjectNames": [],
+      "qualifyingSubjectLevels": [],
+      "expectedMedal": "Brak",
+      "supportingTeachersExcluded": []
+    },
+    {
+      "school": {
+        "id": "92128",
+        "name": "Liceum Ogólnokształcące nr 324. Saska Szkoła Realna",
+        "city": "Warszawa"
+      },
+      "currentMedal": "Brak",
+      "currentSubjectNames": [],
+      "qualifyingSubjectLevels": [
+        "HIS SŚ",
+        "JPL SŚ",
+        "MAT SŚ"
+      ],
+      "expectedMedal": "Złoto",
+      "supportingTeachersExcluded": []
+    },
+    {
+      "school": {
+        "id": "91963",
+        "name": "Społeczna Szkoła Podstawowa Fundacji AlterEdu",
+        "city": "Warszawa"
+      },
+      "currentMedal": "Brak",
+      "currentSubjectNames": [],
+      "qualifyingSubjectLevels": [
+        "MAT SP"
+      ],
+      "expectedMedal": "Brąz",
+      "supportingTeachersExcluded": []
+    },
+    {
+      "school": {
+        "id": "92534",
+        "name": "Przedszkole nr 439",
         "city": "Warszawa"
       },
       "currentMedal": "Brak",

@@ -33,6 +33,7 @@ import {
   prepareSchoolSearchByIdAndMedal,
   searchSchoolsByMedalsWithApi,
   waitForSchoolTeachersLoaded,
+  type SchoolMedal,
 } from "./support/school-medal";
 
 test.describe("Medalowość szkoły", () => {

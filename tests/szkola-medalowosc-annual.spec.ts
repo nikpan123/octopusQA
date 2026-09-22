@@ -14,6 +14,7 @@ import {
   getAnnualMedalTeacherSubjects,
   getExpectedAnnualMedal,
   loadAnnualMedalSnapshot,
+  buildRandomAnnualMedalSnapshot,
 } from "./support/school-medal-annual";
 import { mkdir, writeFile } from "node:fs/promises";
 
@@ -362,11 +363,130 @@ test.describe("Roczne przeliczenie medalowości @annual-medal", () => {
 
     console.log(`Snapshot zapisany: ${outputPath}`);
   });
+
+  test("MED-YEAR-PREP-08: przygotuj snapshot 4 szkół referencyjnych i 50 losowych szkół", async ({
+    page,
+  }) => {
+    test.setTimeout(10 * 60 * 1000);
+
+    const app = new Octopus(page);
+
+    const referenceSchools = [
+      GOLD_SCHOOL,
+      SILVER_SCHOOL,
+      BRONZE_SCHOOL,
+      NO_MEDAL_SCHOOL,
+    ];
+
+    console.log("MED-YEAR-PREP-08: przygotowuję 4 szkoły referencyjne...");
+
+    const referenceSnapshot = await buildAnnualMedalSnapshot(
+      app,
+      referenceSchools,
+    );
+
+    console.log("MED-YEAR-PREP-08: losuję 50 dodatkowych szkół...");
+
+    const randomSnapshot = await buildRandomAnnualMedalSnapshot(
+      app,
+      50,
+      referenceSchools.map((school) => school.id),
+    );
+
+    const schools = [...referenceSnapshot, ...randomSnapshot];
+
+    expect(
+      schools,
+      "Snapshot powinien zawierać 4 szkoły referencyjne i 50 losowych",
+    ).toHaveLength(54);
+
+    const ids = schools.map((entry) => entry.school.id);
+
+    expect(
+      new Set(ids).size,
+      "W snapshotcie nie powinno być duplikatów szkół",
+    ).toBe(ids.length);
+
+    const medalCounts = {
+      Złoto: 0,
+      Srebro: 0,
+      Brąz: 0,
+      Brak: 0,
+    };
+
+    const transitions = new Map<string, number>();
+
+    for (const entry of schools) {
+      medalCounts[entry.expectedMedal]++;
+
+      const transition = `${entry.currentMedal} → ${entry.expectedMedal}`;
+
+      transitions.set(transition, (transitions.get(transition) ?? 0) + 1);
+    }
+
+    console.log(
+      "MED-YEAR-PREP-08: rozkład oczekiwanych medali:",
+      JSON.stringify(medalCounts, null, 2),
+    );
+
+    console.log("MED-YEAR-PREP-08: wykryte przejścia:");
+
+    for (const [transition, count] of transitions) {
+      console.log(`  ${transition}: ${count}`);
+    }
+
+    console.log("MED-YEAR-PREP-08: wylosowane szkoły:");
+
+    for (const entry of randomSnapshot) {
+      console.log(
+        `  ${entry.school.id} "${entry.school.name}": ` +
+          `${entry.currentMedal} → ${entry.expectedMedal}; ` +
+          `przedmioty=${JSON.stringify(entry.qualifyingSubjectLevels)}`,
+      );
+    }
+
+    const output = {
+      schemaVersion: 1,
+
+      generatedAt: new Date().toISOString(),
+
+      targetProcessDate: "2026-10-01",
+
+      selection: {
+        referenceSchoolCount: referenceSnapshot.length,
+
+        randomSchoolCount: randomSnapshot.length,
+
+        totalSchoolCount: schools.length,
+
+        randomSelection: true,
+      },
+
+      schools,
+    };
+
+    await mkdir("tests/data", {
+      recursive: true,
+    });
+
+    const outputPath = "tests/data/medalowosc-annual-2026.json";
+
+    await writeFile(outputPath, JSON.stringify(output, null, 2) + "\n", "utf8");
+
+    console.log(`MED-YEAR-PREP-08: snapshot zapisany: ${outputPath}`);
+
+    console.log(
+      `MED-YEAR-PREP-08: zapisano ${schools.length} szkół: ` +
+        `${referenceSnapshot.length} referencyjne + ${randomSnapshot.length} losowych.`,
+    );
+  });
 });
 
 test("MED-YEAR-01: roczne przeliczenie ustawia oczekiwany medal na podstawie snapshotu @annual-medal", async ({
   page,
 }) => {
+  test.setTimeout(10 * 60 * 1000);
+
   const app = new Octopus(page);
 
   const snapshot = await loadAnnualMedalSnapshot();
@@ -380,16 +500,20 @@ test("MED-YEAR-01: roczne przeliczenie ustawia oczekiwany medal na podstawie sna
 
   console.log(`MED-YEAR-01: snapshot wygenerowany ${snapshot.generatedAt}`);
 
-  console.log(`MED-YEAR-01: data procesu ${snapshot.targetProcessDate}`);
+  console.log(`MED-YEAR-01: sprawdzam ${snapshot.schools.length} szkół`);
 
-  for (const entry of snapshot.schools) {
+  let passed = 0;
+
+  for (let i = 0; i < snapshot.schools.length; i++) {
+    const entry = snapshot.schools[i];
+
     const medalData = await getSchoolMedalApiData(app, entry.school);
 
     console.log(
-      `MED-YEAR-01: szkoła ${entry.school.id} "${entry.school.name}": ` +
-        `przed jobem=${entry.currentMedal}, ` +
-        `oczekiwany=${entry.expectedMedal}, ` +
-        `po jobie=${medalData.medalCategoryName}`,
+      `MED-YEAR-01: ${i + 1}/${snapshot.schools.length} ` +
+        `${entry.school.id} "${entry.school.name}": ` +
+        `${entry.currentMedal} → oczekiwany ${entry.expectedMedal} → ` +
+        `faktyczny ${medalData.medalCategoryName}`,
     );
 
     expect(
@@ -397,5 +521,11 @@ test("MED-YEAR-01: roczne przeliczenie ustawia oczekiwany medal na podstawie sna
       `Szkoła ${entry.school.id} "${entry.school.name}" powinna po rocznym przeliczeniu mieć medal ${entry.expectedMedal}. ` +
         `Przed przeliczeniem miała ${entry.currentMedal}.`,
     ).toBe(entry.expectedMedal);
+
+    passed++;
   }
+
+  console.log(
+    `MED-YEAR-01: poprawnie zweryfikowano ${passed}/${snapshot.schools.length} szkół.`,
+  );
 });
