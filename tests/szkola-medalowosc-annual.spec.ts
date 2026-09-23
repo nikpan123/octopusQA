@@ -56,7 +56,7 @@ async function loadAnnualMedalSnapshotForCurrentEnvironment() {
 }
 
 test.describe("Roczne przeliczenie medalowości @annual-medal", () => {
-  test("MED-YEAR-PREP-08: przygotuj snapshot 4 szkół referencyjnych i 50 losowych szkół", async ({
+  test("MED-YEAR-PREP: przygotuj snapshot 4 szkół referencyjnych i 50 losowych szkół", async ({
     page,
   }) => {
     test.setTimeout(10 * 60 * 1000);
@@ -65,7 +65,7 @@ test.describe("Roczne przeliczenie medalowości @annual-medal", () => {
 
     const referenceSchools = [GOLD_SCHOOL, SILVER_SCHOOL, BRONZE_SCHOOL, NO_MEDAL_SCHOOL];
 
-    console.log("MED-YEAR-PREP-08: przygotowuję 4 szkoły referencyjne...");
+    console.log("MED-YEAR-PREP: przygotowuję 4 szkoły referencyjne...");
 
     const referenceSnapshot = await buildAnnualMedalSnapshot(
       app,
@@ -73,7 +73,7 @@ test.describe("Roczne przeliczenie medalowości @annual-medal", () => {
       ANNUAL_MEDAL_TARGET_PROCESS_DATE,
     );
 
-    console.log("MED-YEAR-PREP-08: losuję 50 dodatkowych szkół...");
+    console.log("MED-YEAR-PREP: losuję 50 dodatkowych szkół...");
 
     const randomSnapshot = await buildRandomAnnualMedalSnapshot(
       app,
@@ -110,17 +110,17 @@ test.describe("Roczne przeliczenie medalowości @annual-medal", () => {
     }
 
     console.log(
-      "MED-YEAR-PREP-08: rozkład oczekiwanych medali:",
+      "MED-YEAR-PREP: rozkład oczekiwanych medali:",
       JSON.stringify(medalCounts, null, 2),
     );
 
-    console.log("MED-YEAR-PREP-08: wykryte przejścia:");
+    console.log("MED-YEAR-PREP: wykryte przejścia:");
 
     for (const [transition, count] of transitions) {
       console.log(`  ${transition}: ${count}`);
     }
 
-    console.log("MED-YEAR-PREP-08: wylosowane szkoły:");
+    console.log("MED-YEAR-PREP: wylosowane szkoły:");
 
     for (const entry of randomSnapshot) {
       console.log(
@@ -158,12 +158,12 @@ test.describe("Roczne przeliczenie medalowości @annual-medal", () => {
 
     await writeFile(outputPath, JSON.stringify(output, null, 2) + "\n", "utf8");
 
-    console.log(`MED-YEAR-PREP-08: środowisko ${OCTOPUS_ENV.toUpperCase()}.`);
+    console.log(`MED-YEAR-PREP: środowisko ${OCTOPUS_ENV.toUpperCase()}.`);
 
-    console.log(`MED-YEAR-PREP-08: snapshot zapisany: ${outputPath}`);
+    console.log(`MED-YEAR-PREP: snapshot zapisany: ${outputPath}`);
 
     console.log(
-      `MED-YEAR-PREP-08: zapisano ${schools.length} szkół: ` +
+      `MED-YEAR-PREP: zapisano ${schools.length} szkół: ` +
         `${referenceSnapshot.length} referencyjne + ` +
         `${randomSnapshot.length} losowych.`,
     );

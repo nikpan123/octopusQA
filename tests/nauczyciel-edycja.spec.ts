@@ -3303,13 +3303,24 @@ test("EDIT-43: ponowny zapis już znormalizowanych danych bez zmian nie modyfiku
 
   /*
    * =====================================================
-   * 2. SPRAWDZENIE NORMALIZACJI
+   * 2. SPRAWDZENIE NORMALIZACJI I ZAŁADOWANIA DANYCH
    * =====================================================
    */
 
   await s.app.openPanel("teacher", teacherId);
 
+  /*
+   * openPanel() potwierdza otwarcie właściwego rekordu,
+   * ale wartości pól mogą doczytać się chwilę później.
+   *
+   * Dlatego przed wykonaniem snapshotu czekamy na
+   * konkretne oczekiwane wartości.
+   */
+  await expect(s.app.detail("firstName")).toHaveValue("Testowy");
+
   await expect(s.app.detail("lastName")).toHaveValue(normalizedLastName);
+
+  await expect(s.app.detail("email")).toHaveValue(s.email);
 
   /*
    * Zapamiętujemy stan po pierwszym,

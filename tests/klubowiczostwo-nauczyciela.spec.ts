@@ -1,7 +1,12 @@
-import { test, expect } from "./support/scenario";
+import { test, expect } from "./support/club-fixtures";
 import {
+  MATH_SECONDARY_FOREIGN_CLASSES,
+  MATH_SECONDARY_OWN_CLASSES,
   MATH_SP_CLASSES,
+  PHYSICS_SP_FOREIGN_CLASSES,
+  PHYSICS_SP_OWN_CLASSES,
   addMathSp,
+  addTeacherSubjectLevel,
   cancelClubForm,
   confirmDeleteIfShown,
   confirmationDetails,
@@ -10,14 +15,18 @@ import {
   disableTeacherEmail,
   foreignClass,
   foreignClasses,
+  foreignSelectAll,
   openClubEdit,
   openNewClubForm,
   ownClass,
   ownClasses,
+  ownSelectAll,
   saveClubEdit,
   saveClubForm,
+  selectForeignPublisher,
   selectSchool,
 } from "./support/club";
+import { prepareClubTeacher } from "./support/club-scenario";
 
 test("CLUB-01: przedmiotopoziom i formularz klubowy nauczyciela są trwałe @teacher @club", async ({
   page,
@@ -328,19 +337,15 @@ test("CLUB-06: edycja usuwa tylko wskazaną klasę 5 z zestawu 4,5,6 @teacher @c
 });
 
 test("CLUB-07: formularz klubowy dotyczy tylko wybranej szkoły nauczyciela @teacher @club", async ({
+  clubSchools,
   page,
   scenario: s,
 }) => {
   const firstSchoolId = await s.createSchool();
-
-  const secondSchoolName = `${s.id} Druga szkoła`;
-
-  const secondSchoolId = await s.app.createSchool(secondSchoolName, String(Date.now() + 1));
+  const { id: secondSchoolId, name: secondSchoolName } = clubSchools.spB;
 
   await s.record("secondSchoolId", secondSchoolId);
   await s.record("secondSchoolName", secondSchoolName);
-
-  await s.app.markTestRecord();
 
   const teacherId = await s.createTeacher(firstSchoolId);
 
@@ -383,6 +388,7 @@ test("CLUB-07: formularz klubowy dotyczy tylko wybranej szkoły nauczyciela @tea
 });
 
 test("CLUB-08: formularz klubowy obsługuje dwie szkoły nauczyciela @teacher @club", async ({
+  clubSchools,
   page,
   scenario: s,
 }) => {
@@ -395,11 +401,7 @@ test("CLUB-08: formularz klubowy obsługuje dwie szkoły nauczyciela @teacher @c
   const firstSchoolId = await s.createSchool();
   const firstSchoolName = s.schoolName;
 
-  const secondSchoolName = `${s.id} Druga szkoła`;
-
-  const secondSchoolId = await s.app.createSchool(secondSchoolName, String(Date.now() + 1));
-
-  await s.app.markTestRecord();
+  const { id: secondSchoolId, name: secondSchoolName } = clubSchools.spB;
 
   await s.record("firstSchoolId", firstSchoolId);
   await s.record("firstSchoolName", firstSchoolName);
@@ -1409,4 +1411,316 @@ test("CLUB-13: formularz klubowy zachowuje klasę obcą i wydawnictwo @teacher @
   await expect(foreignClasses(editForm).getByRole("combobox")).toContainText(publisherName);
 
   await cancelClubForm(editForm);
+});
+
+test("CLUB-14: nowy formularz ma domyślnie wybrany bieżący rok szkolny @teacher @club @defaults", async ({
+  page,
+  scenario: s,
+}) => {
+  await prepareClubTeacher(page, s);
+
+  const { form, schoolYear } = await openNewClubForm(page);
+  const now = new Date();
+  const firstYear = now.getMonth() >= 7 ? now.getFullYear() : now.getFullYear() - 1;
+
+  expect(schoolYear).toBe(`${firstYear}/${firstYear + 1}`);
+  await expect(form.getByRole("radio", { checked: true })).toHaveCount(1);
+
+  await cancelClubForm(form);
+});
+
+test("CLUB-15: formularz pokazuje wszystkie szkoły i przedmioto-poziomy nauczyciela @teacher @club @defaults", async ({
+  clubSchools,
+  page,
+  scenario: s,
+}) => {
+  const { teacherId } = await prepareClubTeacher(page, s);
+
+  await addTeacherSubjectLevel(page, "Fizyka", "Szkoła Podstawowa", "SP");
+
+  const { id: secondSchoolId, name: secondSchoolName } = clubSchools.spB;
+
+  await s.record("secondSchoolId", secondSchoolId);
+  await s.app.openPanel("teacher", teacherId);
+  await s.app.attachSchool(page.locator("body"), secondSchoolId, secondSchoolName);
+
+  const { form } = await openNewClubForm(page, null);
+
+  await expect(form.getByRole("row").filter({ hasText: s.schoolName })).toBeVisible();
+  await expect(form.getByRole("row").filter({ hasText: secondSchoolName })).toBeVisible();
+
+  const subject = form.getByRole("combobox").first();
+  await subject.click();
+  await expect(page.getByRole("option", { name: "Matematyka", exact: true })).toBeVisible();
+  await expect(page.getByRole("option", { name: "Fizyka", exact: true })).toBeVisible();
+  await page.keyboard.press("Escape");
+
+  await cancelClubForm(form);
+});
+
+test("CLUB-16: klasy można wybierać wyłącznie dla zaznaczonej szkoły @teacher @club @school", async ({
+  page,
+  scenario: s,
+}) => {
+  await prepareClubTeacher(page, s);
+
+  const { form } = await openNewClubForm(page);
+
+  await expect(ownClasses(form)).toHaveCount(0);
+  await expect(foreignClasses(form)).toHaveCount(0);
+
+  await selectSchool(form, s.schoolName);
+
+  await expect(ownClasses(form)).toHaveCount(1);
+  await expect(foreignClasses(form)).toHaveCount(1);
+  await expect(ownClass(form, "4")).toBeEnabled();
+
+  await cancelClubForm(form);
+});
+
+test("CLUB-17: odznaczenie szkoły usuwa wybrane dla niej klasy @teacher @club @school", async ({
+  page,
+  scenario: s,
+}) => {
+  await prepareClubTeacher(page, s);
+
+  const { form } = await openNewClubForm(page);
+  const school = await selectSchool(form, s.schoolName);
+
+  await ownClass(form, "4").check();
+  await expect(ownClass(form, "4")).toBeChecked();
+
+  await school.getByRole("checkbox").uncheck();
+  await expect(ownClasses(form)).toHaveCount(0);
+
+  await school.getByRole("checkbox").check();
+  await expect(ownClass(form, "4")).not.toBeChecked();
+
+  await cancelClubForm(form);
+});
+
+test("CLUB-18: standardowa klasa nie może być jednocześnie NASZA i OBCA @teacher @club @classes @validation", async ({
+  page,
+  scenario: s,
+}) => {
+  await prepareClubTeacher(page, s);
+
+  const { form } = await openNewClubForm(page);
+  await selectSchool(form, s.schoolName);
+
+  await ownClass(form, "4").check();
+
+  await expect(ownClass(form, "4")).toBeChecked();
+  await expect(foreignClass(form, "4")).not.toBeChecked();
+  await expect(foreignClass(form, "4")).toBeDisabled();
+
+  await cancelClubForm(form);
+});
+
+test("CLUB-19: zaznaczenie klasy OBCEJ blokuje tę samą klasę NASZĄ @teacher @club @classes", async ({
+  page,
+  scenario: s,
+}) => {
+  await prepareClubTeacher(page, s);
+
+  const { form } = await openNewClubForm(page);
+  await selectSchool(form, s.schoolName);
+
+  await foreignClass(form, "4").check();
+
+  await expect(foreignClass(form, "4")).toBeChecked();
+  await expect(ownClass(form, "4")).not.toBeChecked();
+  await expect(ownClass(form, "4")).toBeDisabled();
+
+  await cancelClubForm(form);
+});
+
+test("CLUB-20: różne klasy mogą być jednocześnie NASZE i OBCE @teacher @club @classes", async ({
+  page,
+  scenario: s,
+}) => {
+  await prepareClubTeacher(page, s);
+
+  const { form } = await openNewClubForm(page);
+  await selectSchool(form, s.schoolName);
+
+  await ownClass(form, "4").check();
+  await foreignClass(form, "5").check();
+
+  await expect(ownClass(form, "4")).toBeChecked();
+  await expect(foreignClass(form, "5")).toBeChecked();
+  await expect(foreignClass(form, "4")).toBeDisabled();
+  await expect(ownClass(form, "5")).toBeDisabled();
+
+  await cancelClubForm(form);
+});
+
+test("CLUB-21: Fizyka pozwala zaznaczyć dwie NASZE serie tej samej klasy @teacher @club @physics", async ({
+  page,
+  scenario: s,
+}) => {
+  await prepareClubTeacher(page, s, {
+    subject: "Fizyka",
+  });
+
+  const { form } = await openNewClubForm(page, "Fizyka");
+  await selectSchool(form, s.schoolName);
+
+  await ownClass(form, "7").check();
+  await ownClass(form, "7TNŚ").check();
+
+  await expect(ownClass(form, "7")).toBeChecked();
+  await expect(ownClass(form, "7TNŚ")).toBeChecked();
+  await expect(foreignClass(form, "7")).toBeDisabled();
+
+  await cancelClubForm(form);
+});
+
+test("CLUB-22: zaznaczenie wszystkich NASZYCH klas Fizyki obejmuje obie serie @teacher @club @physics", async ({
+  page,
+  scenario: s,
+}) => {
+  await prepareClubTeacher(page, s, {
+    subject: "Fizyka",
+  });
+
+  const { form } = await openNewClubForm(page, "Fizyka");
+  await selectSchool(form, s.schoolName);
+
+  await ownSelectAll(form).check();
+
+  for (const className of PHYSICS_SP_OWN_CLASSES) {
+    await expect(ownClass(form, className)).toBeChecked();
+  }
+
+  for (const className of PHYSICS_SP_FOREIGN_CLASSES) {
+    await expect(foreignClass(form, className)).toBeDisabled();
+  }
+
+  await cancelClubForm(form);
+});
+
+test("CLUB-23: Matematyka SŚ pozwala zaznaczyć równocześnie wszystkie klasy NASZE i OBCE @teacher @club @math-secondary", async ({
+  page,
+  scenario: s,
+}) => {
+  await prepareClubTeacher(page, s, {
+    schoolType: "Liceum",
+    levelOption: "Szkoła Średnia",
+    levelCode: "SŚ",
+  });
+
+  const { form } = await openNewClubForm(page);
+  await selectSchool(form, s.schoolName);
+
+  await ownSelectAll(form).check();
+  await foreignSelectAll(form).check();
+
+  for (const className of MATH_SECONDARY_OWN_CLASSES) {
+    await expect(ownClass(form, className)).toBeChecked();
+  }
+
+  for (const className of MATH_SECONDARY_FOREIGN_CLASSES) {
+    await expect(foreignClass(form, className)).toBeChecked();
+  }
+
+  await cancelClubForm(form);
+});
+
+test("CLUB-24: wszystkie klasy Matematyki SŚ są trwałe po ponownym otwarciu @teacher @club @math-secondary", async ({
+  page,
+  scenario: s,
+}) => {
+  const { teacherId } = await prepareClubTeacher(page, s, {
+    schoolType: "Liceum",
+    levelOption: "Szkoła Średnia",
+    levelCode: "SŚ",
+  });
+
+  const { form } = await openNewClubForm(page);
+  await selectSchool(form, s.schoolName);
+  await ownSelectAll(form).check();
+  await foreignSelectAll(form).check();
+
+  const publisher = await selectForeignPublisher(page, form);
+  await disableTeacherEmail(form);
+
+  const confirmationId = await saveClubForm(page, form);
+  await s.record("confirmationId", confirmationId);
+  await s.record("foreignPublisher", publisher);
+
+  await s.app.openPanel("teacher", teacherId);
+
+  const editForm = await openClubEdit(page, confirmationId);
+
+  for (const className of MATH_SECONDARY_OWN_CLASSES) {
+    await expect(ownClass(editForm, className)).toBeChecked();
+  }
+
+  for (const className of MATH_SECONDARY_FOREIGN_CLASSES) {
+    await expect(foreignClass(editForm, className)).toBeChecked();
+  }
+
+  await expect(foreignClasses(editForm).getByRole("combobox")).toContainText(publisher);
+  await cancelClubForm(editForm);
+});
+
+test("CLUB-25: Fizyka zapisuje wszystkie NASZE klasy obu serii @teacher @club @physics", async ({
+  page,
+  scenario: s,
+}) => {
+  const { teacherId } = await prepareClubTeacher(page, s, {
+    subject: "Fizyka",
+  });
+
+  const { form } = await openNewClubForm(page, "Fizyka");
+  await selectSchool(form, s.schoolName);
+  await ownSelectAll(form).check();
+  await disableTeacherEmail(form);
+
+  const confirmationId = await saveClubForm(page, form, "Fizyka");
+  await s.record("confirmationId", confirmationId);
+
+  await s.app.openPanel("teacher", teacherId);
+
+  const editForm = await openClubEdit(page, confirmationId);
+
+  for (const className of PHYSICS_SP_OWN_CLASSES) {
+    await expect(ownClass(editForm, className)).toBeChecked();
+  }
+
+  await cancelClubForm(editForm);
+});
+
+test("CLUB-26: usunięcie wszystkich klas podczas edycji blokuje zapis @teacher @club @edit @validation", async ({
+  page,
+  scenario: s,
+}) => {
+  const { teacherId } = await prepareClubTeacher(page, s);
+
+  const { form } = await openNewClubForm(page);
+  await selectSchool(form, s.schoolName);
+  await ownClass(form, "4").check();
+  await disableTeacherEmail(form);
+
+  const confirmationId = await saveClubForm(page, form);
+  await s.record("confirmationId", confirmationId);
+
+  const editForm = await openClubEdit(page, confirmationId);
+  await ownClass(editForm, "4").uncheck();
+  await editForm.getByRole("button", { name: "Zapisz", exact: true }).click();
+
+  const warning = page.locator("mat-dialog-container").filter({
+    has: page.getByRole("heading", { name: "Uwaga", exact: true }),
+  });
+
+  await expect(warning).toContainText("Nie można dodać/edytować pustego formularza");
+  await warning.getByRole("button", { name: "OK", exact: true }).click();
+  await expect(warning).toHaveCount(0);
+  await expect(editForm).toHaveCount(0);
+
+  await s.app.openPanel("teacher", teacherId);
+  const verifyForm = await openClubEdit(page, confirmationId);
+  await expect(ownClass(verifyForm, "4")).toBeChecked();
+  await cancelClubForm(verifyForm);
 });

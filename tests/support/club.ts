@@ -1,6 +1,21 @@
 import { expect, type Locator, type Page } from "@playwright/test";
 
 export const MATH_SP_CLASSES = ["4", "5", "6", "7", "8"] as const;
+export const PHYSICS_SP_OWN_CLASSES = ["7", "8", "7TNŚ", "8TNŚ"] as const;
+export const PHYSICS_SP_FOREIGN_CLASSES = ["7", "8"] as const;
+export const MATH_SECONDARY_OWN_CLASSES = [
+  "1P",
+  "2P",
+  "3P",
+  "4P",
+  "5P",
+  "1R",
+  "2R",
+  "3R",
+  "4R",
+  "5R",
+] as const;
+export const MATH_SECONDARY_FOREIGN_CLASSES = ["1", "2", "3", "4", "5"] as const;
 
 export function confirmations(page: Page) {
   return page.getByRole("tabpanel", {
@@ -44,6 +59,20 @@ export function foreignClass(form: Locator, classNumber: string) {
   });
 }
 
+export function ownSelectAll(form: Locator) {
+  return ownClasses(form).getByRole("checkbox", {
+    name: "Zaznacz wszystkie możliwe (nasze)",
+    exact: true,
+  });
+}
+
+export function foreignSelectAll(form: Locator) {
+  return foreignClasses(form).getByRole("checkbox", {
+    name: "Zaznacz wszystkie możliwe (obce)",
+    exact: true,
+  });
+}
+
 export function confirmationRow(page: Page, confirmationId: string) {
   return confirmations(page)
     .getByRole("row")
@@ -55,12 +84,17 @@ export function confirmationRow(page: Page, confirmationId: string) {
     });
 }
 
-export async function addMathSp(page: Page) {
+export async function addTeacherSubjectLevel(
+  page: Page,
+  subject: string,
+  levelOption: string,
+  levelCode: string,
+) {
   const container = subjects(page);
 
   const row = container.getByRole("row").filter({
     has: page.getByRole("cell", {
-      name: "Matematyka",
+      name: subject,
       exact: true,
     }),
   });
@@ -69,7 +103,7 @@ export async function addMathSp(page: Page) {
 
   await page
     .getByRole("option", {
-      name: "Matematyka",
+      name: subject,
       exact: true,
     })
     .click();
@@ -78,7 +112,7 @@ export async function addMathSp(page: Page) {
 
   await page
     .getByRole("option", {
-      name: "Szkoła Podstawowa",
+      name: levelOption,
       exact: true,
     })
     .click();
@@ -92,7 +126,7 @@ export async function addMathSp(page: Page) {
 
   await expect(
     row.getByRole("cell", {
-      name: "SP",
+      name: levelCode,
       exact: true,
     }),
   ).toBeVisible();
@@ -100,7 +134,11 @@ export async function addMathSp(page: Page) {
   return row;
 }
 
-export async function openNewClubForm(page: Page) {
+export async function addMathSp(page: Page) {
+  return addTeacherSubjectLevel(page, "Matematyka", "Szkoła Podstawowa", "SP");
+}
+
+export async function openNewClubForm(page: Page, expectedSubject: string | null = "Matematyka") {
   await confirmations(page)
     .getByRole("button", {
       name: "Dodaj formularz",
@@ -125,12 +163,22 @@ export async function openNewClubForm(page: Page) {
 
   expect(schoolYear).toMatch(/^\d{4}\/\d{4}$/);
 
-  await expect(form.getByRole("combobox").first()).toHaveText("Matematyka");
+  if (expectedSubject) {
+    await expect(form.getByRole("combobox").first()).toHaveText(expectedSubject);
+  }
 
   return {
     form,
     schoolYear,
   };
+}
+
+export async function selectClubSubject(page: Page, form: Locator, subject: string) {
+  const select = form.getByRole("combobox").first();
+
+  await select.click();
+  await page.getByRole("option", { name: subject, exact: true }).click();
+  await expect(select).toHaveText(subject);
 }
 
 export async function selectSchool(form: Locator, schoolName: string) {
@@ -162,7 +210,30 @@ export async function disableTeacherEmail(form: Locator) {
   await expect(email).not.toBeChecked();
 }
 
-export async function saveClubForm(page: Page, form: Locator) {
+export async function selectForeignPublisher(page: Page, form: Locator) {
+  const publisher = foreignClasses(form).getByRole("combobox");
+
+  await publisher.click();
+
+  const option = page
+    .getByRole("option")
+    .filter({
+      hasNotText: /^wybierz$/i,
+    })
+    .first();
+
+  await expect(option).toBeVisible();
+
+  const publisherName = (await option.innerText()).trim();
+
+  expect(publisherName).not.toBe("");
+
+  await option.click();
+
+  return publisherName;
+}
+
+export async function saveClubForm(page: Page, form: Locator, subject = "Matematyka") {
   await form
     .getByRole("button", {
       name: "Zapisz",
@@ -176,7 +247,7 @@ export async function saveClubForm(page: Page, form: Locator) {
     .getByRole("row")
     .filter({
       has: page.getByRole("cell", {
-        name: "Matematyka",
+        name: subject,
         exact: true,
       }),
     });

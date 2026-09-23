@@ -54,7 +54,7 @@ export class Octopus {
     }
   }
 
-  async prepareSchool(name: string, number: string) {
+  async prepareSchool(name: string, number: string, schoolType = "Szkoła podstawowa") {
     await this.openPanel("school");
     await this.page
       .getByRole("button", { name: "Dodaj", exact: true })
@@ -65,7 +65,7 @@ export class Octopus {
     const form = this.dialog("Dodaj nową szkołę");
     await typeValue(this.field(form, "* Nazwa"), name);
     await form.getByRole("combobox").click();
-    await this.page.getByRole("option", { name: "Szkoła podstawowa", exact: true }).click();
+    await this.page.getByRole("option", { name: schoolType, exact: true }).click();
     await form.getByRole("button", { name: "Dodaj adres szkoły", exact: true }).click();
     const address = this.dialog("Edycja adresu");
     await typeValue(address.locator('input[id="zip_code_input"]'), "80-064");
@@ -81,8 +81,8 @@ export class Octopus {
     return form;
   }
 
-  async createSchool(name: string, number: string) {
-    const form = await this.prepareSchool(name, number);
+  async createSchool(name: string, number: string, schoolType = "Szkoła podstawowa") {
+    const form = await this.prepareSchool(name, number, schoolType);
     await form.getByRole("button", { name: "Zapisz", exact: true }).click();
     await expect(form).toHaveCount(0);
     await expect(this.page).toHaveURL(/\/school\/school-panel\/\d+$/);

@@ -154,18 +154,20 @@ npm.cmd test -- --grep @smoke # tylko testy oznaczone @smoke
 
 ## Zamówienia i klubowiczostwo
 
-Plik `tests/zamowienia-klubowiczostwo.spec.ts` dodaje dwa niezależne testy:
+Testy zamówień znajdują się w `tests/zamowienia-szkoly.spec.ts`, a testy klubowiczostwa w `tests/klubowiczostwo-nauczyciela.spec.ts`.
 
-- **ORD-01** — własna szkoła testowa, produkt KMLT18, jedna sztuka. Po ponownym otwarciu sprawdza ID zamówienia, tytuł, kod, ilość i adres szkoły. Produkt musi istnieć w katalogu dev.
-- **CLUB-01** — własna szkoła i nauczyciel testowy, matematyka / SP, formularz w Potwierdzeniach dla klasy 4 (nasze) i domyślnego roku szkolnego. Wysyłka e-maila jest wyłączona. Test sprawdza trwałość przedmiotopoziomu, a następnie formularza, szkoły, klasy oraz statusu Nasz.
+- **ORD-01–ORD-03** sprawdzają zapis, edycję i usunięcie zamówień szkoły.
+- **CLUB-01–CLUB-26** sprawdzają przedmioto-poziomy, formularze klubowe, klasy własne i obce, wydawnictwa, walidację oraz trwałość danych.
+- Testy `CLUB-*` używają stałej puli dwóch szkół podstawowych i jednego liceum, osobnej dla każdego środowiska. Szkoły są wyszukiwane po nazwie, tworzone tylko przy pierwszym użyciu i pozostają w bazie.
 
-Uruchomienie tylko nowych testów:
+Uruchomienie tych sekcji:
 
 ```powershell
-npm.cmd test -- zamowienia-klubowiczostwo.spec.ts
+npm.cmd test -- tests/zamowienia-szkoly.spec.ts
+npm.cmd test -- tests/klubowiczostwo-nauczyciela.spec.ts
 ```
 
-ID i parametry rekordów są zapisane w `runs/REG_*.json` i załączone do raportu. Po zakończeniu całego uruchomienia nauczyciel i formularz z udanego CLUB-01 są usuwani; szkoła oraz zamówienie ORD-01 pozostają. Konto wymaga praw do dodawania tych danych oraz usuwania nauczycieli.
+ID i parametry rekordów są zapisane w `runs/REG_*.json` i załączone do raportu. Po zakończeniu całego uruchomienia nauczyciele z udanych scenariuszy `CLUB-*` są usuwani wraz z formularzami; szkoły i zamówienia pozostają. Konto wymaga praw do dodawania tych danych oraz usuwania nauczycieli.
 
 ## Gdy test nie działa
 
