@@ -112,7 +112,7 @@ Rozszerzenie nauczyciela zwiększyło zestaw do 16 testów. Plik `tests/nauczyci
 
 Reguły walidacji dla podanych przykładów sprawdzono w UI dev. To nie jest pełna specyfikacja dopuszczalnych e-maili ani numerów międzynarodowych. W tym rozszerzeniu pozytywna edycja dotyczy nazwiska, nie zapisu nowego kontaktu.
 
-Nowe testy mają wspólną szkołę tworzoną raz na proces wykonawczy, bez stałego ID istniejącej placówki. Każdy przypadek tworzy własnego nauczyciela albo własny niezapisany formularz. REL-02 tworzy dodatkową szkołę. Po błędzie Playwright uruchamia nowy proces, więc może powstać kolejna wspólna szkoła. Dotychczasowe testy zachowują swoje przygotowanie danych.
+Testy edycji i relacji korzystają z trwałej szkoły `AUTOMAT TEACHER <ŚRODOWISKO> SP`, wyszukiwanej i przygotowywanej raz na proces wykonawczy. Każdy przypadek tworzy własnego nauczyciela albo własny niezapisany formularz. REL-02 tworzy dodatkową szkołę wymaganą przez scenariusz.
 
 ```powershell
 npm.cmd test -- nauczyciel-rozszerzenie.spec.ts
@@ -151,6 +151,8 @@ npm.cmd run check            # kontrola TypeScript, bez zmiany danych
 npm.cmd run test:auth        # mechanizm logowania na przechwyconych formularzach, fikcyjne dane
 npm.cmd test -- --grep @smoke # tylko testy oznaczone @smoke
 ```
+
+Jednocześnie może działać tylko jedno uruchomienie testów dla danego środowiska. Jeżeli pełny zestaw działa już w terminalu, test uruchomiony z VS Code zakończy się komunikatem wskazującym aktywny proces. Zapobiega to równoczesnemu odświeżaniu sesji, obciążaniu DEV i wzajemnemu zakłócaniu danych testowych.
 
 ## Zamówienia i klubowiczostwo
 

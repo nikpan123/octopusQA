@@ -2,37 +2,43 @@
 
 > Plik generowany automatycznie przez `npm run docs:scenarios`. Nie edytuj tabeli ręcznie.
 
-Łącznie: **182 scenariuszy**.
+Łącznie: **188 scenariuszy**.
 
 | ID | Scenariusz | Plik | Tagi |
 |---|---|---|---|
-| CLUB-01 | CLUB-01: przedmiotopoziom i formularz klubowy nauczyciela są trwałe | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L31) | `teacher`, `club` |
-| CLUB-02 | CLUB-02: edycja klasy 4 na 5 dla Matematyka/SP jest trwała | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L114) | `teacher`, `club` |
-| CLUB-03 | CLUB-03: Matematyka/SP udostępnia wyłącznie klasy 4-8 | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L177) | `teacher`, `club` |
-| CLUB-04 | CLUB-04: formularz klubowy zachowuje kilka klas 4,5,6 | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L212) | `teacher`, `club` |
-| CLUB-05 | CLUB-05: zaznaczenie wszystkich klas Matematyka/SP wybiera 4-8 | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L253) | `teacher`, `club` |
-| CLUB-06 | CLUB-06: edycja usuwa tylko wskazaną klasę 5 z zestawu 4,5,6 | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L297) | `teacher`, `club` |
-| CLUB-07 | CLUB-07: formularz klubowy dotyczy tylko wybranej szkoły nauczyciela | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L339) | `teacher`, `club` |
-| CLUB-08 | CLUB-08: formularz klubowy obsługuje dwie szkoły nauczyciela | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L390) | `teacher`, `club` |
-| CLUB-09 | CLUB-09: anulowanie dodawania formularza nie tworzy potwierdzenia | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L840) | `teacher`, `club`, `cancel` |
-| CLUB-10 | CLUB-10: anulowanie edycji zachowuje klasę 4 | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L875) | `teacher`, `club`, `cancel` |
-| CLUB-11 | CLUB-11: formularz klubowy można usunąć | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L921) | `teacher`, `club`, `delete` |
-| CLUB-12A | CLUB-12A: brak szkoły blokuje utworzenie formularza klubowego | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L1120) | `teacher`, `club`, `validation` |
-| CLUB-12B | CLUB-12B: brak klasy blokuje utworzenie formularza klubowego | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L1231) | `teacher`, `club`, `validation` |
-| CLUB-13 | CLUB-13: formularz klubowy zachowuje klasę obcą i wydawnictwo | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L1347) | `teacher`, `club` |
-| CLUB-14 | CLUB-14: nowy formularz ma domyślnie wybrany bieżący rok szkolny | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L1416) | `teacher`, `club`, `defaults` |
-| CLUB-15 | CLUB-15: formularz pokazuje wszystkie szkoły i przedmioto-poziomy nauczyciela | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L1432) | `teacher`, `club`, `defaults` |
-| CLUB-16 | CLUB-16: klasy można wybierać wyłącznie dla zaznaczonej szkoły | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L1461) | `teacher`, `club`, `school` |
-| CLUB-17 | CLUB-17: odznaczenie szkoły usuwa wybrane dla niej klasy | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L1481) | `teacher`, `club`, `school` |
-| CLUB-18 | CLUB-18: standardowa klasa nie może być jednocześnie NASZA i OBCA | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L1502) | `teacher`, `club`, `classes`, `validation` |
-| CLUB-19 | CLUB-19: zaznaczenie klasy OBCEJ blokuje tę samą klasę NASZĄ | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L1520) | `teacher`, `club`, `classes` |
-| CLUB-20 | CLUB-20: różne klasy mogą być jednocześnie NASZE i OBCE | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L1538) | `teacher`, `club`, `classes` |
-| CLUB-21 | CLUB-21: Fizyka pozwala zaznaczyć dwie NASZE serie tej samej klasy | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L1558) | `teacher`, `club`, `physics` |
-| CLUB-22 | CLUB-22: zaznaczenie wszystkich NASZYCH klas Fizyki obejmuje obie serie | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L1579) | `teacher`, `club`, `physics` |
-| CLUB-23 | CLUB-23: Matematyka SŚ pozwala zaznaczyć równocześnie wszystkie klasy NASZE i OBCE | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L1603) | `teacher`, `club`, `math-secondary` |
-| CLUB-24 | CLUB-24: wszystkie klasy Matematyki SŚ są trwałe po ponownym otwarciu | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L1630) | `teacher`, `club`, `math-secondary` |
-| CLUB-25 | CLUB-25: Fizyka zapisuje wszystkie NASZE klasy obu serii | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L1668) | `teacher`, `club`, `physics` |
-| CLUB-26 | CLUB-26: usunięcie wszystkich klas podczas edycji blokuje zapis | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L1695) | `teacher`, `club`, `edit`, `validation` |
+| CLUB-01 | CLUB-01: przedmiotopoziom i formularz klubowy nauczyciela są trwałe | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L33) | `teacher`, `club` |
+| CLUB-02 | CLUB-02: edycja klasy 4 na 5 dla Matematyka/SP jest trwała | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L116) | `teacher`, `club` |
+| CLUB-03 | CLUB-03: Matematyka/SP udostępnia wyłącznie klasy 4-8 | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L179) | `teacher`, `club` |
+| CLUB-04 | CLUB-04: formularz klubowy zachowuje kilka klas 4,5,6 | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L214) | `teacher`, `club` |
+| CLUB-05 | CLUB-05: zaznaczenie wszystkich klas Matematyka/SP wybiera 4-8 | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L255) | `teacher`, `club` |
+| CLUB-06 | CLUB-06: edycja usuwa tylko wskazaną klasę 5 z zestawu 4,5,6 | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L299) | `teacher`, `club` |
+| CLUB-07 | CLUB-07: formularz klubowy dotyczy tylko wybranej szkoły nauczyciela | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L341) | `teacher`, `club` |
+| CLUB-08 | CLUB-08: formularz klubowy obsługuje dwie szkoły nauczyciela | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L392) | `teacher`, `club` |
+| CLUB-09 | CLUB-09: anulowanie dodawania formularza nie tworzy potwierdzenia | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L842) | `teacher`, `club`, `cancel` |
+| CLUB-10 | CLUB-10: anulowanie edycji zachowuje klasę 4 | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L877) | `teacher`, `club`, `cancel` |
+| CLUB-11 | CLUB-11: formularz klubowy można usunąć | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L923) | `teacher`, `club`, `delete` |
+| CLUB-12A | CLUB-12A: brak szkoły blokuje utworzenie formularza klubowego | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L1122) | `teacher`, `club`, `validation` |
+| CLUB-12B | CLUB-12B: brak klasy blokuje utworzenie formularza klubowego | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L1233) | `teacher`, `club`, `validation` |
+| CLUB-13 | CLUB-13: formularz klubowy zachowuje klasę obcą i wydawnictwo | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L1349) | `teacher`, `club` |
+| CLUB-14 | CLUB-14: nowy formularz ma domyślnie wybrany bieżący rok szkolny | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L1418) | `teacher`, `club`, `defaults` |
+| CLUB-15 | CLUB-15: formularz pokazuje wszystkie szkoły i przedmioto-poziomy nauczyciela | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L1434) | `teacher`, `club`, `defaults` |
+| CLUB-16 | CLUB-16: klasy można wybierać wyłącznie dla zaznaczonej szkoły | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L1463) | `teacher`, `club`, `school` |
+| CLUB-17 | CLUB-17: odznaczenie szkoły usuwa wybrane dla niej klasy | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L1483) | `teacher`, `club`, `school` |
+| CLUB-18 | CLUB-18: standardowa klasa nie może być jednocześnie NASZA i OBCA | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L1504) | `teacher`, `club`, `classes`, `validation` |
+| CLUB-19 | CLUB-19: zaznaczenie klasy OBCEJ blokuje tę samą klasę NASZĄ | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L1522) | `teacher`, `club`, `classes` |
+| CLUB-20 | CLUB-20: różne klasy mogą być jednocześnie NASZE i OBCE | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L1540) | `teacher`, `club`, `classes` |
+| CLUB-21 | CLUB-21: Fizyka pozwala zaznaczyć dwie NASZE serie tej samej klasy | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L1560) | `teacher`, `club`, `physics` |
+| CLUB-22 | CLUB-22: zaznaczenie wszystkich NASZYCH klas Fizyki obejmuje obie serie | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L1581) | `teacher`, `club`, `physics` |
+| CLUB-23 | CLUB-23: Matematyka SŚ pozwala zaznaczyć równocześnie wszystkie klasy NASZE i OBCE | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L1605) | `teacher`, `club`, `math-secondary` |
+| CLUB-24 | CLUB-24: wszystkie klasy Matematyki SŚ są trwałe po ponownym otwarciu | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L1632) | `teacher`, `club`, `math-secondary` |
+| CLUB-25 | CLUB-25: Fizyka zapisuje wszystkie NASZE klasy obu serii | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L1670) | `teacher`, `club`, `physics` |
+| CLUB-26 | CLUB-26: usunięcie wszystkich klas podczas edycji blokuje zapis | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L1697) | `teacher`, `club`, `edit`, `validation` |
+| CLUB-27 | CLUB-27: istniejące potwierdzenie blokuje duplikat dla tego samego roku, przedmiotu i szkoły | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L1730) | `teacher`, `club`, `duplicate`, `validation` |
+| CLUB-28 | CLUB-28: formularz dla poprzedniego roku szkolnego jest trwały | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L1765) | `teacher`, `club`, `school-year` |
+| CLUB-29 | CLUB-29: potwierdzenia dla tej samej szkoły i przedmiotu mogą dotyczyć dwóch różnych lat | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L1795) | `teacher`, `club`, `school-year` |
+| CLUB-30 | CLUB-30: odznaczenie opcji wszystkich klas NASZYCH czyści cały wybór | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L1844) | `teacher`, `club`, `classes` |
+| CLUB-31 | CLUB-31: odznaczenie opcji wszystkich klas OBCYCH czyści cały wybór | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L1865) | `teacher`, `club`, `classes` |
+| CLUB-32 | CLUB-32: edycja zmienia klasę NASZĄ na OBCĄ i zachowuje wydawnictwo | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L1888) | `teacher`, `club`, `edit` |
 | ADD-01 | ADD-01: nauczyciela można utworzyć z imieniem, nazwiskiem, szkołą i e-mailem bez przedmioto-poziomu | [nauczyciel-dodawanie.spec.ts](../../tests/nauczyciel-dodawanie.spec.ts#L84) | `teacher`, `add`, `positive` |
 | ADD-02 | ADD-02: nauczyciela można utworzyć z telefonem bez e-maila | [nauczyciel-dodawanie.spec.ts](../../tests/nauczyciel-dodawanie.spec.ts#L219) | `teacher`, `add`, `positive` |
 | ADD-03 | ADD-03: dzisiejsza data urodzenia jest akceptowana | [nauczyciel-dodawanie.spec.ts](../../tests/nauczyciel-dodawanie.spec.ts#L321) | `teacher`, `add`, `birthdate` |
@@ -75,41 +81,41 @@
 | EDIT-10 | EDIT-10: puste imię blokuje zapis | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L324) | `teacher`, `edit`, `validation` |
 | EDIT-11 | EDIT-11: puste nazwisko blokuje zapis | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L368) | `teacher`, `edit`, `validation` |
 | EDIT-12 | EDIT-12: poprawny e-mail można zmienić i zmiana jest widoczna w historii | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L410) | `teacher`, `edit` |
-| EDIT-13 | EDIT-13: niepoprawny e-mail blokuje zapis | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L581) | `teacher`, `edit`, `validation` |
-| EDIT-14 | EDIT-14: poprawny telefon można dodać | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L739) | `teacher`, `edit` |
-| EDIT-15 | EDIT-15: można dodać drugi numer telefonu | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L855) | `teacher`, `edit` |
-| EDIT-16 | EDIT-16: przy dwóch telefonach nie można dodać trzeciego | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L924) | `teacher`, `edit` |
-| EDIT-17 | EDIT-17: można usunąć zapisany numer telefonu | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L1018) | `teacher`, `edit` |
-| EDIT-18 | EDIT-18: anulowanie usunięcia telefonu nie zmienia danych | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L1169) | `teacher`, `edit` |
-| EDIT-19 | EDIT-19: niepoprawny telefon blokuje dodanie | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L1293) | `teacher`, `edit`, `validation` |
-| EDIT-20 | EDIT-20: nauczyciel może pozostać bez e-maila jeśli posiada telefon | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L1399) | `teacher`, `edit` |
-| EDIT-21 | EDIT-21: nauczyciel może istnieć bez telefonu jeśli posiada e-mail | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L1482) | `teacher`, `edit` |
-| EDIT-22 | EDIT-22: brak e-maila i telefonu wymaga dodatkowego potwierdzenia | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L1523) | `teacher`, `edit`, `validation` |
-| EDIT-23 | EDIT-23: można usunąć e-mail bez telefonu po potwierdzeniu ostrzeżenia o rekordzie minimalnym | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L1582) | `teacher`, `edit`, `validation` |
-| EDIT-24 | EDIT-24: poprawna data urodzenia jest trwała | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L1709) | `teacher`, `edit` |
-| EDIT-25 | EDIT-25: niepoprawna data urodzenia blokuje zapis | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L1752) | `teacher`, `edit`, `validation` |
-| EDIT-26 | EDIT-26: pełny adres prywatny można dodać i jest zapisany w historii | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L1798) | `teacher`, `edit`, `history` |
-| EDIT-27 | EDIT-27: wszystkie dane istniejącego adresu prywatnego można zmienić | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L1919) | `teacher`, `edit`, `history` |
-| EDIT-28 | EDIT-28: uwagi nauczyciela są trwałe | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L2168) | `teacher`, `edit` |
-| EDIT-29 | EDIT-29: nauczyciel może posiadać wiele notatek | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L2289) | `teacher`, `edit`, `notes` |
-| EDIT-30 | EDIT-30: notatkę nauczyciela można zarchiwizować | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L2352) | `teacher`, `edit`, `notes` |
-| EDIT-31 | EDIT-31: anulowanie nie zapisuje nowej notatki nauczyciela | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L2414) | `teacher`, `edit`, `notes`, `cancel` |
-| EDIT-32 | EDIT-32: zapisana notatka posiada autora i datę | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L2482) | `teacher`, `edit`, `notes` |
-| EDIT-33 | EDIT-33: notatka nauczyciela ma limit 220 znaków | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L2545) | `teacher`, `edit`, `notes`, `validation` |
-| EDIT-34 | EDIT-34: pusta notatka nauczyciela nie jest zapisywana | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L2613) | `teacher`, `edit`, `notes`, `validation` |
-| EDIT-35 | EDIT-35: zgoda Marketing jest trwała | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L2737) | `teacher`, `edit`, `rodo` |
-| EDIT-36 | EDIT-36: zaznaczenie zgody E-mail automatycznie zaznacza Marketing | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L2781) | `teacher`, `edit`, `rodo` |
-| EDIT-37 | EDIT-37: zaznaczenie zgody Telefon automatycznie zaznacza Marketing | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L2841) | `teacher`, `edit`, `rodo` |
-| EDIT-38 | EDIT-38: wszystkie zgody RODO można zapisać jednocześnie | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L2899) | `teacher`, `edit`, `rodo` |
-| EDIT-39 | EDIT-39: odznaczenie zgody Marketing pokazuje ostrzeżenie | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L2941) | `teacher`, `edit`, `rodo`, `validation` |
-| EDIT-40 | EDIT-40: odznaczenie Marketing automatycznie odznacza E-mail i Telefon | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L3029) | `teacher`, `edit`, `rodo`, `validation` |
-| EDIT-41 | EDIT-41: zapis bez żadnej zgody RODO pokazuje ostrzeżenie | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L3154) | `teacher`, `edit`, `rodo`, `validation` |
-| EDIT-42 | EDIT-42: dropdown Źródło RODO zawiera oczekiwane wartości | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L3204) | `teacher`, `edit`, `rodo` |
-| EDIT-43 | EDIT-43: ponowny zapis już znormalizowanych danych bez zmian nie modyfikuje danych ani historii | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L3274) | `teacher`, `edit` |
-| EDIT-44 | EDIT-44: anulowanie wielu zmian zachowuje poprzednie dane i historię | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L3398) | `teacher`, `edit`, `cancel` |
-| EDIT-45 | EDIT-45: zmienione dane są trwałe po przejściu do szkoły i powrocie | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L3445) | `teacher`, `edit`, `navigation` |
-| EDIT-46 | EDIT-46: edycja danych nauczyciela nie usuwa relacji ze szkołą | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L3493) | `teacher`, `edit`, `relation` |
-| EDIT-47 | EDIT-47: jednoczesna zmiana wielu pól tworzy komplet wpisów historii | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L3548) | `teacher`, `edit`, `history` |
+| EDIT-13 | EDIT-13: niepoprawny e-mail blokuje zapis | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L585) | `teacher`, `edit`, `validation` |
+| EDIT-14 | EDIT-14: poprawny telefon można dodać | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L743) | `teacher`, `edit` |
+| EDIT-15 | EDIT-15: można dodać drugi numer telefonu | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L859) | `teacher`, `edit` |
+| EDIT-16 | EDIT-16: przy dwóch telefonach nie można dodać trzeciego | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L928) | `teacher`, `edit` |
+| EDIT-17 | EDIT-17: można usunąć zapisany numer telefonu | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L1022) | `teacher`, `edit` |
+| EDIT-18 | EDIT-18: anulowanie usunięcia telefonu nie zmienia danych | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L1173) | `teacher`, `edit` |
+| EDIT-19 | EDIT-19: niepoprawny telefon blokuje dodanie | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L1297) | `teacher`, `edit`, `validation` |
+| EDIT-20 | EDIT-20: nauczyciel może pozostać bez e-maila jeśli posiada telefon | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L1403) | `teacher`, `edit` |
+| EDIT-21 | EDIT-21: nauczyciel może istnieć bez telefonu jeśli posiada e-mail | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L1490) | `teacher`, `edit` |
+| EDIT-22 | EDIT-22: brak e-maila i telefonu wymaga dodatkowego potwierdzenia | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L1531) | `teacher`, `edit`, `validation` |
+| EDIT-23 | EDIT-23: można usunąć e-mail bez telefonu po potwierdzeniu ostrzeżenia o rekordzie minimalnym | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L1590) | `teacher`, `edit`, `validation` |
+| EDIT-24 | EDIT-24: poprawna data urodzenia jest trwała | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L1721) | `teacher`, `edit` |
+| EDIT-25 | EDIT-25: niepoprawna data urodzenia blokuje zapis | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L1764) | `teacher`, `edit`, `validation` |
+| EDIT-26 | EDIT-26: pełny adres prywatny można dodać i jest zapisany w historii | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L1810) | `teacher`, `edit`, `history` |
+| EDIT-27 | EDIT-27: wszystkie dane istniejącego adresu prywatnego można zmienić | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L1931) | `teacher`, `edit`, `history` |
+| EDIT-28 | EDIT-28: uwagi nauczyciela są trwałe | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L2180) | `teacher`, `edit` |
+| EDIT-29 | EDIT-29: nauczyciel może posiadać wiele notatek | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L2301) | `teacher`, `edit`, `notes` |
+| EDIT-30 | EDIT-30: notatkę nauczyciela można zarchiwizować | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L2364) | `teacher`, `edit`, `notes` |
+| EDIT-31 | EDIT-31: anulowanie nie zapisuje nowej notatki nauczyciela | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L2426) | `teacher`, `edit`, `notes`, `cancel` |
+| EDIT-32 | EDIT-32: zapisana notatka posiada autora i datę | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L2494) | `teacher`, `edit`, `notes` |
+| EDIT-33 | EDIT-33: notatka nauczyciela ma limit 220 znaków | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L2557) | `teacher`, `edit`, `notes`, `validation` |
+| EDIT-34 | EDIT-34: pusta notatka nauczyciela nie jest zapisywana | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L2625) | `teacher`, `edit`, `notes`, `validation` |
+| EDIT-35 | EDIT-35: zgoda Marketing jest trwała | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L2749) | `teacher`, `edit`, `rodo` |
+| EDIT-36 | EDIT-36: zaznaczenie zgody E-mail automatycznie zaznacza Marketing | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L2793) | `teacher`, `edit`, `rodo` |
+| EDIT-37 | EDIT-37: zaznaczenie zgody Telefon automatycznie zaznacza Marketing | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L2853) | `teacher`, `edit`, `rodo` |
+| EDIT-38 | EDIT-38: wszystkie zgody RODO można zapisać jednocześnie | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L2911) | `teacher`, `edit`, `rodo` |
+| EDIT-39 | EDIT-39: odznaczenie zgody Marketing pokazuje ostrzeżenie | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L2953) | `teacher`, `edit`, `rodo`, `validation` |
+| EDIT-40 | EDIT-40: odznaczenie Marketing automatycznie odznacza E-mail i Telefon | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L3041) | `teacher`, `edit`, `rodo`, `validation` |
+| EDIT-41 | EDIT-41: zapis bez żadnej zgody RODO pokazuje ostrzeżenie | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L3166) | `teacher`, `edit`, `rodo`, `validation` |
+| EDIT-42 | EDIT-42: dropdown Źródło RODO zawiera oczekiwane wartości | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L3216) | `teacher`, `edit`, `rodo` |
+| EDIT-43 | EDIT-43: ponowny zapis już znormalizowanych danych bez zmian nie modyfikuje danych ani historii | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L3286) | `teacher`, `edit` |
+| EDIT-44 | EDIT-44: anulowanie wielu zmian zachowuje poprzednie dane i historię | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L3410) | `teacher`, `edit`, `cancel` |
+| EDIT-45 | EDIT-45: zmienione dane są trwałe po przejściu do szkoły i powrocie | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L3457) | `teacher`, `edit`, `navigation` |
+| EDIT-46 | EDIT-46: edycja danych nauczyciela nie usuwa relacji ze szkołą | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L3505) | `teacher`, `edit`, `relation` |
+| EDIT-47 | EDIT-47: jednoczesna zmiana wielu pól tworzy komplet wpisów historii | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L3560) | `teacher`, `edit`, `history` |
 | EDIT-03 | EDIT-03: zapis nazwiska jest trwały i widoczny w historii | [nauczyciel-rozszerzenie.spec.ts](../../tests/nauczyciel-rozszerzenie.spec.ts#L4) | `teacher`, `edit` |
 | TEA-04 | TEA-04: niepoprawny e-mail blokuje zapis nauczyciela | [nauczyciel-rozszerzenie.spec.ts](../../tests/nauczyciel-rozszerzenie.spec.ts#L42) | `teacher`, `validation` |
 | TEA-04 | TEA-04: niepoprawny telefon blokuje zapis nauczyciela | [nauczyciel-rozszerzenie.spec.ts](../../tests/nauczyciel-rozszerzenie.spec.ts#L42) | `teacher`, `validation` |

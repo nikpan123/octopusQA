@@ -23,8 +23,10 @@ import {
   ownSelectAll,
   saveClubEdit,
   saveClubForm,
+  schoolYears,
   selectForeignPublisher,
   selectSchool,
+  selectSchoolYear,
 } from "./support/club";
 import { prepareClubTeacher } from "./support/club-scenario";
 
@@ -1723,4 +1725,191 @@ test("CLUB-26: usunięcie wszystkich klas podczas edycji blokuje zapis @teacher 
   const verifyForm = await openClubEdit(page, confirmationId);
   await expect(ownClass(verifyForm, "4")).toBeChecked();
   await cancelClubForm(verifyForm);
+});
+
+test("CLUB-27: istniejące potwierdzenie blokuje duplikat dla tego samego roku, przedmiotu i szkoły @teacher @club @duplicate @validation", async ({
+  page,
+  scenario: s,
+}) => {
+  await prepareClubTeacher(page, s);
+
+  const { form } = await openNewClubForm(page);
+  await selectSchool(form, s.schoolName);
+  await ownClass(form, "4").check();
+  await disableTeacherEmail(form);
+
+  const confirmationId = await saveClubForm(page, form);
+  await s.record("confirmationId", confirmationId);
+
+  const { form: duplicateForm } = await openNewClubForm(page);
+  await selectSchool(duplicateForm, s.schoolName);
+  await ownClass(duplicateForm, "5").check();
+  await disableTeacherEmail(duplicateForm);
+  await duplicateForm.getByRole("button", { name: "Zapisz", exact: true }).click();
+
+  const warning = page.locator("mat-dialog-container").filter({
+    has: page.getByRole("heading", { name: "Uwaga", exact: true }),
+  });
+
+  await expect(warning).toContainText(
+    "Nie można dodać/edytować formularza, ponieważ na ten rok/przedmiot/szkołę istnieje już potwierdzenie.",
+  );
+  await expect(warning).toContainText(`ID potwierdzenia: ${confirmationId}`);
+  await warning.getByRole("button", { name: "OK", exact: true }).click();
+  await expect(warning).toHaveCount(0);
+  if (await duplicateForm.count()) await cancelClubForm(duplicateForm);
+
+  await expect(confirmationRow(page, confirmationId)).toHaveCount(1);
+});
+
+test("CLUB-28: formularz dla poprzedniego roku szkolnego jest trwały @teacher @club @school-year", async ({
+  page,
+  scenario: s,
+}) => {
+  const { teacherId } = await prepareClubTeacher(page, s);
+
+  const { form, schoolYear: currentSchoolYear } = await openNewClubForm(page);
+  const previousSchoolYear = `${Number(currentSchoolYear.slice(0, 4)) - 1}/${Number(
+    currentSchoolYear.slice(0, 4),
+  )}`;
+
+  await expect(schoolYears(form)).toHaveCount(2);
+  await selectSchoolYear(form, previousSchoolYear);
+  await selectSchool(form, s.schoolName);
+  await ownClass(form, "4").check();
+  await disableTeacherEmail(form);
+
+  const confirmationId = await saveClubForm(page, form);
+  await s.record("confirmationId", confirmationId);
+  await s.record("schoolYear", previousSchoolYear);
+
+  await s.app.openPanel("teacher", teacherId);
+  await expect(confirmationRow(page, confirmationId)).toContainText(previousSchoolYear);
+
+  const editForm = await openClubEdit(page, confirmationId);
+  await expect(s.app.field(editForm, "Rok szkolny")).toHaveValue(previousSchoolYear.slice(0, 4));
+  await expect(ownClass(editForm, "4")).toBeChecked();
+  await cancelClubForm(editForm);
+});
+
+test("CLUB-29: potwierdzenia dla tej samej szkoły i przedmiotu mogą dotyczyć dwóch różnych lat @teacher @club @school-year", async ({
+  page,
+  scenario: s,
+}) => {
+  await prepareClubTeacher(page, s);
+
+  const { form: previousForm, schoolYear: currentSchoolYear } = await openNewClubForm(page);
+  const previousSchoolYear = `${Number(currentSchoolYear.slice(0, 4)) - 1}/${Number(
+    currentSchoolYear.slice(0, 4),
+  )}`;
+
+  await selectSchoolYear(previousForm, previousSchoolYear);
+  await selectSchool(previousForm, s.schoolName);
+  await ownClass(previousForm, "4").check();
+  await disableTeacherEmail(previousForm);
+  const previousConfirmationId = await saveClubForm(page, previousForm);
+
+  const { form: currentForm, schoolYear } = await openNewClubForm(page);
+  expect(schoolYear).toBe(currentSchoolYear);
+  await selectSchool(currentForm, s.schoolName);
+  await ownClass(currentForm, "5").check();
+  await disableTeacherEmail(currentForm);
+
+  await currentForm.getByRole("button", { name: "Zapisz", exact: true }).click();
+  await expect(currentForm).toHaveCount(0);
+
+  const mathRows = confirmations(page)
+    .getByRole("row")
+    .filter({
+      has: page.getByRole("cell", { name: "Matematyka", exact: true }),
+    });
+
+  await expect(mathRows).toHaveCount(2);
+
+  const confirmationIds: string[] = [];
+  for (let index = 0; index < (await mathRows.count()); index += 1) {
+    confirmationIds.push((await mathRows.nth(index).getByRole("cell").nth(1).innerText()).trim());
+  }
+
+  const currentConfirmationId = confirmationIds.find((id) => id !== previousConfirmationId) ?? "";
+
+  expect(currentConfirmationId).toMatch(/^\d+$/);
+  await expect(confirmationRow(page, previousConfirmationId)).toContainText(previousSchoolYear);
+  await expect(confirmationRow(page, currentConfirmationId)).toContainText(currentSchoolYear);
+
+  await s.record("previousConfirmationId", previousConfirmationId);
+  await s.record("currentConfirmationId", currentConfirmationId);
+});
+
+test("CLUB-30: odznaczenie opcji wszystkich klas NASZYCH czyści cały wybór @teacher @club @classes", async ({
+  page,
+  scenario: s,
+}) => {
+  await prepareClubTeacher(page, s);
+
+  const { form } = await openNewClubForm(page);
+  await selectSchool(form, s.schoolName);
+
+  await ownSelectAll(form).check();
+  for (const className of MATH_SP_CLASSES) await expect(ownClass(form, className)).toBeChecked();
+
+  await ownSelectAll(form).uncheck();
+  for (const className of MATH_SP_CLASSES) {
+    await expect(ownClass(form, className)).not.toBeChecked();
+    await expect(foreignClass(form, className)).toBeEnabled();
+  }
+
+  await cancelClubForm(form);
+});
+
+test("CLUB-31: odznaczenie opcji wszystkich klas OBCYCH czyści cały wybór @teacher @club @classes", async ({
+  page,
+  scenario: s,
+}) => {
+  await prepareClubTeacher(page, s);
+
+  const { form } = await openNewClubForm(page);
+  await selectSchool(form, s.schoolName);
+
+  await foreignSelectAll(form).check();
+  for (const className of MATH_SP_CLASSES) {
+    await expect(foreignClass(form, className)).toBeChecked();
+  }
+
+  await foreignSelectAll(form).uncheck();
+  for (const className of MATH_SP_CLASSES) {
+    await expect(foreignClass(form, className)).not.toBeChecked();
+    await expect(ownClass(form, className)).toBeEnabled();
+  }
+
+  await cancelClubForm(form);
+});
+
+test("CLUB-32: edycja zmienia klasę NASZĄ na OBCĄ i zachowuje wydawnictwo @teacher @club @edit", async ({
+  page,
+  scenario: s,
+}) => {
+  const { teacherId } = await prepareClubTeacher(page, s);
+
+  const { form } = await openNewClubForm(page);
+  await selectSchool(form, s.schoolName);
+  await ownClass(form, "4").check();
+  await disableTeacherEmail(form);
+  const confirmationId = await saveClubForm(page, form);
+
+  const editForm = await openClubEdit(page, confirmationId);
+  await ownClass(editForm, "4").uncheck();
+  await foreignClass(editForm, "4").check();
+  const publisher = await selectForeignPublisher(page, editForm);
+  await saveClubEdit(editForm);
+
+  await s.app.openPanel("teacher", teacherId);
+  const verifyForm = await openClubEdit(page, confirmationId);
+  await expect(ownClass(verifyForm, "4")).not.toBeChecked();
+  await expect(foreignClass(verifyForm, "4")).toBeChecked();
+  await expect(foreignClasses(verifyForm).getByRole("combobox")).toContainText(publisher);
+  await cancelClubForm(verifyForm);
+
+  await s.record("confirmationId", confirmationId);
+  await s.record("foreignPublisher", publisher);
 });

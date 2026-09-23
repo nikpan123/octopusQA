@@ -73,6 +73,26 @@ export function foreignSelectAll(form: Locator) {
   });
 }
 
+export function schoolYears(form: Locator) {
+  return form.locator("mat-radio-button");
+}
+
+export async function selectedSchoolYear(form: Locator) {
+  const checkedRadio = form.getByRole("radio", { checked: true });
+
+  await expect(checkedRadio).toHaveCount(1);
+
+  return (await checkedRadio.locator("xpath=ancestor::mat-radio-button[1]").innerText()).trim();
+}
+
+export async function selectSchoolYear(form: Locator, schoolYear: string) {
+  const option = schoolYears(form).filter({ hasText: schoolYear });
+
+  await expect(option).toHaveCount(1);
+  await option.getByRole("radio").check();
+  expect(await selectedSchoolYear(form)).toBe(schoolYear);
+}
+
 export function confirmationRow(page: Page, confirmationId: string) {
   return confirmations(page)
     .getByRole("row")
@@ -150,16 +170,7 @@ export async function openNewClubForm(page: Page, expectedSubject: string | null
 
   await expect(form).toBeVisible();
 
-  const schoolYear = (
-    await form
-      .locator("mat-radio-button")
-      .filter({
-        has: page.getByRole("radio", {
-          checked: true,
-        }),
-      })
-      .innerText()
-  ).trim();
+  const schoolYear = await selectedSchoolYear(form);
 
   expect(schoolYear).toMatch(/^\d{4}\/\d{4}$/);
 
@@ -234,6 +245,21 @@ export async function selectForeignPublisher(page: Page, form: Locator) {
 }
 
 export async function saveClubForm(page: Page, form: Locator, subject = "Matematyka") {
+  const rows = confirmations(page)
+    .getByRole("row", { includeHidden: true })
+    .filter({
+      has: page.getByRole("cell", {
+        name: subject,
+        exact: true,
+        includeHidden: true,
+      }),
+    });
+  const previousIds = new Set<string>();
+
+  for (let index = 0; index < (await rows.count()); index += 1) {
+    previousIds.add((await rows.nth(index).getByRole("cell").nth(1).innerText()).trim());
+  }
+
   await form
     .getByRole("button", {
       name: "Zapisz",
@@ -243,18 +269,13 @@ export async function saveClubForm(page: Page, form: Locator, subject = "Matemat
 
   await expect(form).toHaveCount(0);
 
-  const row = confirmations(page)
-    .getByRole("row")
-    .filter({
-      has: page.getByRole("cell", {
-        name: subject,
-        exact: true,
-      }),
-    });
+  await expect(rows).toHaveCount(previousIds.size + 1);
 
-  await expect(row).toHaveCount(1);
-
-  const confirmationId = (await row.getByRole("cell").nth(1).innerText()).trim();
+  let confirmationId = "";
+  for (let index = 0; index < (await rows.count()); index += 1) {
+    const id = (await rows.nth(index).getByRole("cell").nth(1).innerText()).trim();
+    if (!previousIds.has(id)) confirmationId = id;
+  }
 
   expect(confirmationId).toMatch(/^\d+$/);
 

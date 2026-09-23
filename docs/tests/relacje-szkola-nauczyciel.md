@@ -49,14 +49,14 @@ utworzenie szkoły
 
 ## 5. Fixture współdzielonej szkoły
 
-`shared-school.ts` tworzy szkołę w osobnym kontekście przeglądarki i udostępnia ją testom jako fixture `school`:
+`shared-school.ts` wyszukuje trwałą szkołę przypisaną do środowiska i udostępnia ją testom jako fixture `school`:
 
 ```ts
 school.id;
 school.name;
 ```
 
-Pozwala to przygotować kosztowny rekord raz dla scenariusza, zachowując zwykłą sesję testową nauczyciela. Szkoła otrzymuje nazwę `REG_SHARED_*`, jest oznaczana jako testowa, a metadane trafiają do `runs/*.json`.
+Na DEV szkoła ma nazwę `AUTOMAT TEACHER DEV SP`, a na TEST odpowiednio `AUTOMAT TEACHER TEST SP`. Fixture jest przygotowywana raz na proces wykonawczy: najpierw wyszukuje dokładną nazwę i tworzy szkołę tylko wtedy, gdy jeszcze nie istnieje. Dzięki temu testy edycji i relacji nie tworzą dziesiątek szkół podczas pełnego przebiegu.
 
 ## 6. Asercje relacji
 

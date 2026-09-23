@@ -227,41 +227,54 @@ export async function cleanupTeacherBatch(page, selected, save) {
     pending.push(run.teacherId);
   }
   if (!pending.length) return;
-  for (const id of pending) await update(id, "RUNNING");
-  let deleteError;
-  try {
-    console.log(`Jedno żądanie DELETE dla ${pending.length} nauczycieli (limit 180 s).`);
-    const result = await api(page, "/api/DeleteRecordsDB/DeleteRecordsFromDB", "DELETE", {
-      jsonData: JSON.stringify(pending.map((id) => ({ nauczycielId: Number(id) }))),
-    });
-    if (result.status < 200 || result.status >= 300)
-      throw new Error(`Zbiorcze usuwanie zwróciło HTTP ${result.status}.`);
-  } catch (error) {
-    // Timeout przerywa oczekiwanie klienta, ale serwer może kontynuować operację.
-    // Nie ponawiamy DELETE; sprawdzamy stan każdego rekordu samymi odczytami.
-    deleteError = error;
-    for (const id of pending) await update(id, "UNKNOWN");
-    console.warn(
-      "Nie otrzymano potwierdzenia DELETE. Sprawdzam stan rekordów bez ponawiania usuwania.",
-    );
-  }
   const failures = [];
-  for (const id of pending) {
+  let uncertainFailure;
+  const batchSize = 25;
+  const batchCount = Math.ceil(pending.length / batchSize);
+  for (let offset = 0; offset < pending.length; offset += batchSize) {
+    const batch = pending.slice(offset, offset + batchSize);
+    const batchNumber = offset / batchSize + 1;
+    for (const id of batch) await update(id, "RUNNING");
+    let deleteError;
     try {
-      const after = await api(page, `/api/Teacher/${id}`);
-      if (after.status !== 204)
-        throw new Error("Rekord nadal istnieje lub odczyt się nie powiódł.");
-      await update(id, "DELETED");
-      console.log(`${id}: DELETED`);
-    } catch {
-      await update(id, deleteError ? "UNKNOWN" : "FAILED");
-      failures.push(id);
+      console.log(
+        `Żądanie DELETE ${batchNumber}/${batchCount} dla ${batch.length} nauczycieli (limit 180 s).`,
+      );
+      const result = await api(page, "/api/DeleteRecordsDB/DeleteRecordsFromDB", "DELETE", {
+        jsonData: JSON.stringify(batch.map((id) => ({ nauczycielId: Number(id) }))),
+      });
+      if (result.status < 200 || result.status >= 300)
+        throw new Error(`Zbiorcze usuwanie zwróciło HTTP ${result.status}.`);
+    } catch (error) {
+      // Timeout przerywa oczekiwanie klienta, ale serwer może kontynuować operację.
+      // Nie ponawiamy DELETE; sprawdzamy stan każdego rekordu samymi odczytami.
+      deleteError = error;
+      uncertainFailure = error;
+      for (const id of batch) await update(id, "UNKNOWN");
+      console.warn(
+        "Nie otrzymano potwierdzenia DELETE. Sprawdzam stan rekordów bez ponawiania usuwania.",
+      );
     }
+    const batchFailures = [];
+    for (const id of batch) {
+      try {
+        const after = await api(page, `/api/Teacher/${id}`);
+        if (after.status !== 204)
+          throw new Error("Rekord nadal istnieje lub odczyt się nie powiódł.");
+        await update(id, "DELETED");
+        console.log(`${id}: DELETED`);
+      } catch {
+        await update(id, deleteError ? "UNKNOWN" : "FAILED");
+        failures.push(id);
+        batchFailures.push(id);
+      }
+    }
+    if (deleteError && batchFailures.length) break;
   }
   if (failures.length)
     throw new Error(
-      `Nie potwierdzono usunięcia nauczycieli: ${failures.join(", ")}. ${deleteError ? "Wynik żądania jest niepewny; serwer mógł nadal przetwarzać operację. " : ""}Nie ponawiano DELETE.`,
-      { cause: deleteError },
+      `Nie potwierdzono usunięcia nauczycieli: ${failures.join(", ")}. ${uncertainFailure ? "Wynik żądania jest niepewny; serwer mógł nadal przetwarzać operację. " : ""}Nie ponawiano DELETE.`,
+      { cause: uncertainFailure },
     );
 }
 

@@ -115,12 +115,16 @@ export const test = base.extend<Record<never, never>, { clubSchools: ClubSchools
 
   scenario: async ({ scenario, clubSchools }, use) => {
     const schoolById = new Map(Object.values(clubSchools).map((school) => [school.id, school]));
+    let activeSchool = clubSchools.spA;
 
     await use({
       ...scenario,
-      schoolName: clubSchools.spA.name,
+      get schoolName() {
+        return activeSchool.name;
+      },
       createSchool: async (schoolType) => {
         const school = schoolType === "Liceum" ? clubSchools.secondary : clubSchools.spA;
+        activeSchool = school;
 
         await scenario.record("schoolName", school.name);
         await scenario.record("schoolId", school.id);

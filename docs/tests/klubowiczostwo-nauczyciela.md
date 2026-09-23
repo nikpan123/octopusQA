@@ -40,7 +40,7 @@ Testy korzystają z trwałej, wspólnej puli szkół przygotowywanej przez `club
 
 Nazwa zawiera środowisko, więc DEV i TEST nie współdzielą rekordów. Fixture najpierw wyszukuje szkołę po pełnej nazwie i tworzy ją tylko wtedy, gdy nie istnieje. Szkoły nie są usuwane po teście, ponieważ Octopus nie udostępnia takiej operacji. Dzięki temu kolejne uruchomienia nie zaśmiecają bazy następnymi szkołami. Każdy test nadal tworzy własnego nauczyciela i własne formularze; nauczyciel z poprawnego scenariusza jest usuwany przez globalne sprzątanie wraz z jego danymi zależnymi.
 
-## 4. Zakres CLUB-01–CLUB-26
+## 4. Zakres CLUB-01–CLUB-32
 
 | Test       | Cel                                                       |
 | ---------- | --------------------------------------------------------- |
@@ -71,6 +71,12 @@ Nazwa zawiera środowisko, więc DEV i TEST nie współdzielą rekordów. Fixtur
 | `CLUB-24`  | trwałość wszystkich klas Matematyki/SŚ i wydawnictwa      |
 | `CLUB-25`  | trwałość wszystkich NASZYCH klas obu serii Fizyki         |
 | `CLUB-26`  | pusta edycja pokazuje ostrzeżenie i nie zmienia rekordu   |
+| `CLUB-27`  | istniejące potwierdzenie blokuje duplikat                 |
+| `CLUB-28`  | trwałość formularza dla poprzedniego roku szkolnego       |
+| `CLUB-29`  | osobne potwierdzenia dla dwóch różnych lat szkolnych      |
+| `CLUB-30`  | odznaczenie wszystkich klas NASZYCH czyści wybór          |
+| `CLUB-31`  | odznaczenie wszystkich klas OBCYCH czyści wybór           |
+| `CLUB-32`  | edycja klasy NASZEJ na OBCĄ zachowuje wydawnictwo         |
 
 ## 5. Reguły biznesowe
 
