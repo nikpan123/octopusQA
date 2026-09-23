@@ -229,7 +229,9 @@ export async function cleanupTeacherBatch(page, selected, save) {
   if (!pending.length) return;
   const failures = [];
   let uncertainFailure;
-  const batchSize = 25;
+  // Endpoint usuwa rozbudowany graf zależności. Paczki po 25 rekordów kończyły
+  // się 503 podczas pełnej regresji; mniejsze ograniczają szczyt obciążenia.
+  const batchSize = 10;
   const batchCount = Math.ceil(pending.length / batchSize);
   for (let offset = 0; offset < pending.length; offset += batchSize) {
     const batch = pending.slice(offset, offset + batchSize);

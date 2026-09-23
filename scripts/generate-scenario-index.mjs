@@ -11,7 +11,9 @@ const checkOnly = process.argv.includes("--check");
 const result = spawnSync(process.execPath, [playwrightCli, "test", "--list", "--reporter=json"], {
   cwd: process.cwd(),
   encoding: "utf8",
-  env: process.env,
+  // Dokumentujemy również jawnie uruchamiany workflow roczny, mimo że jest
+  // wyłączony z domyślnej regresji.
+  env: { ...process.env, OCTOPUS_INCLUDE_ANNUAL: "1" },
   maxBuffer: 10 * 1024 * 1024,
 });
 

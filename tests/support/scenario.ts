@@ -3,6 +3,12 @@ import { mkdir, writeFile } from "node:fs/promises";
 import { test as base, expect } from "./fixtures";
 import { OCTOPUS_BASE_URL } from "./environment";
 import { Octopus } from "./octopus";
+import type { TeacherSubjectLevel } from "./api-factory";
+
+export type CreateScenarioTeacherOptions = {
+  additionalSchoolIds?: string[];
+  subjectLevels?: TeacherSubjectLevel[];
+};
 
 export type Scenario = {
   app: Octopus;
@@ -11,11 +17,15 @@ export type Scenario = {
   email: string;
   record: (key: string, value: string) => Promise<void>;
   createSchool: (schoolType?: string) => Promise<string>;
-  createTeacher: (schoolId: string, relatedSchoolName?: string) => Promise<string>;
+  createTeacher: (
+    schoolId: string,
+    relatedSchoolName?: string,
+    options?: CreateScenarioTeacherOptions,
+  ) => Promise<string>;
 };
 
 export const test = base.extend<{ scenario: Scenario }>({
-  scenario: async ({ page }, use, testInfo) => {
+  scenario: async ({ page, apiFactory, performanceMetrics }, use, testInfo) => {
     const app = new Octopus(page);
     const id = `REG_${Date.now()}_${randomUUID().slice(0, 6)}`;
     const schoolName = `${id} Szkoła testowa`;
@@ -34,7 +44,7 @@ export const test = base.extend<{ scenario: Scenario }>({
       data[key] = value;
       await save();
     };
-    await save();
+    await performanceMetrics.measure("fixture.scenario.setup", save);
     try {
       await use({
         app,
@@ -48,12 +58,17 @@ export const test = base.extend<{ scenario: Scenario }>({
           await app.markTestRecord();
           return schoolId;
         },
-        createTeacher: async (schoolId, relatedSchoolName = schoolName) => {
+        createTeacher: async (schoolId, relatedSchoolName = schoolName, options = {}) => {
           await record("schoolId", schoolId);
           await record("relatedSchoolName", relatedSchoolName);
-          const teacherId = await app.createTeacher(id, email, schoolId, relatedSchoolName);
+          const teacherId = await apiFactory.createTeacher({
+            lastName: id,
+            email,
+            schoolIds: [schoolId, ...(options.additionalSchoolIds ?? [])],
+            subjectLevels: options.subjectLevels,
+          });
           await record("teacherId", teacherId);
-          await app.markTestRecord();
+          await app.openPanel("teacher", teacherId);
           return teacherId;
         },
       });
@@ -68,10 +83,12 @@ export const test = base.extend<{ scenario: Scenario }>({
       data.finishedAt = new Date().toISOString();
       if (data.teacherId)
         data.cleanupStatus = data.result === "PASS" ? "PENDING_SUITE_END" : "KEPT_FAILED_TEST";
-      await save();
-      await testInfo.attach("Dane scenariusza", {
-        body: JSON.stringify(data, null, 2),
-        contentType: "application/json",
+      await performanceMetrics.measure("fixture.scenario.cleanup", async () => {
+        await save();
+        await testInfo.attach("Dane scenariusza", {
+          body: JSON.stringify(data, null, 2),
+          contentType: "application/json",
+        });
       });
     }
   },

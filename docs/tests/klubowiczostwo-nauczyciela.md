@@ -38,7 +38,7 @@ Testy korzystają z trwałej, wspólnej puli szkół przygotowywanej przez `club
 | druga podstawowa | `AUTOMAT CLUB DEV SP B` | Szkoła podstawowa |
 | ponadpodstawowa  | `AUTOMAT CLUB DEV SŚ`   | Liceum            |
 
-Nazwa zawiera środowisko, więc DEV i TEST nie współdzielą rekordów. Fixture najpierw wyszukuje szkołę po pełnej nazwie i tworzy ją tylko wtedy, gdy nie istnieje. Szkoły nie są usuwane po teście, ponieważ Octopus nie udostępnia takiej operacji. Dzięki temu kolejne uruchomienia nie zaśmiecają bazy następnymi szkołami. Każdy test nadal tworzy własnego nauczyciela i własne formularze; nauczyciel z poprawnego scenariusza jest usuwany przez globalne sprzątanie wraz z jego danymi zależnymi.
+Nazwa zawiera środowisko, więc DEV i TEST nie współdzielą rekordów. Fixture najpierw wyszukuje szkołę po pełnej nazwie i tworzy ją tylko wtedy, gdy nie istnieje. Szkoły nie są usuwane po teście. Każdy test tworzy własnego nauczyciela i formularze; nauczyciel, relacje i przygotowawcze przedmioto-poziomy powstają przez `api-factory.ts` i są usuwane przez globalne sprzątanie. `CLUB-01` celowo dodaje przedmioto-poziom przez UI, ponieważ ta operacja jest częścią celu scenariusza.
 
 ## 4. Zakres CLUB-01–CLUB-32
 
@@ -96,7 +96,7 @@ Nazwa zawiera środowisko, więc DEV i TEST nie współdzielą rekordów. Fixtur
 
 | Helper                          | Odpowiedzialność                |
 | ------------------------------- | ------------------------------- |
-| `addMathSp()`                   | dodanie Matematyka / SP         |
+| API factory                     | przygotowanie Matematyka / SP   |
 | `openNewClubForm()`             | formularz nowego potwierdzenia  |
 | `selectSchool()`                | wybór szkoły nauczyciela        |
 | `ownClass()` / `foreignClass()` | checkbox konkretnej klasy       |

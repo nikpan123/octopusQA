@@ -15,3 +15,4 @@ export function sessionHasMinimumLifetime(
   nowSeconds?: number,
 ): boolean;
 export function ensureSession(options?: { force?: boolean }): Promise<AuthSession>;
+export function readStoredSession(): AuthSession;

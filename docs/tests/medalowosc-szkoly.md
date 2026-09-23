@@ -16,7 +16,7 @@ Testy obejmują:
 | Spójność           | API ↔ UI ↔ tooltip ↔ historia                     |
 | Dane zbiorcze      | poprawność reguł dla większej liczby szkół        |
 
-Aktualny zestaw obejmuje testy **MED-01 – MED-60**.
+Identyfikatory obejmują zakres **MED-01 – MED-60**, ale świadomie zawierają luki po połączeniu scenariuszy wykonujących te same nawigacje i sprawdzających podzbiory tych samych danych.
 
 ---
 
@@ -148,23 +148,21 @@ informationAboutMedalCategory.subjectNames;
 
 ## 6. Zakres MED-01 – MED-19 — UI i podstawowe scenariusze
 
-### MED-01 – MED-05 — Złoto
+### MED-02, MED-04 i MED-05 — Złoto
 
-- wartość `Złoto`,
-- pole readonly,
-- tooltip,
-- lista przedmiotów,
+- wartość `Złoto` i pole readonly w jednym scenariuszu,
+- tooltip i lista przedmiotów w jednym scenariuszu,
 - medal w wynikach wyszukiwania.
 
-### MED-06 – MED-10 — Srebro
+### MED-07, MED-09 i MED-10 — Srebro
 
 Analogiczny zestaw dla szkoły `85263`.
 
-### MED-11 – MED-15 — Brąz
+### MED-12, MED-14 i MED-15 — Brąz
 
 Analogiczny zestaw dla szkoły `66109`.
 
-### MED-16 – MED-19 — Brak
+### MED-17 – MED-19 — Brak
 
 Sprawdzane są:
 

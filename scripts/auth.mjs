@@ -1,6 +1,7 @@
 import { chromium } from "@playwright/test";
 import { existsSync, readFileSync } from "node:fs";
-import { mkdir, writeFile, rename } from "node:fs/promises";
+import { mkdir, open, readFile, rename, unlink, writeFile } from "node:fs/promises";
+import { setTimeout as delay } from "node:timers/promises";
 import { loadEnvFile } from "node:process";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -45,11 +46,60 @@ const octopusBaseDomain = octopusHost.split(".").slice(-2).join(".");
 // playwright/.auth/test/
 const authDir = path.join(root, "playwright", ".auth", environment);
 
-// Większość testów kończy się w mniej niż minutę. Pięciominutowy zapas
-// powodował przy krótkim JWT zbędne logowanie co kilka testów i serię żądań
-// do formularza logowania. Odświeżamy dopiero wtedy, gdy do wygaśnięcia
-// pozostało mniej niż 90 sekund.
-const minimumSessionLifetimeSeconds = 90;
+export function readStoredSession() {
+  return {
+    storageState: JSON.parse(readFileSync(path.join(authDir, "user.json"), "utf8")),
+    session: JSON.parse(readFileSync(path.join(authDir, "session.json"), "utf8")),
+  };
+}
+
+// Zapas musi obejmować pojedynczy dłuższy scenariusz. Odświeżenie jest
+// synchronizowane między workerami, więc większa wartość nie powoduje już
+// równoległej serii logowań.
+const minimumSessionLifetimeSeconds = 300;
+
+const refreshLockFile = path.join(authDir, "auth-refresh.lock");
+
+function processIsRunning(pid) {
+  if (!Number.isSafeInteger(pid) || pid <= 0) return false;
+  try {
+    process.kill(pid, 0);
+    return true;
+  } catch (error) {
+    return error.code !== "ESRCH";
+  }
+}
+
+async function acquireRefreshLock() {
+  await mkdir(authDir, { recursive: true });
+
+  for (let attempt = 0; attempt < 600; attempt += 1) {
+    try {
+      const handle = await open(refreshLockFile, "wx", 0o600);
+      await handle.writeFile(JSON.stringify({ pid: process.pid }));
+      await handle.close();
+      return async () => {
+        await unlink(refreshLockFile).catch((error) => {
+          if (error.code !== "ENOENT") throw error;
+        });
+      };
+    } catch (error) {
+      if (error.code !== "EEXIST") throw error;
+      const owner = await readFile(refreshLockFile, "utf8")
+        .then(JSON.parse)
+        .catch(() => null);
+      if (!owner || !processIsRunning(Number(owner.pid))) {
+        await unlink(refreshLockFile).catch((unlinkError) => {
+          if (unlinkError.code !== "ENOENT") throw unlinkError;
+        });
+        continue;
+      }
+      await delay(100);
+    }
+  }
+
+  throw new Error("Przekroczono czas oczekiwania na odświeżenie sesji Octopusa.");
+}
 
 export function sessionHasMinimumLifetime(
   authSession,
@@ -91,11 +141,20 @@ function credentials() {
   const octopusPasswordVariable =
     environment === "test" ? "OCTOPUS_TEST_PASSWORD" : "OCTOPUS_DEV_PASSWORD";
 
+  // Zachowaj zgodność z dotychczasowym .env dla DEV. Zmienne środowiskowe
+  // per środowisko mają pierwszeństwo i są wymagane dla TEST.
+  const octopusUsername =
+    process.env[octopusUsernameVariable] ??
+    (environment === "dev" ? process.env.OCTOPUS_USERNAME : undefined);
+  const octopusPassword =
+    process.env[octopusPasswordVariable] ??
+    (environment === "dev" ? process.env.OCTOPUS_PASSWORD : undefined);
+
   const requiredVariables = [
     "GITLAB_USERNAME",
     "GITLAB_PASSWORD",
-    octopusUsernameVariable,
-    octopusPasswordVariable,
+    ...(octopusUsername ? [] : [octopusUsernameVariable]),
+    ...(octopusPassword ? [] : [octopusPasswordVariable]),
   ];
 
   const missing = requiredVariables.filter((name) => !process.env[name]);
@@ -111,9 +170,9 @@ function credentials() {
 
     GITLAB_PASSWORD: process.env.GITLAB_PASSWORD,
 
-    OCTOPUS_USERNAME: process.env[octopusUsernameVariable],
+    OCTOPUS_USERNAME: octopusUsername,
 
-    OCTOPUS_PASSWORD: process.env[octopusPasswordVariable],
+    OCTOPUS_PASSWORD: octopusPassword,
   };
 }
 
@@ -295,7 +354,7 @@ async function capture(context, page) {
   };
 }
 
-export async function ensureSession({ force = false } = {}) {
+async function ensureSessionUnlocked({ force = false } = {}) {
   const runId = process.env.OCTOPUS_AUTH_RUN_ID;
 
   const failureFile =
@@ -424,5 +483,33 @@ export async function ensureSession({ force = false } = {}) {
     return result;
   } finally {
     await browser.close();
+  }
+}
+
+export async function ensureSession({ force = false } = {}) {
+  if (!force) {
+    try {
+      const stored = readStoredSession();
+      if (sessionHasMinimumLifetime(stored)) return stored;
+    } catch {
+      // Brak lub uszkodzona sesja zostanie naprawiona pod blokadą.
+    }
+  }
+
+  const release = await acquireRefreshLock();
+  try {
+    // Worker, który czekał na blokadę, korzysta z sesji zapisanej przez
+    // poprzednika zamiast wykonywać kolejne logowanie.
+    if (!force) {
+      try {
+        const refreshed = readStoredSession();
+        if (sessionHasMinimumLifetime(refreshed)) return refreshed;
+      } catch {
+        // Pierwszy worker wykona logowanie poniżej.
+      }
+    }
+    return await ensureSessionUnlocked({ force });
+  } finally {
+    await release();
   }
 }

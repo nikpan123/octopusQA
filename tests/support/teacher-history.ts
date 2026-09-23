@@ -25,6 +25,13 @@ export async function openTeacherHistory(page: Page) {
   const history = teacherHistory(page);
 
   await expect(history).toBeVisible();
+  await expect(
+    history
+      .getByRole("row")
+      .filter({ has: page.getByRole("gridcell") })
+      .first(),
+    "Historia nauczyciela powinna zakończyć renderowanie danych",
+  ).toBeVisible();
 
   return history;
 }
