@@ -17,6 +17,12 @@
     "test:cleanup": "node --test scripts/cleanup-teachers.test.mjs",
     "report": "playwright show-report",
     "check": "tsc --noEmit",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "docs:scenarios": "node scripts/generate-scenario-index.mjs",
+    "docs:scenarios:check": "node scripts/generate-scenario-index.mjs --check",
+    "quality": "npm run check && npm run lint && npm run format:check && npm run docs:scenarios:check",
     "install:browser": "playwright install chromium",
     "test:dev": "cross-env OCTOPUS_ENV=dev playwright test",
     "test:test": "cross-env OCTOPUS_ENV=test playwright test",
@@ -24,10 +30,16 @@
     "test:ui:test": "cross-env OCTOPUS_ENV=test playwright test --ui"
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
     "@playwright/test": "1.63.0",
     "@types/node": "^22.20.4",
     "cross-env": "^10.1.0",
-    "typescript": "~5.9.3"
+    "eslint": "^10.11.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-playwright": "^2.12.0",
+    "prettier": "^3.9.9",
+    "typescript": "~5.9.3",
+    "typescript-eslint": "^8.70.1"
   },
   "engines": {
     "node": ">=22"

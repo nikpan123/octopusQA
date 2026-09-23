@@ -10,13 +10,9 @@ export function createPlaywrightConfig(environment: OctopusEnvironment) {
   process.env.OCTOPUS_AUTH_RUN_ID = randomUUID();
 
   const baseURL =
-    environment === "test"
-      ? "https://octopus.gwotest.pl"
-      : "https://octopus.gwodev.pl";
+    environment === "test" ? "https://octopus.gwotest.pl" : "https://octopus.gwodev.pl";
 
-  console.log(
-    `Playwright: środowisko ${environment.toUpperCase()} → ${baseURL}`,
-  );
+  console.log(`Playwright: środowisko ${environment.toUpperCase()} → ${baseURL}`);
 
   return defineConfig({
     testDir: "./tests",

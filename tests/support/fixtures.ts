@@ -1,10 +1,6 @@
 import { test as base, expect } from "@playwright/test";
 
-import {
-  ensureSession,
-  restoreSession,
-  type AuthSession,
-} from "../../scripts/auth.mjs";
+import { ensureSession, restoreSession, type AuthSession } from "../../scripts/auth.mjs";
 
 import { OCTOPUS_BASE_URL, OCTOPUS_ENV } from "./environment";
 
@@ -12,9 +8,7 @@ function escapeRegExp(value: string): string {
   return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
-const teacherUrlPattern = new RegExp(
-  `^${escapeRegExp(OCTOPUS_BASE_URL)}/teacher/`,
-);
+const teacherUrlPattern = new RegExp(`^${escapeRegExp(OCTOPUS_BASE_URL)}/teacher/`);
 
 export const test = base.extend<{
   authSession: AuthSession;

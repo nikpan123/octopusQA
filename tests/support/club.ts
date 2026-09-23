@@ -183,9 +183,7 @@ export async function saveClubForm(page: Page, form: Locator) {
 
   await expect(row).toHaveCount(1);
 
-  const confirmationId = (
-    await row.getByRole("cell").nth(1).innerText()
-  ).trim();
+  const confirmationId = (await row.getByRole("cell").nth(1).innerText()).trim();
 
   expect(confirmationId).toMatch(/^\d+$/);
 

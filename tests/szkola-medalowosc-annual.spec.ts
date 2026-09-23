@@ -2,7 +2,7 @@ import { test, expect } from "./support/fixtures";
 
 import { Octopus } from "./support/octopus";
 
-import { getSchoolMedalApiData, openMedalSchool } from "./support/school-medal";
+import { getSchoolMedalApiData } from "./support/school-medal";
 
 import { OCTOPUS_ENV } from "./support/environment";
 
@@ -49,8 +49,7 @@ async function loadAnnualMedalSnapshotForCurrentEnvironment() {
   ).toBeGreaterThan(0);
 
   console.log(
-    `Snapshot dla środowiska ${OCTOPUS_ENV.toUpperCase()}: ` +
-      ANNUAL_MEDAL_SNAPSHOT_PATH,
+    `Snapshot dla środowiska ${OCTOPUS_ENV.toUpperCase()}: ` + ANNUAL_MEDAL_SNAPSHOT_PATH,
   );
 
   return snapshot;
@@ -64,12 +63,7 @@ test.describe("Roczne przeliczenie medalowości @annual-medal", () => {
 
     const app = new Octopus(page);
 
-    const referenceSchools = [
-      GOLD_SCHOOL,
-      SILVER_SCHOOL,
-      BRONZE_SCHOOL,
-      NO_MEDAL_SCHOOL,
-    ];
+    const referenceSchools = [GOLD_SCHOOL, SILVER_SCHOOL, BRONZE_SCHOOL, NO_MEDAL_SCHOOL];
 
     console.log("MED-YEAR-PREP-08: przygotowuję 4 szkoły referencyjne...");
 
@@ -90,17 +84,13 @@ test.describe("Roczne przeliczenie medalowości @annual-medal", () => {
 
     const schools = [...referenceSnapshot, ...randomSnapshot];
 
-    expect(
-      schools,
-      "Snapshot powinien zawierać 4 szkoły referencyjne i 50 losowych",
-    ).toHaveLength(54);
+    expect(schools, "Snapshot powinien zawierać 4 szkoły referencyjne i 50 losowych").toHaveLength(
+      54,
+    );
 
     const ids = schools.map((entry) => entry.school.id);
 
-    expect(
-      new Set(ids).size,
-      "W snapshotcie nie powinno być duplikatów szkół",
-    ).toBe(ids.length);
+    expect(new Set(ids).size, "W snapshotcie nie powinno być duplikatów szkół").toBe(ids.length);
 
     const medalCounts = {
       Złoto: 0,
@@ -233,7 +223,6 @@ test("MED-YEAR-01: roczne przeliczenie ustawia oczekiwany medal na podstawie sna
   }
 
   console.log(
-    `MED-YEAR-01: poprawnie zweryfikowano ` +
-      `${passed}/${snapshot.schools.length} szkół.`,
+    `MED-YEAR-01: poprawnie zweryfikowano ` + `${passed}/${snapshot.schools.length} szkół.`,
   );
 });

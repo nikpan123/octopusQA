@@ -7,9 +7,7 @@ export type ExpectedOrderItem = {
 };
 
 export function ordersPanel(page: Page): Locator {
-  return page
-    .getByRole("tabpanel", { name: "Zamówienia", exact: true })
-    .last();
+  return page.getByRole("tabpanel", { name: "Zamówienia", exact: true }).last();
 }
 
 export async function openOrders(page: Page): Promise<Locator> {
@@ -40,10 +38,7 @@ export function selectedProducts(form: Locator): Locator {
     .locator("xpath=ancestor::*[@role='treegrid'][1]");
 }
 
-export async function addOrderProduct(
-  form: Locator,
-  code: string,
-): Promise<string> {
+export async function addOrderProduct(form: Locator, code: string): Promise<string> {
   const searchInput = form.getByPlaceholder("Wpisz", { exact: true });
   await searchInput.fill(code);
   await form.getByRole("button", { name: "Szukaj", exact: true }).click();
@@ -83,10 +78,7 @@ export async function setOrderQuantity(
   await expect(input).toHaveValue(quantity);
 }
 
-export async function saveNewOrder(
-  page: Page,
-  form: Locator,
-): Promise<string> {
+export async function saveNewOrder(page: Page, form: Locator): Promise<string> {
   await form.getByRole("button", { name: "Zapisz", exact: true }).click();
   await expect(form).toHaveCount(0);
 
@@ -103,16 +95,10 @@ export function orderRow(orders: Locator, orderId: string): Locator {
     .locator("xpath=ancestor::*[@role='row'][1]");
 }
 
-export async function expandOrderItems(
-  orders: Locator,
-  orderId: string,
-): Promise<Locator> {
+export async function expandOrderItems(orders: Locator, orderId: string): Promise<Locator> {
   const row = orderRow(orders, orderId);
   await expect(row).toHaveCount(1);
-  await row
-    .locator("mat-icon")
-    .filter({ hasText: "keyboard_arrow_down" })
-    .click();
+  await row.locator("mat-icon").filter({ hasText: "keyboard_arrow_down" }).click();
 
   return orders
     .getByRole("columnheader", { name: "Ilość", exact: true })
@@ -132,16 +118,11 @@ export async function expectOrderItems(
       .locator("xpath=ancestor::*[@role='row'][1]");
     await expect(item).toHaveCount(1);
     await expect(item.getByRole("cell").nth(0)).toHaveText(expectedItem.title);
-    await expect(item.getByRole("cell").nth(4)).toHaveText(
-      expectedItem.quantity,
-    );
+    await expect(item.getByRole("cell").nth(4)).toHaveText(expectedItem.quantity);
   }
 }
 
-export async function openOrderEdit(
-  page: Page,
-  orderId: string,
-): Promise<Locator> {
+export async function openOrderEdit(page: Page, orderId: string): Promise<Locator> {
   const orders = ordersPanel(page);
   const row = orderRow(orders, orderId);
   await expect(row).toHaveCount(1);

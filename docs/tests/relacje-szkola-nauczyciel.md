@@ -17,15 +17,15 @@ tests/support/octopus.ts
 
 ## 3. Scenariusze
 
-| Test | Cel |
-|---|---|
-| `REL-01` | utworzenie nauczyciela z relacją i odczyt nauczyciela od strony szkoły |
-| `REL-02` | dodanie drugiej szkoły nie usuwa pierwszej relacji |
-| `ADD-09` | nauczyciela można utworzyć z dwiema szkołami |
-| `ADD-10` | szkołę można usunąć z formularza przed zapisem |
-| `ADD-30` | anulowanie nie tworzy rekordu ani relacji |
-| `EDIT-45` | dane są trwałe po przejściu do szkoły i powrocie |
-| `EDIT-46` | edycja nauczyciela nie usuwa relacji |
+| Test      | Cel                                                                    |
+| --------- | ---------------------------------------------------------------------- |
+| `REL-01`  | utworzenie nauczyciela z relacją i odczyt nauczyciela od strony szkoły |
+| `REL-02`  | dodanie drugiej szkoły nie usuwa pierwszej relacji                     |
+| `ADD-09`  | nauczyciela można utworzyć z dwiema szkołami                           |
+| `ADD-10`  | szkołę można usunąć z formularza przed zapisem                         |
+| `ADD-30`  | anulowanie nie tworzy rekordu ani relacji                              |
+| `EDIT-45` | dane są trwałe po przejściu do szkoły i powrocie                       |
+| `EDIT-46` | edycja nauczyciela nie usuwa relacji                                   |
 
 Scenariusz `@smoke` dodatkowo łączy pełny przepływ:
 
@@ -52,8 +52,8 @@ utworzenie szkoły
 `shared-school.ts` tworzy szkołę w osobnym kontekście przeglądarki i udostępnia ją testom jako fixture `school`:
 
 ```ts
-school.id
-school.name
+school.id;
+school.name;
 ```
 
 Pozwala to przygotować kosztowny rekord raz dla scenariusza, zachowując zwykłą sesję testową nauczyciela. Szkoła otrzymuje nazwę `REG_SHARED_*`, jest oznaczana jako testowa, a metadane trafiają do `runs/*.json`.
@@ -76,4 +76,3 @@ Takie podejście chroni test przed przypadkowym dopasowaniem osoby o podobnej na
 npx playwright test tests/szkola-nauczyciel.spec.ts
 npx playwright test tests/nauczyciel-rozszerzenie.spec.ts --grep @relation
 ```
-

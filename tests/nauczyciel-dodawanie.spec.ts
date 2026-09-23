@@ -1,6 +1,4 @@
-import type { Page } from "@playwright/test";
-import { test, expect, type Scenario } from "./support/scenario";
-
+import { test, expect } from "./support/scenario";
 import { typeValue } from "./support/octopus";
 
 import {
@@ -49,6 +47,11 @@ import {
   expectDuplicateTeacherSubjectWarning,
   closeDuplicateTeacherSubjectWarning,
 } from "./support/teacher-add";
+import {
+  expectTeacherInSchool,
+  registerCreatedTeacher,
+  searchTeacherByEmail,
+} from "./support/teacher-add-scenario";
 
 /*
  * =========================================================
@@ -73,102 +76,6 @@ const SECOND_TEST_SCHOOL = {
 
 /*
  * =========================================================
- * HELPERY LOKALNE
- * =========================================================
- */
-
-async function registerCreatedTeacher(
-  s: Scenario,
-  teacherId: string,
-  identity: { email?: string; lastName?: string } = {},
-) {
-  /*
-   * Scenario nie utworzył nauczyciela przez createTeacher(),
-   * dlatego ID zapisujemy ręcznie.
-   */
-  await s.record("teacherId", teacherId);
-  await s.record("teacherEmail", identity.email ?? s.email);
-  if (identity.lastName) {
-    await s.record("teacherLastName", identity.lastName);
-  }
-
-  /*
-   * Oznaczamy rekord jako testowy.
-   */
-  await s.app.markTestRecord();
-}
-
-/*
- * Sprawdzenie relacji od strony szkoły.
- */
-async function expectTeacherInSchool(
-  page: Page,
-  s: Scenario,
-  schoolId: string,
-  teacherId: string,
-) {
-  await s.app.openPanel("school", schoolId);
-
-  const teachers = page.getByRole("tabpanel", {
-    name: "Nauczyciele",
-    exact: true,
-  });
-
-  const row = teachers.getByRole("row").filter({
-    has: page.getByRole("gridcell", {
-      name: teacherId,
-      exact: true,
-    }),
-  });
-
-  await expect(row).toHaveCount(1);
-}
-
-/*
- * Wyszukanie konkretnego nauczyciela po e-mailu.
- */
-async function searchTeacherByEmail(
-  page: Page,
-  s: Scenario,
-  email: string,
-  teacherId: string,
-) {
-  await s.app.openPanel("teacher");
-
-  const search = await s.app.openSearch("teacher");
-
-  await typeValue(s.app.field(search, "Email"), email);
-
-  await search
-    .getByRole("button", {
-      name: "Szukaj",
-      exact: true,
-    })
-    .click();
-
-  await expect(search).toHaveCount(0);
-
-  const row = s.app
-    .results("teacher")
-    .getByRole("row")
-    .filter({
-      has: page.getByRole("gridcell", {
-        name: teacherId,
-        exact: true,
-      }),
-    });
-
-  await expect(row).toHaveCount(1);
-
-  await row.click();
-
-  await expect(page).toHaveURL(
-    new RegExp(`/teacher/teacher-panel/${teacherId}$`),
-  );
-}
-
-/*
- * =========================================================
  * ADD-01
  * MINIMALNY POPRAWNY REKORD Z E-MAILEM
  * =========================================================
@@ -189,12 +96,7 @@ test("ADD-01: nauczyciela można utworzyć z imieniem, nazwiskiem, szkołą i e-
 
   const lastName = "nOWAK";
 
-  const form = await s.app.prepareTeacher(
-    lastName,
-    s.email,
-    TEST_SCHOOL.id,
-    TEST_SCHOOL.name,
-  );
+  const form = await s.app.prepareTeacher(lastName, s.email, TEST_SCHOOL.id, TEST_SCHOOL.name);
 
   await typeValue(newTeacherFirstNameInput(form), firstName);
 
@@ -286,13 +188,7 @@ test("ADD-01: nauczyciela można utworzyć z imieniem, nazwiskiem, szkołą i e-
 
   const history = await openTeacherHistory(page);
 
-  await expectTeacherCreationHistoryChange(
-    page,
-    history,
-    "Imię",
-    firstName,
-    "Karta nauczyciela",
-  );
+  await expectTeacherCreationHistoryChange(page, history, "Imię", firstName, "Karta nauczyciela");
 
   await expectTeacherCreationHistoryChange(
     page,
@@ -302,13 +198,7 @@ test("ADD-01: nauczyciela można utworzyć z imieniem, nazwiskiem, szkołą i e-
     "Karta nauczyciela",
   );
 
-  await expectTeacherCreationHistoryChange(
-    page,
-    history,
-    "Email",
-    s.email,
-    "Karta nauczyciela",
-  );
+  await expectTeacherCreationHistoryChange(page, history, "Email", s.email, "Karta nauczyciela");
 
   await expectTeacherCreationHistoryChange(
     page,
@@ -342,12 +232,7 @@ test("ADD-02: nauczyciela można utworzyć z telefonem bez e-maila @teacher @add
    * Celowo nie podajemy e-maila.
    */
 
-  const form = await s.app.prepareTeacher(
-    lastName,
-    "",
-    TEST_SCHOOL.id,
-    TEST_SCHOOL.name,
-  );
+  const form = await s.app.prepareTeacher(lastName, "", TEST_SCHOOL.id, TEST_SCHOOL.name);
 
   /*
    * =====================================================
@@ -449,12 +334,7 @@ test("ADD-03: dzisiejsza data urodzenia jest akceptowana @teacher @add @birthdat
    * =====================================================
    */
 
-  const form = await s.app.prepareTeacher(
-    lastName,
-    s.email,
-    TEST_SCHOOL.id,
-    TEST_SCHOOL.name,
-  );
+  const form = await s.app.prepareTeacher(lastName, s.email, TEST_SCHOOL.id, TEST_SCHOOL.name);
 
   await typeValue(newTeacherFirstNameInput(form), firstName);
 
@@ -557,11 +437,7 @@ test("ADD-04: źródło domyślne to Karta nauczyciela i lista zawiera trzy wart
 
   await source.click();
 
-  const expectedSources = [
-    "Formularz klubowy",
-    "Karta LS",
-    "Karta nauczyciela",
-  ];
+  const expectedSources = ["Formularz klubowy", "Karta LS", "Karta nauczyciela"];
 
   for (const sourceName of expectedSources) {
     await expect(
@@ -600,12 +476,7 @@ test("ADD-05: nauczyciela można utworzyć ze źródłem Karta LS @teacher @add 
   page,
   scenario: s,
 }) => {
-  const form = await s.app.prepareTeacher(
-    "Zrodlo",
-    s.email,
-    TEST_SCHOOL.id,
-    TEST_SCHOOL.name,
-  );
+  const form = await s.app.prepareTeacher("Zrodlo", s.email, TEST_SCHOOL.id, TEST_SCHOOL.name);
 
   await selectNewTeacherSource(page, form, "Karta LS");
 
@@ -617,13 +488,7 @@ test("ADD-05: nauczyciela można utworzyć ze źródłem Karta LS @teacher @add 
 
   const history = await openTeacherHistory(page);
 
-  await expectTeacherCreationHistoryChange(
-    page,
-    history,
-    "Email",
-    s.email,
-    "Karta LS",
-  );
+  await expectTeacherCreationHistoryChange(page, history, "Email", s.email, "Karta LS");
 
   await expectTeacherCreationHistoryChange(
     page,
@@ -645,12 +510,7 @@ test("ADD-06: zgoda E-mail może być zaznaczona bez zgody Marketing @teacher @a
   page,
   scenario: s,
 }) => {
-  const form = await s.app.prepareTeacher(
-    "Rodoemail",
-    s.email,
-    TEST_SCHOOL.id,
-    TEST_SCHOOL.name,
-  );
+  const form = await s.app.prepareTeacher("Rodoemail", s.email, TEST_SCHOOL.id, TEST_SCHOOL.name);
 
   const marketing = newTeacherConsentCheckbox(form, "Marketing");
 
@@ -736,12 +596,7 @@ test("ADD-07: zgoda Telefon może być zaznaczona bez zgody Marketing @teacher @
   page,
   scenario: s,
 }) => {
-  const form = await s.app.prepareTeacher(
-    "Rodotelefon",
-    s.email,
-    TEST_SCHOOL.id,
-    TEST_SCHOOL.name,
-  );
+  const form = await s.app.prepareTeacher("Rodotelefon", s.email, TEST_SCHOOL.id, TEST_SCHOOL.name);
 
   const marketing = newTeacherConsentCheckbox(form, "Marketing");
 
@@ -822,12 +677,7 @@ test("ADD-08: nauczyciela można utworzyć bez żadnej zgody RODO @teacher @add 
   page,
   scenario: s,
 }) => {
-  const form = await s.app.prepareTeacher(
-    "Bezrodo",
-    s.email,
-    TEST_SCHOOL.id,
-    TEST_SCHOOL.name,
-  );
+  const form = await s.app.prepareTeacher("Bezrodo", s.email, TEST_SCHOOL.id, TEST_SCHOOL.name);
 
   await expect(newTeacherConsentCheckbox(form, "Marketing")).not.toBeChecked();
 
@@ -871,29 +721,18 @@ test("ADD-09: nauczyciela można utworzyć z dwiema szkołami @teacher @add @sch
   page,
   scenario: s,
 }) => {
-  const form = await s.app.prepareTeacher(
-    "Dwieszkoly",
-    s.email,
-    TEST_SCHOOL.id,
-    TEST_SCHOOL.name,
-  );
+  const form = await s.app.prepareTeacher("Dwieszkoly", s.email, TEST_SCHOOL.id, TEST_SCHOOL.name);
 
   /*
    * Nie tworzymy drugiej szkoły.
    *
    * Dodajemy istniejącą Szkołę QA 2.
    */
-  await s.app.attachSchool(
-    form,
-    SECOND_TEST_SCHOOL.id,
-    SECOND_TEST_SCHOOL.name,
-  );
+  await s.app.attachSchool(form, SECOND_TEST_SCHOOL.id, SECOND_TEST_SCHOOL.name);
 
   await expect(newTeacherSchoolRow(form, TEST_SCHOOL.name)).toHaveCount(1);
 
-  await expect(newTeacherSchoolRow(form, SECOND_TEST_SCHOOL.name)).toHaveCount(
-    1,
-  );
+  await expect(newTeacherSchoolRow(form, SECOND_TEST_SCHOOL.name)).toHaveCount(1);
 
   await addNewTeacherSubjectLevel(page, form, "Matematyka", "SP");
 
@@ -921,27 +760,16 @@ test("ADD-10: szkołę można usunąć przed zapisaniem nauczyciela @teacher @ad
   page,
   scenario: s,
 }) => {
-  const form = await s.app.prepareTeacher(
-    "Usunszkole",
-    s.email,
-    TEST_SCHOOL.id,
-    TEST_SCHOOL.name,
-  );
+  const form = await s.app.prepareTeacher("Usunszkole", s.email, TEST_SCHOOL.id, TEST_SCHOOL.name);
 
-  await s.app.attachSchool(
-    form,
-    SECOND_TEST_SCHOOL.id,
-    SECOND_TEST_SCHOOL.name,
-  );
+  await s.app.attachSchool(form, SECOND_TEST_SCHOOL.id, SECOND_TEST_SCHOOL.name);
 
   /*
    * Mamy obie szkoły.
    */
   await expect(newTeacherSchoolRow(form, TEST_SCHOOL.name)).toHaveCount(1);
 
-  await expect(newTeacherSchoolRow(form, SECOND_TEST_SCHOOL.name)).toHaveCount(
-    1,
-  );
+  await expect(newTeacherSchoolRow(form, SECOND_TEST_SCHOOL.name)).toHaveCount(1);
 
   /*
    * Usuwamy Szkołę QA 2.
@@ -950,9 +778,7 @@ test("ADD-10: szkołę można usunąć przed zapisaniem nauczyciela @teacher @ad
 
   await expect(newTeacherSchoolRow(form, TEST_SCHOOL.name)).toHaveCount(1);
 
-  await expect(newTeacherSchoolRow(form, SECOND_TEST_SCHOOL.name)).toHaveCount(
-    0,
-  );
+  await expect(newTeacherSchoolRow(form, SECOND_TEST_SCHOOL.name)).toHaveCount(0);
 
   await addNewTeacherSubjectLevel(page, form, "Matematyka", "SP");
 
@@ -987,12 +813,7 @@ test("ADD-11: nauczyciela można utworzyć z przedmioto-poziomem Matematyka SP @
   page,
   scenario: s,
 }) => {
-  const form = await s.app.prepareTeacher(
-    "Matematyka",
-    s.email,
-    TEST_SCHOOL.id,
-    TEST_SCHOOL.name,
-  );
+  const form = await s.app.prepareTeacher("Matematyka", s.email, TEST_SCHOOL.id, TEST_SCHOOL.name);
 
   await addNewTeacherSubjectLevel(page, form, "Matematyka", "SP");
 
@@ -1072,12 +893,7 @@ test("ADD-13: dodawanie nauczyciela zachowuje wielkość liter i akceptuje znak 
    * - uzupełnia e-mail,
    * - przypina szkołę.
    */
-  const form = await s.app.prepareTeacher(
-    "Tymczasowe",
-    s.email,
-    TEST_SCHOOL.id,
-    TEST_SCHOOL.name,
-  );
+  const form = await s.app.prepareTeacher("Tymczasowe", s.email, TEST_SCHOOL.id, TEST_SCHOOL.name);
 
   /*
    * Nadpisujemy dane wartościami,
@@ -1201,9 +1017,7 @@ test("ADD-14: Pokaż przy podobnej osobie zamyka formularz i otwiera istniejące
    */
   await showSimilarTeacher(form, existingTeacherId);
 
-  await expect(page).toHaveURL(
-    new RegExp(`/teacher/teacher-panel/${existingTeacherId}$`),
-  );
+  await expect(page).toHaveURL(new RegExp(`/teacher/teacher-panel/${existingTeacherId}$`));
 });
 
 /*
@@ -1217,7 +1031,6 @@ for (const missing of ["imię", "nazwisko", "szkoła"] as const) {
   test(`ADD-${
     missing === "imię" ? "15" : missing === "nazwisko" ? "16" : "17"
   }: brak pola ${missing} blokuje utworzenie nauczyciela @teacher @add @validation`, async ({
-    page,
     scenario: s,
   }) => {
     const form = await s.app.prepareTeacher(
@@ -1242,9 +1055,7 @@ for (const missing of ["imię", "nazwisko", "szkoła"] as const) {
 
     await newTeacherSaveButton(form).click();
 
-    await expect(form).toContainText(
-      "Należy uzupełnić nazwisko, imię i wybrać szkołę",
-    );
+    await expect(form).toContainText("Należy uzupełnić nazwisko, imię i wybrać szkołę");
 
     /*
      * Formularz pozostaje otwarty.
@@ -1277,12 +1088,7 @@ test("ADD-18: brak e-maila i telefonu blokuje utworzenie nauczyciela po potwierd
 }) => {
   const lastName = "Bezkontaktu";
 
-  const form = await s.app.prepareTeacher(
-    lastName,
-    "",
-    TEST_SCHOOL.id,
-    TEST_SCHOOL.name,
-  );
+  const form = await s.app.prepareTeacher(lastName, "", TEST_SCHOOL.id, TEST_SCHOOL.name);
 
   /*
    * Pierwszy Zapisz:
@@ -1423,12 +1229,7 @@ test("ADD-21: e-mail używany przez innego nauczyciela blokuje zapis @teacher @a
    * Ten nauczyciel zajmie adres s.email.
    */
 
-  let form = await s.app.prepareTeacher(
-    "Emailzajety",
-    s.email,
-    TEST_SCHOOL.id,
-    TEST_SCHOOL.name,
-  );
+  let form = await s.app.prepareTeacher("Emailzajety", s.email, TEST_SCHOOL.id, TEST_SCHOOL.name);
 
   const existingTeacherId = await saveNewTeacherWithoutSubjectLevel(page, form);
 
@@ -1531,12 +1332,7 @@ test("ADD-22: telefon krótszy niż 9 cyfr blokuje zapis @teacher @add @phone @v
 }) => {
   const lastName = "Krotkitelefon";
 
-  const form = await s.app.prepareTeacher(
-    lastName,
-    "",
-    TEST_SCHOOL.id,
-    TEST_SCHOOL.name,
-  );
+  const form = await s.app.prepareTeacher(lastName, "", TEST_SCHOOL.id, TEST_SCHOOL.name);
 
   /*
    * =====================================================
@@ -1634,12 +1430,7 @@ test("ADD-23: pole telefonu nie pozwala wprowadzić więcej niż 9 cyfr @teacher
   page,
   scenario: s,
 }) => {
-  const form = await s.app.prepareTeacher(
-    "Telefonlimit",
-    "",
-    TEST_SCHOOL.id,
-    TEST_SCHOOL.name,
-  );
+  const form = await s.app.prepareTeacher("Telefonlimit", "", TEST_SCHOOL.id, TEST_SCHOOL.name);
 
   const phone = newTeacherPhoneInput(form);
 
@@ -1682,12 +1473,7 @@ test("ADD-24: przyszła data urodzenia blokuje zapis nauczyciela @teacher @add @
   page,
   scenario: s,
 }) => {
-  const form = await s.app.prepareTeacher(
-    "Przyszly",
-    s.email,
-    TEST_SCHOOL.id,
-    TEST_SCHOOL.name,
-  );
+  const form = await s.app.prepareTeacher("Przyszly", s.email, TEST_SCHOOL.id, TEST_SCHOOL.name);
 
   const birthDate = newTeacherBirthDateInput(form);
 
@@ -1699,9 +1485,7 @@ test("ADD-24: przyszła data urodzenia blokuje zapis nauczyciela @teacher @add @
 
   await newTeacherSaveButton(form).click();
 
-  await expect(
-    form.getByText(/Wybierz datę z poprawnego zakresu/),
-  ).toBeVisible();
+  await expect(form.getByText(/Wybierz datę z poprawnego zakresu/)).toBeVisible();
 
   await expect(form).toBeVisible();
 
@@ -1727,12 +1511,7 @@ test("ADD-25: nauczyciela można utworzyć bez daty urodzenia @teacher @add @bir
    * =====================================================
    */
 
-  const form = await s.app.prepareTeacher(
-    lastName,
-    s.email,
-    TEST_SCHOOL.id,
-    TEST_SCHOOL.name,
-  );
+  const form = await s.app.prepareTeacher(lastName, s.email, TEST_SCHOOL.id, TEST_SCHOOL.name);
 
   /*
    * =====================================================
@@ -1955,9 +1734,7 @@ test("ADD-27: brak poziomu blokuje dodanie przedmioto-poziomu @teacher @add @sub
    * =====================================================
    */
 
-  await expect(newTeacherSubjectLevelRow(form, "Matematyka", "SP")).toHaveCount(
-    0,
-  );
+  await expect(newTeacherSubjectLevelRow(form, "Matematyka", "SP")).toHaveCount(0);
 
   /*
    * Formularz dodawania nauczyciela
@@ -1987,12 +1764,7 @@ test("ADD-28: brak przedmiotu blokuje dodanie przedmioto-poziomu @teacher @add @
   page,
   scenario: s,
 }) => {
-  const form = await s.app.prepareTeacher(
-    "Sampoziom",
-    s.email,
-    TEST_SCHOOL.id,
-    TEST_SCHOOL.name,
-  );
+  const form = await s.app.prepareTeacher("Sampoziom", s.email, TEST_SCHOOL.id, TEST_SCHOOL.name);
 
   /*
    * =====================================================
@@ -2050,9 +1822,7 @@ test("ADD-28: brak przedmiotu blokuje dodanie przedmioto-poziomu @teacher @add @
    * =====================================================
    */
 
-  await expect(newTeacherSubjectLevelRow(form, "Matematyka", "SP")).toHaveCount(
-    0,
-  );
+  await expect(newTeacherSubjectLevelRow(form, "Matematyka", "SP")).toHaveCount(0);
 
   /*
    * Formularz nadal pozostaje otwarty.
@@ -2099,9 +1869,7 @@ test("ADD-29: tego samego przedmioto-poziomu nie można dodać dwa razy @teacher
   /*
    * Powinien istnieć dokładnie jeden wiersz.
    */
-  await expect(newTeacherSubjectLevelRow(form, "Matematyka", "SP")).toHaveCount(
-    1,
-  );
+  await expect(newTeacherSubjectLevelRow(form, "Matematyka", "SP")).toHaveCount(1);
 
   /*
    * =====================================================
@@ -2149,9 +1917,7 @@ test("ADD-29: tego samego przedmioto-poziomu nie można dodać dwa razy @teacher
 
   await expect(form).toBeVisible();
 
-  await expect(newTeacherSubjectLevelRow(form, "Matematyka", "SP")).toHaveCount(
-    1,
-  );
+  await expect(newTeacherSubjectLevelRow(form, "Matematyka", "SP")).toHaveCount(1);
 
   /*
    * =====================================================
@@ -2177,12 +1943,7 @@ test("ADD-30: anulowanie kompletnego formularza nie tworzy nauczyciela ani relac
 }) => {
   const lastName = "Anulowany";
 
-  const form = await s.app.prepareTeacher(
-    lastName,
-    s.email,
-    TEST_SCHOOL.id,
-    TEST_SCHOOL.name,
-  );
+  const form = await s.app.prepareTeacher(lastName, s.email, TEST_SCHOOL.id, TEST_SCHOOL.name);
 
   await addNewTeacherSubjectLevel(page, form, "Matematyka", "SP");
 

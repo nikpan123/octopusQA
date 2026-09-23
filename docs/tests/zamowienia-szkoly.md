@@ -16,19 +16,19 @@ tests/support/scenario.ts
 
 Testy używają produktów katalogowych:
 
-| Kod | Zastosowanie |
-|---|---|
+| Kod      | Zastosowanie                         |
+| -------- | ------------------------------------ |
 | `KMLT18` | scenariusz jednego i wielu produktów |
-| `4P-2` | scenariusze wielu produktów |
+| `4P-2`   | scenariusze wielu produktów          |
 
 Brak produktu o oczekiwanym kodzie oznacza zmianę danych referencyjnych i powinien ujawnić się jako błąd testu, a nie zostać pominięty.
 
 ## 4. Zakres ORD-01–ORD-03
 
-| Test | Cel |
-|---|---|
-| `ORD-01` | zapis jednego produktu i ilości po ponownym otwarciu szkoły |
-| `ORD-02` | zapis dwóch różnych produktów i ich ilości |
+| Test     | Cel                                                                 |
+| -------- | ------------------------------------------------------------------- |
+| `ORD-01` | zapis jednego produktu i ilości po ponownym otwarciu szkoły         |
+| `ORD-02` | zapis dwóch różnych produktów i ich ilości                          |
 | `ORD-03` | edycja ilości obu produktów oraz cleanup przez usunięcie zamówienia |
 
 ## 5. Przepływ zamówienia
@@ -51,19 +51,19 @@ Pole ilości jest edytorem AG Grid. Helper najpierw aktywuje je kliknięciem, na
 
 Wspólny helper usuwa powtarzalne selektory i operacje techniczne z testów.
 
-| Helper | Odpowiedzialność |
-|---|---|
-| `ordersPanel()` | panel zamówień szkoły |
-| `openOrders()` | otwarcie zakładki |
-| `openNewOrderForm()` | formularz nowego zamówienia |
-| `addOrderProduct()` | wyszukanie i przeniesienie produktu |
-| `setOrderQuantity()` | bezpieczna edycja ilości w AG Grid |
-| `saveNewOrder()` | zapis i zwrócenie ID zamówienia |
-| `orderRow()` | wiersz konkretnego zamówienia |
-| `expandOrderItems()` | rozwinięcie listy pozycji |
-| `expectOrderItems()` | porównanie kodu, nazwy i ilości |
-| `openOrderEdit()` | otwarcie edycji zaznaczonego zamówienia |
-| `deleteOrder()` | usunięcie z opcjonalnym dialogiem potwierdzenia |
+| Helper               | Odpowiedzialność                                |
+| -------------------- | ----------------------------------------------- |
+| `ordersPanel()`      | panel zamówień szkoły                           |
+| `openOrders()`       | otwarcie zakładki                               |
+| `openNewOrderForm()` | formularz nowego zamówienia                     |
+| `addOrderProduct()`  | wyszukanie i przeniesienie produktu             |
+| `setOrderQuantity()` | bezpieczna edycja ilości w AG Grid              |
+| `saveNewOrder()`     | zapis i zwrócenie ID zamówienia                 |
+| `orderRow()`         | wiersz konkretnego zamówienia                   |
+| `expandOrderItems()` | rozwinięcie listy pozycji                       |
+| `expectOrderItems()` | porównanie kodu, nazwy i ilości                 |
+| `openOrderEdit()`    | otwarcie edycji zaznaczonego zamówienia         |
+| `deleteOrder()`      | usunięcie z opcjonalnym dialogiem potwierdzenia |
 
 ## 7. Cleanup
 
@@ -80,4 +80,3 @@ FAILED
 ```text
 npx playwright test tests/zamowienia-klubowiczostwo.spec.ts --grep @order
 ```
-

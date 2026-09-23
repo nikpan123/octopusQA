@@ -36,9 +36,7 @@ export type AnnualMedalTeacherRow = {
   subjectsCellHtml: string;
 };
 
-export async function getAnnualMedalTeacherRows(
-  page: Page,
-): Promise<AnnualMedalTeacherRow[]> {
+export async function getAnnualMedalTeacherRows(page: Page): Promise<AnnualMedalTeacherRow[]> {
   const teachers = page.getByRole("tabpanel", {
     name: "Nauczyciele",
     exact: true,
@@ -68,20 +66,13 @@ export async function getAnnualMedalTeacherRows(
 
   const functionIndex = headerNames.indexOf("Funkcja");
 
-  expect(
-    idIndex,
-    "Nie znaleziono kolumny ID w tabeli nauczycieli",
-  ).toBeGreaterThanOrEqual(0);
+  expect(idIndex, "Nie znaleziono kolumny ID w tabeli nauczycieli").toBeGreaterThanOrEqual(0);
 
-  expect(
-    subjectsIndex,
-    'Nie znaleziono kolumny "Przedmioty w tej szkole"',
-  ).toBeGreaterThanOrEqual(0);
+  expect(subjectsIndex, 'Nie znaleziono kolumny "Przedmioty w tej szkole"').toBeGreaterThanOrEqual(
+    0,
+  );
 
-  expect(
-    functionIndex,
-    "Nie znaleziono kolumny Funkcja",
-  ).toBeGreaterThanOrEqual(0);
+  expect(functionIndex, "Nie znaleziono kolumny Funkcja").toBeGreaterThanOrEqual(0);
 
   const rows = teachers.getByRole("row");
 
@@ -116,11 +107,9 @@ export async function getAnnualMedalTeacherRows(
 
     const subjectsCellStyle = (await subjectsCell.getAttribute("style")) ?? "";
 
-    const subjectsCellBackgroundColor = await subjectsCell.evaluate(
-      (element) => {
-        return window.getComputedStyle(element).backgroundColor;
-      },
-    );
+    const subjectsCellBackgroundColor = await subjectsCell.evaluate((element) => {
+      return window.getComputedStyle(element).backgroundColor;
+    });
 
     const subjectsCellColor = await subjectsCell.evaluate((element) => {
       return window.getComputedStyle(element).color;
@@ -189,15 +178,11 @@ export async function getAnnualMedalTeacherSubjects(
 
   expect(idIndex, "Nie znaleziono kolumny ID").toBeGreaterThanOrEqual(0);
 
-  expect(
-    subjectsIndex,
-    'Nie znaleziono kolumny "Przedmioty w tej szkole"',
-  ).toBeGreaterThanOrEqual(0);
+  expect(subjectsIndex, 'Nie znaleziono kolumny "Przedmioty w tej szkole"').toBeGreaterThanOrEqual(
+    0,
+  );
 
-  expect(
-    functionIndex,
-    "Nie znaleziono kolumny Funkcja",
-  ).toBeGreaterThanOrEqual(0);
+  expect(functionIndex, "Nie znaleziono kolumny Funkcja").toBeGreaterThanOrEqual(0);
 
   const rows = teachers.getByRole("row");
 
@@ -220,9 +205,7 @@ export async function getAnnualMedalTeacherSubjects(
 
     const functionName = (await cells.nth(functionIndex).innerText()).trim();
 
-    const isSupportingTeacher = functionName.includes(
-      "Nauczyciel wspomagający",
-    );
+    const isSupportingTeacher = functionName.includes("Nauczyciel wspomagający");
 
     const subjectElements = cells.nth(subjectsIndex).locator(".subject");
 
@@ -231,9 +214,7 @@ export async function getAnnualMedalTeacherSubjects(
     for (let j = 0; j < subjectCount; j++) {
       const subjectElement = subjectElements.nth(j);
 
-      const subjectLevel = (await subjectElement.innerText())
-        .replace(/;\s*$/, "")
-        .trim();
+      const subjectLevel = (await subjectElement.innerText()).replace(/;\s*$/, "").trim();
 
       if (!subjectLevel) {
         continue;
@@ -260,9 +241,7 @@ export function getAnnualTargetSchoolYear(targetProcessDate: string): string {
   const match = targetProcessDate.match(/^(\d{4})-\d{2}-\d{2}$/);
 
   if (!match) {
-    throw new Error(
-      `Nieprawidłowa data procesu rocznego: "${targetProcessDate}".`,
-    );
+    throw new Error(`Nieprawidłowa data procesu rocznego: "${targetProcessDate}".`);
   }
 
   const startYear = Number(match[1]);
@@ -278,16 +257,11 @@ async function getCurrentSchoolId(page: Page): Promise<string> {
     })
     .locator('input[type="text"]');
 
-  await expect(
-    idInput,
-    "Nie znaleziono ID aktualnie otwartej szkoły",
-  ).toBeVisible();
+  await expect(idInput, "Nie znaleziono ID aktualnie otwartej szkoły").toBeVisible();
 
   const schoolId = (await idInput.inputValue()).trim();
 
-  expect(schoolId, "ID aktualnie otwartej szkoły powinno być liczbą").toMatch(
-    /^\d+$/,
-  );
+  expect(schoolId, "ID aktualnie otwartej szkoły powinno być liczbą").toMatch(/^\d+$/);
 
   return schoolId;
 }
@@ -318,10 +292,7 @@ async function getTeacherSchoolSubjectYears(
     })
     .first();
 
-  await expect(
-    schoolsGrid,
-    "Tabela szkół nauczyciela powinna być widoczna",
-  ).toBeVisible();
+  await expect(schoolsGrid, "Tabela szkół nauczyciela powinna być widoczna").toBeVisible();
 
   const headers = schoolsGrid.getByRole("columnheader");
 
@@ -341,10 +312,9 @@ async function getTeacherSchoolSubjectYears(
 
   const schoolYearIndex = headerNames.indexOf("Rok szkolny");
 
-  expect(
-    idIndex,
-    'Nie znaleziono kolumny "ID" w tabeli szkół nauczyciela',
-  ).toBeGreaterThanOrEqual(0);
+  expect(idIndex, 'Nie znaleziono kolumny "ID" w tabeli szkół nauczyciela').toBeGreaterThanOrEqual(
+    0,
+  );
 
   expect(
     levelIndex,
@@ -410,13 +380,10 @@ async function getTeacherSchoolSubjectYears(
         continue;
       }
 
-      const level =
-        levelLines.length === 1 ? levelLines[0] : (levelLines[j] ?? "");
+      const level = levelLines.length === 1 ? levelLines[0] : (levelLines[j] ?? "");
 
       const schoolYear =
-        schoolYearLines.length === 1
-          ? schoolYearLines[0]
-          : (schoolYearLines[j] ?? "");
+        schoolYearLines.length === 1 ? schoolYearLines[0] : (schoolYearLines[j] ?? "");
 
       if (!level || !schoolYear) {
         continue;
@@ -450,10 +417,7 @@ class AnnualMedalTeacherVerificationError extends Error {
     readonly teacherId: string,
     readonly schoolId: string,
   ) {
-    super(
-      `Nie udało się zweryfikować nauczyciela ${teacherId} ` +
-        `dla szkoły ${schoolId}.`,
-    );
+    super(`Nie udało się zweryfikować nauczyciela ${teacherId} ` + `dla szkoły ${schoolId}.`);
 
     this.name = "AnnualMedalTeacherVerificationError";
   }
@@ -518,20 +482,14 @@ export async function getExpectedAnnualMedal(
 
   const qualifyingSubjectLevels = new Set<string>();
 
-  const clubMembershipExcluded = new Map<
-    string,
-    AnnualMedalClubMembershipExclusion
-  >();
+  const clubMembershipExcluded = new Map<string, AnnualMedalClubMembershipExclusion>();
 
   const app = new Octopus(page);
 
   for (const [teacherId, subjects] of subjectsByTeacher) {
     await openAnnualMedalTeacherPanel(app, teacherId, schoolId);
 
-    const teacherSchoolSubjects = await getTeacherSchoolSubjectYears(
-      page,
-      schoolId,
-    );
+    const teacherSchoolSubjects = await getTeacherSchoolSubjectYears(page, schoolId);
 
     for (const subject of subjects) {
       const hasMembershipForTargetYear = teacherSchoolSubjects.some(
@@ -564,9 +522,7 @@ export async function getExpectedAnnualMedal(
 
   const sortedQualifyingSubjectLevels = [...qualifyingSubjectLevels].sort();
 
-  const sortedClubMembershipExcluded = [
-    ...clubMembershipExcluded.values(),
-  ].sort((a, b) => {
+  const sortedClubMembershipExcluded = [...clubMembershipExcluded.values()].sort((a, b) => {
     const teacherCompare = a.teacherId.localeCompare(b.teacherId);
 
     if (teacherCompare !== 0) {
@@ -650,10 +606,7 @@ export async function buildAnnualMedalSnapshot(
   for (const school of schools) {
     await openMedalSchool(app, school);
 
-    const expectation = await getExpectedAnnualMedal(
-      app.page,
-      targetProcessDate,
-    );
+    const expectation = await getExpectedAnnualMedal(app.page, targetProcessDate);
 
     const currentMedalData = await getSchoolMedalApiData(app, school);
 
@@ -666,8 +619,7 @@ export async function buildAnnualMedalSnapshot(
 
     expect(
       allowedMedals,
-      `Nieznana wartość medalu szkoły ${school.id}: ` +
-        `"${currentMedalData.medalCategoryName}"`,
+      `Nieznana wartość medalu szkoły ${school.id}: ` + `"${currentMedalData.medalCategoryName}"`,
     ).toContain(currentMedalData.medalCategoryName);
 
     result.push({
@@ -706,25 +658,19 @@ export async function loadAnnualMedalSnapshot(
 
   const snapshot = JSON.parse(raw) as AnnualMedalSnapshot;
 
-  expect(
-    snapshot.schemaVersion,
-    "Snapshot powinien mieć schemaVersion = 1",
-  ).toBe(1);
+  expect(snapshot.schemaVersion, "Snapshot powinien mieć schemaVersion = 1").toBe(1);
 
-  expect(
-    snapshot.generatedAt,
-    "Snapshot powinien zawierać datę wygenerowania",
-  ).toMatch(/^\d{4}-\d{2}-\d{2}T/);
+  expect(snapshot.generatedAt, "Snapshot powinien zawierać datę wygenerowania").toMatch(
+    /^\d{4}-\d{2}-\d{2}T/,
+  );
 
-  expect(
-    snapshot.targetProcessDate,
-    "Snapshot powinien zawierać datę procesu rocznego",
-  ).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+  expect(snapshot.targetProcessDate, "Snapshot powinien zawierać datę procesu rocznego").toMatch(
+    /^\d{4}-\d{2}-\d{2}$/,
+  );
 
-  expect(
-    snapshot.schools.length,
-    "Snapshot powinien zawierać szkoły referencyjne",
-  ).toBeGreaterThan(0);
+  expect(snapshot.schools.length, "Snapshot powinien zawierać szkoły referencyjne").toBeGreaterThan(
+    0,
+  );
 
   return snapshot;
 }
@@ -750,9 +696,7 @@ export async function getRandomAnnualMedalCandidates(
 
   const search = await app.openSearch("school");
 
-  const textInputs = search.locator(
-    'input:not([type="checkbox"]):not([readonly]):not([disabled])',
-  );
+  const textInputs = search.locator('input:not([type="checkbox"]):not([readonly]):not([disabled])');
 
   const inputCount = await textInputs.count();
 
@@ -813,8 +757,7 @@ export async function getRandomAnnualMedalCandidates(
         .toLowerCase();
 
       const hasNoSchoolId =
-        !Array.isArray(filterModel.institutionIds) ||
-        filterModel.institutionIds.length === 0;
+        !Array.isArray(filterModel.institutionIds) || filterModel.institutionIds.length === 0;
 
       return cityPost === "warszawa" && hasNoSchoolId;
     } catch {
@@ -891,8 +834,7 @@ export async function getRandomAnnualMedalCandidates(
 
       currentMedal: medal as SchoolMedal,
 
-      currentSubjectNames:
-        school.informationAboutMedalCategory?.subjectNames ?? [],
+      currentSubjectNames: school.informationAboutMedalCategory?.subjectNames ?? [],
     });
   }
 
@@ -935,12 +877,7 @@ export async function buildRandomAnnualMedalSnapshot(
   excludedSchoolIds: string[] = [],
   targetProcessDate = ANNUAL_MEDAL_TARGET_PROCESS_DATE,
 ): Promise<AnnualMedalSnapshotEntry[]> {
-  const candidates = await getRandomAnnualMedalCandidates(
-    app,
-    count,
-    excludedSchoolIds,
-    20,
-  );
+  const candidates = await getRandomAnnualMedalCandidates(app, count, excludedSchoolIds, 20);
 
   const result: AnnualMedalSnapshotEntry[] = [];
 
@@ -982,8 +919,7 @@ export async function buildRandomAnnualMedalSnapshot(
       expectation = await getExpectedAnnualMedal(app.page, targetProcessDate);
     } catch (error) {
       if (error instanceof AnnualMedalTeacherVerificationError) {
-        const reason =
-          `Nie udało się zweryfikować nauczyciela ` + `${error.teacherId}.`;
+        const reason = `Nie udało się zweryfikować nauczyciela ` + `${error.teacherId}.`;
 
         skippedSchools.push({
           id: candidate.id,
@@ -993,10 +929,7 @@ export async function buildRandomAnnualMedalSnapshot(
           reason,
         });
 
-        console.log(
-          `PREP-08: pomijam szkołę ${candidate.id} "${candidate.name}". ` +
-            reason,
-        );
+        console.log(`PREP-08: pomijam szkołę ${candidate.id} "${candidate.name}". ` + reason);
 
         continue;
       }
@@ -1039,8 +972,7 @@ export async function buildRandomAnnualMedalSnapshot(
   }
 
   console.log(
-    `PREP-08: pominięto podczas szczegółowej analizy: ` +
-      `${skippedSchools.length} szkół.`,
+    `PREP-08: pominięto podczas szczegółowej analizy: ` + `${skippedSchools.length} szkół.`,
   );
 
   for (const skipped of skippedSchools) {

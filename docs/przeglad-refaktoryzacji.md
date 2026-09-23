@@ -1,5 +1,19 @@
 # Przegląd jakości i refaktoryzacji testów
 
+## Status realizacji — 2026-09-23
+
+Zrealizowano:
+
+- rozdzielenie zamówień i klubowiczostwa na osobne pliki spec,
+- podział `teacher-edit.ts` na moduły domenowe z zachowaniem wspólnego eksportu,
+- usunięcie adresu DEV z logiki fixture scenariusza,
+- przeniesienie helperów dodawania nauczyciela do `tests/support`,
+- wspólne formatowanie przez Prettier,
+- kontrolę TypeScript, ESLint i reguł Playwright przez `npm run quality`,
+- generowany indeks wszystkich scenariuszy w `docs/tests/scenario-index.md`.
+
+Osobną, nadal aktualną rekomendacją pozostaje pełna migracja `ORD-03` do helperów z `order.ts`.
+
 ## Wprowadzone zmiany
 
 1. Powtarzalna obsługa zamówień została przeniesiona do `tests/support/order.ts`.

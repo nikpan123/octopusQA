@@ -35,10 +35,7 @@ export function medalTooltip(page: Page): Locator {
  * Otwiera wskazaną szkołę i potwierdza,
  * że został załadowany właściwy rekord.
  */
-export async function openMedalSchool(
-  app: Octopus,
-  school: MedalSchool,
-): Promise<void> {
+export async function openMedalSchool(app: Octopus, school: MedalSchool): Promise<void> {
   await app.openPanel("school", school.id);
 
   console.log(`Otwarto szkołę ${school.id} "${school.name}".`);
@@ -47,10 +44,7 @@ export async function openMedalSchool(
 /**
  * Sprawdza wartość pola Medal.
  */
-export async function expectSchoolMedal(
-  page: Page,
-  expectedMedal: SchoolMedal,
-): Promise<void> {
+export async function expectSchoolMedal(page: Page, expectedMedal: SchoolMedal): Promise<void> {
   await expect(medalInput(page)).toHaveValue(expectedMedal);
 }
 
@@ -67,10 +61,7 @@ export async function expectMedalReadOnly(page: Page): Promise<void> {
  * Opcjonalnie można przekazać listę przedmiotów,
  * które powinny znajdować się w tooltipie.
  */
-export async function expectMedalTooltip(
-  page: Page,
-  subjects: string[] = [],
-): Promise<void> {
+export async function expectMedalTooltip(page: Page, subjects: string[] = []): Promise<void> {
   await medalInput(page).hover();
 
   const tooltip = medalTooltip(page);
@@ -101,10 +92,7 @@ export async function expectNoMedalTooltip(page: Page): Promise<void> {
  * Wyszukuje szkołę po ID i zwraca jej wiersz
  * z tabeli wyników wyszukiwania.
  */
-export async function searchSchoolById(
-  app: Octopus,
-  school: MedalSchool,
-): Promise<Locator> {
+export async function searchSchoolById(app: Octopus, school: MedalSchool): Promise<Locator> {
   await app.openPanel("school");
 
   const search = await app.openSearch("school");
@@ -149,10 +137,7 @@ export async function openSchoolHistory(page: Page): Promise<Locator> {
 
   const firstGridCell = history.getByRole("gridcell").first();
 
-  await expect(
-    firstGridCell,
-    "Historia zmian powinna zakończyć ładowanie danych",
-  ).toBeVisible({
+  await expect(firstGridCell, "Historia zmian powinna zakończyć ładowanie danych").toBeVisible({
     timeout: 20_000,
   });
 
@@ -178,10 +163,7 @@ export function medalHistoryRows(history: Locator): Locator {
  * Zwraca konkretny wpis medalowy po wartości,
  * np. "2025/2026 Złoto".
  */
-export function medalHistoryRowByValue(
-  history: Locator,
-  value: string,
-): Locator {
+export function medalHistoryRowByValue(history: Locator, value: string): Locator {
   return history
     .getByRole("gridcell", {
       name: value,
@@ -222,10 +204,7 @@ export function historyDateCell(row: Locator): Locator {
 /**
  * Wyszukuje szkoły po jednej lub kilku wartościach pola Medal.
  */
-export async function searchSchoolsByMedals(
-  app: Octopus,
-  medals: SchoolMedal[],
-): Promise<Locator> {
+export async function searchSchoolsByMedals(app: Octopus, medals: SchoolMedal[]): Promise<Locator> {
   await app.openPanel("school");
 
   const search = await app.openSearch("school");
@@ -263,10 +242,7 @@ export async function searchSchoolsByMedals(
 /**
  * Wersja skrócona dla wyszukiwania po jednym medalu.
  */
-export async function searchSchoolsByMedal(
-  app: Octopus,
-  medal: SchoolMedal,
-): Promise<Locator> {
+export async function searchSchoolsByMedal(app: Octopus, medal: SchoolMedal): Promise<Locator> {
   return searchSchoolsByMedals(app, [medal]);
 }
 
@@ -292,10 +268,7 @@ export async function expectSchoolResultsMedals(
 
   const count = await medalCells.count();
 
-  expect(
-    count,
-    "Wyszukiwanie powinno zwrócić co najmniej jedną szkołę",
-  ).toBeGreaterThan(0);
+  expect(count, "Wyszukiwanie powinno zwrócić co najmniej jedną szkołę").toBeGreaterThan(0);
 
   const foundMedals = new Set<SchoolMedal>();
 
@@ -304,10 +277,7 @@ export async function expectSchoolResultsMedals(
 
     const medalText = (await medalCell.innerText()).trim() as SchoolMedal;
 
-    expect(
-      allMedals,
-      `Nieznana wartość medalu w wynikach: "${medalText}"`,
-    ).toContain(medalText);
+    expect(allMedals, `Nieznana wartość medalu w wynikach: "${medalText}"`).toContain(medalText);
 
     expect(
       allowedMedals,
@@ -364,25 +334,16 @@ export async function getSchoolMedalApiData(
 
   const response = await responsePromise;
 
-  expect(
-    response.ok(),
-    "GetInstitutions powinien zwrócić poprawną odpowiedź",
-  ).toBeTruthy();
+  expect(response.ok(), "GetInstitutions powinien zwrócić poprawną odpowiedź").toBeTruthy();
 
   const body = await response.json();
 
-  const schoolData = body.data?.find(
-    (item: { id: number }) => String(item.id) === school.id,
-  );
+  const schoolData = body.data?.find((item: { id: number }) => String(item.id) === school.id);
 
-  expect(
-    schoolData,
-    `API powinno zwrócić szkołę o ID ${school.id}`,
-  ).toBeTruthy();
+  expect(schoolData, `API powinno zwrócić szkołę o ID ${school.id}`).toBeTruthy();
 
   return {
-    medalCategoryName:
-      schoolData.informationAboutMedalCategory?.medalCategoryName ?? null,
+    medalCategoryName: schoolData.informationAboutMedalCategory?.medalCategoryName ?? null,
 
     subjectNames: schoolData.informationAboutMedalCategory?.subjectNames ?? [],
   };
@@ -415,10 +376,9 @@ export async function getMedalTooltipSubjects(page: Page): Promise<string[]> {
 export async function getSchoolMedalValue(page: Page): Promise<SchoolMedal> {
   const value = await medalInput(page).inputValue();
 
-  expect(
-    ["Złoto", "Srebro", "Brąz", "Brak"],
-    `Nieznana wartość medalu w UI: "${value}"`,
-  ).toContain(value);
+  expect(["Złoto", "Srebro", "Brąz", "Brak"], `Nieznana wartość medalu w UI: "${value}"`).toContain(
+    value,
+  );
 
   return value as SchoolMedal;
 }
@@ -466,10 +426,7 @@ export function expectUniqueMedalSubjects(subjectNames: string[]): void {
   ).toBe(subjectNames.length);
 }
 
-export function schoolTeachersBySubject(
-  page: Page,
-  subjectLevel: string,
-): Locator {
+export function schoolTeachersBySubject(page: Page, subjectLevel: string): Locator {
   const teachers = page.getByRole("tabpanel", {
     name: "Nauczyciele",
     exact: true,
@@ -483,9 +440,7 @@ export function schoolTeachersBySubject(
   });
 }
 
-export async function getLatestMedalHistoryValue(
-  history: Locator,
-): Promise<string> {
+export async function getLatestMedalHistoryValue(history: Locator): Promise<string> {
   const rows = medalHistoryRows(history);
 
   await expect(rows.first()).toBeVisible();
@@ -500,10 +455,7 @@ export async function getLatestMedalHistoryValue(
 
     const match = value.match(/^(\d{4})\/(\d{4}) (Złoto|Srebro|Brąz|Brak)$/);
 
-    expect(
-      match,
-      `Nieprawidłowy format wpisu historii medalu: "${value}"`,
-    ).not.toBeNull();
+    expect(match, `Nieprawidłowy format wpisu historii medalu: "${value}"`).not.toBeNull();
 
     const startYear = Number(match![1]);
 
@@ -539,10 +491,7 @@ export async function collectMedalHistoryEntries(
   });
 
   const scrollHandle = await history.evaluateHandle((root) => {
-    const elements = [
-      root as HTMLElement,
-      ...Array.from(root.querySelectorAll<HTMLElement>("*")),
-    ];
+    const elements = [root as HTMLElement, ...Array.from(root.querySelectorAll<HTMLElement>("*"))];
 
     const scrollables = elements.filter((element) => {
       const style = window.getComputedStyle(element);
@@ -553,10 +502,7 @@ export async function collectMedalHistoryEntries(
       );
     });
 
-    scrollables.sort(
-      (a, b) =>
-        b.scrollHeight - b.clientHeight - (a.scrollHeight - a.clientHeight),
-    );
+    scrollables.sort((a, b) => b.scrollHeight - b.clientHeight - (a.scrollHeight - a.clientHeight));
 
     /*
      * TEST:
@@ -619,10 +565,7 @@ export async function collectMedalHistoryEntries(
         date: (await cells.nth(4).innerText()).trim(),
       };
 
-      found.set(
-        [entry.value, entry.author, entry.source, entry.date].join("|"),
-        entry,
-      );
+      found.set([entry.value, entry.author, entry.source, entry.date].join("|"), entry);
     }
 
     const scrollState = await scrollElement.evaluate((element) => {
@@ -637,8 +580,7 @@ export async function collectMedalHistoryEntries(
       };
     });
 
-    const isScrollable =
-      scrollState.scrollHeight > scrollState.clientHeight + 2;
+    const isScrollable = scrollState.scrollHeight > scrollState.clientHeight + 2;
 
     /*
      * DEV:
@@ -650,8 +592,7 @@ export async function collectMedalHistoryEntries(
     }
 
     const reachedBottom =
-      scrollState.scrollTop + scrollState.clientHeight >=
-      scrollState.scrollHeight - 2;
+      scrollState.scrollTop + scrollState.clientHeight >= scrollState.scrollHeight - 2;
 
     if (reachedBottom) {
       break;
@@ -660,10 +601,7 @@ export async function collectMedalHistoryEntries(
     await scrollElement.evaluate((element) => {
       const el = element as HTMLElement;
 
-      el.scrollTop = Math.min(
-        el.scrollTop + Math.max(el.clientHeight * 0.8, 300),
-        el.scrollHeight,
-      );
+      el.scrollTop = Math.min(el.scrollTop + Math.max(el.clientHeight * 0.8, 300), el.scrollHeight);
     });
   }
 
@@ -727,8 +665,17 @@ export async function searchSchoolsByMedalsWithApi(
   medals: SchoolMedal[],
 ): Promise<{
   results: Locator;
-  filterModel: Record<string, any>;
-  schools: any[];
+  filterModel: Record<string, unknown> & {
+    institutionIds: unknown[];
+    medal: SchoolMedal[];
+  };
+  schools: Array<{
+    id: string | number;
+    informationAboutMedalCategory?: {
+      medalCategoryName?: string;
+      subjectNames?: string[];
+    };
+  }>;
 }> {
   const responsePromise = app.page.waitForResponse((response) => {
     const url = new URL(response.url());
@@ -750,12 +697,10 @@ export async function searchSchoolsByMedalsWithApi(
       const filterModel = JSON.parse(rawFilterModel);
 
       const hasExpectedMedalCount =
-        Array.isArray(filterModel.medal) &&
-        filterModel.medal.length === medals.length;
+        Array.isArray(filterModel.medal) && filterModel.medal.length === medals.length;
 
       const hasNoSchoolId =
-        !Array.isArray(filterModel.institutionIds) ||
-        filterModel.institutionIds.length === 0;
+        !Array.isArray(filterModel.institutionIds) || filterModel.institutionIds.length === 0;
 
       return hasExpectedMedalCount && hasNoSchoolId;
     } catch {
@@ -776,13 +721,21 @@ export async function searchSchoolsByMedalsWithApi(
 
   const rawFilterModel = url.searchParams.get("filterModel");
 
-  expect(
-    rawFilterModel,
-    "Żądanie wyszukiwania powinno zawierać filterModel",
-  ).not.toBeNull();
+  expect(rawFilterModel, "Żądanie wyszukiwania powinno zawierać filterModel").not.toBeNull();
 
-  const filterModel = JSON.parse(rawFilterModel!);
-  const body = await response.json();
+  const filterModel = JSON.parse(rawFilterModel!) as Record<string, unknown> & {
+    institutionIds: unknown[];
+    medal: SchoolMedal[];
+  };
+  const body = (await response.json()) as {
+    data?: Array<{
+      id: string | number;
+      informationAboutMedalCategory?: {
+        medalCategoryName?: string;
+        subjectNames?: string[];
+      };
+    }>;
+  };
 
   return {
     results,

@@ -79,12 +79,12 @@ Ten test sprawdza cały proces biznesowy. Przygotowanie sesji (w tym ewentualne 
 
 Pierwsze rozszerzenie zawiera 9 przypadków obok dotychczasowej ścieżki:
 
-| Obszar | Przypadki | Sprawdzenie |
-|---|---:|---|
-| Wymagane dane nauczyciela | 4 | Osobno brak imienia, nazwiska, szkoły oraz e-maila i telefonu; komunikat, otwarty formularz i brak rekordu w wyszukiwaniu |
-| Anulowanie dodawania | 2 | Kompletny formularz nauczyciela lub szkoły anulowany; brak rekordu po ponownym wyszukaniu |
-| Anulowanie edycji | 1 | Zmiana imienia i nazwiska anulowana; po ponownym otwarciu poprzednie dane, relacja i identyczna historia |
-| Brak wyników po udanym wyszukiwaniu | 2 | Osobno szkoły i nauczyciele: komunikat o braku wyników, usunięcie poprzedniej listy i licznika 1 |
+| Obszar                              | Przypadki | Sprawdzenie                                                                                                               |
+| ----------------------------------- | --------: | ------------------------------------------------------------------------------------------------------------------------- |
+| Wymagane dane nauczyciela           |         4 | Osobno brak imienia, nazwiska, szkoły oraz e-maila i telefonu; komunikat, otwarty formularz i brak rekordu w wyszukiwaniu |
+| Anulowanie dodawania                |         2 | Kompletny formularz nauczyciela lub szkoły anulowany; brak rekordu po ponownym wyszukaniu                                 |
+| Anulowanie edycji                   |         1 | Zmiana imienia i nazwiska anulowana; po ponownym otwarciu poprzednie dane, relacja i identyczna historia                  |
+| Brak wyników po udanym wyszukiwaniu |         2 | Osobno szkoły i nauczyciele: komunikat o braku wyników, usunięcie poprzedniej listy i licznika 1                          |
 
 Każdy przypadek może działać samodzielnie. Wymagane szkoły i nauczyciele są tworzeni od nowa, bez zależności od rekordów z wcześniejszego uruchomienia. Testy nie usuwają danych przygotowawczych. Weryfikacja braku rekordu odbywa się przez wyszukiwarkę interfejsu, nie przez bezpośredni odczyt bazy danych.
 
@@ -101,14 +101,14 @@ npm.cmd test -- --grep @search
 
 Rozszerzenie nauczyciela zwiększyło zestaw do 16 testów. Plik `tests/nauczyciel-rozszerzenie.spec.ts` dodaje:
 
-| Test | Sprawdzenie |
-|---|---|
-| EDIT-03 | Zapis nazwiska Nowak, trwałość po ponownym otwarciu, zachowanie imienia, e-maila i szkoły oraz wpis historii z autorem i datą |
-| TEA-04, e-mail | Adres `invalid-email` bez @: niepoprawne pole, komunikat, otwarty formularz i brak rekordu po próbie zapisu |
-| TEA-04, telefon | Numer `123`: niepoprawne pole, komunikat, otwarty formularz i brak rekordu; pozostałe wymagane dane są poprawne |
-| FIND-05, e-mail | Dokładnie jeden wynik dla unikalnego e-maila, właściwe ID i dane otwartego nauczyciela |
-| FIND-05, nazwisko | Dokładnie jeden wynik dla unikalnego nazwiska, właściwe ID i dane otwartego nauczyciela |
-| REL-02 | Dodanie drugiej szkoły, zachowanie pierwszej, dokładnie dwa trwałe powiązania i ten sam nauczyciel w obu szkołach |
+| Test              | Sprawdzenie                                                                                                                   |
+| ----------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| EDIT-03           | Zapis nazwiska Nowak, trwałość po ponownym otwarciu, zachowanie imienia, e-maila i szkoły oraz wpis historii z autorem i datą |
+| TEA-04, e-mail    | Adres `invalid-email` bez @: niepoprawne pole, komunikat, otwarty formularz i brak rekordu po próbie zapisu                   |
+| TEA-04, telefon   | Numer `123`: niepoprawne pole, komunikat, otwarty formularz i brak rekordu; pozostałe wymagane dane są poprawne               |
+| FIND-05, e-mail   | Dokładnie jeden wynik dla unikalnego e-maila, właściwe ID i dane otwartego nauczyciela                                        |
+| FIND-05, nazwisko | Dokładnie jeden wynik dla unikalnego nazwiska, właściwe ID i dane otwartego nauczyciela                                       |
+| REL-02            | Dodanie drugiej szkoły, zachowanie pierwszej, dokładnie dwa trwałe powiązania i ten sam nauczyciel w obu szkołach             |
 
 Reguły walidacji dla podanych przykładów sprawdzono w UI dev. To nie jest pełna specyfikacja dopuszczalnych e-maili ani numerów międzynarodowych. W tym rozszerzeniu pozytywna edycja dotyczy nazwiska, nie zapisu nowego kontaktu.
 

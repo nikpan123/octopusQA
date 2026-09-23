@@ -2,13 +2,15 @@
 
 Dokumenty opisują cel, dane, reguły biznesowe, zakres scenariuszy i helpery używane przez testy regresji Octopusa.
 
-| Funkcjonalność | Dokument | Główne identyfikatory |
-|---|---|---|
-| Medalowość szkoły | [medalowosc-szkoly.md](medalowosc-szkoly.md) | `MED-*`, `MED-YEAR-*` |
-| Dodawanie i edycja nauczyciela | [nauczyciele.md](nauczyciele.md) | `ADD-*`, `EDIT-*`, `TEA-*`, `FIND-*` |
-| Relacje szkoła–nauczyciel | [relacje-szkola-nauczyciel.md](relacje-szkola-nauczyciel.md) | `REL-*`, scenariusz `@smoke` |
-| Zamówienia szkoły | [zamowienia-szkoly.md](zamowienia-szkoly.md) | `ORD-*` |
-| Klubowiczostwo nauczyciela | [klubowiczostwo-nauczyciela.md](klubowiczostwo-nauczyciela.md) | `CLUB-*` |
+Pełna, generowana lista testów znajduje się w [indeksie scenariuszy](scenario-index.md).
+
+| Funkcjonalność                 | Dokument                                                       | Główne identyfikatory                |
+| ------------------------------ | -------------------------------------------------------------- | ------------------------------------ |
+| Medalowość szkoły              | [medalowosc-szkoly.md](medalowosc-szkoly.md)                   | `MED-*`, `MED-YEAR-*`                |
+| Dodawanie i edycja nauczyciela | [nauczyciele.md](nauczyciele.md)                               | `ADD-*`, `EDIT-*`, `TEA-*`, `FIND-*` |
+| Relacje szkoła–nauczyciel      | [relacje-szkola-nauczyciel.md](relacje-szkola-nauczyciel.md)   | `REL-*`, scenariusz `@smoke`         |
+| Zamówienia szkoły              | [zamowienia-szkoly.md](zamowienia-szkoly.md)                   | `ORD-*`                              |
+| Klubowiczostwo nauczyciela     | [klubowiczostwo-nauczyciela.md](klubowiczostwo-nauczyciela.md) | `CLUB-*`                             |
 
 ## Uruchamianie
 
@@ -27,4 +29,3 @@ npx playwright test --grep @club
 ```
 
 Przed uruchomieniem wymagane są poprawne dane logowania w `.env` oraz aktualna sesja utworzona przez `npm run login`.
-

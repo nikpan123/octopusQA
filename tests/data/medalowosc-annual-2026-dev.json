@@ -33,15 +33,9 @@
         "Fizyka",
         "Edukacja wczesnoszkolna"
       ],
-      "qualifyingSubjectLevels": [
-        "EW SP",
-        "FIZ SP",
-        "PRZ SP"
-      ],
+      "qualifyingSubjectLevels": ["EW SP", "FIZ SP", "PRZ SP"],
       "expectedMedal": "Złoto",
-      "supportingTeachersExcluded": [
-        "342492"
-      ],
+      "supportingTeachersExcluded": ["342492"],
       "clubMembershipExcluded": [
         {
           "teacherId": "177556",
@@ -106,20 +100,11 @@
         "name": "Szkoła Podstawowa nr 379",
         "city": "Warszawa",
         "expectedMedal": "Srebro",
-        "expectedSubjects": [
-          "Matematyka",
-          "Geografia"
-        ]
+        "expectedSubjects": ["Matematyka", "Geografia"]
       },
       "currentMedal": "Srebro",
-      "currentSubjectNames": [
-        "Matematyka",
-        "Geografia"
-      ],
-      "qualifyingSubjectLevels": [
-        "GEO SP",
-        "JPL SP"
-      ],
+      "currentSubjectNames": ["Matematyka", "Geografia"],
+      "qualifyingSubjectLevels": ["GEO SP", "JPL SP"],
       "expectedMedal": "Srebro",
       "supportingTeachersExcluded": [],
       "clubMembershipExcluded": [
@@ -162,17 +147,11 @@
         "name": "Szkoła Podstawowa w Raszkowie",
         "city": "Raszków",
         "expectedMedal": "Brąz",
-        "expectedSubjects": [
-          "Matematyka"
-        ]
+        "expectedSubjects": ["Matematyka"]
       },
       "currentMedal": "Brąz",
-      "currentSubjectNames": [
-        "Matematyka"
-      ],
-      "qualifyingSubjectLevels": [
-        "GEO SP"
-      ],
+      "currentSubjectNames": ["Matematyka"],
+      "qualifyingSubjectLevels": ["GEO SP"],
       "expectedMedal": "Brąz",
       "supportingTeachersExcluded": [],
       "clubMembershipExcluded": [
@@ -233,9 +212,7 @@
       },
       "currentMedal": "Brak",
       "currentSubjectNames": [],
-      "qualifyingSubjectLevels": [
-        "MAT SŚ"
-      ],
+      "qualifyingSubjectLevels": ["MAT SŚ"],
       "expectedMedal": "Brąz",
       "supportingTeachersExcluded": [],
       "clubMembershipExcluded": [],
@@ -898,12 +875,7 @@
       "currentSubjectNames": [],
       "qualifyingSubjectLevels": [],
       "expectedMedal": "Brak",
-      "supportingTeachersExcluded": [
-        "524978",
-        "525090",
-        "524979",
-        "524980"
-      ],
+      "supportingTeachersExcluded": ["524978", "525090", "524979", "524980"],
       "clubMembershipExcluded": [
         {
           "teacherId": "490590",
@@ -1046,9 +1018,7 @@
       },
       "currentMedal": "Brąz",
       "currentSubjectNames": [],
-      "qualifyingSubjectLevels": [
-        "EW SP"
-      ],
+      "qualifyingSubjectLevels": ["EW SP"],
       "expectedMedal": "Brąz",
       "supportingTeachersExcluded": [],
       "clubMembershipExcluded": [],

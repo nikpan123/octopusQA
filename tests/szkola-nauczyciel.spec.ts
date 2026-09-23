@@ -24,8 +24,7 @@ test("szkoła → nauczyciel → relacja → wyszukiwanie → nauczyciel → his
     cleanupBatchId: process.env.OCTOPUS_CLEANUP_BATCH_ID ?? "",
   };
   await mkdir("runs", { recursive: true });
-  const saveRun = () =>
-    writeFile(`runs/${runId}.json`, JSON.stringify(run, null, 2));
+  const saveRun = () => writeFile(`runs/${runId}.json`, JSON.stringify(run, null, 2));
   await saveRun();
 
   try {
@@ -36,21 +35,12 @@ test("szkoła → nauczyciel → relacja → wyszukiwanie → nauczyciel → his
       await app.markTestRecord();
       await app.searchSchool(schoolName, run.schoolId);
       await app.openPanel("school", run.schoolId);
-      await expect(
-        page.getByRole("checkbox", { name: "Testowy", exact: true }),
-      ).toBeChecked();
-      await expect(app.detail("address")).toHaveValue(
-        `80-064 Gdańsk ${number}`,
-      );
+      await expect(page.getByRole("checkbox", { name: "Testowy", exact: true })).toBeChecked();
+      await expect(app.detail("address")).toHaveValue(`80-064 Gdańsk ${number}`);
     });
 
     await test.step("TEA-01 / REL-01: dodaj nauczyciela i powiąż ze szkołą", async () => {
-      run.teacherId = await app.createTeacher(
-        lastName,
-        email,
-        run.schoolId,
-        schoolName,
-      );
+      run.teacherId = await app.createTeacher(lastName, email, run.schoolId, schoolName);
       run.teacherUrl = `${OCTOPUS_BASE_URL}/teacher/teacher-panel/${run.teacherId}`;
       await saveRun();
       await app.markTestRecord();
@@ -68,23 +58,15 @@ test("szkoła → nauczyciel → relacja → wyszukiwanie → nauczyciel → his
       await expect(app.detail("firstName")).toHaveValue("Jan");
       await expect(app.detail("lastName")).toHaveValue(normalizedLastName);
       await expect(app.detail("email")).toHaveValue(email);
-      await expect(
-        page.getByRole("checkbox", { name: "Testowy", exact: true }),
-      ).toBeChecked();
+      await expect(page.getByRole("checkbox", { name: "Testowy", exact: true })).toBeChecked();
       for (const name of ["Marketing", "E-mail", "Telefon"]) {
-        await expect(
-          page.getByRole("checkbox", { name, exact: true }),
-        ).not.toBeChecked();
+        await expect(page.getByRole("checkbox", { name, exact: true })).not.toBeChecked();
       }
-      await expect(
-        page.getByRole("row").filter({ hasText: schoolName }),
-      ).toHaveCount(1);
+      await expect(page.getByRole("row").filter({ hasText: schoolName })).toHaveCount(1);
     });
 
     await test.step("AUDIT-01: sprawdź wpis edycji i dodanie szkoły", async () => {
-      await page
-        .getByRole("tab", { name: "Historia zmian", exact: true })
-        .click();
+      await page.getByRole("tab", { name: "Historia zmian", exact: true }).click();
       const history = page.getByRole("tabpanel", {
         name: "Historia zmian",
         exact: true,
@@ -127,9 +109,7 @@ test("szkoła → nauczyciel → relacja → wyszukiwanie → nauczyciel → his
         has: page.getByRole("gridcell", { name: run.teacherId, exact: true }),
       });
       await expect(row).toHaveCount(1);
-      await expect(
-        row.getByRole("gridcell", { name: "Jan", exact: true }),
-      ).toBeVisible();
+      await expect(row.getByRole("gridcell", { name: "Jan", exact: true })).toBeVisible();
       await expect(
         row.getByRole("gridcell", { name: normalizedLastName, exact: true }),
       ).toBeVisible();
@@ -141,8 +121,7 @@ test("szkoła → nauczyciel → relacja → wyszukiwanie → nauczyciel → his
   } finally {
     run.finishedAt = new Date().toISOString();
     if (run.teacherId)
-      run.cleanupStatus =
-        run.result === "PASS" ? "PENDING_SUITE_END" : "KEPT_FAILED_TEST";
+      run.cleanupStatus = run.result === "PASS" ? "PENDING_SUITE_END" : "KEPT_FAILED_TEST";
     await saveRun();
     await testInfo.attach("Dane utworzone w tym przebiegu", {
       body: JSON.stringify(run, null, 2),

@@ -11,8 +11,7 @@ const environment = process.env.OCTOPUS_ENV ?? "dev";
 
 if (environment !== "dev" && environment !== "test") {
   throw new Error(
-    `Nieobsługiwane OCTOPUS_ENV="${environment}". ` +
-      "Dozwolone wartości: dev, test.",
+    `Nieobsługiwane OCTOPUS_ENV="${environment}". ` + "Dozwolone wartości: dev, test.",
   );
 }
 
@@ -99,8 +98,7 @@ function credentials() {
 
   if (missing.length) {
     throw new Error(
-      `Brak wymaganych danych w .env dla środowiska ${config.name}: ` +
-        `${missing.join(", ")}.`,
+      `Brak wymaganych danych w .env dla środowiska ${config.name}: ` + `${missing.join(", ")}.`,
     );
   }
 
@@ -127,8 +125,7 @@ export async function restoreSession(context, session) {
 
 async function ready(page, timeout = 30_000) {
   await page.waitForURL(
-    (url) =>
-      url.origin === origin && /^\/(teacher|school)\//.test(url.pathname),
+    (url) => url.origin === origin && /^\/(teacher|school)\//.test(url.pathname),
     {
       timeout,
     },
@@ -221,12 +218,9 @@ export async function authenticate(page, secrets) {
       })
       .click();
 
-    await page.waitForURL(
-      (url) => url.origin === origin && url.pathname === "/login",
-      {
-        timeout: 30_000,
-      },
-    );
+    await page.waitForURL((url) => url.origin === origin && url.pathname === "/login", {
+      timeout: 30_000,
+    });
   }
 
   if (new URL(page.url()).origin !== origin) {
@@ -260,16 +254,12 @@ async function capture(context, page) {
     return domain === octopusHost || domain === octopusBaseDomain;
   });
 
-  storageState.origins = storageState.origins.filter(
-    (item) => item.origin === origin,
-  );
+  storageState.origins = storageState.origins.filter((item) => item.origin === origin);
 
   const session = {
     origin,
 
-    values: await page.evaluate(() =>
-      Object.fromEntries(Object.entries(window.sessionStorage)),
-    ),
+    values: await page.evaluate(() => Object.fromEntries(Object.entries(window.sessionStorage))),
   };
 
   await mkdir(authDir, {
@@ -305,9 +295,7 @@ export async function ensureSession({ force = false } = {}) {
   const runId = process.env.OCTOPUS_AUTH_RUN_ID;
 
   const failureFile =
-    runId && /^[a-f0-9-]{36}$/.test(runId)
-      ? path.join(authDir, `failed-${runId}.json`)
-      : undefined;
+    runId && /^[a-f0-9-]{36}$/.test(runId) ? path.join(authDir, `failed-${runId}.json`) : undefined;
 
   if (failureFile && existsSync(failureFile)) {
     throw new Error(
@@ -354,10 +342,7 @@ export async function ensureSession({ force = false } = {}) {
           storageState: userFile,
         });
 
-        await restoreSession(
-          context,
-          JSON.parse(readFileSync(sessionFile, "utf8")),
-        );
+        await restoreSession(context, JSON.parse(readFileSync(sessionFile, "utf8")));
 
         const page = await context.newPage();
 
@@ -367,9 +352,7 @@ export async function ensureSession({ force = false } = {}) {
 
         const result = await capture(context, page);
 
-        console.log(
-          `Logowanie ${config.name}: wykorzystano zapisaną sesję Octopusa.`,
-        );
+        console.log(`Logowanie ${config.name}: wykorzystano zapisaną sesję Octopusa.`);
 
         return result;
       } catch {
@@ -394,10 +377,7 @@ export async function ensureSession({ force = false } = {}) {
     const postStatuses = [];
 
     page.on("response", (response) => {
-      if (
-        response.request().method() === "POST" &&
-        new URL(response.url()).origin === origin
-      ) {
+      if (response.request().method() === "POST" && new URL(response.url()).origin === origin) {
         postStatuses.push(response.status());
       }
     });

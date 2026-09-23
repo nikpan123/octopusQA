@@ -6,15 +6,15 @@ Sekcja testów **„Medalowość szkoły”** weryfikuje poprawność wyliczania
 
 Testy obejmują:
 
-| Obszar | Co sprawdzamy |
-|---|---|
-| UI szkoły | wyświetlany medal, readonly, tooltip |
+| Obszar             | Co sprawdzamy                                     |
+| ------------------ | ------------------------------------------------- |
+| UI szkoły          | wyświetlany medal, readonly, tooltip              |
 | Wyszukiwarka szkół | filtrowanie po medalu, multiselect, zachowanie ID |
-| API | medal i lista przedmiotów medalowych |
-| Historia zmian | sezon, medal, autor, źródło, data |
-| Reguły biznesowe | zależność medalu od liczby przedmiotów |
-| Spójność | API ↔ UI ↔ tooltip ↔ historia |
-| Dane zbiorcze | poprawność reguł dla większej liczby szkół |
+| API                | medal i lista przedmiotów medalowych              |
+| Historia zmian     | sezon, medal, autor, źródło, data                 |
+| Reguły biznesowe   | zależność medalu od liczby przedmiotów            |
+| Spójność           | API ↔ UI ↔ tooltip ↔ historia                     |
+| Dane zbiorcze      | poprawność reguł dla większej liczby szkół        |
 
 Aktualny zestaw obejmuje testy **MED-01 – MED-60**.
 
@@ -46,12 +46,12 @@ tests/support/octopus.ts
 
 ## 3. Reguły biznesowe medalowości
 
-| Liczba kwalifikowanych przedmiotów | Medal |
-|---:|---|
-| 0 | Brak |
-| 1 | Brąz |
-| 2 | Srebro |
-| 3 lub więcej | Złoto |
+| Liczba kwalifikowanych przedmiotów | Medal  |
+| ---------------------------------: | ------ |
+|                                  0 | Brak   |
+|                                  1 | Brąz   |
+|                                  2 | Srebro |
+|                       3 lub więcej | Złoto  |
 
 Przedmioty muszą być unikalne. Wielu nauczycieli tego samego przedmiotu nie zwiększa liczby przedmiotów medalowych.
 
@@ -67,20 +67,20 @@ pozostaje jednym przedmiotem medalowym, nawet jeśli w szkole jest kilku nauczyc
 
 ## 4. Stałe szkoły wykorzystywane w regresji
 
-| Typ | ID | Szkoła | Oczekiwany medal | Przedmioty |
-|---|---:|---|---|---|
-| Gold | `57616` | Szkoła Podstawowa nr 5, Lębork | Złoto | Matematyka, Język polski, Historia, Fizyka, Edukacja wczesnoszkolna |
-| Silver | `85263` | Szkoła Podstawowa nr 379, Warszawa | Srebro | Matematyka, Geografia |
-| Bronze | `66109` | Szkoła Podstawowa w Raszkowie | Brąz | Matematyka |
-| No medal | `92928` | Szkoła Podstawowa nr 403, Warszawa | Brak | brak |
+| Typ      |      ID | Szkoła                             | Oczekiwany medal | Przedmioty                                                          |
+| -------- | ------: | ---------------------------------- | ---------------- | ------------------------------------------------------------------- |
+| Gold     | `57616` | Szkoła Podstawowa nr 5, Lębork     | Złoto            | Matematyka, Język polski, Historia, Fizyka, Edukacja wczesnoszkolna |
+| Silver   | `85263` | Szkoła Podstawowa nr 379, Warszawa | Srebro           | Matematyka, Geografia                                               |
+| Bronze   | `66109` | Szkoła Podstawowa w Raszkowie      | Brąz             | Matematyka                                                          |
+| No medal | `92928` | Szkoła Podstawowa nr 403, Warszawa | Brak             | brak                                                                |
 
 W helperze odpowiadają im:
 
 ```ts
-GOLD_SCHOOL
-SILVER_SCHOOL
-BRONZE_SCHOOL
-NO_MEDAL_SCHOOL
+GOLD_SCHOOL;
+SILVER_SCHOOL;
+BRONZE_SCHOOL;
+NO_MEDAL_SCHOOL;
 ```
 
 ---
@@ -99,9 +99,7 @@ Interesujący fragment odpowiedzi:
 {
   "informationAboutMedalCategory": {
     "medalCategoryName": "Brąz",
-    "subjectNames": [
-      "Matematyka"
-    ]
+    "subjectNames": ["Matematyka"]
   }
 }
 ```
@@ -109,8 +107,8 @@ Interesujący fragment odpowiedzi:
 W testach używamy:
 
 ```ts
-informationAboutMedalCategory.medalCategoryName
-informationAboutMedalCategory.subjectNames
+informationAboutMedalCategory.medalCategoryName;
+informationAboutMedalCategory.subjectNames;
 ```
 
 ---
@@ -118,6 +116,7 @@ informationAboutMedalCategory.subjectNames
 ## 6. Zakres MED-01 – MED-19 — UI i podstawowe scenariusze
 
 ### MED-01 – MED-05 — Złoto
+
 - wartość `Złoto`,
 - pole readonly,
 - tooltip,
@@ -125,13 +124,17 @@ informationAboutMedalCategory.subjectNames
 - medal w wynikach wyszukiwania.
 
 ### MED-06 – MED-10 — Srebro
+
 Analogiczny zestaw dla szkoły `85263`.
 
 ### MED-11 – MED-15 — Brąz
+
 Analogiczny zestaw dla szkoły `66109`.
 
 ### MED-16 – MED-19 — Brak
+
 Sprawdzane są:
+
 - `Medal = Brak`,
 - `subjectNames = []`,
 - brak tooltipa medalowego,
@@ -149,13 +152,13 @@ Historia zmian
 
 Sprawdzane kolumny:
 
-| Kolumna | Przykład |
-|---|---|
-| Pole | Medal |
-| Wartość | `2025/2026 Złoto` |
-| Autor | `automat` |
-| Źródło | `Formularz klubowy` |
-| Data | `2026-10-01 00:00` |
+| Kolumna | Przykład            |
+| ------- | ------------------- |
+| Pole    | Medal               |
+| Wartość | `2025/2026 Złoto`   |
+| Autor   | `automat`           |
+| Źródło  | `Formularz klubowy` |
+| Data    | `2026-10-01 00:00`  |
 
 Format wartości:
 
@@ -164,6 +167,7 @@ Format wartości:
 ```
 
 Zakres:
+
 - poprawność wpisu,
 - jeden wpis na sezon,
 - format wartości,
@@ -177,6 +181,7 @@ Zakres:
 ## 8. MED-27 – MED-31 — filtrowanie wyszukiwarki
 
 Sprawdzane filtry:
+
 - `Złoto`,
 - `Srebro`,
 - `Brąz`,
@@ -235,6 +240,7 @@ Matematyka
 ```
 
 Dla `Brak`:
+
 - API `subjectNames = []`,
 - UI `Medal = Brak`,
 - tooltip nie istnieje.
@@ -244,6 +250,7 @@ Dla `Brak`:
 ## 11. MED-44 – MED-46 — reguły biznesowe
 
 MED-44:
+
 ```text
 0 → Brak
 1 → Brąz
@@ -252,25 +259,27 @@ MED-44:
 ```
 
 MED-45:
+
 - brak duplikatów w `subjectNames`.
 
 MED-46:
+
 - wielu nauczycieli `MAT SP` nie oznacza wielu przedmiotów medalowych.
 
 ---
 
 ## 12. MED-47 – MED-54 — spójność i wyjątki
 
-| Test | Cel |
-|---|---|
-| MED-47 | medal w wynikach wyszukiwania = medal z API |
+| Test   | Cel                                                                                |
+| ------ | ---------------------------------------------------------------------------------- |
+| MED-47 | medal w wynikach wyszukiwania = medal z API                                        |
 | MED-48 | samo występowanie nauczyciela danego przedmiotu nie oznacza kwalifikacji do medalu |
-| MED-49 | najnowszy wpis historii odpowiada aktualnemu medalowi |
-| MED-50 | maksymalnie jeden wpis medalowy na sezon |
-| MED-51 | źródło każdego wpisu = `Formularz klubowy` |
-| MED-52 | wpis dla sezonu zapisywany jest 1 października roku kończącego sezon |
-| MED-53 | autor wpisów medalowych = `automat` |
-| MED-54 | ID szkoły ma priorytet nad filtrem Medal |
+| MED-49 | najnowszy wpis historii odpowiada aktualnemu medalowi                              |
+| MED-50 | maksymalnie jeden wpis medalowy na sezon                                           |
+| MED-51 | źródło każdego wpisu = `Formularz klubowy`                                         |
+| MED-52 | wpis dla sezonu zapisywany jest 1 października roku kończącego sezon               |
+| MED-53 | autor wpisów medalowych = `automat`                                                |
+| MED-54 | ID szkoły ma priorytet nad filtrem Medal                                           |
 
 ---
 
@@ -285,12 +294,15 @@ GET /api/InstitutionBrowser/GetInstitutions
 oraz analizowany `filterModel`.
 
 MED-55:
+
 - wyszukiwanie bez ID po jednym medalu.
 
 MED-56:
+
 - multiselect `Złoto + Srebro`.
 
 Sprawdzane są:
+
 - request,
 - response API,
 - wyniki UI.
@@ -324,12 +336,12 @@ Dzięki temu test skupia się na wymaganiu biznesowym.
 
 ## 15. MED-57 – MED-60 — reguły progów na większym zbiorze danych
 
-| Test | Reguła |
-|---|---|
-| MED-57 | każda szkoła Brąz ma dokładnie 1 unikalny przedmiot |
-| MED-58 | każda szkoła Srebro ma dokładnie 2 unikalne przedmioty |
+| Test   | Reguła                                                  |
+| ------ | ------------------------------------------------------- |
+| MED-57 | każda szkoła Brąz ma dokładnie 1 unikalny przedmiot     |
+| MED-58 | każda szkoła Srebro ma dokładnie 2 unikalne przedmioty  |
 | MED-59 | każda szkoła Złoto ma co najmniej 3 unikalne przedmioty |
-| MED-60 | każda szkoła Brak ma 0 przedmiotów |
+| MED-60 | każda szkoła Brak ma 0 przedmiotów                      |
 
 Używane helpery:
 
@@ -342,35 +354,35 @@ expectUniqueMedalSubjects(...)
 
 ## 16. Najważniejsze helpery `school-medal.ts`
 
-| Helper | Odpowiedzialność |
-|---|---|
-| `medalInput()` | pole Medal na panelu szkoły |
-| `medalTooltip()` | tooltip z przedmiotami |
-| `openMedalSchool()` | otwarcie konkretnej szkoły |
-| `expectSchoolMedal()` | sprawdzenie wartości medalu |
-| `expectMedalReadOnly()` | sprawdzenie braku edycji |
-| `expectMedalTooltip()` | sprawdzenie tooltipa |
-| `expectNoMedalTooltip()` | brak tooltipa dla `Brak` |
-| `getMedalTooltipSubjects()` | pobranie przedmiotów z tooltipa |
-| `getSchoolMedalValue()` | odczyt aktualnego medalu UI |
-| `searchSchoolById()` | wyszukanie szkoły po ID |
-| `searchSchoolsByMedal()` | filtr jednego medalu |
-| `searchSchoolsByMedals()` | multiselect |
-| `searchSchoolsByMedalsWithApi()` | filtrowanie + przechwycenie API |
-| `expectSchoolResultsMedals()` | walidacja medali w tabeli |
-| `prepareSchoolSearchByIdAndMedal()` | scenariusze ID + medal |
-| `openSchoolHistory()` | otwarcie historii |
-| `medalHistoryRows()` | wszystkie wiersze historii medalu |
-| `medalHistoryRowByValue()` | konkretny wpis historii |
-| `historyValueCell()` | kolumna Wartość |
-| `historyAuthorCell()` | kolumna Autor |
-| `historySourceCell()` | kolumna Źródło |
-| `historyDateCell()` | kolumna Data |
-| `getLatestMedalHistoryValue()` | najnowszy sezon |
-| `getSchoolMedalApiData()` | medal i przedmioty z API |
-| `expectMedalMatchesSubjectCount()` | walidacja progu medalowego |
-| `expectUniqueMedalSubjects()` | brak duplikatów |
-| `schoolTeachersBySubject()` | nauczyciele danego przedmioto-poziomu |
+| Helper                              | Odpowiedzialność                      |
+| ----------------------------------- | ------------------------------------- |
+| `medalInput()`                      | pole Medal na panelu szkoły           |
+| `medalTooltip()`                    | tooltip z przedmiotami                |
+| `openMedalSchool()`                 | otwarcie konkretnej szkoły            |
+| `expectSchoolMedal()`               | sprawdzenie wartości medalu           |
+| `expectMedalReadOnly()`             | sprawdzenie braku edycji              |
+| `expectMedalTooltip()`              | sprawdzenie tooltipa                  |
+| `expectNoMedalTooltip()`            | brak tooltipa dla `Brak`              |
+| `getMedalTooltipSubjects()`         | pobranie przedmiotów z tooltipa       |
+| `getSchoolMedalValue()`             | odczyt aktualnego medalu UI           |
+| `searchSchoolById()`                | wyszukanie szkoły po ID               |
+| `searchSchoolsByMedal()`            | filtr jednego medalu                  |
+| `searchSchoolsByMedals()`           | multiselect                           |
+| `searchSchoolsByMedalsWithApi()`    | filtrowanie + przechwycenie API       |
+| `expectSchoolResultsMedals()`       | walidacja medali w tabeli             |
+| `prepareSchoolSearchByIdAndMedal()` | scenariusze ID + medal                |
+| `openSchoolHistory()`               | otwarcie historii                     |
+| `medalHistoryRows()`                | wszystkie wiersze historii medalu     |
+| `medalHistoryRowByValue()`          | konkretny wpis historii               |
+| `historyValueCell()`                | kolumna Wartość                       |
+| `historyAuthorCell()`               | kolumna Autor                         |
+| `historySourceCell()`               | kolumna Źródło                        |
+| `historyDateCell()`                 | kolumna Data                          |
+| `getLatestMedalHistoryValue()`      | najnowszy sezon                       |
+| `getSchoolMedalApiData()`           | medal i przedmioty z API              |
+| `expectMedalMatchesSubjectCount()`  | walidacja progu medalowego            |
+| `expectUniqueMedalSubjects()`       | brak duplikatów                       |
+| `schoolTeachersBySubject()`         | nauczyciele danego przedmioto-poziomu |
 
 ---
 
@@ -424,6 +436,7 @@ PO PROCESIE ROCZNYM
 Roczny test nie ogranicza się do szkół podstawowych.
 
 Poprawnymi kandydatami są m.in.:
+
 - szkoły podstawowe,
 - licea,
 - technika,
@@ -540,11 +553,11 @@ Helper `getExpectedAnnualMedal()` wykonuje następujące kroki:
 Reguła:
 
 | Liczba unikalnych kwalifikowanych przedmioto-poziomów | `expectedMedal` |
-|---:|---|
-| 0 | Brak |
-| 1 | Brąz |
-| 2 | Srebro |
-| 3 lub więcej | Złoto |
+| ----------------------------------------------------: | --------------- |
+|                                                     0 | Brak            |
+|                                                     1 | Brąz            |
+|                                                     2 | Srebro          |
+|                                          3 lub więcej | Złoto           |
 
 Przykład:
 
@@ -595,15 +608,15 @@ Tag testów rocznych:
 
 Najważniejsze helpery roczne:
 
-| Helper | Odpowiedzialność |
-|---|---|
-| `getAnnualMedalTeacherRows()` | diagnostyczny odczyt wierszy tabeli nauczycieli |
-| `getAnnualMedalTeacherSubjects()` | odczyt pojedynczych `.subject`, koloru i funkcji nauczyciela |
-| `getExpectedAnnualMedal()` | wyliczenie kwalifikowanych przedmioto-poziomów i oczekiwanego medalu |
-| `buildAnnualMedalSnapshot()` | przygotowanie danych dla czterech szkół referencyjnych |
-| `getRandomAnnualMedalCandidates()` | pobranie i losowanie kandydatów z Warszawy |
-| `buildRandomAnnualMedalSnapshot()` | wyliczenie danych dla 50 losowych szkół |
-| `loadAnnualMedalSnapshot()` | wczytanie zachowanego snapshotu po procesie rocznym |
+| Helper                             | Odpowiedzialność                                                     |
+| ---------------------------------- | -------------------------------------------------------------------- |
+| `getAnnualMedalTeacherRows()`      | diagnostyczny odczyt wierszy tabeli nauczycieli                      |
+| `getAnnualMedalTeacherSubjects()`  | odczyt pojedynczych `.subject`, koloru i funkcji nauczyciela         |
+| `getExpectedAnnualMedal()`         | wyliczenie kwalifikowanych przedmioto-poziomów i oczekiwanego medalu |
+| `buildAnnualMedalSnapshot()`       | przygotowanie danych dla czterech szkół referencyjnych               |
+| `getRandomAnnualMedalCandidates()` | pobranie i losowanie kandydatów z Warszawy                           |
+| `buildRandomAnnualMedalSnapshot()` | wyliczenie danych dla 50 losowych szkół                              |
+| `loadAnnualMedalSnapshot()`        | wczytanie zachowanego snapshotu po procesie rocznym                  |
 
 ---
 
@@ -614,6 +627,7 @@ Testy `PREP-*` służą do przygotowania i zweryfikowania danych wejściowych. N
 ### MED-YEAR-PREP-01 — diagnostyka tabeli nauczycieli
 
 Cel:
+
 - sprawdzenie struktury DOM tabeli,
 - odczyt ID nauczyciela,
 - odczyt `Przedmioty w tej szkole`,
@@ -629,6 +643,7 @@ subject green-background
 ### MED-YEAR-PREP-02 — zielone przedmioty vs aktualny medal
 
 Cel:
+
 - pobranie wszystkich zielonych przedmiotów,
 - wykluczenie nauczycieli wspomagających,
 - porównanie z aktualnym stanem medalowości.
@@ -730,12 +745,12 @@ To właśnie **PREP-08 jest testem, który należy uruchomić 30 września przed
 
 Stałe przypadki gwarantują powtarzalne scenariusze niezależnie od losowania:
 
-| ID | Szkoła | Stan przy przygotowaniu | Oczekiwany wynik przy aktualnym stanie wejściowym |
-|---:|---|---|---|
-| `57616` | Szkoła Podstawowa nr 5 | Złoto | Złoto |
-| `85263` | Szkoła Podstawowa nr 379 | Srebro | Złoto |
-| `66109` | Szkoła Podstawowa w Raszkowie | Brąz | Srebro |
-| `92928` | Szkoła Podstawowa nr 403 | Brak | Brak |
+|      ID | Szkoła                        | Stan przy przygotowaniu | Oczekiwany wynik przy aktualnym stanie wejściowym |
+| ------: | ----------------------------- | ----------------------- | ------------------------------------------------- |
+| `57616` | Szkoła Podstawowa nr 5        | Złoto                   | Złoto                                             |
+| `85263` | Szkoła Podstawowa nr 379      | Srebro                  | Złoto                                             |
+| `66109` | Szkoła Podstawowa w Raszkowie | Brąz                    | Srebro                                            |
+| `92928` | Szkoła Podstawowa nr 403      | Brak                    | Brak                                              |
 
 Wartości `expectedMedal` są każdorazowo wyliczane ze stanu nauczycieli przy tworzeniu snapshotu. Powyższa tabela dokumentuje wynik z etapu przygotowawczego, ale **finalną prawdą dla testu 1 października jest JSON wygenerowany 30 września**.
 
@@ -796,6 +811,7 @@ nazwa zaczyna się od REG_
 Porównanie jest wykonywane bez rozróżniania wielkości liter.
 
 Odrzucamy również:
+
 - cztery szkoły referencyjne, aby nie było duplikatów,
 - rekord bez poprawnego ID,
 - rekord spoza Warszawy,
@@ -884,13 +900,8 @@ ma strukturę zbliżoną do:
         "city": "Raszków"
       },
       "currentMedal": "Brąz",
-      "currentSubjectNames": [
-        "Matematyka"
-      ],
-      "qualifyingSubjectLevels": [
-        "GEO SP",
-        "MAT SP"
-      ],
+      "currentSubjectNames": ["Matematyka"],
+      "qualifyingSubjectLevels": ["GEO SP", "MAT SP"],
       "expectedMedal": "Srebro",
       "supportingTeachersExcluded": []
     }
@@ -998,6 +1009,7 @@ schools.length = 54
 ```
 
 Dodatkowo sprawdź, czy:
+
 - nie ma duplikatów ID,
 - nie ma szkół `REG_*`,
 - wszystkie losowe szkoły mają `city = Warszawa`,
@@ -1065,6 +1077,7 @@ proces roczny poprawnie ustawił kategorie medali dla badanego zbioru
 ```
 
 Jeżeli test się wywali, zapisz dla błędnej szkoły:
+
 - ID,
 - nazwę,
 - `currentMedal`,
@@ -1143,6 +1156,7 @@ actualMedal = Brąz
 ```
 
 Możliwe kierunki analizy:
+
 - job nie objął szkoły,
 - job się nie wykonał,
 - dane wejściowe procesu różnią się od reguły użytej przez test,
@@ -1160,6 +1174,7 @@ actualMedal = Srebro
 ```
 
 Należy porównać:
+
 - zielone przedmioto-poziomy przed jobem,
 - nauczycieli wspomagających,
 - aktualny `subjectNames`,
@@ -1221,6 +1236,7 @@ Srebro → oczekiwany Złoto → faktyczny Złoto
 ```
 
 Dzięki temu przy awarii od razu wiadomo:
+
 - która szkoła nie przeszła,
 - czy oczekiwaliśmy zmiany,
 - jaka była wartość przed procesem,
@@ -1252,6 +1268,7 @@ Nie należy:
 Obecne rozwiązanie nie steruje samym jobem.
 
 Test:
+
 - nie uruchamia procesu rocznego,
 - nie zmienia daty systemowej,
 - nie używa fake date,
@@ -1418,6 +1435,7 @@ Standardowa regresja medalowości obejmuje testy **MED-01 – MED-60**.
 Osobno przygotowany jest roczny workflow `@annual-medal`, który pozwala zweryfikować rzeczywisty proces 1 października bez tworzenia sztucznych szkół i bez ręcznego przeliczania każdej placówki.
 
 Na obecnym etapie:
+
 - PREP-08 poprawnie buduje snapshot 54 szkół,
 - kandydaci losowi pobierani są z Warszawy,
 - `REG_*` są wykluczane,
@@ -1425,4 +1443,3 @@ Na obecnym etapie:
 - kalkulator uwzględnia zielone przedmioty, duplikaty i nauczycieli wspomagających,
 - `MED-YEAR-01` jest przygotowany do porównania finalnego snapshotu z wynikiem procesu po 1 października,
 - sam job nadal pozostaje zewnętrznym procesem i nie jest uruchamiany przez test.
-

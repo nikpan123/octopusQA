@@ -4,8 +4,7 @@ const environment = (process.env.OCTOPUS_ENV ?? "dev") as OctopusEnvironment;
 
 if (environment !== "dev" && environment !== "test") {
   throw new Error(
-    `Nieobsługiwane środowisko OCTOPUS_ENV="${environment}". ` +
-      `Dozwolone wartości: dev, test.`,
+    `Nieobsługiwane środowisko OCTOPUS_ENV="${environment}". ` + `Dozwolone wartości: dev, test.`,
   );
 }
 

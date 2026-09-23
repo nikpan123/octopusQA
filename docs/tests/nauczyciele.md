@@ -4,16 +4,16 @@
 
 Testy nauczycieli weryfikują utworzenie rekordu, jego edycję, walidację danych, normalizację, historię zmian oraz wyszukiwanie.
 
-| Obszar | Co sprawdzamy |
-|---|---|
-| Dane podstawowe | imię, nazwisko, data urodzenia |
-| Kontakt | e-mail, maksymalnie dwa telefony, rekord minimalny |
-| RODO | Marketing, E-mail, Telefon i źródło zgody |
-| Szkoły | jedna lub wiele relacji i usunięcie relacji przed zapisem |
-| Przedmioto-poziomy | dodawanie, wiele wartości, duplikaty i wymagane pola |
-| Dodatkowe dane | adres prywatny, uwagi i notatki |
-| Audyt | trwałość danych, autor, data, źródło i historia zmian |
-| Wyszukiwanie | ID, nazwisko i e-mail |
+| Obszar             | Co sprawdzamy                                             |
+| ------------------ | --------------------------------------------------------- |
+| Dane podstawowe    | imię, nazwisko, data urodzenia                            |
+| Kontakt            | e-mail, maksymalnie dwa telefony, rekord minimalny        |
+| RODO               | Marketing, E-mail, Telefon i źródło zgody                 |
+| Szkoły             | jedna lub wiele relacji i usunięcie relacji przed zapisem |
+| Przedmioto-poziomy | dodawanie, wiele wartości, duplikaty i wymagane pola      |
+| Dodatkowe dane     | adres prywatny, uwagi i notatki                           |
+| Audyt              | trwałość danych, autor, data, źródło i historia zmian     |
+| Wyszukiwanie       | ID, nazwisko i e-mail                                     |
 
 ## 2. Pliki
 
@@ -40,37 +40,37 @@ Na jego podstawie powstają nazwisko, nazwa szkoły i adres e-mail w domenie `ex
 
 Testy `ADD-*` korzystają również ze stałych szkół QA:
 
-| ID | Nazwa |
-|---:|---|
+|      ID | Nazwa       |
+| ------: | ----------- |
 | `93391` | Szkoła QA 1 |
 | `93392` | Szkoła QA 2 |
 
 ## 4. Dodawanie — ADD-01–ADD-30
 
-| Zakres | Funkcjonalność |
-|---|---|
+| Zakres      | Funkcjonalność                                                    |
+| ----------- | ----------------------------------------------------------------- |
 | `ADD-01–03` | minimalny rekord z e-mailem lub telefonem, bieżąca data urodzenia |
-| `ADD-04–05` | domyślne i wybrane źródło |
-| `ADD-06–08` | kombinacje zgód RODO |
-| `ADD-09–10` | dwie szkoły i usunięcie szkoły przed zapisem |
-| `ADD-11–12` | jeden lub wiele przedmioto-poziomów |
-| `ADD-13–14` | zachowanie pisowni oraz podobna osoba |
-| `ADD-18–19` | brak kontaktu i ostrzeżenie o braku przedmioto-poziomu |
-| `ADD-21–25` | zajęty e-mail, długość telefonu i data urodzenia |
-| `ADD-27–29` | brak poziomu, brak przedmiotu i duplikat |
-| `ADD-30` | anulowanie nie tworzy nauczyciela ani relacji |
+| `ADD-04–05` | domyślne i wybrane źródło                                         |
+| `ADD-06–08` | kombinacje zgód RODO                                              |
+| `ADD-09–10` | dwie szkoły i usunięcie szkoły przed zapisem                      |
+| `ADD-11–12` | jeden lub wiele przedmioto-poziomów                               |
+| `ADD-13–14` | zachowanie pisowni oraz podobna osoba                             |
+| `ADD-18–19` | brak kontaktu i ostrzeżenie o braku przedmioto-poziomu            |
+| `ADD-21–25` | zajęty e-mail, długość telefonu i data urodzenia                  |
+| `ADD-27–29` | brak poziomu, brak przedmiotu i duplikat                          |
+| `ADD-30`    | anulowanie nie tworzy nauczyciela ani relacji                     |
 
 Numery niewystępujące w pliku są świadomymi lukami w identyfikatorach; nie należy renumerować istniejących testów, ponieważ identyfikatory mogą występować w raportach i zgłoszeniach.
 
 ## 5. Edycja — EDIT-02–EDIT-47
 
-| Zakres | Funkcjonalność |
-|---|---|
-| `EDIT-02–11` | anulowanie, imię, nazwisko, normalizacja i walidacja |
-| `EDIT-12–23` | e-mail, telefony, usuwanie kontaktu i rekord minimalny |
-| `EDIT-24–27` | data urodzenia i adres prywatny |
-| `EDIT-28–34` | uwagi, notatki, archiwizacja i limit 220 znaków |
-| `EDIT-35–42` | zależności zgód RODO, ostrzeżenia i źródła |
+| Zakres       | Funkcjonalność                                                         |
+| ------------ | ---------------------------------------------------------------------- |
+| `EDIT-02–11` | anulowanie, imię, nazwisko, normalizacja i walidacja                   |
+| `EDIT-12–23` | e-mail, telefony, usuwanie kontaktu i rekord minimalny                 |
+| `EDIT-24–27` | data urodzenia i adres prywatny                                        |
+| `EDIT-28–34` | uwagi, notatki, archiwizacja i limit 220 znaków                        |
+| `EDIT-35–42` | zależności zgód RODO, ostrzeżenia i źródła                             |
 | `EDIT-43–47` | zapis bez zmian, anulowanie, nawigacja, relacje i kompletność historii |
 
 ## 6. Najważniejsze reguły biznesowe
@@ -98,19 +98,19 @@ Do porównania historii przed i po anulowaniu służą snapshoty zwracane przez 
 
 ## 8. Najważniejsze helpery
 
-| Helper | Odpowiedzialność |
-|---|---|
-| `openNewTeacherForm()` | otwarcie formularza dodawania |
-| `saveNewTeacherWithoutSubjectLevel()` | zapis wraz z obsługą ostrzeżenia |
-| `addNewTeacherSubjectLevel()` | dodanie przedmiotu i poziomu |
-| `expectTeacherCreationHistoryChange()` | wpis historii utworzenia |
-| `openBasicTeacherEdit()` | podstawowa edycja nauczyciela |
-| `openTeacherEmailEdit()` | edycja e-maila |
-| `getSavedTeacherPhones()` | odczyt zapisanych telefonów |
-| `openTeacherPrivateAddressEdit()` | edycja adresu prywatnego |
-| `addTeacherNote()` | zapis notatki |
-| `openTeacherRodoEdit()` | edycja zgód RODO |
-| `expectTeacherHistoryChange()` | asercja pojedynczej zmiany |
+| Helper                                 | Odpowiedzialność                 |
+| -------------------------------------- | -------------------------------- |
+| `openNewTeacherForm()`                 | otwarcie formularza dodawania    |
+| `saveNewTeacherWithoutSubjectLevel()`  | zapis wraz z obsługą ostrzeżenia |
+| `addNewTeacherSubjectLevel()`          | dodanie przedmiotu i poziomu     |
+| `expectTeacherCreationHistoryChange()` | wpis historii utworzenia         |
+| `openBasicTeacherEdit()`               | podstawowa edycja nauczyciela    |
+| `openTeacherEmailEdit()`               | edycja e-maila                   |
+| `getSavedTeacherPhones()`              | odczyt zapisanych telefonów      |
+| `openTeacherPrivateAddressEdit()`      | edycja adresu prywatnego         |
+| `addTeacherNote()`                     | zapis notatki                    |
+| `openTeacherRodoEdit()`                | edycja zgód RODO                 |
+| `expectTeacherHistoryChange()`         | asercja pojedynczej zmiany       |
 
 ## 9. Uruchamianie
 
@@ -119,4 +119,3 @@ npx playwright test tests/nauczyciel-dodawanie.spec.ts
 npx playwright test tests/nauczyciel-edycja.spec.ts
 npx playwright test --grep @teacher
 ```
-

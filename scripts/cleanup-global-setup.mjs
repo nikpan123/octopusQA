@@ -1,4 +1,4 @@
-import { randomUUID } from 'node:crypto';
+import { randomUUID } from "node:crypto";
 
 export default async function setup() {
   // Nowy identyfikator dla każdego uruchomienia, także gdy proces jest ponownie użyty.
