@@ -7,18 +7,18 @@ Test wykonany przez interfejs przeglądarki w sesji udostępnionej przez użytko
 
 PASS w wykonanym zakresie: utworzenie szkoły i nauczyciela, wyszukiwanie, relacja w obu kartotekach, trwałość edycji i wpisy historii. Użytkownik potwierdził 2026-09-17, że normalizacja wielkości liter jest zamierzona (przykład: BoŻena → Bożena). Wynik zaktualizowano na podstawie wyjaśnienia reguły, bez ponownego wykonania testu. Nie oznacza to zaliczenia całej regresji projektu.
 
-| Etap | Wynik | Dowód zaobserwowany w UI |
-|---|---|---|
-| Utworzenie szkoły | PASS | Szkoła 93033, REG_20260917_01 Szkoła testowa, Szkoła podstawowa, 80-064 Gdańsk 999 |
-| Wyszukiwanie szkoły po nazwie | PASS | Kryterium REG_20260917_01; Rekordów: 1, ID 93033 |
-| Utworzenie nauczyciela | PASS | Nauczyciel 532276, początkowo Testowy REG_20260917_01, e-mail reg_20260917_01@example.invalid |
-| Szkoła w kartotece nauczyciela | PASS | Wiersz ze szkołą 93033 i zgodnym adresem |
-| Wyszukiwanie nauczyciela po ID | PASS | Kryterium 532276; Rekordów: 1, właściwa osoba |
-| Edycja imienia — trwałość | PASS | Wpisano TestowyPoEdycji; zapisano Testowypoedycji; zmiana widoczna również w kartotece szkoły po pełnej nawigacji |
-| Edycja — normalizacja nazwiska | PASS po potwierdzeniu reguły | Nazwisko REG_20260917_01 zostało zapisane jako Reg_20260917_01; normalizacja jest zamierzona |
-| Historia zmian | PASS w sprawdzonym zakresie | Imię Testowypoedycji i Nazwisko Reg_20260917_01; autor npanek; źródło Edycja danych; czas wyświetlany 2026-09-17 08:10. Widoczne także wpisy utworzenia i Dodana Szkoła z 08:09 |
-| Relacja od strony szkoły | PASS | Po ponownym wejściu na adres szkoły: Nauczyciele: 1; jeden wiersz 532276, Reg_20260917_01, Testowypoedycji, Szkoły: 1 |
-| Oznaczenie danych testowych | PASS | Oba rekordy oznaczono Testowy; szkoła zachowała zaznaczenie po pełnej nawigacji, nauczyciel po ponownym wyszukaniu |
+| Etap                           | Wynik                        | Dowód zaobserwowany w UI                                                                                                                                                        |
+| ------------------------------ | ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Utworzenie szkoły              | PASS                         | Szkoła 93033, REG_20260917_01 Szkoła testowa, Szkoła podstawowa, 80-064 Gdańsk 999                                                                                              |
+| Wyszukiwanie szkoły po nazwie  | PASS                         | Kryterium REG_20260917_01; Rekordów: 1, ID 93033                                                                                                                                |
+| Utworzenie nauczyciela         | PASS                         | Nauczyciel 532276, początkowo Testowy REG_20260917_01, e-mail reg_20260917_01@example.invalid                                                                                   |
+| Szkoła w kartotece nauczyciela | PASS                         | Wiersz ze szkołą 93033 i zgodnym adresem                                                                                                                                        |
+| Wyszukiwanie nauczyciela po ID | PASS                         | Kryterium 532276; Rekordów: 1, właściwa osoba                                                                                                                                   |
+| Edycja imienia — trwałość      | PASS                         | Wpisano TestowyPoEdycji; zapisano Testowypoedycji; zmiana widoczna również w kartotece szkoły po pełnej nawigacji                                                               |
+| Edycja — normalizacja nazwiska | PASS po potwierdzeniu reguły | Nazwisko REG_20260917_01 zostało zapisane jako Reg_20260917_01; normalizacja jest zamierzona                                                                                    |
+| Historia zmian                 | PASS w sprawdzonym zakresie  | Imię Testowypoedycji i Nazwisko Reg_20260917_01; autor npanek; źródło Edycja danych; czas wyświetlany 2026-09-17 08:10. Widoczne także wpisy utworzenia i Dodana Szkoła z 08:09 |
+| Relacja od strony szkoły       | PASS                         | Po ponownym wejściu na adres szkoły: Nauczyciele: 1; jeden wiersz 532276, Reg_20260917_01, Testowypoedycji, Szkoły: 1                                                           |
+| Oznaczenie danych testowych    | PASS                         | Oba rekordy oznaczono Testowy; szkoła zachowała zaznaczenie po pełnej nawigacji, nauczyciel po ponownym wyszukaniu                                                              |
 
 ## Dane pozostawione do dalszej regresji
 
@@ -34,6 +34,7 @@ PASS w wykonanym zakresie: utworzenie szkoły i nauczyciela, wyszukiwanie, relac
 ## Obserwacja OCT-OBS-001 — edycja zmienia również nieedytowane nazwisko
 
 Kroki reprodukcji:
+
 1. Utworzyć nauczyciela z nazwiskiem REG_20260917_01 i imieniem Testowy.
 2. Otworzyć Edycja danych.
 3. Zmienić wyłącznie imię na TestowyPoEdycji i zapisać.

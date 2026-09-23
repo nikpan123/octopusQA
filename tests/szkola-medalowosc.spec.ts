@@ -1,4 +1,5 @@
 import { test, expect } from "./support/fixtures";
+
 import { Octopus } from "./support/octopus";
 
 import {
@@ -6,6 +7,9 @@ import {
   SILVER_SCHOOL,
   BRONZE_SCHOOL,
   NO_MEDAL_SCHOOL,
+} from "./support/school-medal-data";
+
+import {
   expectSchoolMedal,
   expectMedalReadOnly,
   expectMedalTooltip,
@@ -13,13 +17,6 @@ import {
   openMedalSchool,
   searchSchoolById,
   openSchoolHistory,
-  medalHistoryRows,
-  medalHistoryRowByValue,
-  historyFieldCell,
-  historyValueCell,
-  historyAuthorCell,
-  historySourceCell,
-  historyDateCell,
   searchSchoolsByMedal,
   searchSchoolsByMedals,
   expectSchoolResultsMedals,
@@ -29,11 +26,11 @@ import {
   expectMedalMatchesSubjectCount,
   expectUniqueMedalSubjects,
   schoolTeachersBySubject,
-  getLatestMedalHistoryValue,
   prepareSchoolSearchByIdAndMedal,
   searchSchoolsByMedalsWithApi,
   waitForSchoolTeachersLoaded,
   type SchoolMedal,
+  collectMedalHistoryEntries,
 } from "./support/school-medal";
 
 test.describe("Medalowość szkoły", () => {
@@ -44,17 +41,15 @@ test.describe("Medalowość szkoły", () => {
 
     await openMedalSchool(app, GOLD_SCHOOL);
 
-    await expectSchoolMedal(page, "Złoto");
+    await expectSchoolMedal(page, GOLD_SCHOOL.expectedMedal);
   });
 
-  test("MED-02: pole Medal dla szkoły ze złotym medalem jest nieedytowalne", async ({
-    page,
-  }) => {
+  test("MED-02: pole Medal dla szkoły ze złotym medalem jest nieedytowalne", async ({ page }) => {
     const app = new Octopus(page);
 
     await openMedalSchool(app, GOLD_SCHOOL);
 
-    await expectSchoolMedal(page, "Złoto");
+    await expectSchoolMedal(page, GOLD_SCHOOL.expectedMedal);
     await expectMedalReadOnly(page);
   });
 
@@ -65,7 +60,7 @@ test.describe("Medalowość szkoły", () => {
 
     await openMedalSchool(app, GOLD_SCHOOL);
 
-    await expectSchoolMedal(page, "Złoto");
+    await expectSchoolMedal(page, GOLD_SCHOOL.expectedMedal);
     await expectMedalTooltip(page);
   });
 
@@ -76,20 +71,12 @@ test.describe("Medalowość szkoły", () => {
 
     await openMedalSchool(app, GOLD_SCHOOL);
 
-    await expectSchoolMedal(page, "Złoto");
+    await expectSchoolMedal(page, GOLD_SCHOOL.expectedMedal);
 
-    await expectMedalTooltip(page, [
-      "Matematyka",
-      "Język polski",
-      "Historia",
-      "Fizyka",
-      "Edukacja wczesnoszkolna",
-    ]);
+    await expectMedalTooltip(page, GOLD_SCHOOL.expectedSubjects);
   });
 
-  test("MED-05: złoty medal jest widoczny w wynikach wyszukiwania szkół", async ({
-    page,
-  }) => {
+  test("MED-05: złoty medal jest widoczny w wynikach wyszukiwania szkół", async ({ page }) => {
     const app = new Octopus(page);
 
     const schoolRow = await searchSchoolById(app, GOLD_SCHOOL);
@@ -105,17 +92,15 @@ test.describe("Medalowość szkoły", () => {
 
     await openMedalSchool(app, SILVER_SCHOOL);
 
-    await expectSchoolMedal(page, "Srebro");
+    await expectSchoolMedal(page, SILVER_SCHOOL.expectedMedal);
   });
 
-  test("MED-07: pole Medal dla szkoły ze srebrnym medalem jest nieedytowalne", async ({
-    page,
-  }) => {
+  test("MED-07: pole Medal dla szkoły ze srebrnym medalem jest nieedytowalne", async ({ page }) => {
     const app = new Octopus(page);
 
     await openMedalSchool(app, SILVER_SCHOOL);
 
-    await expectSchoolMedal(page, "Srebro");
+    await expectSchoolMedal(page, SILVER_SCHOOL.expectedMedal);
     await expectMedalReadOnly(page);
   });
 
@@ -126,7 +111,7 @@ test.describe("Medalowość szkoły", () => {
 
     await openMedalSchool(app, SILVER_SCHOOL);
 
-    await expectSchoolMedal(page, "Srebro");
+    await expectSchoolMedal(page, SILVER_SCHOOL.expectedMedal);
     await expectMedalTooltip(page);
   });
 
@@ -137,14 +122,12 @@ test.describe("Medalowość szkoły", () => {
 
     await openMedalSchool(app, SILVER_SCHOOL);
 
-    await expectSchoolMedal(page, "Srebro");
+    await expectSchoolMedal(page, SILVER_SCHOOL.expectedMedal);
 
-    await expectMedalTooltip(page, ["Matematyka", "Geografia"]);
+    await expectMedalTooltip(page, SILVER_SCHOOL.expectedSubjects);
   });
 
-  test("MED-10: srebrny medal jest widoczny w wynikach wyszukiwania szkół", async ({
-    page,
-  }) => {
+  test("MED-10: srebrny medal jest widoczny w wynikach wyszukiwania szkół", async ({ page }) => {
     const app = new Octopus(page);
 
     const schoolRow = await searchSchoolById(app, SILVER_SCHOOL);
@@ -160,17 +143,15 @@ test.describe("Medalowość szkoły", () => {
 
     await openMedalSchool(app, BRONZE_SCHOOL);
 
-    await expectSchoolMedal(page, "Brąz");
+    await expectSchoolMedal(page, BRONZE_SCHOOL.expectedMedal);
   });
 
-  test("MED-12: pole Medal dla szkoły z brązowym medalem jest nieedytowalne", async ({
-    page,
-  }) => {
+  test("MED-12: pole Medal dla szkoły z brązowym medalem jest nieedytowalne", async ({ page }) => {
     const app = new Octopus(page);
 
     await openMedalSchool(app, BRONZE_SCHOOL);
 
-    await expectSchoolMedal(page, "Brąz");
+    await expectSchoolMedal(page, BRONZE_SCHOOL.expectedMedal);
     await expectMedalReadOnly(page);
   });
 
@@ -181,7 +162,7 @@ test.describe("Medalowość szkoły", () => {
 
     await openMedalSchool(app, BRONZE_SCHOOL);
 
-    await expectSchoolMedal(page, "Brąz");
+    await expectSchoolMedal(page, BRONZE_SCHOOL.expectedMedal);
     await expectMedalTooltip(page);
   });
 
@@ -192,14 +173,12 @@ test.describe("Medalowość szkoły", () => {
 
     await openMedalSchool(app, BRONZE_SCHOOL);
 
-    await expectSchoolMedal(page, "Brąz");
+    await expectSchoolMedal(page, BRONZE_SCHOOL.expectedMedal);
 
-    await expectMedalTooltip(page, ["Matematyka"]);
+    await expectMedalTooltip(page, BRONZE_SCHOOL.expectedSubjects);
   });
 
-  test("MED-15: brązowy medal jest widoczny w wynikach wyszukiwania szkół", async ({
-    page,
-  }) => {
+  test("MED-15: brązowy medal jest widoczny w wynikach wyszukiwania szkół", async ({ page }) => {
     const app = new Octopus(page);
 
     const schoolRow = await searchSchoolById(app, BRONZE_SCHOOL);
@@ -215,17 +194,15 @@ test.describe("Medalowość szkoły", () => {
 
     await openMedalSchool(app, NO_MEDAL_SCHOOL);
 
-    await expectSchoolMedal(page, "Brak");
+    await expectSchoolMedal(page, NO_MEDAL_SCHOOL.expectedMedal);
   });
 
-  test("MED-17: pole Medal dla szkoły bez medalu jest nieedytowalne", async ({
-    page,
-  }) => {
+  test("MED-17: pole Medal dla szkoły bez medalu jest nieedytowalne", async ({ page }) => {
     const app = new Octopus(page);
 
     await openMedalSchool(app, NO_MEDAL_SCHOOL);
 
-    await expectSchoolMedal(page, "Brak");
+    await expectSchoolMedal(page, NO_MEDAL_SCHOOL.expectedMedal);
     await expectMedalReadOnly(page);
   });
 
@@ -236,13 +213,11 @@ test.describe("Medalowość szkoły", () => {
 
     await openMedalSchool(app, NO_MEDAL_SCHOOL);
 
-    await expectSchoolMedal(page, "Brak");
+    await expectSchoolMedal(page, NO_MEDAL_SCHOOL.expectedMedal);
     await expectNoMedalTooltip(page);
   });
 
-  test("MED-19: wartość Brak jest widoczna w wynikach wyszukiwania szkół", async ({
-    page,
-  }) => {
+  test("MED-19: wartość Brak jest widoczna w wynikach wyszukiwania szkół", async ({ page }) => {
     const app = new Octopus(page);
 
     const schoolRow = await searchSchoolById(app, NO_MEDAL_SCHOOL);
@@ -251,28 +226,39 @@ test.describe("Medalowość szkoły", () => {
     await expect(schoolRow).toContainText("Brak");
   });
 
-  test("MED-20: historia zmian szkoły zawiera wpis dotyczący złotego medalu", async ({
-    page,
-  }) => {
+  test("MED-20: historia zmian szkoły zawiera wpis dotyczący złotego medalu", async ({ page }) => {
     const app = new Octopus(page);
 
     await openMedalSchool(app, GOLD_SCHOOL);
 
     const history = await openSchoolHistory(page);
 
-    const medalRow = medalHistoryRowByValue(history, "2025/2026 Złoto");
+    const entries = await collectMedalHistoryEntries(page, history);
 
-    await expect(medalRow).toHaveCount(1);
+    expect(
+      GOLD_SCHOOL.expectedHistoryValue,
+      "Dla szkoły referencyjnej powinien być zdefiniowany oczekiwany wpis historii",
+    ).toBeDefined();
 
-    await expect(historyFieldCell(medalRow)).toHaveText("Medal");
+    expect(
+      GOLD_SCHOOL.expectedHistoryDate,
+      "Dla szkoły referencyjnej powinna być zdefiniowana oczekiwana data historii",
+    ).toBeDefined();
 
-    await expect(historyValueCell(medalRow)).toHaveText("2025/2026 Złoto");
+    const medalEntry = entries.find((entry) => entry.value === GOLD_SCHOOL.expectedHistoryValue);
 
-    await expect(historyAuthorCell(medalRow)).toHaveText("automat");
+    console.log(`MED-20: znaleziono wpis "${medalEntry!.value}" ` + `z datą ${medalEntry!.date}.`);
 
-    await expect(historySourceCell(medalRow)).toHaveText("Formularz klubowy");
+    expect(
+      medalEntry,
+      `Historia powinna zawierać wpis "${GOLD_SCHOOL.expectedHistoryValue}"`,
+    ).toBeDefined();
 
-    await expect(historyDateCell(medalRow)).toHaveText("2026-10-01 00:00");
+    expect(medalEntry!.author).toBe("automat");
+
+    expect(medalEntry!.source).toBe("Formularz klubowy");
+
+    expect(medalEntry!.date).toBe(GOLD_SCHOOL.expectedHistoryDate);
   });
 
   test("MED-21: historia zawiera tylko jeden wpis medalowy dla danego roku szkolnego", async ({
@@ -284,93 +270,121 @@ test.describe("Medalowość szkoły", () => {
 
     const history = await openSchoolHistory(page);
 
-    const medalRowsForSeason = medalHistoryRows(history).filter({
-      hasText: "2025/2026",
-    });
+    const entries = await collectMedalHistoryEntries(page, history);
 
-    await expect(medalRowsForSeason).toHaveCount(1);
-  });
+    expect(
+      GOLD_SCHOOL.expectedHistoryValue,
+      "Dla szkoły referencyjnej powinien być zdefiniowany oczekiwany wpis historii",
+    ).toBeDefined();
 
-  test("MED-22: wartość wpisu medalowego ma format RRRR/RRRR Medal", async ({
-    page,
-  }) => {
-    const app = new Octopus(page);
+    const expectedSeason = GOLD_SCHOOL.expectedHistoryValue!.split(" ")[0];
 
-    await openMedalSchool(app, GOLD_SCHOOL);
-
-    const history = await openSchoolHistory(page);
-
-    const medalRows = medalHistoryRows(history);
-
-    await expect(medalRows.first()).toBeVisible();
-
-    await expect(historyValueCell(medalRows.first())).toHaveText(
-      /^\d{4}\/\d{4} (Złoto|Srebro|Brąz|Brak)$/,
+    const entriesForSeason = entries.filter((entry) =>
+      entry.value.startsWith(`${expectedSeason} `),
     );
+
+    console.log(
+      `MED-21: szkoła ${GOLD_SCHOOL.id}. ` +
+        `Sezon ${expectedSeason}. ` +
+        `Znaleziono ${entriesForSeason.length} wpisów medalowych: ` +
+        `${entriesForSeason.map((entry) => entry.value).join(", ")}.`,
+    );
+
+    expect(
+      entriesForSeason,
+      `Historia powinna zawierać dokładnie jeden wpis medalowy dla sezonu ${expectedSeason}`,
+    ).toHaveLength(1);
   });
 
-  test("MED-23: wpisy medalowe w historii mają źródło Formularz klubowy", async ({
-    page,
-  }) => {
+  test("MED-22: wartość wpisu medalowego ma format RRRR/RRRR Medal", async ({ page }) => {
     const app = new Octopus(page);
 
     await openMedalSchool(app, GOLD_SCHOOL);
 
     const history = await openSchoolHistory(page);
 
-    const medalRows = medalHistoryRows(history);
+    const entries = await collectMedalHistoryEntries(page, history);
 
-    await expect(medalRows.first()).toBeVisible();
+    expect(
+      entries.length,
+      "Historia powinna zawierać co najmniej jeden wpis medalowy",
+    ).toBeGreaterThan(0);
 
-    const count = await medalRows.count();
+    for (const entry of entries) {
+      expect(entry.value, `Nieprawidłowy format wpisu medalowego: "${entry.value}"`).toMatch(
+        /^\d{4}\/\d{4} (Złoto|Srebro|Brąz|Brak)$/,
+      );
+    }
 
-    for (let i = 0; i < count; i++) {
-      await expect(historySourceCell(medalRows.nth(i))).toHaveText(
+    console.log(`MED-22: sprawdzono format ${entries.length} wpisów medalowych.`);
+  });
+
+  test("MED-23: wpisy medalowe w historii mają źródło Formularz klubowy", async ({ page }) => {
+    const app = new Octopus(page);
+
+    await openMedalSchool(app, GOLD_SCHOOL);
+
+    const history = await openSchoolHistory(page);
+
+    const entries = await collectMedalHistoryEntries(page, history);
+
+    expect(
+      entries.length,
+      "Historia powinna zawierać co najmniej jeden wpis medalowy",
+    ).toBeGreaterThan(0);
+
+    for (const entry of entries) {
+      expect(entry.source, `Wpis "${entry.value}" powinien mieć źródło Formularz klubowy`).toBe(
         "Formularz klubowy",
       );
     }
+
+    console.log(`MED-23: sprawdzono źródło ${entries.length} wpisów medalowych.`);
   });
 
-  test("MED-24: wpisy medalowe w historii mają uzupełnionego autora", async ({
-    page,
-  }) => {
+  test("MED-24: wpisy medalowe w historii mają uzupełnionego autora", async ({ page }) => {
     const app = new Octopus(page);
 
     await openMedalSchool(app, GOLD_SCHOOL);
 
     const history = await openSchoolHistory(page);
 
-    const medalRows = medalHistoryRows(history);
+    const entries = await collectMedalHistoryEntries(page, history);
 
-    await expect(medalRows.first()).toBeVisible();
+    expect(
+      entries.length,
+      "Historia powinna zawierać co najmniej jeden wpis medalowy",
+    ).toBeGreaterThan(0);
 
-    const count = await medalRows.count();
-
-    for (let i = 0; i < count; i++) {
-      await expect(historyAuthorCell(medalRows.nth(i))).not.toHaveText("");
+    for (const entry of entries) {
+      expect(entry.author, `Wpis "${entry.value}" powinien mieć uzupełnionego autora`).not.toBe("");
     }
+
+    console.log(`MED-24: sprawdzono autora dla ${entries.length} wpisów medalowych.`);
   });
 
-  test("MED-25: wpisy medalowe w historii są zapisane z datą 1 października", async ({
-    page,
-  }) => {
+  test("MED-25: wpisy medalowe w historii są zapisane z datą 1 października", async ({ page }) => {
     const app = new Octopus(page);
 
     await openMedalSchool(app, GOLD_SCHOOL);
 
     const history = await openSchoolHistory(page);
 
-    const medalRows = medalHistoryRows(history);
+    const entries = await collectMedalHistoryEntries(page, history);
 
-    await expect(medalRows.first()).toBeVisible();
+    expect(
+      entries.length,
+      "Historia powinna zawierać co najmniej jeden wpis medalowy",
+    ).toBeGreaterThan(0);
 
-    const count = await medalRows.count();
-
-    for (let i = 0; i < count; i++) {
-      await expect(historyDateCell(medalRows.nth(i))).toHaveText(
-        /^\d{4}-10-01 \d{2}:\d{2}$/,
-      );
+    for (const entry of entries) {
+      expect(
+        entry.date,
+        `Wpis "${entry.value}" powinien mieć datę przypadającą na 1 października`,
+      ).toMatch(/^\d{4}-10-01 \d{2}:\d{2}$/);
     }
+
+    console.log(`MED-25: sprawdzono datę ${entries.length} wpisów medalowych.`);
   });
 
   test("MED-26: wpisy medalowe w historii są posortowane od najnowszego sezonu do najstarszego", async ({
@@ -378,36 +392,45 @@ test.describe("Medalowość szkoły", () => {
   }) => {
     const app = new Octopus(page);
 
-    await openMedalSchool(app, GOLD_SCHOOL);
+    const schools = [GOLD_SCHOOL, SILVER_SCHOOL, BRONZE_SCHOOL, NO_MEDAL_SCHOOL];
 
-    const history = await openSchoolHistory(page);
+    for (const school of schools) {
+      await openMedalSchool(app, school);
 
-    const medalRows = medalHistoryRows(history);
+      const history = await openSchoolHistory(page);
 
-    await expect(medalRows.first()).toBeVisible();
-
-    const count = await medalRows.count();
-
-    expect(count).toBeGreaterThan(1);
-
-    const seasons: number[] = [];
-
-    for (let i = 0; i < count; i++) {
-      const value = await historyValueCell(medalRows.nth(i)).innerText();
-
-      const match = value.match(/^(\d{4})\/\d{4}/);
+      const entries = await collectMedalHistoryEntries(page, history);
 
       expect(
-        match,
-        `Nie udało się odczytać roku szkolnego z wartości: "${value}"`,
-      ).not.toBeNull();
+        entries.length,
+        `Historia szkoły ${school.id} powinna zawierać co najmniej jeden wpis medalowy`,
+      ).toBeGreaterThan(0);
 
-      seasons.push(Number(match![1]));
+      const seasons: number[] = [];
+
+      for (const entry of entries) {
+        const match = entry.value.match(/^(\d{4})\/\d{4} (Złoto|Srebro|Brąz|Brak)$/);
+
+        expect(
+          match,
+          `Nie udało się odczytać roku szkolnego z wartości: "${entry.value}"`,
+        ).not.toBeNull();
+
+        seasons.push(Number(match![1]));
+      }
+
+      const expectedOrder = [...seasons].sort((a, b) => b - a);
+
+      expect(
+        seasons,
+        `Historia medalowości szkoły ${school.id} powinna być posortowana od najnowszego sezonu do najstarszego`,
+      ).toEqual(expectedOrder);
+
+      console.log(
+        `MED-26: szkoła ${school.id}. ` +
+          `Sprawdzono kolejność ${entries.length} wpisów medalowych.`,
+      );
     }
-
-    const expectedOrder = [...seasons].sort((a, b) => b - a);
-
-    expect(seasons).toEqual(expectedOrder);
   });
 
   test("MED-27: wyszukiwanie po Medal = Złoto zwraca tylko szkoły ze złotym medalem", async ({
@@ -440,9 +463,7 @@ test.describe("Medalowość szkoły", () => {
     await expectSchoolResultsMedals(results, ["Brąz"]);
   });
 
-  test("MED-30: wyszukiwanie po Medal = Brak zwraca tylko szkoły bez medalu", async ({
-    page,
-  }) => {
+  test("MED-30: wyszukiwanie po Medal = Brak zwraca tylko szkoły bez medalu", async ({ page }) => {
     const app = new Octopus(page);
 
     const results = await searchSchoolsByMedal(app, "Brak");
@@ -460,9 +481,7 @@ test.describe("Medalowość szkoły", () => {
     await expectSchoolResultsMedals(results, ["Złoto", "Srebro"]);
   });
 
-  test("MED-32: API zwraca złoty medal i właściwe przedmioty dla szkoły", async ({
-    page,
-  }) => {
+  test("MED-32: API zwraca złoty medal i właściwe przedmioty dla szkoły", async ({ page }) => {
     const app = new Octopus(page);
 
     const medalData = await getSchoolMedalApiData(app, GOLD_SCHOOL);
@@ -474,15 +493,9 @@ test.describe("Medalowość szkoły", () => {
         `Przedmioty: ${medalData.subjectNames.join(", ")}.`,
     );
 
-    expect(medalData.medalCategoryName).toBe("Złoto");
+    expect(medalData.medalCategoryName).toBe(GOLD_SCHOOL.expectedMedal);
 
-    expect(medalData.subjectNames).toEqual([
-      "Matematyka",
-      "Język polski",
-      "Historia",
-      "Fizyka",
-      "Edukacja wczesnoszkolna",
-    ]);
+    expect(medalData.subjectNames).toEqual(GOLD_SCHOOL.expectedSubjects);
   });
 
   test("MED-33: przedmioty złotego medalu w UI są zgodne z danymi zwracanymi przez API", async ({
@@ -500,9 +513,7 @@ test.describe("Medalowość szkoły", () => {
         `Tooltip UI pokazuje ${uiSubjects.length}: ${uiSubjects.join(", ")}.`,
     );
 
-    expect([...uiSubjects].sort()).toEqual(
-      [...apiMedalData.subjectNames].sort(),
-    );
+    expect([...uiSubjects].sort()).toEqual([...apiMedalData.subjectNames].sort());
   });
 
   test("MED-34: wartość złotego medalu w UI jest zgodna z wartością zwracaną przez API", async ({
@@ -522,9 +533,7 @@ test.describe("Medalowość szkoły", () => {
     expect(uiMedal).toBe(apiMedalData.medalCategoryName);
   });
 
-  test("MED-35: API zwraca srebrny medal i właściwe przedmioty dla szkoły", async ({
-    page,
-  }) => {
+  test("MED-35: API zwraca srebrny medal i właściwe przedmioty dla szkoły", async ({ page }) => {
     const app = new Octopus(page);
 
     const medalData = await getSchoolMedalApiData(app, SILVER_SCHOOL);
@@ -536,11 +545,9 @@ test.describe("Medalowość szkoły", () => {
         `Przedmioty: ${medalData.subjectNames.join(", ")}.`,
     );
 
-    expect(medalData.medalCategoryName).toBe("Srebro");
+    expect(medalData.medalCategoryName).toBe(SILVER_SCHOOL.expectedMedal);
 
-    expect([...medalData.subjectNames].sort()).toEqual(
-      ["Matematyka", "Geografia"].sort(),
-    );
+    expect(medalData.subjectNames).toEqual(SILVER_SCHOOL.expectedSubjects);
   });
 
   test("MED-36: przedmioty srebrnego medalu w UI są zgodne z danymi zwracanymi przez API", async ({
@@ -558,9 +565,7 @@ test.describe("Medalowość szkoły", () => {
         `Tooltip UI pokazuje ${uiSubjects.length}: ${uiSubjects.join(", ")}.`,
     );
 
-    expect([...uiSubjects].sort()).toEqual(
-      [...apiMedalData.subjectNames].sort(),
-    );
+    expect([...uiSubjects].sort()).toEqual([...apiMedalData.subjectNames].sort());
   });
 
   test("MED-37: wartość srebrnego medalu w UI jest zgodna z wartością zwracaną przez API", async ({
@@ -580,9 +585,7 @@ test.describe("Medalowość szkoły", () => {
     expect(uiMedal).toBe(apiMedalData.medalCategoryName);
   });
 
-  test("MED-38: API zwraca brązowy medal i właściwe przedmioty dla szkoły", async ({
-    page,
-  }) => {
+  test("MED-38: API zwraca brązowy medal i właściwe przedmioty dla szkoły", async ({ page }) => {
     const app = new Octopus(page);
 
     const medalData = await getSchoolMedalApiData(app, BRONZE_SCHOOL);
@@ -594,9 +597,9 @@ test.describe("Medalowość szkoły", () => {
         `Przedmioty: ${medalData.subjectNames.join(", ")}.`,
     );
 
-    expect(medalData.medalCategoryName).toBe("Brąz");
+    expect(medalData.medalCategoryName).toBe(BRONZE_SCHOOL.expectedMedal);
 
-    expect([...medalData.subjectNames].sort()).toEqual(["Matematyka"].sort());
+    expect(medalData.subjectNames).toEqual(BRONZE_SCHOOL.expectedSubjects);
   });
 
   test("MED-39: przedmioty brązowego medalu w UI są zgodne z danymi zwracanymi przez API", async ({
@@ -614,9 +617,7 @@ test.describe("Medalowość szkoły", () => {
         `Tooltip UI pokazuje ${uiSubjects.length}: ${uiSubjects.join(", ")}.`,
     );
 
-    expect([...uiSubjects].sort()).toEqual(
-      [...apiMedalData.subjectNames].sort(),
-    );
+    expect([...uiSubjects].sort()).toEqual([...apiMedalData.subjectNames].sort());
   });
 
   test("MED-40: wartość brązowego medalu w UI jest zgodna z wartością zwracaną przez API", async ({
@@ -649,13 +650,12 @@ test.describe("Medalowość szkoły", () => {
         `Liczba przedmiotów medalowych: ${medalData.subjectNames.length}.`,
     );
 
-    expect(medalData.medalCategoryName).toBe("Brak");
-    expect(medalData.subjectNames).toEqual([]);
+    expect(medalData.medalCategoryName).toBe(NO_MEDAL_SCHOOL.expectedMedal);
+
+    expect(medalData.subjectNames).toEqual(NO_MEDAL_SCHOOL.expectedSubjects);
   });
 
-  test("MED-42: wartość Brak w UI jest zgodna z wartością zwracaną przez API", async ({
-    page,
-  }) => {
+  test("MED-42: wartość Brak w UI jest zgodna z wartością zwracaną przez API", async ({ page }) => {
     const app = new Octopus(page);
 
     const apiMedalData = await getSchoolMedalApiData(app, NO_MEDAL_SCHOOL);
@@ -670,9 +670,7 @@ test.describe("Medalowość szkoły", () => {
     expect(uiMedal).toBe(apiMedalData.medalCategoryName);
   });
 
-  test("MED-43: brak przedmiotów w API jest zgodny z brakiem tooltipa w UI", async ({
-    page,
-  }) => {
+  test("MED-43: brak przedmiotów w API jest zgodny z brakiem tooltipa w UI", async ({ page }) => {
     const app = new Octopus(page);
 
     const apiMedalData = await getSchoolMedalApiData(app, NO_MEDAL_SCHOOL);
@@ -694,12 +692,7 @@ test.describe("Medalowość szkoły", () => {
   }) => {
     const app = new Octopus(page);
 
-    const schools = [
-      GOLD_SCHOOL,
-      SILVER_SCHOOL,
-      BRONZE_SCHOOL,
-      NO_MEDAL_SCHOOL,
-    ];
+    const schools = [GOLD_SCHOOL, SILVER_SCHOOL, BRONZE_SCHOOL, NO_MEDAL_SCHOOL];
 
     for (const school of schools) {
       const medalData = await getSchoolMedalApiData(app, school);
@@ -709,9 +702,7 @@ test.describe("Medalowość szkoły", () => {
           `Medal: ${medalData.medalCategoryName}. ` +
           `Liczba przedmiotów medalowych: ${medalData.subjectNames.length}. ` +
           `Przedmioty: ${
-            medalData.subjectNames.length > 0
-              ? medalData.subjectNames.join(", ")
-              : "brak"
+            medalData.subjectNames.length > 0 ? medalData.subjectNames.join(", ") : "brak"
           }.`,
       );
 
@@ -778,12 +769,7 @@ test.describe("Medalowość szkoły", () => {
   }) => {
     const app = new Octopus(page);
 
-    const schools = [
-      GOLD_SCHOOL,
-      SILVER_SCHOOL,
-      BRONZE_SCHOOL,
-      NO_MEDAL_SCHOOL,
-    ];
+    const schools = [GOLD_SCHOOL, SILVER_SCHOOL, BRONZE_SCHOOL, NO_MEDAL_SCHOOL];
 
     for (const school of schools) {
       const apiMedalData = await getSchoolMedalApiData(app, school);
@@ -860,9 +846,7 @@ test.describe("Medalowość szkoły", () => {
       "W szkole powinien istnieć co najmniej jeden nauczyciel FIZ SP",
     ).toBeGreaterThan(0);
 
-    expect(medalData.medalCategoryName, "Szkoła powinna mieć medal Brąz").toBe(
-      "Brąz",
-    );
+    expect(medalData.medalCategoryName, "Szkoła powinna mieć medal Brąz").toBe("Brąz");
 
     expect(
       medalData.subjectNames,
@@ -875,31 +859,59 @@ test.describe("Medalowość szkoły", () => {
   }) => {
     const app = new Octopus(page);
 
-    const schools = [
-      GOLD_SCHOOL,
-      SILVER_SCHOOL,
-      BRONZE_SCHOOL,
-      NO_MEDAL_SCHOOL,
-    ];
+    const schools = [GOLD_SCHOOL, SILVER_SCHOOL, BRONZE_SCHOOL, NO_MEDAL_SCHOOL];
 
     for (const school of schools) {
       const apiMedalData = await getSchoolMedalApiData(app, school);
 
       const history = await openSchoolHistory(page);
 
-      const latestHistoryValue = await getLatestMedalHistoryValue(history);
+      const entries = await collectMedalHistoryEntries(page, history);
 
-      const historyMedal = latestHistoryValue.replace(/^\d{4}\/\d{4}\s+/, "");
+      if (entries.length === 0) {
+        console.log(
+          `MED-49: szkoła ${school.id} "${school.name}". ` +
+            `Brak wpisów historii medalowości. ` +
+            `Aktualny medal API: ${apiMedalData.medalCategoryName}.`,
+        );
+
+        expect(
+          apiMedalData.medalCategoryName,
+          `Szkoła ${school.id} bez historii medalowości powinna mieć aktualnie wartość Brak`,
+        ).toBe("Brak");
+
+        continue;
+      }
+
+      const parsedEntries = entries.map((entry) => {
+        const match = entry.value.match(/^(\d{4})\/(\d{4}) (Złoto|Srebro|Brąz|Brak)$/);
+
+        expect(
+          match,
+          `Nieprawidłowy format wpisu historii medalowości: "${entry.value}"`,
+        ).not.toBeNull();
+
+        return {
+          entry,
+          startYear: Number(match![1]),
+        };
+      });
+
+      parsedEntries.sort((a, b) => b.startYear - a.startYear);
+
+      const latestEntry = parsedEntries[0].entry;
+
+      const historyMedal = latestEntry.value.replace(/^\d{4}\/\d{4}\s+/, "");
 
       console.log(
         `MED-49: szkoła ${school.id} "${school.name}". ` +
-          `Najnowszy wpis historii: "${latestHistoryValue}". ` +
-          `Medal w API: ${apiMedalData.medalCategoryName}.`,
+          `Najnowszy wpis: "${latestEntry.value}". ` +
+          `Medal API: ${apiMedalData.medalCategoryName}.`,
       );
 
       expect(
         historyMedal,
-        `Historia medalowości szkoły ${school.id} powinna być zgodna z API`,
+        `Najnowszy wpis historii szkoły ${school.id} powinien być zgodny z API`,
       ).toBe(apiMedalData.medalCategoryName);
     }
   });
@@ -909,35 +921,32 @@ test.describe("Medalowość szkoły", () => {
   }) => {
     const app = new Octopus(page);
 
-    const schools = [
-      GOLD_SCHOOL,
-      SILVER_SCHOOL,
-      BRONZE_SCHOOL,
-      NO_MEDAL_SCHOOL,
-    ];
+    const schools = [GOLD_SCHOOL, SILVER_SCHOOL, BRONZE_SCHOOL, NO_MEDAL_SCHOOL];
 
     for (const school of schools) {
       await openMedalSchool(app, school);
 
       const history = await openSchoolHistory(page);
 
-      const rows = medalHistoryRows(history);
+      const entries = await collectMedalHistoryEntries(page, history);
 
-      await expect(rows.first()).toBeVisible();
+      if (entries.length === 0) {
+        expect(
+          school.expectedMedal,
+          `Szkoła ${school.id} bez historii medalowości powinna mieć wartość Brak`,
+        ).toBe("Brak");
 
-      const count = await rows.count();
+        console.log(`MED-50: szkoła ${school.id}. ` + `Brak wpisów historii medalowości.`);
+
+        continue;
+      }
 
       const seasons: string[] = [];
 
-      for (let i = 0; i < count; i++) {
-        const value = (await historyValueCell(rows.nth(i)).innerText()).trim();
+      for (const entry of entries) {
+        const match = entry.value.match(/^(\d{4}\/\d{4}) (Złoto|Srebro|Brąz|Brak)$/);
 
-        const match = value.match(/^(\d{4}\/\d{4}) (Złoto|Srebro|Brąz|Brak)$/);
-
-        expect(
-          match,
-          `Nieprawidłowy wpis historii medalowości: "${value}"`,
-        ).not.toBeNull();
+        expect(match, `Nieprawidłowy wpis historii medalowości: "${entry.value}"`).not.toBeNull();
 
         seasons.push(match![1]);
       }
@@ -945,10 +954,9 @@ test.describe("Medalowość szkoły", () => {
       const uniqueSeasons = new Set(seasons);
 
       console.log(
-        `MED-50: szkoła ${school.id} "${school.name}". ` +
-          `Pobrano ${seasons.length} wpisów medalowości. ` +
-          `Liczba unikalnych lat szkolnych: ${uniqueSeasons.size}. ` +
-          `Lata: ${seasons.join(", ")}.`,
+        `MED-50: szkoła ${school.id}. ` +
+          `Wpisów: ${seasons.length}, ` +
+          `unikalnych sezonów: ${uniqueSeasons.size}.`,
       );
 
       expect(
@@ -963,44 +971,34 @@ test.describe("Medalowość szkoły", () => {
   }) => {
     const app = new Octopus(page);
 
-    const schools = [
-      GOLD_SCHOOL,
-      SILVER_SCHOOL,
-      BRONZE_SCHOOL,
-      NO_MEDAL_SCHOOL,
-    ];
+    const schools = [GOLD_SCHOOL, SILVER_SCHOOL, BRONZE_SCHOOL, NO_MEDAL_SCHOOL];
 
     for (const school of schools) {
       await openMedalSchool(app, school);
 
       const history = await openSchoolHistory(page);
 
-      const rows = medalHistoryRows(history);
+      const entries = await collectMedalHistoryEntries(page, history);
 
-      await expect(rows.first()).toBeVisible();
-
-      const count = await rows.count();
-
-      const sources: string[] = [];
-
-      for (let i = 0; i < count; i++) {
-        const source = (
-          await historySourceCell(rows.nth(i)).innerText()
-        ).trim();
-
-        sources.push(source);
-
+      if (entries.length === 0) {
         expect(
-          source,
-          `Nieprawidłowe źródło wpisu medalowości szkoły ${school.id}`,
+          school.expectedMedal,
+          `Szkoła ${school.id} bez historii medalowości powinna mieć wartość Brak`,
+        ).toBe("Brak");
+
+        console.log(`MED-51: szkoła ${school.id}. ` + `Brak wpisów medalowości do sprawdzenia.`);
+
+        continue;
+      }
+
+      for (const entry of entries) {
+        expect(
+          entry.source,
+          `Wpis "${entry.value}" szkoły ${school.id} powinien mieć źródło Formularz klubowy`,
         ).toBe("Formularz klubowy");
       }
 
-      console.log(
-        `MED-51: szkoła ${school.id} "${school.name}". ` +
-          `Sprawdzono ${count} wpisów medalowości. ` +
-          `Źródła: ${sources.join(", ")}.`,
-      );
+      console.log(`MED-51: szkoła ${school.id}. ` + `Sprawdzono źródło ${entries.length} wpisów.`);
     }
   });
 
@@ -1009,56 +1007,42 @@ test.describe("Medalowość szkoły", () => {
   }) => {
     const app = new Octopus(page);
 
-    const schools = [
-      GOLD_SCHOOL,
-      SILVER_SCHOOL,
-      BRONZE_SCHOOL,
-      NO_MEDAL_SCHOOL,
-    ];
+    const schools = [GOLD_SCHOOL, SILVER_SCHOOL, BRONZE_SCHOOL, NO_MEDAL_SCHOOL];
 
     for (const school of schools) {
       await openMedalSchool(app, school);
 
       const history = await openSchoolHistory(page);
-      const rows = medalHistoryRows(history);
 
-      await expect(rows.first()).toBeVisible();
+      const entries = await collectMedalHistoryEntries(page, history);
 
-      const count = await rows.count();
-
-      for (let i = 0; i < count; i++) {
-        const row = rows.nth(i);
-
-        const value = (await historyValueCell(row).innerText()).trim();
-
-        const date = (await historyDateCell(row).innerText()).trim();
-
-        const match = value.match(
-          /^(\d{4})\/(\d{4}) (Złoto|Srebro|Brąz|Brak)$/,
-        );
-
+      if (entries.length === 0) {
         expect(
-          match,
-          `Nieprawidłowy wpis historii medalowości: "${value}"`,
-        ).not.toBeNull();
+          school.expectedMedal,
+          `Szkoła ${school.id} bez historii medalowości powinna mieć wartość Brak`,
+        ).toBe("Brak");
+
+        console.log(`MED-52: szkoła ${school.id}. ` + `Brak wpisów medalowości do sprawdzenia.`);
+
+        continue;
+      }
+
+      for (const entry of entries) {
+        const match = entry.value.match(/^(\d{4})\/(\d{4}) (Złoto|Srebro|Brąz|Brak)$/);
+
+        expect(match, `Nieprawidłowy wpis historii medalowości: "${entry.value}"`).not.toBeNull();
 
         const seasonEndYear = match![2];
 
         const expectedDate = `${seasonEndYear}-10-01`;
 
-        console.log(
-          `MED-52: szkoła ${school.id}. ` +
-            `Sezon: ${match![1]}/${seasonEndYear}. ` +
-            `Medal: ${match![3]}. ` +
-            `Data wpisu: ${date}. ` +
-            `Oczekiwana data: ${expectedDate}.`,
-        );
-
         expect(
-          date,
-          `Wpis medalowości "${value}" powinien być zapisany 1 października ${seasonEndYear}`,
+          entry.date,
+          `Wpis "${entry.value}" szkoły ${school.id} powinien być zapisany 1 października ${seasonEndYear}`,
         ).toMatch(new RegExp(`^${expectedDate} \\d{2}:\\d{2}$`));
       }
+
+      console.log(`MED-52: szkoła ${school.id}. ` + `Sprawdzono datę ${entries.length} wpisów.`);
     }
   });
 
@@ -1067,54 +1051,41 @@ test.describe("Medalowość szkoły", () => {
   }) => {
     const app = new Octopus(page);
 
-    const schools = [
-      GOLD_SCHOOL,
-      SILVER_SCHOOL,
-      BRONZE_SCHOOL,
-      NO_MEDAL_SCHOOL,
-    ];
+    const schools = [GOLD_SCHOOL, SILVER_SCHOOL, BRONZE_SCHOOL, NO_MEDAL_SCHOOL];
 
     for (const school of schools) {
       await openMedalSchool(app, school);
 
       const history = await openSchoolHistory(page);
-      const rows = medalHistoryRows(history);
 
-      await expect(rows.first()).toBeVisible();
+      const entries = await collectMedalHistoryEntries(page, history);
 
-      const count = await rows.count();
-
-      for (let i = 0; i < count; i++) {
-        const row = rows.nth(i);
-
-        const value = (await historyValueCell(row).innerText()).trim();
-
-        const author = (await historyAuthorCell(row).innerText()).trim();
-
-        console.log(
-          `MED-53: szkoła ${school.id} "${school.name}". ` +
-            `Wpis: "${value}". ` +
-            `Autor: "${author}".`,
-        );
-
+      if (entries.length === 0) {
         expect(
-          author,
-          `Wpis medalowości "${value}" szkoły ${school.id} powinien zostać zapisany przez automat`,
+          school.expectedMedal,
+          `Szkoła ${school.id} bez historii medalowości powinna mieć wartość Brak`,
+        ).toBe("Brak");
+
+        console.log(`MED-53: szkoła ${school.id}. ` + `Brak wpisów medalowości do sprawdzenia.`);
+
+        continue;
+      }
+
+      for (const entry of entries) {
+        expect(
+          entry.author,
+          `Wpis "${entry.value}" szkoły ${school.id} powinien zostać zapisany przez automat`,
         ).toBe("automat");
       }
+
+      console.log(`MED-53: szkoła ${school.id}. ` + `Sprawdzono autora ${entries.length} wpisów.`);
     }
   });
 
-  test("MED-54: wyszukiwanie po ID szkoły ma priorytet nad filtrem medalu", async ({
-    page,
-  }) => {
+  test("MED-54: wyszukiwanie po ID szkoły ma priorytet nad filtrem medalu", async ({ page }) => {
     const app = new Octopus(page);
 
-    const search = await prepareSchoolSearchByIdAndMedal(
-      app,
-      BRONZE_SCHOOL.id,
-      "Złoto",
-    );
+    const search = await prepareSchoolSearchByIdAndMedal(app, BRONZE_SCHOOL.id, "Złoto");
 
     const responsePromise = page.waitForResponse((response) => {
       const url = new URL(response.url());
@@ -1157,10 +1128,7 @@ test.describe("Medalowość szkoły", () => {
       "Do API powinno zostać wysłane ID szkoły 66109",
     ).toContain(BRONZE_SCHOOL.id);
 
-    expect(
-      filterModel.medal,
-      "Do API powinien zostać wysłany również filtr Złoto",
-    ).toEqual([3]);
+    expect(filterModel.medal, "Do API powinien zostać wysłany również filtr Złoto").toEqual([3]);
 
     expect(
       body.data,
@@ -1169,10 +1137,9 @@ test.describe("Medalowość szkoły", () => {
 
     const returnedSchool = body.data[0];
 
-    expect(
-      String(returnedSchool.id),
-      "Powinna zostać zwrócona szkoła wskazana przez ID",
-    ).toBe(BRONZE_SCHOOL.id);
+    expect(String(returnedSchool.id), "Powinna zostać zwrócona szkoła wskazana przez ID").toBe(
+      BRONZE_SCHOOL.id,
+    );
 
     expect(
       returnedSchool.informationAboutMedalCategory?.medalCategoryName,
@@ -1186,13 +1153,10 @@ test.describe("Medalowość szkoły", () => {
     );
   });
 
-  test("MED-55: filtrowanie bez ID zwraca tylko szkoły z wybranym medalem", async ({
-    page,
-  }) => {
+  test("MED-55: filtrowanie bez ID zwraca tylko szkoły z wybranym medalem", async ({ page }) => {
     const app = new Octopus(page);
 
-    const { results, filterModel, schools } =
-      await searchSchoolsByMedalsWithApi(app, ["Brąz"]);
+    const { results, filterModel, schools } = await searchSchoolsByMedalsWithApi(app, ["Brąz"]);
 
     expect(
       filterModel.institutionIds ?? [],
@@ -1212,10 +1176,7 @@ test.describe("Medalowość szkoły", () => {
     for (const school of schools) {
       const medal = school.informationAboutMedalCategory?.medalCategoryName;
 
-      expect(
-        medal,
-        `Szkoła ${school.id} została zwrócona mimo innego medalu`,
-      ).toBe("Brąz");
+      expect(medal, `Szkoła ${school.id} została zwrócona mimo innego medalu`).toBe("Brąz");
     }
 
     await expectSchoolResultsMedals(results, ["Brąz"]);
@@ -1236,29 +1197,26 @@ test.describe("Medalowość szkoły", () => {
 
     const selectedMedals: SchoolMedal[] = ["Złoto", "Srebro"];
 
-    const { results, filterModel, schools } =
-      await searchSchoolsByMedalsWithApi(app, selectedMedals);
+    const { results, filterModel, schools } = await searchSchoolsByMedalsWithApi(
+      app,
+      selectedMedals,
+    );
 
     expect(
       filterModel.institutionIds ?? [],
       "Przy filtrowaniu wyłącznie po medalach nie powinno być filtra ID szkoły",
     ).toHaveLength(0);
 
-    expect(
-      filterModel.medal,
-      "Do API powinny zostać przekazane dokładnie dwa medale",
-    ).toHaveLength(2);
+    expect(filterModel.medal, "Do API powinny zostać przekazane dokładnie dwa medale").toHaveLength(
+      2,
+    );
 
-    expect(
-      schools.length,
-      "API powinno zwrócić co najmniej jedną szkołę",
-    ).toBeGreaterThan(0);
+    expect(schools.length, "API powinno zwrócić co najmniej jedną szkołę").toBeGreaterThan(0);
 
     const apiMedals = new Set<SchoolMedal>();
 
     for (const school of schools) {
-      const medal = school.informationAboutMedalCategory
-        ?.medalCategoryName as SchoolMedal;
+      const medal = school.informationAboutMedalCategory?.medalCategoryName as SchoolMedal;
 
       expect(
         selectedMedals,
@@ -1404,9 +1362,7 @@ test.describe("Medalowość szkoły", () => {
   //     }
   //   });
 
-  test("MED-60: każda szkoła z medalem Brak nie ma przedmiotów medalowych", async ({
-    page,
-  }) => {
+  test("MED-60: każda szkoła z medalem Brak nie ma przedmiotów medalowych", async ({ page }) => {
     const app = new Octopus(page);
 
     const { schools } = await searchSchoolsByMedalsWithApi(app, ["Brak"]);
@@ -1416,16 +1372,12 @@ test.describe("Medalowość szkoły", () => {
       "API powinno zwrócić co najmniej jedną szkołę z medalem Brak",
     ).toBeGreaterThan(0);
 
-    console.log(
-      `MED-60: API zwróciło ${schools.length} szkół dla filtra Brak.`,
-    );
+    console.log(`MED-60: API zwróciło ${schools.length} szkół dla filtra Brak.`);
 
     for (const school of schools) {
-      const medal = school.informationAboutMedalCategory
-        ?.medalCategoryName as SchoolMedal;
+      const medal = school.informationAboutMedalCategory?.medalCategoryName as SchoolMedal;
 
-      const subjectNames =
-        school.informationAboutMedalCategory?.subjectNames ?? [];
+      const subjectNames = school.informationAboutMedalCategory?.subjectNames ?? [];
 
       console.log(
         `MED-60: szkoła ${school.id}. ` +

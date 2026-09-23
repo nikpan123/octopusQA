@@ -6,7 +6,6 @@ import {
   addTeacherNote,
   archiveTeacherNote,
   cancelTeacherDialog,
-  cancelTeacherEmailDelete,
   cancelTeacherNotesEdit,
   cancelTeacherPhoneDelete,
   cancelTeacherRodoEdit,
@@ -30,13 +29,11 @@ import {
   expectTeacherRodoHistoryChange,
   expectTeacherRodoOnCard,
   fillTeacherPrivateAddress,
-  firstEditableTeacherInput,
   getSavedTeacherPhones,
   normalizeTeacherName,
   openBasicTeacherEdit,
   openTeacherEmailDeleteConfirmation,
   openTeacherEmailEdit,
-  openTeacherFieldEdit,
   openTeacherHistory,
   openTeacherMinimalRecordWarning,
   cancelTeacherMinimalRecordWarning,
@@ -51,9 +48,7 @@ import {
   saveTeacherRodoEdit,
   setTeacherRodoConsent,
   teacherBirthDateInput,
-  teacherConsent,
   teacherHistorySnapshot,
-  teacherNewEmailInput,
   teacherNewPhoneInput,
   teacherNoteInput,
   teacherNoteRow,
@@ -62,7 +57,6 @@ import {
   teacherPhoneAddButton,
   teacherPhoneDeleteButtons,
   teacherRodoCheckbox,
-  teacherRodoCheckboxOnCard,
   teacherRodoSourceSelect,
 } from "./support/teacher-edit";
 
@@ -253,9 +247,7 @@ test("EDIT-07: wielkość liter imienia jest normalizowana @teacher @edit @norma
    * Nazwisko również może zostać
    * znormalizowane przy tym samym zapisie.
    */
-  await expect(s.app.detail("lastName")).toHaveValue(
-    normalizeTeacherName(s.id),
-  );
+  await expect(s.app.detail("lastName")).toHaveValue(normalizeTeacherName(s.id));
 });
 
 /*
@@ -577,6 +569,10 @@ test("EDIT-12: poprawny e-mail można zmienić i zmiana jest widoczna w historii
   await s.record("oldEmail", oldEmail);
 
   await s.record("editedEmail", newEmail);
+
+  await s.record("teacherEmail", newEmail);
+
+  await s.record("teacherLastName", s.id);
 });
 
 /*
@@ -1441,10 +1437,7 @@ test("EDIT-20: nauczyciel może pozostać bez e-maila jeśli posiada telefon @te
 
   const emailDialog = await openTeacherEmailEdit(page);
 
-  const confirmDialog = await openTeacherEmailDeleteConfirmation(
-    page,
-    emailDialog,
-  );
+  const confirmDialog = await openTeacherEmailDeleteConfirmation(page, emailDialog);
 
   await confirmTeacherEmailDelete(confirmDialog);
 
@@ -1481,6 +1474,10 @@ test("EDIT-20: nauczyciel może pozostać bez e-maila jeśli posiada telefon @te
    * zapisany w historii.
    */
   await expectTeacherPhoneHistoryChange(page, "Dodany numer", phone);
+
+  await s.record("teacherEmail", "");
+
+  await s.record("teacherLastName", s.id);
 });
 
 /*
@@ -1555,10 +1552,7 @@ test("EDIT-22: brak e-maila i telefonu wymaga dodatkowego potwierdzenia @teacher
   /*
    * Klikamy Usuń e-mail.
    */
-  const emailDeleteDialog = await openTeacherEmailDeleteConfirmation(
-    page,
-    emailDialog,
-  );
+  const emailDeleteDialog = await openTeacherEmailDeleteConfirmation(page, emailDialog);
 
   /*
    * Pierwsze potwierdzenie usunięcia.
@@ -1633,10 +1627,7 @@ test("EDIT-23: można usunąć e-mail bez telefonu po potwierdzeniu ostrzeżenia
    * "Czy na pewno chcesz usunąć adres e-mail?"
    */
 
-  const emailDeleteDialog = await openTeacherEmailDeleteConfirmation(
-    page,
-    emailDialog,
-  );
+  const emailDeleteDialog = await openTeacherEmailDeleteConfirmation(page, emailDialog);
 
   await confirmTeacherEmailDelete(emailDeleteDialog);
 
@@ -1714,6 +1705,10 @@ test("EDIT-23: można usunąć e-mail bez telefonu po potwierdzeniu ostrzeżenia
   await s.record("removedEmail", oldEmail);
 
   await s.record("removedEmailWithoutPhone", "true");
+
+  await s.record("teacherEmail", "");
+
+  await s.record("teacherLastName", s.id);
 });
 
 /*
@@ -1750,9 +1745,7 @@ test("EDIT-24: poprawna data urodzenia jest trwała @teacher @edit", async ({
    * Przy zapisie danych podstawowych
    * nazwisko zostaje znormalizowane.
    */
-  await expect(s.app.detail("lastName")).toHaveValue(
-    normalizeTeacherName(s.id),
-  );
+  await expect(s.app.detail("lastName")).toHaveValue(normalizeTeacherName(s.id));
 
   /*
    * Data powinna być trwała
@@ -2224,8 +2217,7 @@ test("EDIT-28: uwagi nauczyciela są trwałe @teacher @edit", async ({
     'input:not([type="checkbox"]):not([readonly]):not([disabled])',
   );
 
-  const noteField =
-    (await textarea.count()) > 0 ? textarea.first() : editableInput.first();
+  const noteField = (await textarea.count()) > 0 ? textarea.first() : editableInput.first();
 
   await expect(noteField).toBeVisible();
 
@@ -2621,9 +2613,7 @@ test("EDIT-33: notatka nauczyciela ma limit 220 znaków @teacher @edit @notes @v
    * Pole nie powinno pozwolić zachować
    * wartości dłuższej niż 220.
    */
-  await expect
-    .poll(async () => (await input.inputValue()).length)
-    .toBeLessThanOrEqual(220);
+  await expect.poll(async () => (await input.inputValue()).length).toBeLessThanOrEqual(220);
 
   const actualValue = await input.inputValue();
 
@@ -3325,13 +3315,24 @@ test("EDIT-43: ponowny zapis już znormalizowanych danych bez zmian nie modyfiku
 
   /*
    * =====================================================
-   * 2. SPRAWDZENIE NORMALIZACJI
+   * 2. SPRAWDZENIE NORMALIZACJI I ZAŁADOWANIA DANYCH
    * =====================================================
    */
 
   await s.app.openPanel("teacher", teacherId);
 
+  /*
+   * openPanel() potwierdza otwarcie właściwego rekordu,
+   * ale wartości pól mogą doczytać się chwilę później.
+   *
+   * Dlatego przed wykonaniem snapshotu czekamy na
+   * konkretne oczekiwane wartości.
+   */
+  await expect(s.app.detail("firstName")).toHaveValue("Testowy");
+
   await expect(s.app.detail("lastName")).toHaveValue(normalizedLastName);
+
+  await expect(s.app.detail("email")).toHaveValue(s.email);
 
   /*
    * Zapamiętujemy stan po pierwszym,

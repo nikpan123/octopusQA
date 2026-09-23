@@ -16,7 +16,7 @@ Copy-Item .env.example .env
 
 Uzupełnij lokalny plik `.env`: `GITLAB_USERNAME`, `GITLAB_PASSWORD`, `OCTOPUS_USERNAME`, `OCTOPUS_PASSWORD`. GitLab i Octopus mają osobne dane. Wpisz wartości pomiędzy apostrofami; jeśli hasło zawiera apostrof, użyj podwójnych cudzysłowów. Nie nadpisuj istniejącego, uzupełnionego `.env`. Zmienne środowiskowe (np. sekrety CI) mają pierwszeństwo przed plikiem.
 
-Przed testami automat sprawdza zapisaną sesję. Jeśli jest nieaktualna albo jej nie ma, loguje się przez `https://gitlab.gwo.pl`, a następnie do Octopusa. Dane logowania nie są nagrywane w trace, filmie ani zrzutach raportu. Hasła w `.env` są zapisane jawnym tekstem lokalnie; plik jest wykluczony z Gita. Nie udostępniaj go. W repozytorium jest tylko pusty wzór `.env.example`.
+Przed każdym testem automat lokalnie sprawdza datę wygaśnięcia JWT, bez uruchamiania dodatkowej przeglądarki. Pełne logowanie wykonuje tylko wtedy, gdy sesji brakuje albo pozostało mniej niż pięć minut jej ważności. Każdy test nadal potwierdza dostęp podczas otwierania właściwego panelu. Jeśli potrzebne jest odświeżenie, automat loguje się przez `https://gitlab.gwo.pl`, a następnie do Octopusa. Dane logowania nie są nagrywane w trace, filmie ani zrzutach raportu. Hasła w `.env` są zapisane jawnym tekstem lokalnie; plik jest wykluczony z Gita. Nie udostępniaj go. W repozytorium jest tylko pusty wzór `.env.example`.
 
 Sprawdzenie samego logowania, bez tworzenia szkół i nauczycieli:
 
@@ -57,7 +57,7 @@ Wybierz test i kliknij przycisk uruchomienia. Panel pokazuje kroki i ich wyniki.
 - `tests/support/shared-school.ts` — szkoła przygotowywana raz na proces wykonawczy nowych testów.
 - `tests/support/scenario.ts` — osobne dane i rejestr przebiegu każdego nowego przypadku.
 - `tests/support/octopus.ts` — obsługa formularzy i selektory elementów aplikacji.
-- `tests/support/fixtures.ts` — odtworzenie sesji i sprawdzenie dostępu przed zmianą danych.
+- `tests/support/fixtures.ts` — szybka kontrola ważności JWT, odtworzenie sesji i kontrola dostępu każdego testu.
 - `scripts/login.mjs` — samodzielne logowanie i zapis sesji.
 - `scripts/auth.mjs` — sprawdzenie sesji i automatyczne logowanie.
 - `.env.example` — pusty wzór konfiguracji danych logowania.
@@ -79,12 +79,12 @@ Ten test sprawdza cały proces biznesowy. Przygotowanie sesji (w tym ewentualne 
 
 Pierwsze rozszerzenie zawiera 9 przypadków obok dotychczasowej ścieżki:
 
-| Obszar | Przypadki | Sprawdzenie |
-|---|---:|---|
-| Wymagane dane nauczyciela | 4 | Osobno brak imienia, nazwiska, szkoły oraz e-maila i telefonu; komunikat, otwarty formularz i brak rekordu w wyszukiwaniu |
-| Anulowanie dodawania | 2 | Kompletny formularz nauczyciela lub szkoły anulowany; brak rekordu po ponownym wyszukaniu |
-| Anulowanie edycji | 1 | Zmiana imienia i nazwiska anulowana; po ponownym otwarciu poprzednie dane, relacja i identyczna historia |
-| Brak wyników po udanym wyszukiwaniu | 2 | Osobno szkoły i nauczyciele: komunikat o braku wyników, usunięcie poprzedniej listy i licznika 1 |
+| Obszar                              | Przypadki | Sprawdzenie                                                                                                               |
+| ----------------------------------- | --------: | ------------------------------------------------------------------------------------------------------------------------- |
+| Wymagane dane nauczyciela           |         4 | Osobno brak imienia, nazwiska, szkoły oraz e-maila i telefonu; komunikat, otwarty formularz i brak rekordu w wyszukiwaniu |
+| Anulowanie dodawania                |         2 | Kompletny formularz nauczyciela lub szkoły anulowany; brak rekordu po ponownym wyszukaniu                                 |
+| Anulowanie edycji                   |         1 | Zmiana imienia i nazwiska anulowana; po ponownym otwarciu poprzednie dane, relacja i identyczna historia                  |
+| Brak wyników po udanym wyszukiwaniu |         2 | Osobno szkoły i nauczyciele: komunikat o braku wyników, usunięcie poprzedniej listy i licznika 1                          |
 
 Każdy przypadek może działać samodzielnie. Wymagane szkoły i nauczyciele są tworzeni od nowa, bez zależności od rekordów z wcześniejszego uruchomienia. Testy nie usuwają danych przygotowawczych. Weryfikacja braku rekordu odbywa się przez wyszukiwarkę interfejsu, nie przez bezpośredni odczyt bazy danych.
 
@@ -101,18 +101,18 @@ npm.cmd test -- --grep @search
 
 Rozszerzenie nauczyciela zwiększyło zestaw do 16 testów. Plik `tests/nauczyciel-rozszerzenie.spec.ts` dodaje:
 
-| Test | Sprawdzenie |
-|---|---|
-| EDIT-03 | Zapis nazwiska Nowak, trwałość po ponownym otwarciu, zachowanie imienia, e-maila i szkoły oraz wpis historii z autorem i datą |
-| TEA-04, e-mail | Adres `invalid-email` bez @: niepoprawne pole, komunikat, otwarty formularz i brak rekordu po próbie zapisu |
-| TEA-04, telefon | Numer `123`: niepoprawne pole, komunikat, otwarty formularz i brak rekordu; pozostałe wymagane dane są poprawne |
-| FIND-05, e-mail | Dokładnie jeden wynik dla unikalnego e-maila, właściwe ID i dane otwartego nauczyciela |
-| FIND-05, nazwisko | Dokładnie jeden wynik dla unikalnego nazwiska, właściwe ID i dane otwartego nauczyciela |
-| REL-02 | Dodanie drugiej szkoły, zachowanie pierwszej, dokładnie dwa trwałe powiązania i ten sam nauczyciel w obu szkołach |
+| Test              | Sprawdzenie                                                                                                                   |
+| ----------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| EDIT-03           | Zapis nazwiska Nowak, trwałość po ponownym otwarciu, zachowanie imienia, e-maila i szkoły oraz wpis historii z autorem i datą |
+| TEA-04, e-mail    | Adres `invalid-email` bez @: niepoprawne pole, komunikat, otwarty formularz i brak rekordu po próbie zapisu                   |
+| TEA-04, telefon   | Numer `123`: niepoprawne pole, komunikat, otwarty formularz i brak rekordu; pozostałe wymagane dane są poprawne               |
+| FIND-05, e-mail   | Dokładnie jeden wynik dla unikalnego e-maila, właściwe ID i dane otwartego nauczyciela                                        |
+| FIND-05, nazwisko | Dokładnie jeden wynik dla unikalnego nazwiska, właściwe ID i dane otwartego nauczyciela                                       |
+| REL-02            | Dodanie drugiej szkoły, zachowanie pierwszej, dokładnie dwa trwałe powiązania i ten sam nauczyciel w obu szkołach             |
 
 Reguły walidacji dla podanych przykładów sprawdzono w UI dev. To nie jest pełna specyfikacja dopuszczalnych e-maili ani numerów międzynarodowych. W tym rozszerzeniu pozytywna edycja dotyczy nazwiska, nie zapisu nowego kontaktu.
 
-Nowe testy mają wspólną szkołę tworzoną raz na proces wykonawczy, bez stałego ID istniejącej placówki. Każdy przypadek tworzy własnego nauczyciela albo własny niezapisany formularz. REL-02 tworzy dodatkową szkołę. Po błędzie Playwright uruchamia nowy proces, więc może powstać kolejna wspólna szkoła. Dotychczasowe testy zachowują swoje przygotowanie danych.
+Testy edycji i relacji korzystają z trwałej szkoły `AUTOMAT TEACHER <ŚRODOWISKO> SP`, wyszukiwanej i przygotowywanej raz na proces wykonawczy. Każdy przypadek tworzy własnego nauczyciela albo własny niezapisany formularz. REL-02 tworzy dodatkową szkołę wymaganą przez scenariusz.
 
 ```powershell
 npm.cmd test -- nauczyciel-rozszerzenie.spec.ts
@@ -124,7 +124,7 @@ Każdy przebieg ma unikalny prefiks `REG_...`. ID i linki do rekordów są w `ru
 
 Nie ma automatycznych ponowień. Testy działają kolejno w jednym procesie, by ograniczyć wzajemny wpływ operacji na tej samej sesji. Ponowne uruchomienie to nowy zestaw danych.
 
-Raport HTML znajduje się w `playwright-report`, a zrzut i ślad wykonania nieudanego testu w `test-results`. Kolejne uruchomienie zastępuje bieżący raport; trwały rejestr identyfikatorów pozostaje w `runs`.
+Raport HTML znajduje się w `playwright-report`, a zrzut i ślad wykonania nieudanego testu w osobnym podkatalogu uruchomienia w `test-results`. Dzięki temu drugie uruchomienie nie usuwa diagnostyki działającego zestawu. Kolejne uruchomienie zastępuje bieżący raport; trwały rejestr identyfikatorów pozostaje w `runs`.
 
 Sesja jest lokalnie w `playwright/.auth` i daje dostęp do konta. Nie udostępniaj tego katalogu. Jest wyłączony z Git, podobnie jak `.env` i raporty mogące zawierać dane aplikacji. Kod nie zawiera hasła i nie zapisuje logowania na filmie ani w śladzie wykonania. Zapisywany jest tylko stan Octopusa, bez sesji GitLaba. Po zmianie danych w `.env` uruchom test/panel UI ponownie.
 
@@ -152,20 +152,24 @@ npm.cmd run test:auth        # mechanizm logowania na przechwyconych formularzac
 npm.cmd test -- --grep @smoke # tylko testy oznaczone @smoke
 ```
 
+Jednocześnie może działać tylko jedno uruchomienie testów dla danego środowiska. Jeżeli pełny zestaw działa już w terminalu, test uruchomiony z VS Code zakończy się komunikatem wskazującym aktywny proces. Zapobiega to równoczesnemu odświeżaniu sesji, obciążaniu DEV i wzajemnemu zakłócaniu danych testowych.
+
 ## Zamówienia i klubowiczostwo
 
-Plik `tests/zamowienia-klubowiczostwo.spec.ts` dodaje dwa niezależne testy:
+Testy zamówień znajdują się w `tests/zamowienia-szkoly.spec.ts`, a testy klubowiczostwa w `tests/klubowiczostwo-nauczyciela.spec.ts`.
 
-- **ORD-01** — własna szkoła testowa, produkt KMLT18, jedna sztuka. Po ponownym otwarciu sprawdza ID zamówienia, tytuł, kod, ilość i adres szkoły. Produkt musi istnieć w katalogu dev.
-- **CLUB-01** — własna szkoła i nauczyciel testowy, matematyka / SP, formularz w Potwierdzeniach dla klasy 4 (nasze) i domyślnego roku szkolnego. Wysyłka e-maila jest wyłączona. Test sprawdza trwałość przedmiotopoziomu, a następnie formularza, szkoły, klasy oraz statusu Nasz.
+- **ORD-01–ORD-03** sprawdzają zapis, edycję i usunięcie zamówień szkoły.
+- **CLUB-01–CLUB-26** sprawdzają przedmioto-poziomy, formularze klubowe, klasy własne i obce, wydawnictwa, walidację oraz trwałość danych.
+- Testy `CLUB-*` używają stałej puli dwóch szkół podstawowych i jednego liceum, osobnej dla każdego środowiska. Szkoły są wyszukiwane po nazwie, tworzone tylko przy pierwszym użyciu i pozostają w bazie.
 
-Uruchomienie tylko nowych testów:
+Uruchomienie tych sekcji:
 
 ```powershell
-npm.cmd test -- zamowienia-klubowiczostwo.spec.ts
+npm.cmd test -- tests/zamowienia-szkoly.spec.ts
+npm.cmd test -- tests/klubowiczostwo-nauczyciela.spec.ts
 ```
 
-ID i parametry rekordów są zapisane w `runs/REG_*.json` i załączone do raportu. Po zakończeniu całego uruchomienia nauczyciel i formularz z udanego CLUB-01 są usuwani; szkoła oraz zamówienie ORD-01 pozostają. Konto wymaga praw do dodawania tych danych oraz usuwania nauczycieli.
+ID i parametry rekordów są zapisane w `runs/REG_*.json` i załączone do raportu. Po zakończeniu całego uruchomienia nauczyciele z udanych scenariuszy `CLUB-*` są usuwani wraz z formularzami; szkoły i zamówienia pozostają. Konto wymaga praw do dodawania tych danych oraz usuwania nauczycieli.
 
 ## Gdy test nie działa
 

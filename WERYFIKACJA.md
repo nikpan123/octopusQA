@@ -4,11 +4,9 @@
 
 Zrzut użytkownika pokazuje 18 PASS i timeout podczas jednego DELETE dla 8 nauczycieli. Dotychczasowy limit klienta wynosił 30 s. Zmieniono limit DELETE na 180 s, pozostawiając 30 s dla GET. Po błędzie DELETE wykonywane są odczyty kontrolne, bez ponawiania usuwania; niepewne wyniki oznaczane są UNKNOWN. Nie ustalono na podstawie zrzutu, czy serwer zakończył usuwanie. Zgodnie z prośbą użytkownika poprawki nie uruchamiano.
 
-
 ## Zbiorcze DELETE — zmiana niezweryfikowana
 
 Końcowe sprzątanie i ręczne cleanup:teachers wysyłają teraz jedno DELETE z listą unikalnych ID. Zachowano kontrolę rekordów przed wysłaniem i sprawdzanie ich braku po operacji. Zgodnie z prośbą użytkownika po tej zmianie nie uruchamiano testów ani usuwania na dev. Wyniki poniżej dotyczą wcześniejszego kodu.
-
 
 ## Sprzątanie po całym zestawie — 2026-09-17
 
@@ -42,14 +40,14 @@ HTML w `playwright-report` zawiera ten przebieg. Dane: `runs/REG_1789633987836_d
 
 Dodano sześć przypadków w `tests/nauczyciel-rozszerzenie.spec.ts`; projekt wykrywa teraz 16 testów w trzech plikach.
 
-| Przypadek | Wynik |
-|---|---|
-| EDIT-03 — zapis nazwiska, trwałość i historia | PASS w osobnej próbie po korekcie danych, 44,1 s wraz z przygotowaniem wspólnej szkoły |
-| TEA-04 — niepoprawny e-mail | PASS, 19,4 s |
-| TEA-04 — za krótki telefon | PASS, 15,6 s |
-| FIND-05 — e-mail | PASS, 14,5 s |
-| FIND-05 — nazwisko | PASS, 15,5 s |
-| REL-02 — druga szkoła, trwałość i obie strony relacji | PASS, 32,3 s |
+| Przypadek                                             | Wynik                                                                                  |
+| ----------------------------------------------------- | -------------------------------------------------------------------------------------- |
+| EDIT-03 — zapis nazwiska, trwałość i historia         | PASS w osobnej próbie po korekcie danych, 44,1 s wraz z przygotowaniem wspólnej szkoły |
+| TEA-04 — niepoprawny e-mail                           | PASS, 19,4 s                                                                           |
+| TEA-04 — za krótki telefon                            | PASS, 15,6 s                                                                           |
+| FIND-05 — e-mail                                      | PASS, 14,5 s                                                                           |
+| FIND-05 — nazwisko                                    | PASS, 15,5 s                                                                           |
+| REL-02 — druga szkoła, trwałość i obie strony relacji | PASS, 32,3 s                                                                           |
 
 Pierwsze uruchomienie nowego pliku dało 5 PASS / 1 FAIL (3 minuty). Edycja nazwiska dopuszcza litery i łącznik, więc syntetyczna wartość z cyframi i podkreśleniami została odfiltrowana. Zmieniono ją na `Nowak`, identyfikując nauczyciela przez jego ID. Ponownie wykonano wyłącznie EDIT-03: PASS. Nie jest to wynik jednego nieprzerwanego przebiegu wszystkich 16 testów.
 
@@ -79,14 +77,14 @@ Dodano dziewięć niezależnych przypadków w `tests/walidacja-anulowanie.spec.t
 
 Końcowe uruchomienie `npm.cmd test`: **8 passed, 2 failed**, około 4,4 minuty. `npm.cmd run check` oraz `git diff --check` zakończyły się poprawnie.
 
-| Obszar | Wynik końcowego przebiegu |
-|---|---|
-| Pełna ścieżka szkoła–nauczyciel, JaN → Jan, historia | PASS |
-| Walidacja braku imienia, nazwiska, szkoły, kontaktu | 4 × PASS |
-| Anulowanie dodawania nauczyciela i szkoły | 2 × PASS |
-| Anulowanie edycji, zachowanie danych i historii | PASS |
+| Obszar                                                | Wynik końcowego przebiegu                           |
+| ----------------------------------------------------- | --------------------------------------------------- |
+| Pełna ścieżka szkoła–nauczyciel, JaN → Jan, historia  | PASS                                                |
+| Walidacja braku imienia, nazwiska, szkoły, kontaktu   | 4 × PASS                                            |
+| Anulowanie dodawania nauczyciela i szkoły             | 2 × PASS                                            |
+| Anulowanie edycji, zachowanie danych i historii       | PASS                                                |
 | Puste wyniki po wcześniejszym znalezieniu nauczyciela | FAIL — komunikat nie był widoczny w końcowym stanie |
-| Puste wyniki po wcześniejszym znalezieniu szkoły | FAIL — komunikat zniknął przed kliknięciem OK |
+| Puste wyniki po wcześniejszym znalezieniu szkoły      | FAIL — komunikat zniknął przed kliknięciem OK       |
 
 Opis obserwacji i odtworzenia: [OCT-OBS-002](OCT-OBS-002.md). Te same dwa przypadki przeszły we wcześniejszym przebiegu, co wskazuje na zależność od momentu zamknięcia komunikatu. Nie oznaczono ich jako pomijanych ani oczekiwanych błędów. Przyczynę w kodzie aplikacji trzeba jeszcze ustalić.
 

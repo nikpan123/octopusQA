@@ -1,0 +1,6 @@
+auth/
+node_modules/
+playwright-report/
+runs/
+test-results/
+docs/tests/scenario-index.md

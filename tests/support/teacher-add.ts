@@ -1,9 +1,6 @@
 import { expect, type Locator, type Page } from "@playwright/test";
 
-export type TeacherSource =
-  | "Formularz klubowy"
-  | "Karta LS"
-  | "Karta nauczyciela";
+export type TeacherSource = "Formularz klubowy" | "Karta LS" | "Karta nauczyciela";
 
 export type TeacherConsent = "Marketing" | "E-mail" | "Telefon";
 
@@ -111,11 +108,7 @@ export function newTeacherSourceSelect(form: Locator) {
   return label.locator('xpath=following::*[@role="combobox"][1]');
 }
 
-export async function selectNewTeacherSource(
-  page: Page,
-  form: Locator,
-  source: TeacherSource,
-) {
+export async function selectNewTeacherSource(page: Page, form: Locator, source: TeacherSource) {
   const select = newTeacherSourceSelect(form);
 
   await expect(select).toBeVisible();
@@ -147,11 +140,7 @@ export function newTeacherConsentCheckbox(form: Locator, name: TeacherConsent) {
   });
 }
 
-export async function setNewTeacherConsent(
-  form: Locator,
-  name: TeacherConsent,
-  checked: boolean,
-) {
+export async function setNewTeacherConsent(form: Locator, name: TeacherConsent, checked: boolean) {
   const checkbox = newTeacherConsentCheckbox(form, name);
 
   await expect(checkbox).toBeVisible();
@@ -196,11 +185,7 @@ export function newTeacherSubjectAddButton(form: Locator) {
   });
 }
 
-export function newTeacherSubjectLevelRow(
-  form: Locator,
-  subject: string,
-  level: string,
-) {
+export function newTeacherSubjectLevelRow(form: Locator, subject: string, level: string) {
   return form
     .getByRole("row")
     .filter({
@@ -237,11 +222,7 @@ function newTeacherLevelOptionName(level: string) {
   }
 }
 
-export async function selectNewTeacherSubject(
-  page: Page,
-  form: Locator,
-  subject: string,
-) {
+export async function selectNewTeacherSubject(page: Page, form: Locator, subject: string) {
   const select = newTeacherSubjectSelect(form);
 
   await expect(select).toBeVisible();
@@ -258,11 +239,7 @@ export async function selectNewTeacherSubject(
   await option.click();
 }
 
-export async function selectNewTeacherLevel(
-  page: Page,
-  form: Locator,
-  level: string,
-) {
+export async function selectNewTeacherLevel(page: Page, form: Locator, level: string) {
   const select = newTeacherLevelSelect(form);
 
   await expect(select).toBeVisible();
@@ -318,10 +295,7 @@ export function newTeacherSchoolRow(form: Locator, schoolName: string) {
   });
 }
 
-export async function removeSchoolFromNewTeacher(
-  form: Locator,
-  schoolName: string,
-) {
+export async function removeSchoolFromNewTeacher(form: Locator, schoolName: string) {
   const row = newTeacherSchoolRow(form, schoolName);
 
   await expect(row).toHaveCount(1);
@@ -363,8 +337,7 @@ export async function openNoSubjectLevelWarning(page: Page) {
   const warning = page
     .locator("mat-dialog-container")
     .filter({
-      hasText:
-        "Nie dodałeś przedmioto-poziomu, czy mimo to chcesz zapisać rekord?",
+      hasText: "Nie dodałeś przedmioto-poziomu, czy mimo to chcesz zapisać rekord?",
     })
     .last();
 
@@ -422,10 +395,7 @@ export async function closeContactRequiredWarning(warning: Locator) {
   await expect(warning).toHaveCount(0);
 }
 
-export async function saveNewTeacherWithoutSubjectLevel(
-  page: Page,
-  form: Locator,
-) {
+export async function saveNewTeacherWithoutSubjectLevel(page: Page, form: Locator) {
   await newTeacherSaveButton(form).click();
 
   const warning = await openNoSubjectLevelWarning(page);
@@ -439,10 +409,7 @@ export async function saveNewTeacherWithoutSubjectLevel(
   return page.url().split("/").pop()!;
 }
 
-export async function saveNewTeacherWithSubjectLevel(
-  page: Page,
-  form: Locator,
-) {
+export async function saveNewTeacherWithSubjectLevel(page: Page, form: Locator) {
   await newTeacherSaveButton(form).click();
 
   await expect(form).toHaveCount(0);
@@ -615,11 +582,7 @@ export async function showSimilarTeacher(form: Locator, teacherId: string) {
  * =========================================================
  */
 
-export async function expectTeacherSubjectLevelOnCard(
-  page: Page,
-  subject: string,
-  level: string,
-) {
+export async function expectTeacherSubjectLevelOnCard(page: Page, subject: string, level: string) {
   /*
    * Sprawdzamy główną tabelę
    * "Przedmioto - poziomy".
