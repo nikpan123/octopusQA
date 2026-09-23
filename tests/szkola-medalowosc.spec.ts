@@ -29,6 +29,7 @@ import {
   prepareSchoolSearchByIdAndMedal,
   searchSchoolsByMedalsWithApi,
   waitForSchoolTeachersLoaded,
+  medalHistoryRows,
   type SchoolMedal,
   collectMedalHistoryEntries,
 } from "./support/school-medal";
@@ -727,6 +728,13 @@ test.describe("Medalowość szkoły", () => {
       await openMedalSchool(app, school);
 
       const history = await openSchoolHistory(page);
+
+      if (school.expectedMedal !== "Brak") {
+        await expect(
+          medalHistoryRows(history).first(),
+          `Historia szkoły ${school.id} powinna zawierać wpis medalowości`,
+        ).toBeVisible();
+      }
 
       const entries = await collectMedalHistoryEntries(page, history);
 

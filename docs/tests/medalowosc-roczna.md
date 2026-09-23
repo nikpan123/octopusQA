@@ -332,12 +332,36 @@ Nie regeneruj snapshotu po jobie w celu „naprawienia” niezgodności.
 
 ---
 
+## 13.1. Wykluczenie z regularnej regresji
+
+Oba testy roczne mają tag `@annual-medal`. Konfiguracja Playwrighta domyślnie wyklucza ten tag, dlatego poniższe polecenia nie wykonują `MED-YEAR-PREP` ani `MED-YEAR-01`:
+
+```powershell
+npm.cmd test
+npm.cmd run test:dev
+npm.cmd run test:test
+npm.cmd run test:workers:2
+npm.cmd run test:workers:4
+```
+
+Zakres można sprawdzić bez uruchamiania testów:
+
+```powershell
+npm.cmd run test:test -- --list
+```
+
+Regularna regresja powinna zawierać 171 testów. Pełny katalog zawiera 173 scenariusze, z czego dwa `MED-YEAR-*` należą wyłącznie do workflow rocznego.
+
+Nie ustawiaj globalnie zmiennej `OCTOPUS_INCLUDE_ANNUAL=1`. Jest ona ustawiana tylko na czas jawnego uruchomienia skryptów `test:annual:dev` i `test:annual:test`.
+
+---
+
 ## 14. Uruchomienie MED-YEAR-PREP
 
 ### DEV
 
 ```powershell
-npx playwright test tests/szkola-medalowosc-annual.spec.ts --grep "MED-YEAR-PREP" --config=playwright.config.ts
+npm.cmd run test:annual:dev -- --grep "MED-YEAR-PREP"
 ```
 
 Oczekiwany plik:
@@ -349,8 +373,10 @@ tests/data/medalowosc-annual-2026-dev.json
 ### TEST
 
 ```powershell
-npx playwright test tests/szkola-medalowosc-annual.spec.ts --grep "MED-YEAR-PREP" --config=playwright.test.config.ts
+npm.cmd run test:annual:test -- --grep "MED-YEAR-PREP"
 ```
+
+Nie uruchamiaj samego `npm.cmd run test:annual:test` bez `--grep`: wykonałoby to kolejno `MED-YEAR-PREP` i `MED-YEAR-01`. Etapy muszą pozostać rozdzielone jobem rocznym.
 
 Oczekiwany plik:
 
@@ -387,13 +413,13 @@ Przed `targetProcessDate` test jest pomijany.
 ### DEV
 
 ```powershell
-npx playwright test tests/szkola-medalowosc-annual.spec.ts --grep "MED-YEAR-01" --config=playwright.config.ts
+npm.cmd run test:annual:dev -- --grep "MED-YEAR-01"
 ```
 
 ### TEST
 
 ```powershell
-npx playwright test tests/szkola-medalowosc-annual.spec.ts --grep "MED-YEAR-01" --config=playwright.test.config.ts
+npm.cmd run test:annual:test -- --grep "MED-YEAR-01"
 ```
 
 ---

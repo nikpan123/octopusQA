@@ -144,7 +144,7 @@ test("HTTP 200 z istniejącym rekordem zapisuje błąd sprzątania", async () =>
   await assert.rejects(cleanupSuccessfulTeacher(page, data, async () => {}));
   assert.equal(data.cleanupStatus, "FAILED");
 });
-test("dużą listę usuwa w osobno potwierdzanych paczkach po 25 nauczycieli", async () => {
+test("dużą listę usuwa w osobno potwierdzanych paczkach po 10 nauczycieli", async () => {
   const selected = Array.from({ length: 26 }, (_, index) => {
     const id = `REG_${100000 + index}_abcdef`;
     return {
@@ -164,16 +164,19 @@ test("dużą listę usuwa w osobno potwierdzanych paczkach po 25 nauczycieli", a
   const page = pageWith([
     ...validationResponses,
     { status: 200, data: {} },
-    ...Array.from({ length: 25 }, () => ({ status: 204, data: null })),
+    ...Array.from({ length: 10 }, () => ({ status: 204, data: null })),
     { status: 200, data: {} },
-    { status: 204, data: null },
+    ...Array.from({ length: 10 }, () => ({ status: 204, data: null })),
+    { status: 200, data: {} },
+    ...Array.from({ length: 6 }, () => ({ status: 204, data: null })),
   ]);
 
   await cleanupTeacherBatch(page, selected, async () => {});
 
   const deletes = page.calls.filter((call) => call.method === "DELETE");
-  assert.equal(deletes.length, 2);
-  assert.equal(JSON.parse(deletes[0].params.jsonData).length, 25);
-  assert.equal(JSON.parse(deletes[1].params.jsonData).length, 1);
+  assert.equal(deletes.length, 3);
+  assert.equal(JSON.parse(deletes[0].params.jsonData).length, 10);
+  assert.equal(JSON.parse(deletes[1].params.jsonData).length, 10);
+  assert.equal(JSON.parse(deletes[2].params.jsonData).length, 6);
   assert(selected.every(({ run: item }) => item.cleanupStatus === "DELETED"));
 });

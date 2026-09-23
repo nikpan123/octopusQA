@@ -1,6 +1,6 @@
 import { test as base, expect } from "@playwright/test";
 
-import { readStoredSession, restoreSession, type AuthSession } from "../../scripts/auth.mjs";
+import { ensureSession, restoreSession, type AuthSession } from "../../scripts/auth.mjs";
 
 import { OctopusApiFactory } from "./api-factory";
 import { PerformanceMetrics } from "./performance";
@@ -19,9 +19,7 @@ export const test = base.extend<{
   // Przed każdym testem odczytujemy sesję z pliku bez uruchamiania dodatkowej
   // przeglądarki. Pełne logowanie następuje tylko tuż przed wygaśnięciem JWT.
   authSession: async ({ performanceMetrics }, use) => {
-    const authSession = await performanceMetrics.measure("fixture.auth", async () =>
-      readStoredSession(),
-    );
+    const authSession = await performanceMetrics.measure("fixture.auth", () => ensureSession());
 
     await use(authSession);
   },

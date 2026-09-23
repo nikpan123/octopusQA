@@ -13,6 +13,8 @@
     "test:headed": "playwright test --headed",
     "test:workers:2": "cross-env OCTOPUS_WORKERS=2 playwright test",
     "test:workers:4": "cross-env OCTOPUS_WORKERS=4 playwright test",
+    "test:annual:dev": "cross-env OCTOPUS_INCLUDE_ANNUAL=1 OCTOPUS_WORKERS=1 playwright test tests/szkola-medalowosc-annual.spec.ts --config=playwright.config.ts",
+    "test:annual:test": "cross-env OCTOPUS_INCLUDE_ANNUAL=1 OCTOPUS_WORKERS=1 playwright test tests/szkola-medalowosc-annual.spec.ts --config=playwright.test.config.ts",
     "test:ui": "playwright test --ui",
     "test:list": "playwright test --list",
     "cleanup:preview": "node scripts/cleanup-preview.mjs",

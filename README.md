@@ -16,7 +16,7 @@ Copy-Item .env.example .env
 
 Uzupełnij lokalny plik `.env`: dane GitLaba oraz `OCTOPUS_DEV_USERNAME` / `OCTOPUS_DEV_PASSWORD`; dla środowiska TEST także `OCTOPUS_TEST_USERNAME` / `OCTOPUS_TEST_PASSWORD`. Starsze `OCTOPUS_USERNAME` i `OCTOPUS_PASSWORD` nadal działają jako fallback dla DEV. GitLab i Octopus mają osobne dane.
 
-Przed każdym testem automat lokalnie sprawdza datę wygaśnięcia JWT, bez uruchamiania dodatkowej przeglądarki. Pełne logowanie wykonuje tylko wtedy, gdy sesji brakuje albo pozostało mniej niż 90 sekund jej ważności. Fixture odtwarza `sessionStorage`, ale nie wykonuje już startowej nawigacji do panelu nauczyciela; pierwszą stroną jest panel wymagany przez scenariusz. Jeśli potrzebne jest odświeżenie, automat loguje się przez GitLab, a następnie do Octopusa.
+Przed każdym testem automat lokalnie sprawdza datę wygaśnięcia JWT, bez uruchamiania dodatkowej przeglądarki. Pełne logowanie wykonuje tylko wtedy, gdy sesji brakuje albo pozostało mniej niż pięć minut jej ważności. Blokada między workerami gwarantuje, że sesję odświeża jeden proces, a pozostałe wykorzystują jego wynik. Fixture odtwarza `sessionStorage`, ale nie wykonuje startowej nawigacji do panelu nauczyciela; pierwszą stroną jest panel wymagany przez scenariusz.
 
 Sprawdzenie samego logowania, bez tworzenia szkół i nauczycieli:
 
@@ -52,6 +52,7 @@ Wybierz test i kliknij przycisk uruchomienia. Panel pokazuje kroki i ich wyniki.
 ## Kod do przeczytania
 
 - `tests/szkola-nauczyciel.spec.ts` — scenariusz i oczekiwane wyniki, opisane przez `test.step`.
+- `docs/tests/dodawanie-szkoly.md` — plan rozwoju testów formularza dodawania szkoły, scenariusze i wymagania dotyczące cleanupu.
 - `tests/walidacja-anulowanie.spec.ts` — 9 przypadków walidacji, anulowania i pustych wyników.
 - `tests/nauczyciel-rozszerzenie.spec.ts` — 6 przypadków zapisu nazwiska, walidacji kontaktu, wyszukiwania i drugiej szkoły.
 - `tests/support/shared-school.ts` — stabilna szkoła referencyjna używana przez testy edycji.
@@ -117,6 +118,8 @@ Reguły walidacji dla podanych przykładów sprawdzono w UI dev. To nie jest pe�
 
 Testy edycji korzystają ze szkoły referencyjnej właściwej dla środowiska. Nauczyciel, relacja ze szkołą i opcjonalne przedmioto-poziomy są przygotowywane przez API; UI wykonuje wyłącznie operację badaną przez scenariusz. Testy `ADD-*` i pełny smoke nadal tworzą nauczyciela przez interfejs. REL-02 bada dodanie drugiej relacji przez UI.
 
+Weryfikacja relacji od strony szkoły przełącza paginowaną tabelę nauczycieli na `Pokaż wszystkich`, a następnie identyfikuje rekord po ID. Wyszukiwanie `FIND-05` po e-mailu używa zdarzenia `input` bez dodatkowego `keyup`, ponieważ aktualny formularz po `keyup` kopiuje e-mail również do filtra nazwiska.
+
 ```powershell
 npm.cmd test -- nauczyciel-rozszerzenie.spec.ts
 ```
@@ -151,13 +154,27 @@ Na macOS/Linux użyj `npm` zamiast `npm.cmd`.
 npm.cmd test                 # bez widocznego okna
 npm.cmd run test:workers:2   # bezpieczny poziom domyślny
 npm.cmd run test:workers:4   # próba obciążeniowa
+npm.cmd run test:annual:dev  # osobny workflow rocznej medalowości, 1 worker
 npm.cmd run test:list        # lista testów bez wykonywania
 npm.cmd run check            # kontrola TypeScript, bez zmiany danych
 npm.cmd run test:auth        # mechanizm logowania na przechwyconych formularzach, fikcyjne dane
 npm.cmd test -- --grep @smoke # tylko testy oznaczone @smoke
 ```
 
-Jednocześnie może działać tylko jedno uruchomienie testów dla danego środowiska. Wewnątrz tego uruchomienia Playwright używa 2–4 workerów. Sesja jest sprawdzana lub odświeżana raz w globalnym setupie, a nie osobno w każdym workerze. Po przebiegu konsola pokazuje p50, p90, p95 i maksimum dla testu, setupu i cleanupu (w tym osobno faz globalnych), a pełny raport wraz z licznikami HTTP trafia do `runs/performance-<run-id>.json`.
+Jednocześnie może działać tylko jedno uruchomienie testów dla danego środowiska. Wewnątrz tego uruchomienia Playwright używa 2–4 workerów. Sesja jest kontrolowana w globalnym setupie i przed testami; gdy wymaga odświeżenia, blokada między procesami dopuszcza tylko jedno logowanie, a pozostałe workery odczytują jego wynik. Po przebiegu konsola pokazuje p50, p90, p95 i maksimum dla testu, setupu i cleanupu (w tym osobno faz globalnych), a pełny raport wraz z licznikami HTTP trafia do `runs/performance-<run-id>.json`.
+
+Dwufazowe testy `@annual-medal` są celowo wyłączone ze zwykłego `npm test`. Generują snapshot i kilka tysięcy żądań, dlatego uruchamia się je osobno przez `test:annual:dev` lub `test:annual:test`, zawsze na jednym workerze.
+
+Wykluczenie obowiązuje również dla `npm.cmd run test:test`, `test:dev` oraz profili 2–4 workerów. Lista regularnej regresji powinna zawierać 171 testów i można ją sprawdzić przez `npm.cmd run test:test -- --list`. Roczny skrypt zawsze uruchamiaj z `--grep "MED-YEAR-PREP"` albo `--grep "MED-YEAR-01"`; bez filtra wykona oba etapy w jednym przebiegu.
+
+### Pomiar skalowania z 23.09.2026
+
+| Workery |   Wynik | Czas całkowity | `test.total` p50 / p95 | Wniosek                                                                                 |
+| ------: | ------: | -------------: | ---------------------: | --------------------------------------------------------------------------------------- |
+|       2 | 171/171 |       19,7 min |       6,99 s / 17,95 s | profil domyślny i stabilny                                                              |
+|       4 | 166/171 |       15,9 min |       6,65 s / 20,05 s | profil eksperymentalny; 5 błędów pod obciążeniem, w tym HTTP 500 optimistic concurrency |
+
+Cztery workery skróciły przebieg o około 19%, ale podniosły p95 i ujawniły limit środowiska DEV. Dlatego `npm test` pozostaje przy dwóch workerach, a `test:workers:4` służy do kontrolowanych prób obciążeniowych. Raporty źródłowe: `runs/performance-1d8097ac-dbeb-467d-ab3f-6eb6e7b22763.json` i `runs/performance-4a30477c-13cd-43d5-bf3a-1b30b1cac0d6.json`.
 
 ## Zamówienia i klubowiczostwo
 

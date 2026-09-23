@@ -90,7 +90,16 @@ for (const criterion of ["Email", "Nazwisko"] as const) {
     const teacherId = await s.createTeacher(school.id, school.name);
     await s.app.openPanel("teacher");
     const search = await s.app.openSearch("teacher");
-    await typeValue(s.app.field(search, criterion), criterion === "Email" ? s.email : s.id);
+    const searchField = s.app.field(search, criterion);
+    if (criterion === "Email") {
+      // W tym formularzu keyup zmienia również model nazwiska. Dla e-maila
+      // wystarcza natywne zdarzenie input oraz opuszczenie pola.
+      await searchField.fill(s.email);
+      await searchField.press("Tab");
+      await expect(searchField).toHaveValue(s.email);
+    } else {
+      await typeValue(searchField, s.id);
+    }
     await search.getByRole("button", { name: "Szukaj", exact: true }).click();
     await expect(search).toHaveCount(0);
     const results = s.app.results("teacher");
@@ -138,10 +147,7 @@ test("REL-02: druga szkoła zachowuje pierwszą relację i pokazuje nauczyciela 
   await test.step("Znajdź tego samego nauczyciela w obu kartotekach szkół", async () => {
     for (const id of [school.id, secondId]) {
       await s.app.openPanel("school", id);
-      const teachers = page.getByRole("tabpanel", { name: "Nauczyciele", exact: true });
-      const row = teachers
-        .getByRole("row")
-        .filter({ has: page.getByRole("gridcell", { name: teacherId, exact: true }) });
+      const row = await s.app.schoolTeacherRow(teacherId);
       await expect(row).toHaveCount(1);
       await expect(row.getByRole("gridcell", { name: s.id, exact: true })).toBeVisible();
       await expect(row.getByRole("gridcell", { name: "Testowy", exact: true })).toBeVisible();

@@ -1,12 +1,15 @@
 import { expect, type Locator, type Page } from "@playwright/test";
 
 // fill wpisuje całość atomowo; End emituje keyup wymagany m.in. przez adres.
-// Długie pressSequentially koliduje z automatycznym ustawianiem fokusu dialogu.
+// Dialog może zostać jednokrotnie wyrenderowany ponownie po doczytaniu słowników,
+// dlatego ponawiamy całą operację, jeśli aplikacja wyczyściła już wpisaną wartość.
 export async function typeValue(input: Locator, value: string) {
-  await input.fill(value);
-  await input.press("End");
-  await input.press("Tab");
-  await expect(input).toHaveValue(value);
+  await expect(async () => {
+    await input.fill(value);
+    await input.press("End");
+    await input.press("Tab");
+    await expect(input).toHaveValue(value, { timeout: 1_000 });
+  }).toPass({ timeout: 20_000 });
 }
 
 export class Octopus {
@@ -32,7 +35,24 @@ export class Octopus {
   }
 
   async openPanel(kind: "teacher" | "school", id?: string) {
+    const relatedData = id
+      ? this.page.waitForResponse((response) => {
+          const url = new URL(response.url());
+          if (response.request().method() !== "GET") return false;
+          return kind === "teacher"
+            ? url.pathname === "/api/TeacherSubject/GetTeacherStatusHistory" &&
+                url.searchParams.get("teacherId") === id
+            : url.pathname === "/api/SchoolTeachers/GetSchoolTeachers" &&
+                url.searchParams.get("schoolId") === id;
+        })
+      : undefined;
+
     await this.page.goto(`/${kind}/${kind}-panel${id ? `/${id}` : ""}`);
+    if (relatedData) {
+      const response = await relatedData;
+      expect(response.ok(), `Dane powiązane panelu ${kind} powinny się załadować`).toBeTruthy();
+      await response.finished();
+    }
     await expect(
       this.page.getByRole("heading", {
         name: kind === "school" ? "Dane podstawowe szkoły" : "Dane podstawowe",
@@ -198,6 +218,27 @@ export class Octopus {
     await expect(
       this.page.getByRole("heading", { name: "Rekordów: 1", exact: true }),
     ).toBeVisible();
+  }
+
+  async schoolTeacherRow(teacherId: string) {
+    const teachers = this.page.getByRole("tabpanel", { name: "Nauczyciele", exact: true });
+    await expect(
+      teachers.getByRole("button", { name: /^Nauczyciele:\s*[1-9]\d*$/ }),
+      "Licznik nauczycieli szkoły powinien zakończyć ładowanie",
+    ).toBeVisible();
+    const showAll = teachers.getByRole("button", { name: "Pokaż wszystkich", exact: true });
+    await expect(showAll).toBeVisible();
+    await showAll.click();
+    const row = teachers
+      .getByRole("row")
+      .filter({ has: this.page.getByRole("gridcell", { name: teacherId, exact: true }) });
+    await expect(async () => {
+      await teachers.locator(".ag-body-viewport").evaluate((viewport) => {
+        viewport.scrollTop = viewport.scrollHeight;
+      });
+      await expect(row).toHaveCount(1, { timeout: 1_000 });
+    }).toPass({ timeout: 20_000 });
+    return row;
   }
 
   async editFirstName(value: string) {

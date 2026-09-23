@@ -17,11 +17,16 @@ export function createPlaywrightConfig(environment: OctopusEnvironment) {
     ? Math.min(4, Math.max(2, requestedWorkers))
     : 2;
   process.env.OCTOPUS_EFFECTIVE_WORKERS = String(workers);
+  const includeAnnualMedal = process.env.OCTOPUS_INCLUDE_ANNUAL === "1";
 
   console.log(`Playwright: środowisko ${environment.toUpperCase()} → ${baseURL}`);
 
   return defineConfig({
     testDir: "./tests",
+
+    // Dwufazowy test roczny generuje kilka tysięcy żądań i zapisuje snapshot.
+    // Uruchamiamy go wyłącznie jawnie, poza zwykłą regresją.
+    ...(includeAnnualMedal ? {} : { grepInvert: /@annual-medal/ }),
 
     globalSetup: "./scripts/cleanup-global-setup.mjs",
 

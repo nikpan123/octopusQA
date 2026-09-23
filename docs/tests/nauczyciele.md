@@ -41,6 +41,10 @@ Na jego podstawie powstają nazwisko, nazwa szkoły i adres e-mail w domenie `ex
 
 Setup testów `EDIT-*` nie przechodzi przez formularz dodawania. Factory API tworzy nauczyciela, relacje ze szkołami i przedmioto-poziomy, po czym scenariusz otwiera bezpośrednio kartę utworzonego rekordu. UI pozostaje warstwą testowaną dla samej edycji. Testy `ADD-*` nadal przygotowują nauczyciela przez UI, ponieważ dodawanie jest ich celem.
 
+`FIND-05` wyszukuje po unikalnym nazwisku i e-mailu oraz potwierdza dokładnie jeden wynik i właściwe ID. Dla pola e-mail helper emituje natywne zdarzenie `input` i opuszcza pole bez dodatkowego `keyup`; obecny formularz wyszukiwania po `keyup` kopiuje wartość e-maila również do modelu nazwiska, co zmieniałoby semantykę żądania.
+
+Otwarcie karty nauczyciela czeka na odpowiedź historii statusów, a snapshot historii na wyrenderowanie pierwszego rzeczywistego wiersza danych. Zapobiega to porównaniu częściowo załadowanej tabeli z jej stanem końcowym bez używania stałych opóźnień.
+
 Testy `ADD-*` korzystają również ze stałych szkół QA:
 
 |      ID | Nazwa       |
@@ -101,19 +105,20 @@ Do porównania historii przed i po anulowaniu służą snapshoty zwracane przez 
 
 ## 8. Najważniejsze helpery
 
-| Helper                                 | Odpowiedzialność                 |
-| -------------------------------------- | -------------------------------- |
-| `openNewTeacherForm()`                 | otwarcie formularza dodawania    |
-| `saveNewTeacherWithoutSubjectLevel()`  | zapis wraz z obsługą ostrzeżenia |
-| `addNewTeacherSubjectLevel()`          | dodanie przedmiotu i poziomu     |
-| `expectTeacherCreationHistoryChange()` | wpis historii utworzenia         |
-| `openBasicTeacherEdit()`               | podstawowa edycja nauczyciela    |
-| `openTeacherEmailEdit()`               | edycja e-maila                   |
-| `getSavedTeacherPhones()`              | odczyt zapisanych telefonów      |
-| `openTeacherPrivateAddressEdit()`      | edycja adresu prywatnego         |
-| `addTeacherNote()`                     | zapis notatki                    |
-| `openTeacherRodoEdit()`                | edycja zgód RODO                 |
-| `expectTeacherHistoryChange()`         | asercja pojedynczej zmiany       |
+| Helper                                 | Odpowiedzialność                                               |
+| -------------------------------------- | -------------------------------------------------------------- |
+| `openNewTeacherForm()`                 | otwarcie formularza dodawania                                  |
+| `saveNewTeacherWithoutSubjectLevel()`  | zapis wraz z obsługą ostrzeżenia                               |
+| `addNewTeacherSubjectLevel()`          | dodanie przedmiotu i poziomu                                   |
+| `expectTeacherCreationHistoryChange()` | wpis historii utworzenia                                       |
+| `openBasicTeacherEdit()`               | podstawowa edycja nauczyciela                                  |
+| `openTeacherEmailEdit()`               | edycja e-maila                                                 |
+| `getSavedTeacherPhones()`              | odczyt zapisanych telefonów                                    |
+| `openTeacherPrivateAddressEdit()`      | edycja adresu prywatnego                                       |
+| `addTeacherNote()`                     | zapis notatki                                                  |
+| `openTeacherRodoEdit()`                | edycja zgód RODO                                               |
+| `expectTeacherHistoryChange()`         | asercja pojedynczej zmiany                                     |
+| `schoolTeacherRow()`                   | wiersz nauczyciela po pokazaniu całej paginowanej listy szkoły |
 
 ## 9. Uruchamianie
 

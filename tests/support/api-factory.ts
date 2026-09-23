@@ -29,6 +29,13 @@ type CreatedTeacher = {
   email: string;
 };
 
+function responseError(method: string, pathname: string, status: number, body: string): Error {
+  const diagnostic = body.trim().slice(0, 500);
+  return new Error(
+    `${method} ${pathname} zwrócił HTTP ${status}${diagnostic ? `: ${diagnostic}` : "."}`,
+  );
+}
+
 function localStorageValue(authSession: AuthSession, name: string): string {
   const value = authSession.storageState.origins
     .find((entry) => entry.origin === authSession.session.origin)
@@ -63,8 +70,9 @@ export class OctopusApiFactory {
 
       this.metrics.increment("api.requests");
       this.metrics.increment(`api.status.${response.status()}`);
-      expect(response.ok(), `GET ${pathname} powinien zakończyć się powodzeniem`).toBeTruthy();
-      return (await response.json()) as T;
+      const text = await response.text();
+      if (!response.ok()) throw responseError("GET", pathname, response.status(), text);
+      return JSON.parse(text) as T;
     });
   }
 
@@ -79,9 +87,8 @@ export class OctopusApiFactory {
 
       this.metrics.increment("api.requests");
       this.metrics.increment(`api.status.${response.status()}`);
-      expect(response.ok(), `POST ${pathname} powinien zakończyć się powodzeniem`).toBeTruthy();
-
       const text = await response.text();
+      if (!response.ok()) throw responseError("POST", pathname, response.status(), text);
       return (text ? JSON.parse(text) : undefined) as T;
     });
   }

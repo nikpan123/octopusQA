@@ -49,14 +49,14 @@ utworzenie szkoły
 
 ## 5. Fixture współdzielonej szkoły
 
-`shared-school.ts` wyszukuje trwałą szkołę przypisaną do środowiska i udostępnia ją testom jako fixture `school`:
+`shared-school.ts` udostępnia testom jako fixture `school` stabilną, referencyjną szkołę medalową przypisaną do środowiska:
 
 ```ts
 school.id;
 school.name;
 ```
 
-Na DEV szkoła ma nazwę `AUTOMAT TEACHER DEV SP`, a na TEST odpowiednio `AUTOMAT TEACHER TEST SP`. Fixture jest przygotowywana raz na proces wykonawczy: najpierw wyszukuje dokładną nazwę i tworzy szkołę tylko wtedy, gdy jeszcze nie istnieje. Dzięki temu testy edycji i relacji nie tworzą dziesiątek szkół podczas pełnego przebiegu.
+Fixture nie wykonuje nawigacji ani wyszukiwania przez UI i nie tworzy szkoły. Relację nauczyciela ze szkołą przygotowuje factory API razem z rekordem nauczyciela. Dzięki temu testy edycji i relacji nie powtarzają kosztownego setupu interfejsowego.
 
 ## 6. Asercje relacji
 
@@ -69,6 +69,8 @@ nazwisko
 ```
 
 Takie podejście chroni test przed przypadkowym dopasowaniem osoby o podobnej nazwie.
+
+Lista nauczycieli szkoły jest paginowana. Helper `schoolTeacherRow()` przełącza tabelę na `Pokaż wszystkich` przed wyszukaniem wiersza po ID; sama obecność nauczyciela w odpowiedzi API nie oznacza jeszcze, że jego wiersz znajduje się na aktualnie wyrenderowanej stronie tabeli.
 
 ## 7. Uruchamianie
 

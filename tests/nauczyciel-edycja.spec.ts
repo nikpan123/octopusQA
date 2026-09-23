@@ -3491,17 +3491,7 @@ test("EDIT-46: edycja danych nauczyciela nie usuwa relacji ze szkołą @teacher 
    */
   await s.app.openPanel("school", school.id);
 
-  const teachers = page.getByRole("tabpanel", {
-    name: "Nauczyciele",
-    exact: true,
-  });
-
-  const teacherRow = teachers.getByRole("row").filter({
-    has: page.getByRole("gridcell", {
-      name: teacherId,
-      exact: true,
-    }),
-  });
+  const teacherRow = await s.app.schoolTeacherRow(teacherId);
 
   await expect(teacherRow).toHaveCount(1);
 
