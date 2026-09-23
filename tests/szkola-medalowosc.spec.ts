@@ -33,11 +33,11 @@ import {
   expectMedalMatchesSubjectCount,
   expectUniqueMedalSubjects,
   schoolTeachersBySubject,
-  getLatestMedalHistoryValue,
   prepareSchoolSearchByIdAndMedal,
   searchSchoolsByMedalsWithApi,
   waitForSchoolTeachersLoaded,
   type SchoolMedal,
+  collectMedalHistoryEntries,
 } from "./support/school-medal";
 
 test.describe("Medalowość szkoły", () => {
@@ -258,19 +258,37 @@ test.describe("Medalowość szkoły", () => {
 
     const history = await openSchoolHistory(page);
 
-    const medalRow = medalHistoryRowByValue(history, "2025/2026 Złoto");
+    const entries = await collectMedalHistoryEntries(page, history);
 
-    await expect(medalRow).toHaveCount(1);
+    expect(
+      GOLD_SCHOOL.expectedHistoryValue,
+      "Dla szkoły referencyjnej powinien być zdefiniowany oczekiwany wpis historii",
+    ).toBeDefined();
 
-    await expect(historyFieldCell(medalRow)).toHaveText("Medal");
+    expect(
+      GOLD_SCHOOL.expectedHistoryDate,
+      "Dla szkoły referencyjnej powinna być zdefiniowana oczekiwana data historii",
+    ).toBeDefined();
 
-    await expect(historyValueCell(medalRow)).toHaveText("2025/2026 Złoto");
+    const medalEntry = entries.find(
+      (entry) => entry.value === GOLD_SCHOOL.expectedHistoryValue,
+    );
 
-    await expect(historyAuthorCell(medalRow)).toHaveText("automat");
+    console.log(
+      `MED-20: znaleziono wpis "${medalEntry!.value}" ` +
+        `z datą ${medalEntry!.date}.`,
+    );
 
-    await expect(historySourceCell(medalRow)).toHaveText("Formularz klubowy");
+    expect(
+      medalEntry,
+      `Historia powinna zawierać wpis "${GOLD_SCHOOL.expectedHistoryValue}"`,
+    ).toBeDefined();
 
-    await expect(historyDateCell(medalRow)).toHaveText("2026-10-01 00:00");
+    expect(medalEntry!.author).toBe("automat");
+
+    expect(medalEntry!.source).toBe("Formularz klubowy");
+
+    expect(medalEntry!.date).toBe(GOLD_SCHOOL.expectedHistoryDate);
   });
 
   test("MED-21: historia zawiera tylko jeden wpis medalowy dla danego roku szkolnego", async ({
@@ -282,11 +300,30 @@ test.describe("Medalowość szkoły", () => {
 
     const history = await openSchoolHistory(page);
 
-    const medalRowsForSeason = medalHistoryRows(history).filter({
-      hasText: "2025/2026",
-    });
+    const entries = await collectMedalHistoryEntries(page, history);
 
-    await expect(medalRowsForSeason).toHaveCount(1);
+    expect(
+      GOLD_SCHOOL.expectedHistoryValue,
+      "Dla szkoły referencyjnej powinien być zdefiniowany oczekiwany wpis historii",
+    ).toBeDefined();
+
+    const expectedSeason = GOLD_SCHOOL.expectedHistoryValue!.split(" ")[0];
+
+    const entriesForSeason = entries.filter((entry) =>
+      entry.value.startsWith(`${expectedSeason} `),
+    );
+
+    console.log(
+      `MED-21: szkoła ${GOLD_SCHOOL.id}. ` +
+        `Sezon ${expectedSeason}. ` +
+        `Znaleziono ${entriesForSeason.length} wpisów medalowych: ` +
+        `${entriesForSeason.map((entry) => entry.value).join(", ")}.`,
+    );
+
+    expect(
+      entriesForSeason,
+      `Historia powinna zawierać dokładnie jeden wpis medalowy dla sezonu ${expectedSeason}`,
+    ).toHaveLength(1);
   });
 
   test("MED-22: wartość wpisu medalowego ma format RRRR/RRRR Medal", async ({
@@ -298,12 +335,22 @@ test.describe("Medalowość szkoły", () => {
 
     const history = await openSchoolHistory(page);
 
-    const medalRows = medalHistoryRows(history);
+    const entries = await collectMedalHistoryEntries(page, history);
 
-    await expect(medalRows.first()).toBeVisible();
+    expect(
+      entries.length,
+      "Historia powinna zawierać co najmniej jeden wpis medalowy",
+    ).toBeGreaterThan(0);
 
-    await expect(historyValueCell(medalRows.first())).toHaveText(
-      /^\d{4}\/\d{4} (Złoto|Srebro|Brąz|Brak)$/,
+    for (const entry of entries) {
+      expect(
+        entry.value,
+        `Nieprawidłowy format wpisu medalowego: "${entry.value}"`,
+      ).toMatch(/^\d{4}\/\d{4} (Złoto|Srebro|Brąz|Brak)$/);
+    }
+
+    console.log(
+      `MED-22: sprawdzono format ${entries.length} wpisów medalowych.`,
     );
   });
 
@@ -316,17 +363,23 @@ test.describe("Medalowość szkoły", () => {
 
     const history = await openSchoolHistory(page);
 
-    const medalRows = medalHistoryRows(history);
+    const entries = await collectMedalHistoryEntries(page, history);
 
-    await expect(medalRows.first()).toBeVisible();
+    expect(
+      entries.length,
+      "Historia powinna zawierać co najmniej jeden wpis medalowy",
+    ).toBeGreaterThan(0);
 
-    const count = await medalRows.count();
-
-    for (let i = 0; i < count; i++) {
-      await expect(historySourceCell(medalRows.nth(i))).toHaveText(
-        "Formularz klubowy",
-      );
+    for (const entry of entries) {
+      expect(
+        entry.source,
+        `Wpis "${entry.value}" powinien mieć źródło Formularz klubowy`,
+      ).toBe("Formularz klubowy");
     }
+
+    console.log(
+      `MED-23: sprawdzono źródło ${entries.length} wpisów medalowych.`,
+    );
   });
 
   test("MED-24: wpisy medalowe w historii mają uzupełnionego autora", async ({
@@ -338,15 +391,23 @@ test.describe("Medalowość szkoły", () => {
 
     const history = await openSchoolHistory(page);
 
-    const medalRows = medalHistoryRows(history);
+    const entries = await collectMedalHistoryEntries(page, history);
 
-    await expect(medalRows.first()).toBeVisible();
+    expect(
+      entries.length,
+      "Historia powinna zawierać co najmniej jeden wpis medalowy",
+    ).toBeGreaterThan(0);
 
-    const count = await medalRows.count();
-
-    for (let i = 0; i < count; i++) {
-      await expect(historyAuthorCell(medalRows.nth(i))).not.toHaveText("");
+    for (const entry of entries) {
+      expect(
+        entry.author,
+        `Wpis "${entry.value}" powinien mieć uzupełnionego autora`,
+      ).not.toBe("");
     }
+
+    console.log(
+      `MED-24: sprawdzono autora dla ${entries.length} wpisów medalowych.`,
+    );
   });
 
   test("MED-25: wpisy medalowe w historii są zapisane z datą 1 października", async ({
@@ -358,17 +419,21 @@ test.describe("Medalowość szkoły", () => {
 
     const history = await openSchoolHistory(page);
 
-    const medalRows = medalHistoryRows(history);
+    const entries = await collectMedalHistoryEntries(page, history);
 
-    await expect(medalRows.first()).toBeVisible();
+    expect(
+      entries.length,
+      "Historia powinna zawierać co najmniej jeden wpis medalowy",
+    ).toBeGreaterThan(0);
 
-    const count = await medalRows.count();
-
-    for (let i = 0; i < count; i++) {
-      await expect(historyDateCell(medalRows.nth(i))).toHaveText(
-        /^\d{4}-10-01 \d{2}:\d{2}$/,
-      );
+    for (const entry of entries) {
+      expect(
+        entry.date,
+        `Wpis "${entry.value}" powinien mieć datę przypadającą na 1 października`,
+      ).toMatch(/^\d{4}-10-01 \d{2}:\d{2}$/);
     }
+
+    console.log(`MED-25: sprawdzono datę ${entries.length} wpisów medalowych.`);
   });
 
   test("MED-26: wpisy medalowe w historii są posortowane od najnowszego sezonu do najstarszego", async ({
@@ -376,36 +441,52 @@ test.describe("Medalowość szkoły", () => {
   }) => {
     const app = new Octopus(page);
 
-    await openMedalSchool(app, GOLD_SCHOOL);
+    const schools = [
+      GOLD_SCHOOL,
+      SILVER_SCHOOL,
+      BRONZE_SCHOOL,
+      NO_MEDAL_SCHOOL,
+    ];
 
-    const history = await openSchoolHistory(page);
+    for (const school of schools) {
+      await openMedalSchool(app, school);
 
-    const medalRows = medalHistoryRows(history);
+      const history = await openSchoolHistory(page);
 
-    await expect(medalRows.first()).toBeVisible();
-
-    const count = await medalRows.count();
-
-    expect(count).toBeGreaterThan(1);
-
-    const seasons: number[] = [];
-
-    for (let i = 0; i < count; i++) {
-      const value = await historyValueCell(medalRows.nth(i)).innerText();
-
-      const match = value.match(/^(\d{4})\/\d{4}/);
+      const entries = await collectMedalHistoryEntries(page, history);
 
       expect(
-        match,
-        `Nie udało się odczytać roku szkolnego z wartości: "${value}"`,
-      ).not.toBeNull();
+        entries.length,
+        `Historia szkoły ${school.id} powinna zawierać co najmniej jeden wpis medalowy`,
+      ).toBeGreaterThan(0);
 
-      seasons.push(Number(match![1]));
+      const seasons: number[] = [];
+
+      for (const entry of entries) {
+        const match = entry.value.match(
+          /^(\d{4})\/\d{4} (Złoto|Srebro|Brąz|Brak)$/,
+        );
+
+        expect(
+          match,
+          `Nie udało się odczytać roku szkolnego z wartości: "${entry.value}"`,
+        ).not.toBeNull();
+
+        seasons.push(Number(match![1]));
+      }
+
+      const expectedOrder = [...seasons].sort((a, b) => b - a);
+
+      expect(
+        seasons,
+        `Historia medalowości szkoły ${school.id} powinna być posortowana od najnowszego sezonu do najstarszego`,
+      ).toEqual(expectedOrder);
+
+      console.log(
+        `MED-26: szkoła ${school.id}. ` +
+          `Sprawdzono kolejność ${entries.length} wpisów medalowych.`,
+      );
     }
-
-    const expectedOrder = [...seasons].sort((a, b) => b - a);
-
-    expect(seasons).toEqual(expectedOrder);
   });
 
   test("MED-27: wyszukiwanie po Medal = Złoto zwraca tylko szkoły ze złotym medalem", async ({
@@ -878,19 +959,54 @@ test.describe("Medalowość szkoły", () => {
 
       const history = await openSchoolHistory(page);
 
-      const latestHistoryValue = await getLatestMedalHistoryValue(history);
+      const entries = await collectMedalHistoryEntries(page, history);
 
-      const historyMedal = latestHistoryValue.replace(/^\d{4}\/\d{4}\s+/, "");
+      if (entries.length === 0) {
+        console.log(
+          `MED-49: szkoła ${school.id} "${school.name}". ` +
+            `Brak wpisów historii medalowości. ` +
+            `Aktualny medal API: ${apiMedalData.medalCategoryName}.`,
+        );
+
+        expect(
+          apiMedalData.medalCategoryName,
+          `Szkoła ${school.id} bez historii medalowości powinna mieć aktualnie wartość Brak`,
+        ).toBe("Brak");
+
+        continue;
+      }
+
+      const parsedEntries = entries.map((entry) => {
+        const match = entry.value.match(
+          /^(\d{4})\/(\d{4}) (Złoto|Srebro|Brąz|Brak)$/,
+        );
+
+        expect(
+          match,
+          `Nieprawidłowy format wpisu historii medalowości: "${entry.value}"`,
+        ).not.toBeNull();
+
+        return {
+          entry,
+          startYear: Number(match![1]),
+        };
+      });
+
+      parsedEntries.sort((a, b) => b.startYear - a.startYear);
+
+      const latestEntry = parsedEntries[0].entry;
+
+      const historyMedal = latestEntry.value.replace(/^\d{4}\/\d{4}\s+/, "");
 
       console.log(
         `MED-49: szkoła ${school.id} "${school.name}". ` +
-          `Najnowszy wpis historii: "${latestHistoryValue}". ` +
-          `Medal w API: ${apiMedalData.medalCategoryName}.`,
+          `Najnowszy wpis: "${latestEntry.value}". ` +
+          `Medal API: ${apiMedalData.medalCategoryName}.`,
       );
 
       expect(
         historyMedal,
-        `Historia medalowości szkoły ${school.id} powinna być zgodna z API`,
+        `Najnowszy wpis historii szkoły ${school.id} powinien być zgodny z API`,
       ).toBe(apiMedalData.medalCategoryName);
     }
   });
@@ -912,22 +1028,31 @@ test.describe("Medalowość szkoły", () => {
 
       const history = await openSchoolHistory(page);
 
-      const rows = medalHistoryRows(history);
+      const entries = await collectMedalHistoryEntries(page, history);
 
-      await expect(rows.first()).toBeVisible();
+      if (entries.length === 0) {
+        expect(
+          school.expectedMedal,
+          `Szkoła ${school.id} bez historii medalowości powinna mieć wartość Brak`,
+        ).toBe("Brak");
 
-      const count = await rows.count();
+        console.log(
+          `MED-50: szkoła ${school.id}. ` + `Brak wpisów historii medalowości.`,
+        );
+
+        continue;
+      }
 
       const seasons: string[] = [];
 
-      for (let i = 0; i < count; i++) {
-        const value = (await historyValueCell(rows.nth(i)).innerText()).trim();
-
-        const match = value.match(/^(\d{4}\/\d{4}) (Złoto|Srebro|Brąz|Brak)$/);
+      for (const entry of entries) {
+        const match = entry.value.match(
+          /^(\d{4}\/\d{4}) (Złoto|Srebro|Brąz|Brak)$/,
+        );
 
         expect(
           match,
-          `Nieprawidłowy wpis historii medalowości: "${value}"`,
+          `Nieprawidłowy wpis historii medalowości: "${entry.value}"`,
         ).not.toBeNull();
 
         seasons.push(match![1]);
@@ -936,10 +1061,9 @@ test.describe("Medalowość szkoły", () => {
       const uniqueSeasons = new Set(seasons);
 
       console.log(
-        `MED-50: szkoła ${school.id} "${school.name}". ` +
-          `Pobrano ${seasons.length} wpisów medalowości. ` +
-          `Liczba unikalnych lat szkolnych: ${uniqueSeasons.size}. ` +
-          `Lata: ${seasons.join(", ")}.`,
+        `MED-50: szkoła ${school.id}. ` +
+          `Wpisów: ${seasons.length}, ` +
+          `unikalnych sezonów: ${uniqueSeasons.size}.`,
       );
 
       expect(
@@ -966,31 +1090,32 @@ test.describe("Medalowość szkoły", () => {
 
       const history = await openSchoolHistory(page);
 
-      const rows = medalHistoryRows(history);
+      const entries = await collectMedalHistoryEntries(page, history);
 
-      await expect(rows.first()).toBeVisible();
-
-      const count = await rows.count();
-
-      const sources: string[] = [];
-
-      for (let i = 0; i < count; i++) {
-        const source = (
-          await historySourceCell(rows.nth(i)).innerText()
-        ).trim();
-
-        sources.push(source);
-
+      if (entries.length === 0) {
         expect(
-          source,
-          `Nieprawidłowe źródło wpisu medalowości szkoły ${school.id}`,
+          school.expectedMedal,
+          `Szkoła ${school.id} bez historii medalowości powinna mieć wartość Brak`,
+        ).toBe("Brak");
+
+        console.log(
+          `MED-51: szkoła ${school.id}. ` +
+            `Brak wpisów medalowości do sprawdzenia.`,
+        );
+
+        continue;
+      }
+
+      for (const entry of entries) {
+        expect(
+          entry.source,
+          `Wpis "${entry.value}" szkoły ${school.id} powinien mieć źródło Formularz klubowy`,
         ).toBe("Formularz klubowy");
       }
 
       console.log(
-        `MED-51: szkoła ${school.id} "${school.name}". ` +
-          `Sprawdzono ${count} wpisów medalowości. ` +
-          `Źródła: ${sources.join(", ")}.`,
+        `MED-51: szkoła ${school.id}. ` +
+          `Sprawdzono źródło ${entries.length} wpisów.`,
       );
     }
   });
@@ -1011,45 +1136,47 @@ test.describe("Medalowość szkoły", () => {
       await openMedalSchool(app, school);
 
       const history = await openSchoolHistory(page);
-      const rows = medalHistoryRows(history);
 
-      await expect(rows.first()).toBeVisible();
+      const entries = await collectMedalHistoryEntries(page, history);
 
-      const count = await rows.count();
+      if (entries.length === 0) {
+        expect(
+          school.expectedMedal,
+          `Szkoła ${school.id} bez historii medalowości powinna mieć wartość Brak`,
+        ).toBe("Brak");
 
-      for (let i = 0; i < count; i++) {
-        const row = rows.nth(i);
+        console.log(
+          `MED-52: szkoła ${school.id}. ` +
+            `Brak wpisów medalowości do sprawdzenia.`,
+        );
 
-        const value = (await historyValueCell(row).innerText()).trim();
+        continue;
+      }
 
-        const date = (await historyDateCell(row).innerText()).trim();
-
-        const match = value.match(
+      for (const entry of entries) {
+        const match = entry.value.match(
           /^(\d{4})\/(\d{4}) (Złoto|Srebro|Brąz|Brak)$/,
         );
 
         expect(
           match,
-          `Nieprawidłowy wpis historii medalowości: "${value}"`,
+          `Nieprawidłowy wpis historii medalowości: "${entry.value}"`,
         ).not.toBeNull();
 
         const seasonEndYear = match![2];
 
         const expectedDate = `${seasonEndYear}-10-01`;
 
-        console.log(
-          `MED-52: szkoła ${school.id}. ` +
-            `Sezon: ${match![1]}/${seasonEndYear}. ` +
-            `Medal: ${match![3]}. ` +
-            `Data wpisu: ${date}. ` +
-            `Oczekiwana data: ${expectedDate}.`,
-        );
-
         expect(
-          date,
-          `Wpis medalowości "${value}" powinien być zapisany 1 października ${seasonEndYear}`,
+          entry.date,
+          `Wpis "${entry.value}" szkoły ${school.id} powinien być zapisany 1 października ${seasonEndYear}`,
         ).toMatch(new RegExp(`^${expectedDate} \\d{2}:\\d{2}$`));
       }
+
+      console.log(
+        `MED-52: szkoła ${school.id}. ` +
+          `Sprawdzono datę ${entries.length} wpisów.`,
+      );
     }
   });
 
@@ -1069,30 +1196,34 @@ test.describe("Medalowość szkoły", () => {
       await openMedalSchool(app, school);
 
       const history = await openSchoolHistory(page);
-      const rows = medalHistoryRows(history);
 
-      await expect(rows.first()).toBeVisible();
+      const entries = await collectMedalHistoryEntries(page, history);
 
-      const count = await rows.count();
-
-      for (let i = 0; i < count; i++) {
-        const row = rows.nth(i);
-
-        const value = (await historyValueCell(row).innerText()).trim();
-
-        const author = (await historyAuthorCell(row).innerText()).trim();
+      if (entries.length === 0) {
+        expect(
+          school.expectedMedal,
+          `Szkoła ${school.id} bez historii medalowości powinna mieć wartość Brak`,
+        ).toBe("Brak");
 
         console.log(
-          `MED-53: szkoła ${school.id} "${school.name}". ` +
-            `Wpis: "${value}". ` +
-            `Autor: "${author}".`,
+          `MED-53: szkoła ${school.id}. ` +
+            `Brak wpisów medalowości do sprawdzenia.`,
         );
 
+        continue;
+      }
+
+      for (const entry of entries) {
         expect(
-          author,
-          `Wpis medalowości "${value}" szkoły ${school.id} powinien zostać zapisany przez automat`,
+          entry.author,
+          `Wpis "${entry.value}" szkoły ${school.id} powinien zostać zapisany przez automat`,
         ).toBe("automat");
       }
+
+      console.log(
+        `MED-53: szkoła ${school.id}. ` +
+          `Sprawdzono autora ${entries.length} wpisów.`,
+      );
     }
   });
 

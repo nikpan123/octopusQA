@@ -46,6 +46,35 @@ const octopusBaseDomain = octopusHost.split(".").slice(-2).join(".");
 // playwright/.auth/test/
 const authDir = path.join(root, "playwright", ".auth", environment);
 
+const minimumSessionLifetimeSeconds = 300;
+
+export function sessionHasMinimumLifetime(
+  authSession,
+  minimumLifetimeSeconds = minimumSessionLifetimeSeconds,
+  nowSeconds = Date.now() / 1000,
+) {
+  const tokenEntry = authSession?.storageState?.origins
+    ?.find((item) => item.origin === origin)
+    ?.localStorage?.find((item) => item.name === "token");
+
+  if (!tokenEntry?.value) return false;
+
+  try {
+    let token = tokenEntry.value;
+    try {
+      token = JSON.parse(token);
+    } catch {
+      // Token bywa zapisany bez otaczającego JSON-a.
+    }
+    const parts = String(token).split(".");
+    if (parts.length !== 3) return false;
+    const payload = JSON.parse(Buffer.from(parts[1], "base64url").toString());
+    return Number(payload.exp) - nowSeconds > minimumLifetimeSeconds;
+  } catch {
+    return false;
+  }
+}
+
 function credentials() {
   const envFile = path.join(root, ".env");
 
@@ -122,6 +151,43 @@ async function ready(page, timeout = 30_000) {
     .waitFor({
       timeout,
     });
+}
+
+function isPanelUrl(url) {
+  return url.origin === origin && /^\/(teacher|school)\//.test(url.pathname);
+}
+
+function isLoginUrl(url) {
+  return (
+    (url.origin === origin && url.pathname === "/login") ||
+    (url.origin === gitlabOrigin && url.pathname === "/users/sign_in")
+  );
+}
+
+// Przy nieaktualnej sesji aplikacja szybko przechodzi na ekran logowania.
+// Traktujemy ten adres jako gotowy wynik negatywny zamiast czekać, aż
+// wygaśnie timeout oczekiwania na panel.
+export async function hasActiveSession(page, timeout = 8_000) {
+  await page.goto(panel, { waitUntil: "domcontentloaded" });
+
+  await page.waitForURL((url) => isPanelUrl(url) || isLoginUrl(url), {
+    timeout,
+  });
+
+  if (isLoginUrl(new URL(page.url()))) {
+    return false;
+  }
+
+  await Promise.all([
+    page.getByRole("button", { name: "Wyloguj", exact: true }).waitFor({
+      timeout,
+    }),
+    page.getByRole("button", { name: "Szukaj", exact: true }).waitFor({
+      timeout,
+    }),
+  ]);
+
+  return true;
 }
 
 // Dane wpisujemy wyłącznie na dwóch jawnie
@@ -218,7 +284,9 @@ async function capture(context, page) {
   for (const [name, data] of files) {
     const target = path.join(authDir, name);
 
-    const temporary = `${target}.tmp`;
+    // Równoległe workery mogą odświeżyć tę samą sesję w podobnym czasie.
+    // Osobny plik procesu zapobiega kolizji wspólnej nazwy *.tmp.
+    const temporary = `${target}.${process.pid}.tmp`;
 
     await writeFile(temporary, JSON.stringify(data), {
       mode: 0o600,
@@ -234,8 +302,6 @@ async function capture(context, page) {
 }
 
 export async function ensureSession({ force = false } = {}) {
-  console.log(`Logowanie: środowisko ${config.name} → ${origin}`);
-
   const runId = process.env.OCTOPUS_AUTH_RUN_ID;
 
   const failureFile =
@@ -251,16 +317,36 @@ export async function ensureSession({ force = false } = {}) {
     );
   }
 
+  const userFile = path.join(authDir, "user.json");
+  const sessionFile = path.join(authDir, "session.json");
+  let storedSession;
+
+  if (!force && existsSync(userFile) && existsSync(sessionFile)) {
+    try {
+      storedSession = {
+        storageState: JSON.parse(readFileSync(userFile, "utf8")),
+        session: JSON.parse(readFileSync(sessionFile, "utf8")),
+      };
+      if (sessionHasMinimumLifetime(storedSession)) {
+        return storedSession;
+      }
+      console.log(
+        `Logowanie ${config.name}: token wkrótce wygaśnie; odświeżam sesję przed testem.`,
+      );
+      storedSession = undefined;
+    } catch {
+      storedSession = undefined;
+    }
+  }
+
+  console.log(`Logowanie: środowisko ${config.name} → ${origin}`);
+
   // Osobny browser bez trace/screenshots/video,
   // poza raportem właściwego testu.
   const browser = await chromium.launch();
 
   try {
-    const userFile = path.join(authDir, "user.json");
-
-    const sessionFile = path.join(authDir, "session.json");
-
-    if (!force && existsSync(userFile) && existsSync(sessionFile)) {
+    if (!force && storedSession) {
       let context;
 
       try {
@@ -275,9 +361,9 @@ export async function ensureSession({ force = false } = {}) {
 
         const page = await context.newPage();
 
-        await page.goto(panel);
-
-        await ready(page, 8_000);
+        if (!(await hasActiveSession(page))) {
+          throw new Error("Zapisana sesja wygasła.");
+        }
 
         const result = await capture(context, page);
 

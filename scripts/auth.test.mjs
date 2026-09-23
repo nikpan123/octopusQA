@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { chromium } from '@playwright/test';
-import { authenticate, restoreSession } from './auth.mjs';
+import { authenticate, hasActiveSession, restoreSession, sessionHasMinimumLifetime } from './auth.mjs';
 
 const octopus = 'https://octopus.gwodev.pl';
 const gitlab = 'https://gitlab.gwo.pl';
@@ -9,6 +9,23 @@ const secrets = {
   GITLAB_USERNAME: 'gitlab-test-user', GITLAB_PASSWORD: 'gitlab-test-password',
   OCTOPUS_USERNAME: 'octopus-test-user', OCTOPUS_PASSWORD: 'octopus-test-password',
 };
+
+function authSessionExpiringAt(exp) {
+  const token = `header.${Buffer.from(JSON.stringify({ exp })).toString('base64url')}.signature`;
+  return {
+    storageState: {
+      cookies: [],
+      origins: [{ origin: octopus, localStorage: [{ name: 'token', value: JSON.stringify(token) }] }],
+    },
+    session: { origin: octopus, values: {} },
+  };
+}
+
+test('lokalna kontrola JWT wymaga bezpiecznego zapasu ważności', () => {
+  assert.equal(sessionHasMinimumLifetime(authSessionExpiringAt(1300), 120, 1000), true);
+  assert.equal(sessionHasMinimumLifetime(authSessionExpiringAt(1100), 120, 1000), false);
+  assert.equal(sessionHasMinimumLifetime({ storageState: { origins: [] } }, 120, 1000), false);
+});
 
 for (const withGitlab of [true, false]) {
   test(`logowanie przez przechwycone formularze: GitLab=${withGitlab}`, async () => {
@@ -55,5 +72,39 @@ test('sessionStorage odtwarzany tylko dla Octopusa', async () => {
     assert.equal(await page.evaluate(() => sessionStorage.getItem('exampleToken')), 'fictional');
     await page.goto(gitlab);
     assert.equal(await page.evaluate(() => sessionStorage.getItem('exampleToken')), null);
+  } finally { await browser.close(); }
+});
+
+test('ekran logowania natychmiast oznacza zapisaną sesję jako nieaktualną', async () => {
+  const browser = await chromium.launch();
+  try {
+    const context = await browser.newContext();
+    await context.route('**/*', route => {
+      const url = new URL(route.request().url());
+      if (url.pathname === '/login') {
+        return route.fulfill({ contentType: 'text/html', body: '<h1>Logowanie</h1>' });
+      }
+      return route.fulfill({
+        contentType: 'text/html',
+        body: `<script>location.href=${JSON.stringify(`${octopus}/login`)}</script>`,
+      });
+    });
+    const page = await context.newPage();
+    const startedAt = Date.now();
+    assert.equal(await hasActiveSession(page, 5_000), false);
+    assert.ok(Date.now() - startedAt < 2_000, 'Rozpoznanie /login nie powinno czekać na timeout panelu.');
+  } finally { await browser.close(); }
+});
+
+test('widoczny panel oznacza aktywną zapisaną sesję', async () => {
+  const browser = await chromium.launch();
+  try {
+    const context = await browser.newContext();
+    await context.route('**/*', route => route.fulfill({
+      contentType: 'text/html',
+      body: '<button>Wyloguj</button><button>Szukaj</button>',
+    }));
+    const page = await context.newPage();
+    assert.equal(await hasActiveSession(page, 5_000), true);
   } finally { await browser.close(); }
 });

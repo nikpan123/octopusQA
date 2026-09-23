@@ -3,7 +3,7 @@ import { mkdir, writeFile } from 'node:fs/promises';
 import { test as base, expect } from './fixtures';
 import { Octopus } from './octopus';
 
-type Scenario = {
+export type Scenario = {
   app: Octopus;
   id: string;
   schoolName: string;

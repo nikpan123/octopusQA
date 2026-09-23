@@ -25,6 +25,7 @@ test('odrzuca niejednoznaczne lub błędne argumenty',()=>{
 });
 
 const run = () => ({ id:'REG_123456_abcdef', teacherId:'123', email:'reg_123456_abcdef@example.invalid', result:'PASS' });
+const phoneOnlyRun = () => ({ ...run(), teacherEmail:'', teacherLastName:'Telefonlimit' });
 function pageWith(responses, origin='https://octopus.gwodev.pl') {
   const calls=[];
   return { calls, url:()=>origin+'/teacher/teacher-panel', evaluate:async (_fn,args)=>{
@@ -40,6 +41,7 @@ test('odrzuca nieprawidłowe ID i obcy adres e-mail',()=>{
   for(const changes of [{teacherId:'1&x=2'},{teacherId:'9007199254740993'},{email:'person@example.com'},{result:'RUNNING'}]) {
     assert.throws(()=>validateTeacherRun({...run(),...changes}));
   }
+  assert.throws(()=>validateTeacherRun({...run(),teacherEmail:''}));
 });
 test('nie wysyła żądań poza dev',async()=>{
   const page=pageWith([],'https://example.com');
@@ -53,6 +55,16 @@ test('nie usuwa rekordu z innym e-mailem ani bez flagi Testowy',async()=>{
     const page=pageWith(responses); await assert.rejects(deleteTestTeacher(page,run()));
     assert(!page.calls.some(c=>c.method==='DELETE'));
   }
+});
+test('nauczyciela bez e-maila usuwa tylko po zgodności nazwiska i flagi Testowy',async()=>{
+  const data=phoneOnlyRun();
+  const teacher={status:200,data:{id:123,email:'',lastName:'Telefonlimit'}};
+  const page=pageWith([teacher,{status:200,data:true},{status:200,data:{}},{status:204,data:null}]);
+  assert.equal(await deleteTestTeacher(page,data),'DELETED');
+
+  const mismatch=pageWith([{status:200,data:{id:123,email:'',lastName:'Inny'}}]);
+  await assert.rejects(deleteTestTeacher(mismatch,data));
+  assert(!mismatch.calls.some(c=>c.method==='DELETE'));
 });
 test('brak rekordu jest idempotentny; błąd serwera nie oznacza braku',async()=>{
   const page=pageWith([{status:204,data:null}]);

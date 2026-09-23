@@ -13,6 +13,20 @@ export function validateTeacherRun(run) {
   if (!/^REG_\d+_[a-f0-9]{6}$/.test(runId ?? '') || run.email !== `${runId.toLowerCase()}@example.invalid`) {
     throw new Error('Brak jednoznacznych danych własnego nauczyciela testowego.');
   }
+  const expectedEmail = Object.hasOwn(run, 'teacherEmail') ? run.teacherEmail : run.email;
+  if (typeof expectedEmail !== 'string') throw new Error('Brak oczekiwanego e-maila nauczyciela.');
+  if (expectedEmail === '' && !run.teacherLastName) {
+    throw new Error('Nauczyciel bez e-maila wymaga oczekiwanego nazwiska.');
+  }
+}
+
+function teacherMatchesRun(teacher, run) {
+  const expectedEmail = Object.hasOwn(run, 'teacherEmail') ? run.teacherEmail : run.email;
+  const emailMatches = String(teacher?.email ?? '').trim().toLowerCase()
+    === expectedEmail.trim().toLowerCase();
+  const lastNameMatches = !run.teacherLastName
+    || String(teacher?.lastName ?? '').trim() === run.teacherLastName.trim();
+  return String(teacher?.id) === run.teacherId && emailMatches && lastNameMatches;
 }
 
 // Żądania wykonujemy w zalogowanej przeglądarce; token nie opuszcza strony.
@@ -43,7 +57,7 @@ export async function deleteTestTeacher(page, run) {
   const endpoint = `/api/Teacher/${run.teacherId}`;
   const before = await api(page, endpoint);
   if (before.status === 204) return 'ALREADY_ABSENT';
-  if (before.status !== 200 || String(before.data?.id) !== run.teacherId || before.data?.email !== run.email) {
+  if (before.status !== 200 || !teacherMatchesRun(before.data, run)) {
     throw new Error('Dane nauczyciela nie zgadzają się z rejestrem; nie wykonano DELETE.');
   }
   const tested = await api(page, '/api/Teacher/GetTeacherIsTested', 'GET', { teacherId: run.teacherId });
@@ -147,7 +161,7 @@ export async function cleanupTeacherBatch(page, selected, save) {
       console.log(`${run.teacherId}: ALREADY_ABSENT`);
       continue;
     }
-    if (before.status !== 200 || String(before.data?.id) !== run.teacherId || before.data?.email !== run.email) {
+    if (before.status !== 200 || !teacherMatchesRun(before.data, run)) {
       throw new Error(`Nauczyciel ${run.teacherId}: dane nie zgadzają się z rejestrem; nie wykonano DELETE.`);
     }
     const tested = await api(page, '/api/Teacher/GetTeacherIsTested', 'GET', {teacherId:run.teacherId});

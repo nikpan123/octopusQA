@@ -1,0 +1,1332 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-09-23T08:26:51.377Z",
+  "targetProcessDate": "2026-10-01",
+  "selection": {
+    "referenceSchoolCount": 4,
+    "randomSchoolCount": 50,
+    "totalSchoolCount": 54,
+    "randomSelection": true
+  },
+  "schools": [
+    {
+      "school": {
+        "id": "57616",
+        "name": "Szkoła Podstawowa nr 5",
+        "city": "Lębork",
+        "expectedMedal": "Złoto",
+        "expectedSubjects": [
+          "Matematyka",
+          "Język polski",
+          "Historia",
+          "Fizyka",
+          "Edukacja wczesnoszkolna"
+        ],
+        "expectedHistoryValue": "2025/2026 Złoto",
+        "expectedHistoryDate": "2026-10-01 00:00"
+      },
+      "currentMedal": "Złoto",
+      "currentSubjectNames": [
+        "Matematyka",
+        "Język polski",
+        "Historia",
+        "Fizyka",
+        "Edukacja wczesnoszkolna"
+      ],
+      "qualifyingSubjectLevels": [
+        "EW SP",
+        "FIZ SP",
+        "PRZ SP"
+      ],
+      "expectedMedal": "Złoto",
+      "supportingTeachersExcluded": [
+        "342492"
+      ],
+      "clubMembershipExcluded": [
+        {
+          "teacherId": "177556",
+          "subjectLevel": "JPL SP",
+          "targetSchoolYear": "2026/2027",
+          "reason": "Brak klubowiczostwa dla JPL SP w roku szkolnym 2026/2027"
+        },
+        {
+          "teacherId": "222885",
+          "subjectLevel": "HIS SP",
+          "targetSchoolYear": "2026/2027",
+          "reason": "Brak klubowiczostwa dla HIS SP w roku szkolnym 2026/2027"
+        },
+        {
+          "teacherId": "233062",
+          "subjectLevel": "MAT SP",
+          "targetSchoolYear": "2026/2027",
+          "reason": "Brak klubowiczostwa dla MAT SP w roku szkolnym 2026/2027"
+        },
+        {
+          "teacherId": "322935",
+          "subjectLevel": "HIS SP",
+          "targetSchoolYear": "2026/2027",
+          "reason": "Brak klubowiczostwa dla HIS SP w roku szkolnym 2026/2027"
+        },
+        {
+          "teacherId": "380160",
+          "subjectLevel": "JPL SP",
+          "targetSchoolYear": "2026/2027",
+          "reason": "Brak klubowiczostwa dla JPL SP w roku szkolnym 2026/2027"
+        },
+        {
+          "teacherId": "392557",
+          "subjectLevel": "JPL SP",
+          "targetSchoolYear": "2026/2027",
+          "reason": "Brak klubowiczostwa dla JPL SP w roku szkolnym 2026/2027"
+        },
+        {
+          "teacherId": "495594",
+          "subjectLevel": "MAT SP",
+          "targetSchoolYear": "2026/2027",
+          "reason": "Brak klubowiczostwa dla MAT SP w roku szkolnym 2026/2027"
+        },
+        {
+          "teacherId": "524117",
+          "subjectLevel": "HIS SP",
+          "targetSchoolYear": "2026/2027",
+          "reason": "Brak klubowiczostwa dla HIS SP w roku szkolnym 2026/2027"
+        },
+        {
+          "teacherId": "532206",
+          "subjectLevel": "EW SP",
+          "targetSchoolYear": "2026/2027",
+          "reason": "Brak klubowiczostwa dla EW SP w roku szkolnym 2026/2027"
+        }
+      ],
+      "targetSchoolYear": "2026/2027"
+    },
+    {
+      "school": {
+        "id": "85263",
+        "name": "Szkoła Podstawowa nr 379",
+        "city": "Warszawa",
+        "expectedMedal": "Srebro",
+        "expectedSubjects": [
+          "Matematyka",
+          "Geografia"
+        ]
+      },
+      "currentMedal": "Srebro",
+      "currentSubjectNames": [
+        "Matematyka",
+        "Geografia"
+      ],
+      "qualifyingSubjectLevels": [
+        "GEO SP",
+        "JPL SP"
+      ],
+      "expectedMedal": "Srebro",
+      "supportingTeachersExcluded": [],
+      "clubMembershipExcluded": [
+        {
+          "teacherId": "168473",
+          "subjectLevel": "MAT SP",
+          "targetSchoolYear": "2026/2027",
+          "reason": "Brak klubowiczostwa dla MAT SP w roku szkolnym 2026/2027"
+        },
+        {
+          "teacherId": "236518",
+          "subjectLevel": "MAT SP",
+          "targetSchoolYear": "2026/2027",
+          "reason": "Brak klubowiczostwa dla MAT SP w roku szkolnym 2026/2027"
+        },
+        {
+          "teacherId": "382984",
+          "subjectLevel": "MAT SP",
+          "targetSchoolYear": "2026/2027",
+          "reason": "Brak klubowiczostwa dla MAT SP w roku szkolnym 2026/2027"
+        },
+        {
+          "teacherId": "471468",
+          "subjectLevel": "MAT SP",
+          "targetSchoolYear": "2026/2027",
+          "reason": "Brak klubowiczostwa dla MAT SP w roku szkolnym 2026/2027"
+        },
+        {
+          "teacherId": "523717",
+          "subjectLevel": "MAT SP",
+          "targetSchoolYear": "2026/2027",
+          "reason": "Brak klubowiczostwa dla MAT SP w roku szkolnym 2026/2027"
+        }
+      ],
+      "targetSchoolYear": "2026/2027"
+    },
+    {
+      "school": {
+        "id": "66109",
+        "name": "Szkoła Podstawowa w Raszkowie",
+        "city": "Raszków",
+        "expectedMedal": "Brąz",
+        "expectedSubjects": [
+          "Matematyka"
+        ]
+      },
+      "currentMedal": "Brąz",
+      "currentSubjectNames": [
+        "Matematyka"
+      ],
+      "qualifyingSubjectLevels": [
+        "GEO SP"
+      ],
+      "expectedMedal": "Brąz",
+      "supportingTeachersExcluded": [],
+      "clubMembershipExcluded": [
+        {
+          "teacherId": "135339",
+          "subjectLevel": "MAT SP",
+          "targetSchoolYear": "2026/2027",
+          "reason": "Brak klubowiczostwa dla MAT SP w roku szkolnym 2026/2027"
+        },
+        {
+          "teacherId": "264017",
+          "subjectLevel": "MAT SP",
+          "targetSchoolYear": "2026/2027",
+          "reason": "Brak klubowiczostwa dla MAT SP w roku szkolnym 2026/2027"
+        },
+        {
+          "teacherId": "390917",
+          "subjectLevel": "MAT SP",
+          "targetSchoolYear": "2026/2027",
+          "reason": "Brak klubowiczostwa dla MAT SP w roku szkolnym 2026/2027"
+        },
+        {
+          "teacherId": "510788",
+          "subjectLevel": "MAT SP",
+          "targetSchoolYear": "2026/2027",
+          "reason": "Brak klubowiczostwa dla MAT SP w roku szkolnym 2026/2027"
+        },
+        {
+          "teacherId": "88988",
+          "subjectLevel": "MAT SP",
+          "targetSchoolYear": "2026/2027",
+          "reason": "Brak klubowiczostwa dla MAT SP w roku szkolnym 2026/2027"
+        }
+      ],
+      "targetSchoolYear": "2026/2027"
+    },
+    {
+      "school": {
+        "id": "92928",
+        "name": "Szkoła Podstawowa nr 403",
+        "city": "Warszawa",
+        "expectedMedal": "Brak",
+        "expectedSubjects": []
+      },
+      "currentMedal": "Brak",
+      "currentSubjectNames": [],
+      "qualifyingSubjectLevels": [],
+      "expectedMedal": "Brak",
+      "supportingTeachersExcluded": [],
+      "clubMembershipExcluded": [],
+      "targetSchoolYear": "2026/2027"
+    },
+    {
+      "school": {
+        "id": "92905",
+        "name": "Liceum Sztuk Plastycznych Cosinus",
+        "city": "Warszawa"
+      },
+      "currentMedal": "Brak",
+      "currentSubjectNames": [],
+      "qualifyingSubjectLevels": [
+        "MAT SŚ"
+      ],
+      "expectedMedal": "Brąz",
+      "supportingTeachersExcluded": [],
+      "clubMembershipExcluded": [],
+      "targetSchoolYear": "2026/2027"
+    },
+    {
+      "school": {
+        "id": "92128",
+        "name": "Liceum Ogólnokształcące nr 324. Saska Szkoła Realna",
+        "city": "Warszawa"
+      },
+      "currentMedal": "Brak",
+      "currentSubjectNames": [],
+      "qualifyingSubjectLevels": [],
+      "expectedMedal": "Brak",
+      "supportingTeachersExcluded": [],
+      "clubMembershipExcluded": [
+        {
+          "teacherId": "452425",
+          "subjectLevel": "MAT SŚ",
+          "targetSchoolYear": "2026/2027",
+          "reason": "Brak klubowiczostwa dla MAT SŚ w roku szkolnym 2026/2027"
+        },
+        {
+          "teacherId": "491036",
+          "subjectLevel": "HIS SŚ",
+          "targetSchoolYear": "2026/2027",
+          "reason": "Brak klubowiczostwa dla HIS SŚ w roku szkolnym 2026/2027"
+        },
+        {
+          "teacherId": "495138",
+          "subjectLevel": "JPL SŚ",
+          "targetSchoolYear": "2026/2027",
+          "reason": "Brak klubowiczostwa dla JPL SŚ w roku szkolnym 2026/2027"
+        },
+        {
+          "teacherId": "514162",
+          "subjectLevel": "JPL SŚ",
+          "targetSchoolYear": "2026/2027",
+          "reason": "Brak klubowiczostwa dla JPL SŚ w roku szkolnym 2026/2027"
+        },
+        {
+          "teacherId": "522481",
+          "subjectLevel": "JPL SŚ",
+          "targetSchoolYear": "2026/2027",
+          "reason": "Brak klubowiczostwa dla JPL SŚ w roku szkolnym 2026/2027"
+        }
+      ],
+      "targetSchoolYear": "2026/2027"
+    },
+    {
+      "school": {
+        "id": "92490",
+        "name": "Publiczne Przedszkole Europejskie II",
+        "city": "Warszawa"
+      },
+      "currentMedal": "Brak",
+      "currentSubjectNames": [],
+      "qualifyingSubjectLevels": [],
+      "expectedMedal": "Brak",
+      "supportingTeachersExcluded": [],
+      "clubMembershipExcluded": [],
+      "targetSchoolYear": "2026/2027"
+    },
+    {
+      "school": {
+        "id": "92262",
+        "name": "Liceum Ogólnokształcące Artes Liberales",
+        "city": "Warszawa"
+      },
+      "currentMedal": "Brak",
+      "currentSubjectNames": [],
+      "qualifyingSubjectLevels": [],
+      "expectedMedal": "Brak",
+      "supportingTeachersExcluded": [],
+      "clubMembershipExcluded": [
+        {
+          "teacherId": "458514",
+          "subjectLevel": "JPL SŚ",
+          "targetSchoolYear": "2026/2027",
+          "reason": "Brak klubowiczostwa dla JPL SŚ w roku szkolnym 2026/2027"
+        },
+        {
+          "teacherId": "494844",
+          "subjectLevel": "JPL SŚ",
+          "targetSchoolYear": "2026/2027",
+          "reason": "Brak klubowiczostwa dla JPL SŚ w roku szkolnym 2026/2027"
+        },
+        {
+          "teacherId": "500018",
+          "subjectLevel": "JPL SŚ",
+          "targetSchoolYear": "2026/2027",
+          "reason": "Brak klubowiczostwa dla JPL SŚ w roku szkolnym 2026/2027"
+        },
+        {
+          "teacherId": "511243",
+          "subjectLevel": "JPL SŚ",
+          "targetSchoolYear": "2026/2027",
+          "reason": "Brak klubowiczostwa dla JPL SŚ w roku szkolnym 2026/2027"
+        },
+        {
+          "teacherId": "520703",
+          "subjectLevel": "MAT SŚ",
+          "targetSchoolYear": "2026/2027",
+          "reason": "Brak klubowiczostwa dla MAT SŚ w roku szkolnym 2026/2027"
+        },
+        {
+          "teacherId": "520704",
+          "subjectLevel": "MAT SŚ",
+          "targetSchoolYear": "2026/2027",
+          "reason": "Brak klubowiczostwa dla MAT SŚ w roku szkolnym 2026/2027"
+        },
+        {
+          "teacherId": "520705",
+          "subjectLevel": "MAT SŚ",
+          "targetSchoolYear": "2026/2027",
+          "reason": "Brak klubowiczostwa dla MAT SŚ w roku szkolnym 2026/2027"
+        },
+        {
+          "teacherId": "522637",
+          "subjectLevel": "MAT SŚ",
+          "targetSchoolYear": "2026/2027",
+          "reason": "Brak klubowiczostwa dla MAT SŚ w roku szkolnym 2026/2027"
+        }
+      ],
+      "targetSchoolYear": "2026/2027"
+    },
+    {
+      "school": {
+        "id": "92323",
+        "name": "Liceum Ogólnokształcące Johna A. Stevensona",
+        "city": "Warszawa"
+      },
+      "currentMedal": "Brak",
+      "currentSubjectNames": [],
+      "qualifyingSubjectLevels": [],
+      "expectedMedal": "Brak",
+      "supportingTeachersExcluded": [],
+      "clubMembershipExcluded": [
+        {
+          "teacherId": "393679",
+          "subjectLevel": "JPL SŚ",
+          "targetSchoolYear": "2026/2027",
+          "reason": "Brak klubowiczostwa dla JPL SŚ w roku szkolnym 2026/2027"
+        },
+        {
+          "teacherId": "452425",
+          "subjectLevel": "MAT SŚ",
+          "targetSchoolYear": "2026/2027",
+          "reason": "Brak klubowiczostwa dla MAT SŚ w roku szkolnym 2026/2027"
+        },
+        {
+          "teacherId": "495036",
+          "subjectLevel": "MAT SŚ",
+          "targetSchoolYear": "2026/2027",
+          "reason": "Brak klubowiczostwa dla MAT SŚ w roku szkolnym 2026/2027"
+        },
+        {
+          "teacherId": "516341",
+          "subjectLevel": "JPL SŚ",
+          "targetSchoolYear": "2026/2027",
+          "reason": "Brak klubowiczostwa dla JPL SŚ w roku szkolnym 2026/2027"
+        }
+      ],
+      "targetSchoolYear": "2026/2027"
+    },
+    {
+      "school": {
+        "id": "91791",
+        "name": "Nowatorskie Liceum Ogólnokształcące",
+        "city": "Warszawa"
+      },
+      "currentMedal": "Brak",
+      "currentSubjectNames": [],
+      "qualifyingSubjectLevels": [],
+      "expectedMedal": "Brak",
+      "supportingTeachersExcluded": [],
+      "clubMembershipExcluded": [
+        {
+          "teacherId": "459554",
+          "subjectLevel": "JPL SŚ",
+          "targetSchoolYear": "2026/2027",
+          "reason": "Brak klubowiczostwa dla JPL SŚ w roku szkolnym 2026/2027"
+        }
+      ],
+      "targetSchoolYear": "2026/2027"
+    },
+    {
+      "school": {
+        "id": "92681",
+        "name": "Niepubliczna Szkoła Podstawowa Indygo",
+        "city": "Warszawa"
+      },
+      "currentMedal": "Brak",
+      "currentSubjectNames": [],
+      "qualifyingSubjectLevels": [],
+      "expectedMedal": "Brak",
+      "supportingTeachersExcluded": [],
+      "clubMembershipExcluded": [],
+      "targetSchoolYear": "2026/2027"
+    },
+    {
+      "school": {
+        "id": "92216",
+        "name": "Przedszkole nr 443",
+        "city": "Warszawa"
+      },
+      "currentMedal": "Brak",
+      "currentSubjectNames": [],
+      "qualifyingSubjectLevels": [],
+      "expectedMedal": "Brak",
+      "supportingTeachersExcluded": [],
+      "clubMembershipExcluded": [],
+      "targetSchoolYear": "2026/2027"
+    },
+    {
+      "school": {
+        "id": "92012",
+        "name": "Niepubliczna Szkoła Podstawowa. Korczakowska Szkoła Marzeń",
+        "city": "Warszawa"
+      },
+      "currentMedal": "Brak",
+      "currentSubjectNames": [],
+      "qualifyingSubjectLevels": [],
+      "expectedMedal": "Brak",
+      "supportingTeachersExcluded": [],
+      "clubMembershipExcluded": [
+        {
+          "teacherId": "372065",
+          "subjectLevel": "MAT SP",
+          "targetSchoolYear": "2026/2027",
+          "reason": "Brak klubowiczostwa dla MAT SP w roku szkolnym 2026/2027"
+        },
+        {
+          "teacherId": "531119",
+          "subjectLevel": "JPL SP",
+          "targetSchoolYear": "2026/2027",
+          "reason": "Brak klubowiczostwa dla JPL SP w roku szkolnym 2026/2027"
+        }
+      ],
+      "targetSchoolYear": "2026/2027"
+    },
+    {
+      "school": {
+        "id": "92303",
+        "name": "Szkoła Podstawowa Joy Primary School",
+        "city": "Warszawa"
+      },
+      "currentMedal": "Brak",
+      "currentSubjectNames": [],
+      "qualifyingSubjectLevels": [],
+      "expectedMedal": "Brak",
+      "supportingTeachersExcluded": [],
+      "clubMembershipExcluded": [
+        {
+          "teacherId": "460407",
+          "subjectLevel": "FIZ SP",
+          "targetSchoolYear": "2026/2027",
+          "reason": "Brak klubowiczostwa dla FIZ SP w roku szkolnym 2026/2027"
+        },
+        {
+          "teacherId": "460407",
+          "subjectLevel": "MAT SP",
+          "targetSchoolYear": "2026/2027",
+          "reason": "Brak klubowiczostwa dla MAT SP w roku szkolnym 2026/2027"
+        },
+        {
+          "teacherId": "507072",
+          "subjectLevel": "JPL SP",
+          "targetSchoolYear": "2026/2027",
+          "reason": "Brak klubowiczostwa dla JPL SP w roku szkolnym 2026/2027"
+        },
+        {
+          "teacherId": "523001",
+          "subjectLevel": "JPL SP",
+          "targetSchoolYear": "2026/2027",
+          "reason": "Brak klubowiczostwa dla JPL SP w roku szkolnym 2026/2027"
+        }
+      ],
+      "targetSchoolYear": "2026/2027"
+    },
+    {
+      "school": {
+        "id": "92923",
+        "name": "Niepubliczna Szkoła Podstawowa Wyspa JP2",
+        "city": "Warszawa"
+      },
+      "currentMedal": "Brak",
+      "currentSubjectNames": [],
+      "qualifyingSubjectLevels": [],
+      "expectedMedal": "Brak",
+      "supportingTeachersExcluded": [],
+      "clubMembershipExcluded": [
+        {
+          "teacherId": "221796",
+          "subjectLevel": "HIS SP",
+          "targetSchoolYear": "2026/2027",
+          "reason": "Brak klubowiczostwa dla HIS SP w roku szkolnym 2026/2027"
+        }
+      ],
+      "targetSchoolYear": "2026/2027"
+    },
+    {
+      "school": {
+        "id": "92906",
+        "name": "Niepubliczne Specjalne Liceum Ogólnokształcące Wspierania Rozwoju",
+        "city": "Warszawa"
+      },
+      "currentMedal": "Brak",
+      "currentSubjectNames": [],
+      "qualifyingSubjectLevels": [],
+      "expectedMedal": "Brak",
+      "supportingTeachersExcluded": [],
+      "clubMembershipExcluded": [
+        {
+          "teacherId": "474127",
+          "subjectLevel": "HIS SŚ",
+          "targetSchoolYear": "2026/2027",
+          "reason": "Brak klubowiczostwa dla HIS SŚ w roku szkolnym 2026/2027"
+        }
+      ],
+      "targetSchoolYear": "2026/2027"
+    },
+    {
+      "school": {
+        "id": "92645",
+        "name": "Szkoła Podstawowa Edukacyjne Atelier",
+        "city": "Warszawa"
+      },
+      "currentMedal": "Brak",
+      "currentSubjectNames": [],
+      "qualifyingSubjectLevels": [],
+      "expectedMedal": "Brak",
+      "supportingTeachersExcluded": [],
+      "clubMembershipExcluded": [
+        {
+          "teacherId": "513088",
+          "subjectLevel": "GEO SP",
+          "targetSchoolYear": "2026/2027",
+          "reason": "Brak klubowiczostwa dla GEO SP w roku szkolnym 2026/2027"
+        }
+      ],
+      "targetSchoolYear": "2026/2027"
+    },
+    {
+      "school": {
+        "id": "92891",
+        "name": "Niepubliczna Szkoła Podstawowa \"Beztroski Czas\"",
+        "city": "Warszawa"
+      },
+      "currentMedal": "Brak",
+      "currentSubjectNames": [],
+      "qualifyingSubjectLevels": [],
+      "expectedMedal": "Brak",
+      "supportingTeachersExcluded": [],
+      "clubMembershipExcluded": [],
+      "targetSchoolYear": "2026/2027"
+    },
+    {
+      "school": {
+        "id": "92804",
+        "name": "Publiczne Przedszkole Europejskie 3",
+        "city": "Warszawa"
+      },
+      "currentMedal": "Brak",
+      "currentSubjectNames": [],
+      "qualifyingSubjectLevels": [],
+      "expectedMedal": "Brak",
+      "supportingTeachersExcluded": [],
+      "clubMembershipExcluded": [],
+      "targetSchoolYear": "2026/2027"
+    },
+    {
+      "school": {
+        "id": "92927",
+        "name": "Liceum Ogólnokształcące \"Multimedia\"",
+        "city": "Warszawa"
+      },
+      "currentMedal": "Brak",
+      "currentSubjectNames": [],
+      "qualifyingSubjectLevels": [],
+      "expectedMedal": "Brak",
+      "supportingTeachersExcluded": [],
+      "clubMembershipExcluded": [],
+      "targetSchoolYear": "2026/2027"
+    },
+    {
+      "school": {
+        "id": "92489",
+        "name": "Integracyjne Przedszkole Niepubliczne Przyjaciel",
+        "city": "Warszawa"
+      },
+      "currentMedal": "Brak",
+      "currentSubjectNames": [],
+      "qualifyingSubjectLevels": [],
+      "expectedMedal": "Brak",
+      "supportingTeachersExcluded": [],
+      "clubMembershipExcluded": [],
+      "targetSchoolYear": "2026/2027"
+    },
+    {
+      "school": {
+        "id": "92504",
+        "name": "Przedszkole nr 440",
+        "city": "Warszawa"
+      },
+      "currentMedal": "Brak",
+      "currentSubjectNames": [],
+      "qualifyingSubjectLevels": [],
+      "expectedMedal": "Brak",
+      "supportingTeachersExcluded": [],
+      "clubMembershipExcluded": [],
+      "targetSchoolYear": "2026/2027"
+    },
+    {
+      "school": {
+        "id": "92901",
+        "name": "Liceum Ogólnokształcące dla Dorosłych \"PASCAL\" w Warszawie",
+        "city": "Warszawa"
+      },
+      "currentMedal": "Brak",
+      "currentSubjectNames": [],
+      "qualifyingSubjectLevels": [],
+      "expectedMedal": "Brak",
+      "supportingTeachersExcluded": [],
+      "clubMembershipExcluded": [],
+      "targetSchoolYear": "2026/2027"
+    },
+    {
+      "school": {
+        "id": "91896",
+        "name": "Szkoła Podstawowa nr 32",
+        "city": "Warszawa"
+      },
+      "currentMedal": "Brak",
+      "currentSubjectNames": [],
+      "qualifyingSubjectLevels": [],
+      "expectedMedal": "Brak",
+      "supportingTeachersExcluded": [],
+      "clubMembershipExcluded": [
+        {
+          "teacherId": "216997",
+          "subjectLevel": "MAT SP",
+          "targetSchoolYear": "2026/2027",
+          "reason": "Brak klubowiczostwa dla MAT SP w roku szkolnym 2026/2027"
+        },
+        {
+          "teacherId": "260868",
+          "subjectLevel": "JPL SP",
+          "targetSchoolYear": "2026/2027",
+          "reason": "Brak klubowiczostwa dla JPL SP w roku szkolnym 2026/2027"
+        }
+      ],
+      "targetSchoolYear": "2026/2027"
+    },
+    {
+      "school": {
+        "id": "92829",
+        "name": "Przedszkole Publiczne Edulica 3",
+        "city": "Warszawa"
+      },
+      "currentMedal": "Brak",
+      "currentSubjectNames": [],
+      "qualifyingSubjectLevels": [],
+      "expectedMedal": "Brak",
+      "supportingTeachersExcluded": [],
+      "clubMembershipExcluded": [],
+      "targetSchoolYear": "2026/2027"
+    },
+    {
+      "school": {
+        "id": "92039",
+        "name": "Liceum Ogólnokształcące DobraTU",
+        "city": "Warszawa"
+      },
+      "currentMedal": "Brak",
+      "currentSubjectNames": [],
+      "qualifyingSubjectLevels": [],
+      "expectedMedal": "Brak",
+      "supportingTeachersExcluded": [],
+      "clubMembershipExcluded": [
+        {
+          "teacherId": "394876",
+          "subjectLevel": "JPL SŚ",
+          "targetSchoolYear": "2026/2027",
+          "reason": "Brak klubowiczostwa dla JPL SŚ w roku szkolnym 2026/2027"
+        },
+        {
+          "teacherId": "457904",
+          "subjectLevel": "MAT SŚ",
+          "targetSchoolYear": "2026/2027",
+          "reason": "Brak klubowiczostwa dla MAT SŚ w roku szkolnym 2026/2027"
+        },
+        {
+          "teacherId": "478616",
+          "subjectLevel": "JPL SŚ",
+          "targetSchoolYear": "2026/2027",
+          "reason": "Brak klubowiczostwa dla JPL SŚ w roku szkolnym 2026/2027"
+        }
+      ],
+      "targetSchoolYear": "2026/2027"
+    },
+    {
+      "school": {
+        "id": "92803",
+        "name": "Przedszkole Niepubliczne Tequesta",
+        "city": "Warszawa"
+      },
+      "currentMedal": "Brak",
+      "currentSubjectNames": [],
+      "qualifyingSubjectLevels": [],
+      "expectedMedal": "Brak",
+      "supportingTeachersExcluded": [],
+      "clubMembershipExcluded": [],
+      "targetSchoolYear": "2026/2027"
+    },
+    {
+      "school": {
+        "id": "92337",
+        "name": "Liceum Ogólnokształcące",
+        "city": "Warszawa"
+      },
+      "currentMedal": "Brak",
+      "currentSubjectNames": [],
+      "qualifyingSubjectLevels": [],
+      "expectedMedal": "Brak",
+      "supportingTeachersExcluded": [],
+      "clubMembershipExcluded": [],
+      "targetSchoolYear": "2026/2027"
+    },
+    {
+      "school": {
+        "id": "92822",
+        "name": "Integracyjne Przedszkole Nipubliczne HiKids",
+        "city": "Warszawa"
+      },
+      "currentMedal": "Brak",
+      "currentSubjectNames": [],
+      "qualifyingSubjectLevels": [],
+      "expectedMedal": "Brak",
+      "supportingTeachersExcluded": [],
+      "clubMembershipExcluded": [],
+      "targetSchoolYear": "2026/2027"
+    },
+    {
+      "school": {
+        "id": "92314",
+        "name": "Liceum Ogólnokształcące Teb Edukacja",
+        "city": "Warszawa"
+      },
+      "currentMedal": "Brak",
+      "currentSubjectNames": [],
+      "qualifyingSubjectLevels": [],
+      "expectedMedal": "Brak",
+      "supportingTeachersExcluded": [],
+      "clubMembershipExcluded": [
+        {
+          "teacherId": "520539",
+          "subjectLevel": "HIS SŚ",
+          "targetSchoolYear": "2026/2027",
+          "reason": "Brak klubowiczostwa dla HIS SŚ w roku szkolnym 2026/2027"
+        }
+      ],
+      "targetSchoolYear": "2026/2027"
+    },
+    {
+      "school": {
+        "id": "92061",
+        "name": "Niebieska Szkoła Podstawowa",
+        "city": "Warszawa"
+      },
+      "currentMedal": "Brak",
+      "currentSubjectNames": [],
+      "qualifyingSubjectLevels": [],
+      "expectedMedal": "Brak",
+      "supportingTeachersExcluded": [],
+      "clubMembershipExcluded": [
+        {
+          "teacherId": "513809",
+          "subjectLevel": "HIS SP",
+          "targetSchoolYear": "2026/2027",
+          "reason": "Brak klubowiczostwa dla HIS SP w roku szkolnym 2026/2027"
+        },
+        {
+          "teacherId": "515092",
+          "subjectLevel": "MAT SP",
+          "targetSchoolYear": "2026/2027",
+          "reason": "Brak klubowiczostwa dla MAT SP w roku szkolnym 2026/2027"
+        },
+        {
+          "teacherId": "515606",
+          "subjectLevel": "JPL SP",
+          "targetSchoolYear": "2026/2027",
+          "reason": "Brak klubowiczostwa dla JPL SP w roku szkolnym 2026/2027"
+        },
+        {
+          "teacherId": "517565",
+          "subjectLevel": "MAT SP",
+          "targetSchoolYear": "2026/2027",
+          "reason": "Brak klubowiczostwa dla MAT SP w roku szkolnym 2026/2027"
+        },
+        {
+          "teacherId": "530216",
+          "subjectLevel": "HIS SP",
+          "targetSchoolYear": "2026/2027",
+          "reason": "Brak klubowiczostwa dla HIS SP w roku szkolnym 2026/2027"
+        }
+      ],
+      "targetSchoolYear": "2026/2027"
+    },
+    {
+      "school": {
+        "id": "92336",
+        "name": "Szkoła Podstawowa w Chmurze",
+        "city": "Warszawa"
+      },
+      "currentMedal": "Brak",
+      "currentSubjectNames": [],
+      "qualifyingSubjectLevels": [],
+      "expectedMedal": "Brak",
+      "supportingTeachersExcluded": [],
+      "clubMembershipExcluded": [],
+      "targetSchoolYear": "2026/2027"
+    },
+    {
+      "school": {
+        "id": "92351",
+        "name": "CXL Liceum Ogólnokształcące dla Dorosłych",
+        "city": "Warszawa"
+      },
+      "currentMedal": "Brak",
+      "currentSubjectNames": [],
+      "qualifyingSubjectLevels": [],
+      "expectedMedal": "Brak",
+      "supportingTeachersExcluded": [],
+      "clubMembershipExcluded": [],
+      "targetSchoolYear": "2026/2027"
+    },
+    {
+      "school": {
+        "id": "92783",
+        "name": "Szkoła Podstawowa nr 407",
+        "city": "Warszawa"
+      },
+      "currentMedal": "Brak",
+      "currentSubjectNames": [],
+      "qualifyingSubjectLevels": [],
+      "expectedMedal": "Brak",
+      "supportingTeachersExcluded": [],
+      "clubMembershipExcluded": [],
+      "targetSchoolYear": "2026/2027"
+    },
+    {
+      "school": {
+        "id": "91868",
+        "name": "Integracyjna Podstawowa Szkoła Montessori Elipsoida",
+        "city": "Warszawa"
+      },
+      "currentMedal": "Brak",
+      "currentSubjectNames": [],
+      "qualifyingSubjectLevels": [],
+      "expectedMedal": "Brak",
+      "supportingTeachersExcluded": [
+        "524978",
+        "525090",
+        "524979",
+        "524980"
+      ],
+      "clubMembershipExcluded": [
+        {
+          "teacherId": "490590",
+          "subjectLevel": "EW SP",
+          "targetSchoolYear": "2026/2027",
+          "reason": "Brak klubowiczostwa dla EW SP w roku szkolnym 2026/2027"
+        },
+        {
+          "teacherId": "524981",
+          "subjectLevel": "PRZ SP",
+          "targetSchoolYear": "2026/2027",
+          "reason": "Brak klubowiczostwa dla PRZ SP w roku szkolnym 2026/2027"
+        },
+        {
+          "teacherId": "524982",
+          "subjectLevel": "EW SP",
+          "targetSchoolYear": "2026/2027",
+          "reason": "Brak klubowiczostwa dla EW SP w roku szkolnym 2026/2027"
+        },
+        {
+          "teacherId": "524998",
+          "subjectLevel": "JPL SP",
+          "targetSchoolYear": "2026/2027",
+          "reason": "Brak klubowiczostwa dla JPL SP w roku szkolnym 2026/2027"
+        },
+        {
+          "teacherId": "525002",
+          "subjectLevel": "MAT SP",
+          "targetSchoolYear": "2026/2027",
+          "reason": "Brak klubowiczostwa dla MAT SP w roku szkolnym 2026/2027"
+        },
+        {
+          "teacherId": "525026",
+          "subjectLevel": "EW SP",
+          "targetSchoolYear": "2026/2027",
+          "reason": "Brak klubowiczostwa dla EW SP w roku szkolnym 2026/2027"
+        }
+      ],
+      "targetSchoolYear": "2026/2027"
+    },
+    {
+      "school": {
+        "id": "91917",
+        "name": "Moracz - Prywatna Szkoła Podstawowa",
+        "city": "Warszawa"
+      },
+      "currentMedal": "Brak",
+      "currentSubjectNames": [],
+      "qualifyingSubjectLevels": [],
+      "expectedMedal": "Brak",
+      "supportingTeachersExcluded": [],
+      "clubMembershipExcluded": [
+        {
+          "teacherId": "127460",
+          "subjectLevel": "MAT SP",
+          "targetSchoolYear": "2026/2027",
+          "reason": "Brak klubowiczostwa dla MAT SP w roku szkolnym 2026/2027"
+        },
+        {
+          "teacherId": "169369",
+          "subjectLevel": "MAT SP",
+          "targetSchoolYear": "2026/2027",
+          "reason": "Brak klubowiczostwa dla MAT SP w roku szkolnym 2026/2027"
+        },
+        {
+          "teacherId": "428712",
+          "subjectLevel": "MAT SP",
+          "targetSchoolYear": "2026/2027",
+          "reason": "Brak klubowiczostwa dla MAT SP w roku szkolnym 2026/2027"
+        },
+        {
+          "teacherId": "522143",
+          "subjectLevel": "MAT SP",
+          "targetSchoolYear": "2026/2027",
+          "reason": "Brak klubowiczostwa dla MAT SP w roku szkolnym 2026/2027"
+        }
+      ],
+      "targetSchoolYear": "2026/2027"
+    },
+    {
+      "school": {
+        "id": "92575",
+        "name": "Technikum TEB Edukacja",
+        "city": "Warszawa"
+      },
+      "currentMedal": "Brak",
+      "currentSubjectNames": [],
+      "qualifyingSubjectLevels": [],
+      "expectedMedal": "Brak",
+      "supportingTeachersExcluded": [],
+      "clubMembershipExcluded": [
+        {
+          "teacherId": "511782",
+          "subjectLevel": "HIS SŚ",
+          "targetSchoolYear": "2026/2027",
+          "reason": "Brak klubowiczostwa dla HIS SŚ w roku szkolnym 2026/2027"
+        },
+        {
+          "teacherId": "520539",
+          "subjectLevel": "HIS SŚ",
+          "targetSchoolYear": "2026/2027",
+          "reason": "Brak klubowiczostwa dla HIS SŚ w roku szkolnym 2026/2027"
+        }
+      ],
+      "targetSchoolYear": "2026/2027"
+    },
+    {
+      "school": {
+        "id": "92793",
+        "name": "Dwujęzyczne przedszkole Językowe SUPERBOHATEROWIE",
+        "city": "Warszawa"
+      },
+      "currentMedal": "Brak",
+      "currentSubjectNames": [],
+      "qualifyingSubjectLevels": [],
+      "expectedMedal": "Brak",
+      "supportingTeachersExcluded": [],
+      "clubMembershipExcluded": [],
+      "targetSchoolYear": "2026/2027"
+    },
+    {
+      "school": {
+        "id": "92180",
+        "name": "Przedszkole Terapeutyczne Effectis",
+        "city": "Warszawa"
+      },
+      "currentMedal": "Brak",
+      "currentSubjectNames": [],
+      "qualifyingSubjectLevels": [],
+      "expectedMedal": "Brak",
+      "supportingTeachersExcluded": [],
+      "clubMembershipExcluded": [],
+      "targetSchoolYear": "2026/2027"
+    },
+    {
+      "school": {
+        "id": "92315",
+        "name": "Szkoła Podstawowa nr 405",
+        "city": "Warszawa"
+      },
+      "currentMedal": "Brąz",
+      "currentSubjectNames": [],
+      "qualifyingSubjectLevels": [
+        "EW SP"
+      ],
+      "expectedMedal": "Brąz",
+      "supportingTeachersExcluded": [],
+      "clubMembershipExcluded": [],
+      "targetSchoolYear": "2026/2027"
+    },
+    {
+      "school": {
+        "id": "92813",
+        "name": "Szkoła Podstawowa nr 409 w Warszawie",
+        "city": "Warszawa"
+      },
+      "currentMedal": "Brak",
+      "currentSubjectNames": [],
+      "qualifyingSubjectLevels": [],
+      "expectedMedal": "Brak",
+      "supportingTeachersExcluded": [],
+      "clubMembershipExcluded": [
+        {
+          "teacherId": "259772",
+          "subjectLevel": "MAT SP",
+          "targetSchoolYear": "2026/2027",
+          "reason": "Brak klubowiczostwa dla MAT SP w roku szkolnym 2026/2027"
+        },
+        {
+          "teacherId": "372685",
+          "subjectLevel": "MAT SP",
+          "targetSchoolYear": "2026/2027",
+          "reason": "Brak klubowiczostwa dla MAT SP w roku szkolnym 2026/2027"
+        },
+        {
+          "teacherId": "382949",
+          "subjectLevel": "MAT SP",
+          "targetSchoolYear": "2026/2027",
+          "reason": "Brak klubowiczostwa dla MAT SP w roku szkolnym 2026/2027"
+        }
+      ],
+      "targetSchoolYear": "2026/2027"
+    },
+    {
+      "school": {
+        "id": "92122",
+        "name": "Bednarska Szkoła Podstawowa",
+        "city": "Warszawa"
+      },
+      "currentMedal": "Brak",
+      "currentSubjectNames": [],
+      "qualifyingSubjectLevels": [],
+      "expectedMedal": "Brak",
+      "supportingTeachersExcluded": [],
+      "clubMembershipExcluded": [
+        {
+          "teacherId": "359436",
+          "subjectLevel": "JPL SP",
+          "targetSchoolYear": "2026/2027",
+          "reason": "Brak klubowiczostwa dla JPL SP w roku szkolnym 2026/2027"
+        }
+      ],
+      "targetSchoolYear": "2026/2027"
+    },
+    {
+      "school": {
+        "id": "91898",
+        "name": "Niepubliczna Szkoła Podstawowa",
+        "city": "Warszawa"
+      },
+      "currentMedal": "Brak",
+      "currentSubjectNames": [],
+      "qualifyingSubjectLevels": [],
+      "expectedMedal": "Brak",
+      "supportingTeachersExcluded": [],
+      "clubMembershipExcluded": [],
+      "targetSchoolYear": "2026/2027"
+    },
+    {
+      "school": {
+        "id": "92349",
+        "name": "Niepubliczne Technikum Programistyczne Techni Schools",
+        "city": "Warszawa"
+      },
+      "currentMedal": "Brak",
+      "currentSubjectNames": [],
+      "qualifyingSubjectLevels": [],
+      "expectedMedal": "Brak",
+      "supportingTeachersExcluded": [],
+      "clubMembershipExcluded": [],
+      "targetSchoolYear": "2026/2027"
+    },
+    {
+      "school": {
+        "id": "92801",
+        "name": "Przedszkole Publiczne \"Krecik\"",
+        "city": "Warszawa"
+      },
+      "currentMedal": "Brak",
+      "currentSubjectNames": [],
+      "qualifyingSubjectLevels": [],
+      "expectedMedal": "Brak",
+      "supportingTeachersExcluded": [],
+      "clubMembershipExcluded": [],
+      "targetSchoolYear": "2026/2027"
+    },
+    {
+      "school": {
+        "id": "92105",
+        "name": "Bednarska Szkoła Realna",
+        "city": "Warszawa"
+      },
+      "currentMedal": "Brak",
+      "currentSubjectNames": [],
+      "qualifyingSubjectLevels": [],
+      "expectedMedal": "Brak",
+      "supportingTeachersExcluded": [],
+      "clubMembershipExcluded": [],
+      "targetSchoolYear": "2026/2027"
+    },
+    {
+      "school": {
+        "id": "92317",
+        "name": "Szkoła Podstawowa nr 46",
+        "city": "Warszawa"
+      },
+      "currentMedal": "Brak",
+      "currentSubjectNames": [],
+      "qualifyingSubjectLevels": [],
+      "expectedMedal": "Brak",
+      "supportingTeachersExcluded": [],
+      "clubMembershipExcluded": [
+        {
+          "teacherId": "507110",
+          "subjectLevel": "BIO SP",
+          "targetSchoolYear": "2026/2027",
+          "reason": "Brak klubowiczostwa dla BIO SP w roku szkolnym 2026/2027"
+        }
+      ],
+      "targetSchoolYear": "2026/2027"
+    },
+    {
+      "school": {
+        "id": "92534",
+        "name": "Przedszkole nr 439",
+        "city": "Warszawa"
+      },
+      "currentMedal": "Brak",
+      "currentSubjectNames": [],
+      "qualifyingSubjectLevels": [],
+      "expectedMedal": "Brak",
+      "supportingTeachersExcluded": [],
+      "clubMembershipExcluded": [],
+      "targetSchoolYear": "2026/2027"
+    },
+    {
+      "school": {
+        "id": "91954",
+        "name": "Technikum dla młodzieży",
+        "city": "Warszawa"
+      },
+      "currentMedal": "Brak",
+      "currentSubjectNames": [],
+      "qualifyingSubjectLevels": [],
+      "expectedMedal": "Brak",
+      "supportingTeachersExcluded": [],
+      "clubMembershipExcluded": [],
+      "targetSchoolYear": "2026/2027"
+    },
+    {
+      "school": {
+        "id": "92311",
+        "name": "Liceum Edukacji Wielojęzycznej",
+        "city": "Warszawa"
+      },
+      "currentMedal": "Brak",
+      "currentSubjectNames": [],
+      "qualifyingSubjectLevels": [],
+      "expectedMedal": "Brak",
+      "supportingTeachersExcluded": [],
+      "clubMembershipExcluded": [
+        {
+          "teacherId": "363694",
+          "subjectLevel": "MAT SŚ",
+          "targetSchoolYear": "2026/2027",
+          "reason": "Brak klubowiczostwa dla MAT SŚ w roku szkolnym 2026/2027"
+        },
+        {
+          "teacherId": "495080",
+          "subjectLevel": "HIS SŚ",
+          "targetSchoolYear": "2026/2027",
+          "reason": "Brak klubowiczostwa dla HIS SŚ w roku szkolnym 2026/2027"
+        },
+        {
+          "teacherId": "522215",
+          "subjectLevel": "MAT SŚ",
+          "targetSchoolYear": "2026/2027",
+          "reason": "Brak klubowiczostwa dla MAT SŚ w roku szkolnym 2026/2027"
+        },
+        {
+          "teacherId": "522552",
+          "subjectLevel": "MAT SŚ",
+          "targetSchoolYear": "2026/2027",
+          "reason": "Brak klubowiczostwa dla MAT SŚ w roku szkolnym 2026/2027"
+        }
+      ],
+      "targetSchoolYear": "2026/2027"
+    },
+    {
+      "school": {
+        "id": "92878",
+        "name": "Szkoła Podstawowa Mistrzostwa Sportowego Legii Warszawa",
+        "city": "Warszawa"
+      },
+      "currentMedal": "Brak",
+      "currentSubjectNames": [],
+      "qualifyingSubjectLevels": [],
+      "expectedMedal": "Brak",
+      "supportingTeachersExcluded": [],
+      "clubMembershipExcluded": [
+        {
+          "teacherId": "113971",
+          "subjectLevel": "MAT SP",
+          "targetSchoolYear": "2026/2027",
+          "reason": "Brak klubowiczostwa dla MAT SP w roku szkolnym 2026/2027"
+        }
+      ],
+      "targetSchoolYear": "2026/2027"
+    },
+    {
+      "school": {
+        "id": "92027",
+        "name": "Niepubliczna Polsko-Angielska Szkoła Podstawowa \"Vancouver Schools\"",
+        "city": "Warszawa"
+      },
+      "currentMedal": "Brak",
+      "currentSubjectNames": [],
+      "qualifyingSubjectLevels": [],
+      "expectedMedal": "Brak",
+      "supportingTeachersExcluded": [],
+      "clubMembershipExcluded": [],
+      "targetSchoolYear": "2026/2027"
+    },
+    {
+      "school": {
+        "id": "91963",
+        "name": "Społeczna Szkoła Podstawowa Fundacji AlterEdu",
+        "city": "Warszawa"
+      },
+      "currentMedal": "Brak",
+      "currentSubjectNames": [],
+      "qualifyingSubjectLevels": [],
+      "expectedMedal": "Brak",
+      "supportingTeachersExcluded": [],
+      "clubMembershipExcluded": [
+        {
+          "teacherId": "392171",
+          "subjectLevel": "MAT SP",
+          "targetSchoolYear": "2026/2027",
+          "reason": "Brak klubowiczostwa dla MAT SP w roku szkolnym 2026/2027"
+        },
+        {
+          "teacherId": "513675",
+          "subjectLevel": "MAT SP",
+          "targetSchoolYear": "2026/2027",
+          "reason": "Brak klubowiczostwa dla MAT SP w roku szkolnym 2026/2027"
+        }
+      ],
+      "targetSchoolYear": "2026/2027"
+    },
+    {
+      "school": {
+        "id": "92748",
+        "name": "Liceum Ogólnokształcące nr 271 Classical School",
+        "city": "Warszawa"
+      },
+      "currentMedal": "Brak",
+      "currentSubjectNames": [],
+      "qualifyingSubjectLevels": [],
+      "expectedMedal": "Brak",
+      "supportingTeachersExcluded": [],
+      "clubMembershipExcluded": [],
+      "targetSchoolYear": "2026/2027"
+    }
+  ]
+}

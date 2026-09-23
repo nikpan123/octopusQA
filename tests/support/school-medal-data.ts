@@ -5,6 +5,8 @@ import type { SchoolMedal, MedalSchool } from "./school-medal";
 export type MedalReferenceSchool = MedalSchool & {
   expectedMedal: SchoolMedal;
   expectedSubjects: string[];
+  expectedHistoryValue?: string;
+  expectedHistoryDate?: string;
 };
 
 type MedalEnvironmentData = {
@@ -28,6 +30,9 @@ const data: Record<"dev" | "test", MedalEnvironmentData> = {
         "Fizyka",
         "Edukacja wczesnoszkolna",
       ],
+
+      expectedHistoryValue: "2025/2026 Złoto",
+      expectedHistoryDate: "2026-10-01 00:00",
     },
 
     silver: {
@@ -62,6 +67,9 @@ const data: Record<"dev" | "test", MedalEnvironmentData> = {
       city: "Lębork",
       expectedMedal: "Złoto",
       expectedSubjects: ["Matematyka", "Język polski", "Historia"],
+
+      expectedHistoryValue: "2024/2025 Złoto",
+      expectedHistoryDate: "2025-10-01 00:00",
     },
 
     silver: {

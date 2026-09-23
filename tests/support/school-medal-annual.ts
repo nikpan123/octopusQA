@@ -8,6 +8,21 @@ import {
 } from "./school-medal";
 import { readFile } from "node:fs/promises";
 
+export const ANNUAL_MEDAL_TARGET_PROCESS_DATE = "2026-10-01";
+
+export type AnnualMedalClubMembershipExclusion = {
+  teacherId: string;
+  subjectLevel: string;
+  targetSchoolYear: string;
+  reason: string;
+};
+
+type AnnualMedalTeacherSchoolSubjectYear = {
+  schoolId: string;
+  subjectLevel: string;
+  schoolYear: string;
+};
+
 export type AnnualMedalTeacherRow = {
   teacherId: string;
   subjectsInSchool: string;
@@ -241,15 +256,242 @@ export async function getAnnualMedalTeacherSubjects(
   return result;
 }
 
+export function getAnnualTargetSchoolYear(targetProcessDate: string): string {
+  const match = targetProcessDate.match(/^(\d{4})-\d{2}-\d{2}$/);
+
+  if (!match) {
+    throw new Error(
+      `Nieprawidłowa data procesu rocznego: "${targetProcessDate}".`,
+    );
+  }
+
+  const startYear = Number(match[1]);
+
+  return `${startYear}/${startYear + 1}`;
+}
+
+async function getCurrentSchoolId(page: Page): Promise<string> {
+  const idInput = page
+    .locator(".info-row")
+    .filter({
+      has: page.getByText("ID", { exact: true }),
+    })
+    .locator('input[type="text"]');
+
+  await expect(
+    idInput,
+    "Nie znaleziono ID aktualnie otwartej szkoły",
+  ).toBeVisible();
+
+  const schoolId = (await idInput.inputValue()).trim();
+
+  expect(schoolId, "ID aktualnie otwartej szkoły powinno być liczbą").toMatch(
+    /^\d+$/,
+  );
+
+  return schoolId;
+}
+
+async function getTeacherSchoolSubjectYears(
+  page: Page,
+  schoolId: string,
+): Promise<AnnualMedalTeacherSchoolSubjectYear[]> {
+  const schoolsGrid = page
+    .getByRole("treegrid")
+    .filter({
+      has: page.getByRole("columnheader", {
+        name: "Nazwa szkoły",
+        exact: true,
+      }),
+    })
+    .filter({
+      has: page.getByRole("columnheader", {
+        name: "Przedmiot",
+        exact: true,
+      }),
+    })
+    .filter({
+      has: page.getByRole("columnheader", {
+        name: "Rok szkolny",
+        exact: true,
+      }),
+    })
+    .first();
+
+  await expect(
+    schoolsGrid,
+    "Tabela szkół nauczyciela powinna być widoczna",
+  ).toBeVisible();
+
+  const headers = schoolsGrid.getByRole("columnheader");
+
+  const headerCount = await headers.count();
+
+  const headerNames: string[] = [];
+
+  for (let i = 0; i < headerCount; i++) {
+    headerNames.push((await headers.nth(i).innerText()).trim());
+  }
+
+  const idIndex = headerNames.indexOf("ID");
+
+  const levelIndex = headerNames.indexOf("Poziom");
+
+  const subjectIndex = headerNames.indexOf("Przedmiot");
+
+  const schoolYearIndex = headerNames.indexOf("Rok szkolny");
+
+  expect(
+    idIndex,
+    'Nie znaleziono kolumny "ID" w tabeli szkół nauczyciela',
+  ).toBeGreaterThanOrEqual(0);
+
+  expect(
+    levelIndex,
+    'Nie znaleziono kolumny "Poziom" w tabeli szkół nauczyciela',
+  ).toBeGreaterThanOrEqual(0);
+
+  expect(
+    subjectIndex,
+    'Nie znaleziono kolumny "Przedmiot" w tabeli szkół nauczyciela',
+  ).toBeGreaterThanOrEqual(0);
+
+  expect(
+    schoolYearIndex,
+    'Nie znaleziono kolumny "Rok szkolny" w tabeli szkół nauczyciela',
+  ).toBeGreaterThanOrEqual(0);
+
+  const rows = schoolsGrid.getByRole("row");
+
+  const rowCount = await rows.count();
+
+  const result: AnnualMedalTeacherSchoolSubjectYear[] = [];
+
+  let currentSchoolId = "";
+
+  for (let i = 0; i < rowCount; i++) {
+    const cells = rows.nth(i).getByRole("gridcell");
+
+    const cellCount = await cells.count();
+
+    if (
+      cellCount === 0 ||
+      cellCount <= Math.max(idIndex, levelIndex, subjectIndex, schoolYearIndex)
+    ) {
+      continue;
+    }
+
+    const rawSchoolId = (await cells.nth(idIndex).innerText()).trim();
+
+    if (/^\d+$/.test(rawSchoolId)) {
+      currentSchoolId = rawSchoolId;
+    }
+
+    if (currentSchoolId !== schoolId) {
+      continue;
+    }
+
+    const subjectLines = (await cells.nth(subjectIndex).innerText())
+      .split(/\r?\n/)
+      .map((value) => value.trim());
+
+    const levelLines = (await cells.nth(levelIndex).innerText())
+      .split(/\r?\n/)
+      .map((value) => value.trim());
+
+    const schoolYearLines = (await cells.nth(schoolYearIndex).innerText())
+      .split(/\r?\n/)
+      .map((value) => value.trim());
+
+    for (let j = 0; j < subjectLines.length; j++) {
+      const subjectCode = subjectLines[j];
+
+      if (!subjectCode) {
+        continue;
+      }
+
+      const level =
+        levelLines.length === 1 ? levelLines[0] : (levelLines[j] ?? "");
+
+      const schoolYear =
+        schoolYearLines.length === 1
+          ? schoolYearLines[0]
+          : (schoolYearLines[j] ?? "");
+
+      if (!level || !schoolYear) {
+        continue;
+      }
+
+      result.push({
+        schoolId,
+        subjectLevel: `${subjectCode} ${level}`.trim(),
+        schoolYear,
+      });
+    }
+  }
+
+  return result;
+}
+
 export type AnnualMedalExpectation = {
   qualifyingSubjectLevels: string[];
+
   expectedMedal: "Złoto" | "Srebro" | "Brąz" | "Brak";
+
   supportingTeachersExcluded: string[];
+
+  clubMembershipExcluded: AnnualMedalClubMembershipExclusion[];
+
+  targetSchoolYear: string;
 };
+
+class AnnualMedalTeacherVerificationError extends Error {
+  constructor(
+    readonly teacherId: string,
+    readonly schoolId: string,
+  ) {
+    super(
+      `Nie udało się zweryfikować nauczyciela ${teacherId} ` +
+        `dla szkoły ${schoolId}.`,
+    );
+
+    this.name = "AnnualMedalTeacherVerificationError";
+  }
+}
+
+async function openAnnualMedalTeacherPanel(
+  app: Octopus,
+  teacherId: string,
+  schoolId: string,
+): Promise<void> {
+  for (let attempt = 1; attempt <= 2; attempt++) {
+    try {
+      console.log(
+        `Roczna medalowość: otwieram nauczyciela ${teacherId} ` +
+          `dla szkoły ${schoolId}, próba ${attempt}/2.`,
+      );
+
+      await app.openPanel("teacher", teacherId);
+
+      return;
+    } catch {
+      if (attempt === 2) {
+        throw new AnnualMedalTeacherVerificationError(teacherId, schoolId);
+      }
+
+      await app.page.waitForTimeout(500);
+    }
+  }
+}
 
 export async function getExpectedAnnualMedal(
   page: Page,
+  targetProcessDate = ANNUAL_MEDAL_TARGET_PROCESS_DATE,
 ): Promise<AnnualMedalExpectation> {
+  const schoolId = await getCurrentSchoolId(page);
+
+  const targetSchoolYear = getAnnualTargetSchoolYear(targetProcessDate);
+
   const teacherSubjects = await getAnnualMedalTeacherSubjects(page);
 
   const supportingTeachersExcluded = [
@@ -260,17 +502,83 @@ export async function getExpectedAnnualMedal(
     ),
   ];
 
-  const qualifyingSubjectLevels = [
-    ...new Set(
-      teacherSubjects
-        .filter((subject) => subject.isGreen && !subject.isSupportingTeacher)
-        .map((subject) => subject.subjectLevel),
-    ),
-  ].sort();
+  const candidateSubjects = teacherSubjects.filter(
+    (subject) => subject.isGreen && !subject.isSupportingTeacher,
+  );
+
+  const subjectsByTeacher = new Map<string, AnnualMedalTeacherSubject[]>();
+
+  for (const subject of candidateSubjects) {
+    const subjects = subjectsByTeacher.get(subject.teacherId) ?? [];
+
+    subjects.push(subject);
+
+    subjectsByTeacher.set(subject.teacherId, subjects);
+  }
+
+  const qualifyingSubjectLevels = new Set<string>();
+
+  const clubMembershipExcluded = new Map<
+    string,
+    AnnualMedalClubMembershipExclusion
+  >();
+
+  const app = new Octopus(page);
+
+  for (const [teacherId, subjects] of subjectsByTeacher) {
+    await openAnnualMedalTeacherPanel(app, teacherId, schoolId);
+
+    const teacherSchoolSubjects = await getTeacherSchoolSubjectYears(
+      page,
+      schoolId,
+    );
+
+    for (const subject of subjects) {
+      const hasMembershipForTargetYear = teacherSchoolSubjects.some(
+        (teacherSchoolSubject) =>
+          teacherSchoolSubject.subjectLevel === subject.subjectLevel &&
+          teacherSchoolSubject.schoolYear === targetSchoolYear,
+      );
+
+      if (hasMembershipForTargetYear) {
+        qualifyingSubjectLevels.add(subject.subjectLevel);
+
+        continue;
+      }
+
+      const key = `${teacherId}|${subject.subjectLevel}`;
+
+      clubMembershipExcluded.set(key, {
+        teacherId,
+
+        subjectLevel: subject.subjectLevel,
+
+        targetSchoolYear,
+
+        reason:
+          `Brak klubowiczostwa dla ${subject.subjectLevel} ` +
+          `w roku szkolnym ${targetSchoolYear}`,
+      });
+    }
+  }
+
+  const sortedQualifyingSubjectLevels = [...qualifyingSubjectLevels].sort();
+
+  const sortedClubMembershipExcluded = [
+    ...clubMembershipExcluded.values(),
+  ].sort((a, b) => {
+    const teacherCompare = a.teacherId.localeCompare(b.teacherId);
+
+    if (teacherCompare !== 0) {
+      return teacherCompare;
+    }
+
+    return a.subjectLevel.localeCompare(b.subjectLevel);
+  });
 
   let expectedMedal: "Złoto" | "Srebro" | "Brąz" | "Brak";
 
-  switch (qualifyingSubjectLevels.length) {
+  switch (sortedQualifyingSubjectLevels.length) {
     case 0:
       expectedMedal = "Brak";
       break;
@@ -288,10 +596,29 @@ export async function getExpectedAnnualMedal(
       break;
   }
 
+  console.log(
+    `Roczna medalowość: szkoła ${schoolId}, ` +
+      `docelowy rok ${targetSchoolYear}. ` +
+      `Kwalifikowane: ${JSON.stringify(sortedQualifyingSubjectLevels)}.`,
+  );
+
+  if (sortedClubMembershipExcluded.length > 0) {
+    console.log(
+      "Roczna medalowość: przedmioty wykluczone z powodu braku klubowiczostwa:",
+      JSON.stringify(sortedClubMembershipExcluded, null, 2),
+    );
+  }
+
   return {
-    qualifyingSubjectLevels,
+    qualifyingSubjectLevels: sortedQualifyingSubjectLevels,
+
     expectedMedal,
+
     supportingTeachersExcluded,
+
+    clubMembershipExcluded: sortedClubMembershipExcluded,
+
+    targetSchoolYear,
   };
 }
 
@@ -299,24 +626,34 @@ export type AnnualMedalSnapshotEntry = {
   school: MedalSchool;
 
   currentMedal: SchoolMedal;
+
   currentSubjectNames: string[];
 
   qualifyingSubjectLevels: string[];
+
   expectedMedal: SchoolMedal;
 
   supportingTeachersExcluded: string[];
+
+  clubMembershipExcluded: AnnualMedalClubMembershipExclusion[];
+
+  targetSchoolYear: string;
 };
 
 export async function buildAnnualMedalSnapshot(
   app: Octopus,
   schools: MedalSchool[],
+  targetProcessDate = ANNUAL_MEDAL_TARGET_PROCESS_DATE,
 ): Promise<AnnualMedalSnapshotEntry[]> {
   const result: AnnualMedalSnapshotEntry[] = [];
 
   for (const school of schools) {
     await openMedalSchool(app, school);
 
-    const expectation = await getExpectedAnnualMedal(app.page);
+    const expectation = await getExpectedAnnualMedal(
+      app.page,
+      targetProcessDate,
+    );
 
     const currentMedalData = await getSchoolMedalApiData(app, school);
 
@@ -329,7 +666,8 @@ export async function buildAnnualMedalSnapshot(
 
     expect(
       allowedMedals,
-      `Nieznana wartość medalu szkoły ${school.id}: "${currentMedalData.medalCategoryName}"`,
+      `Nieznana wartość medalu szkoły ${school.id}: ` +
+        `"${currentMedalData.medalCategoryName}"`,
     ).toContain(currentMedalData.medalCategoryName);
 
     result.push({
@@ -344,6 +682,10 @@ export async function buildAnnualMedalSnapshot(
       expectedMedal: expectation.expectedMedal,
 
       supportingTeachersExcluded: expectation.supportingTeachersExcluded,
+
+      clubMembershipExcluded: expectation.clubMembershipExcluded,
+
+      targetSchoolYear: expectation.targetSchoolYear,
     });
   }
 
@@ -400,6 +742,7 @@ export async function getRandomAnnualMedalCandidates(
   app: Octopus,
   count: number,
   excludedSchoolIds: string[] = [],
+  reserveCount = 20,
 ): Promise<AnnualMedalRandomCandidate[]> {
   const allMedals: SchoolMedal[] = ["Złoto", "Srebro", "Brąz", "Brak"];
 
@@ -407,8 +750,6 @@ export async function getRandomAnnualMedalCandidates(
 
   const search = await app.openSearch("school");
 
-  // Wyszukiwarka pamięta wcześniejsze kryteria.
-  // Czyścimy wszystkie zwykłe pola tekstowe.
   const textInputs = search.locator(
     'input:not([type="checkbox"]):not([readonly]):not([disabled])',
   );
@@ -419,7 +760,6 @@ export async function getRandomAnnualMedalCandidates(
     await textInputs.nth(i).fill("");
   }
 
-  // Czyścimy zapamiętany filtr Medal.
   const medalLabel = search.getByText("Medal", {
     exact: true,
   });
@@ -447,8 +787,6 @@ export async function getRandomAnnualMedalCandidates(
     await app.page.keyboard.press("Escape");
   }
 
-  // UWAGA:
-  // etykieta w UI brzmi dokładnie "Miasto/poczta".
   await typeValue(app.field(search, "Miasto/poczta"), "warszawa");
 
   const responsePromise = app.page.waitForResponse((response) => {
@@ -499,22 +837,6 @@ export async function getRandomAnnualMedalCandidates(
     response.ok(),
     "Wyszukiwanie szkół z Warszawy powinno zakończyć się poprawną odpowiedzią API",
   ).toBeTruthy();
-
-  const responseUrl = new URL(response.url());
-
-  const rawFilterModel = responseUrl.searchParams.get("filterModel");
-
-  expect(
-    rawFilterModel,
-    "Request powinien zawierać filterModel",
-  ).not.toBeNull();
-
-  const filterModel = JSON.parse(rawFilterModel!);
-
-  console.log(
-    "PREP-08: filterModel wyszukiwania Warszawy:",
-    JSON.stringify(filterModel, null, 2),
-  );
 
   const body = await response.json();
 
@@ -576,34 +898,33 @@ export async function getRandomAnnualMedalCandidates(
 
   const pool = [...candidates.values()];
 
-  console.log(`PREP-08: poprawna pula Warszawa: ${pool.length}`);
-
-  console.log(
-    `PREP-08: pominięto: ` +
-      `REG_*=${skippedReg}, ` +
-      `inne miasto=${skippedOtherCity}, ` +
-      `referencyjne=${skippedReference}, ` +
-      `niepoprawny medal=${skippedInvalidMedal}`,
-  );
-
   expect(
     pool.length,
     `Po filtrowaniu Warszawy powinna pozostać pula co najmniej ${count} szkół`,
   ).toBeGreaterThanOrEqual(count);
 
-  // Fisher-Yates.
   for (let i = pool.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
 
     [pool[i], pool[j]] = [pool[j], pool[i]];
   }
 
-  const selected = pool.slice(0, count);
+  const candidateCount = Math.min(pool.length, count + reserveCount);
 
-  expect(
-    selected,
-    `Powinno zostać wylosowanych dokładnie ${count} szkół z Warszawy`,
-  ).toHaveLength(count);
+  const selected = pool.slice(0, candidateCount);
+
+  console.log(
+    `PREP-08: wybrano ${selected.length} kandydatów ` +
+      `(${count} wymaganych + maksymalnie ${reserveCount} rezerwowych).`,
+  );
+
+  console.log(
+    `PREP-08: pominięto: ` +
+      `REG_*=${skippedReg}, ` +
+      `inne miasto=${skippedOtherCity}, ` +
+      `referencyjne=${skippedReference}, ` +
+      `niepoprawny medal=${skippedInvalidMedal}.`,
+  );
 
   return selected;
 }
@@ -612,20 +933,32 @@ export async function buildRandomAnnualMedalSnapshot(
   app: Octopus,
   count: number,
   excludedSchoolIds: string[] = [],
+  targetProcessDate = ANNUAL_MEDAL_TARGET_PROCESS_DATE,
 ): Promise<AnnualMedalSnapshotEntry[]> {
   const candidates = await getRandomAnnualMedalCandidates(
     app,
     count,
     excludedSchoolIds,
+    20,
   );
 
   const result: AnnualMedalSnapshotEntry[] = [];
 
+  const skippedSchools: {
+    id: string;
+    name: string;
+    reason: string;
+  }[] = [];
+
   for (let i = 0; i < candidates.length; i++) {
+    if (result.length === count) {
+      break;
+    }
+
     const candidate = candidates[i];
 
     console.log(
-      `PREP-08: analizuję ${i + 1}/${candidates.length}: ` +
+      `PREP-08: analizuję kandydata ${i + 1}/${candidates.length}: ` +
         `${candidate.id} "${candidate.name}"`,
     );
 
@@ -643,7 +976,33 @@ export async function buildRandomAnnualMedalSnapshot(
       `Szkoła ${candidate.id} nie może być rekordem automatycznym REG_*`,
     ).toBeFalsy();
 
-    const expectation = await getExpectedAnnualMedal(app.page);
+    let expectation: AnnualMedalExpectation;
+
+    try {
+      expectation = await getExpectedAnnualMedal(app.page, targetProcessDate);
+    } catch (error) {
+      if (error instanceof AnnualMedalTeacherVerificationError) {
+        const reason =
+          `Nie udało się zweryfikować nauczyciela ` + `${error.teacherId}.`;
+
+        skippedSchools.push({
+          id: candidate.id,
+
+          name: candidate.name,
+
+          reason,
+        });
+
+        console.log(
+          `PREP-08: pomijam szkołę ${candidate.id} "${candidate.name}". ` +
+            reason,
+        );
+
+        continue;
+      }
+
+      throw error;
+    }
 
     result.push({
       school: {
@@ -663,19 +1022,35 @@ export async function buildRandomAnnualMedalSnapshot(
       expectedMedal: expectation.expectedMedal,
 
       supportingTeachersExcluded: expectation.supportingTeachersExcluded,
+
+      clubMembershipExcluded: expectation.clubMembershipExcluded,
+
+      targetSchoolYear: expectation.targetSchoolYear,
     });
 
     console.log(
-      `PREP-08: ${i + 1}/${count} ` +
+      `PREP-08: zapisano ${result.length}/${count}: ` +
         `${candidate.id} "${candidate.name}": ` +
         `${candidate.currentMedal} → ${expectation.expectedMedal}; ` +
-        `przedmioty=${JSON.stringify(expectation.qualifyingSubjectLevels)}`,
+        `rok=${expectation.targetSchoolYear}; ` +
+        `przedmioty=${JSON.stringify(expectation.qualifyingSubjectLevels)}; ` +
+        `wykluczoneKlub=${expectation.clubMembershipExcluded.length}`,
     );
+  }
+
+  console.log(
+    `PREP-08: pominięto podczas szczegółowej analizy: ` +
+      `${skippedSchools.length} szkół.`,
+  );
+
+  for (const skipped of skippedSchools) {
+    console.log(`  ${skipped.id} "${skipped.name}": ${skipped.reason}`);
   }
 
   expect(
     result,
-    `Powinno zostać przygotowanych dokładnie ${count} losowych szkół z Warszawy`,
+    `Nie udało się przygotować ${count} poprawnie zweryfikowanych szkół. ` +
+      `Przygotowano ${result.length}.`,
   ).toHaveLength(count);
 
   return result;

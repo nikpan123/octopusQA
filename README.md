@@ -16,7 +16,7 @@ Copy-Item .env.example .env
 
 Uzupełnij lokalny plik `.env`: `GITLAB_USERNAME`, `GITLAB_PASSWORD`, `OCTOPUS_USERNAME`, `OCTOPUS_PASSWORD`. GitLab i Octopus mają osobne dane. Wpisz wartości pomiędzy apostrofami; jeśli hasło zawiera apostrof, użyj podwójnych cudzysłowów. Nie nadpisuj istniejącego, uzupełnionego `.env`. Zmienne środowiskowe (np. sekrety CI) mają pierwszeństwo przed plikiem.
 
-Przed testami automat sprawdza zapisaną sesję. Jeśli jest nieaktualna albo jej nie ma, loguje się przez `https://gitlab.gwo.pl`, a następnie do Octopusa. Dane logowania nie są nagrywane w trace, filmie ani zrzutach raportu. Hasła w `.env` są zapisane jawnym tekstem lokalnie; plik jest wykluczony z Gita. Nie udostępniaj go. W repozytorium jest tylko pusty wzór `.env.example`.
+Przed każdym testem automat lokalnie sprawdza datę wygaśnięcia JWT, bez uruchamiania dodatkowej przeglądarki. Pełne logowanie wykonuje tylko wtedy, gdy sesji brakuje albo pozostało mniej niż pięć minut jej ważności. Każdy test nadal potwierdza dostęp podczas otwierania właściwego panelu. Jeśli potrzebne jest odświeżenie, automat loguje się przez `https://gitlab.gwo.pl`, a następnie do Octopusa. Dane logowania nie są nagrywane w trace, filmie ani zrzutach raportu. Hasła w `.env` są zapisane jawnym tekstem lokalnie; plik jest wykluczony z Gita. Nie udostępniaj go. W repozytorium jest tylko pusty wzór `.env.example`.
 
 Sprawdzenie samego logowania, bez tworzenia szkół i nauczycieli:
 
@@ -57,7 +57,7 @@ Wybierz test i kliknij przycisk uruchomienia. Panel pokazuje kroki i ich wyniki.
 - `tests/support/shared-school.ts` — szkoła przygotowywana raz na proces wykonawczy nowych testów.
 - `tests/support/scenario.ts` — osobne dane i rejestr przebiegu każdego nowego przypadku.
 - `tests/support/octopus.ts` — obsługa formularzy i selektory elementów aplikacji.
-- `tests/support/fixtures.ts` — odtworzenie sesji i sprawdzenie dostępu przed zmianą danych.
+- `tests/support/fixtures.ts` — szybka kontrola ważności JWT, odtworzenie sesji i kontrola dostępu każdego testu.
 - `scripts/login.mjs` — samodzielne logowanie i zapis sesji.
 - `scripts/auth.mjs` — sprawdzenie sesji i automatyczne logowanie.
 - `.env.example` — pusty wzór konfiguracji danych logowania.

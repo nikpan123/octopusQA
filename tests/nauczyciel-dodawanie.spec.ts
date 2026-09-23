@@ -1,4 +1,5 @@
-import { test, expect } from "./support/scenario";
+import type { Page } from "@playwright/test";
+import { test, expect, type Scenario } from "./support/scenario";
 
 import { typeValue } from "./support/octopus";
 
@@ -76,12 +77,20 @@ const SECOND_TEST_SCHOOL = {
  * =========================================================
  */
 
-async function registerCreatedTeacher(s: any, teacherId: string) {
+async function registerCreatedTeacher(
+  s: Scenario,
+  teacherId: string,
+  identity: { email?: string; lastName?: string } = {},
+) {
   /*
    * Scenario nie utworzył nauczyciela przez createTeacher(),
    * dlatego ID zapisujemy ręcznie.
    */
   await s.record("teacherId", teacherId);
+  await s.record("teacherEmail", identity.email ?? s.email);
+  if (identity.lastName) {
+    await s.record("teacherLastName", identity.lastName);
+  }
 
   /*
    * Oznaczamy rekord jako testowy.
@@ -93,8 +102,8 @@ async function registerCreatedTeacher(s: any, teacherId: string) {
  * Sprawdzenie relacji od strony szkoły.
  */
 async function expectTeacherInSchool(
-  page: any,
-  s: any,
+  page: Page,
+  s: Scenario,
   schoolId: string,
   teacherId: string,
 ) {
@@ -119,8 +128,8 @@ async function expectTeacherInSchool(
  * Wyszukanie konkretnego nauczyciela po e-mailu.
  */
 async function searchTeacherByEmail(
-  page: any,
-  s: any,
+  page: Page,
+  s: Scenario,
   email: string,
   teacherId: string,
 ) {
@@ -366,7 +375,7 @@ test("ADD-02: nauczyciela można utworzyć z telefonem bez e-maila @teacher @add
 
   const teacherId = await saveNewTeacherWithoutSubjectLevel(page, form);
 
-  await registerCreatedTeacher(s, teacherId);
+  await registerCreatedTeacher(s, teacherId, { email: "", lastName });
 
   /*
    * =====================================================
@@ -1654,7 +1663,10 @@ test("ADD-23: pole telefonu nie pozwala wprowadzić więcej niż 9 cyfr @teacher
 
   const teacherId = await saveNewTeacherWithSubjectLevel(page, form);
 
-  await registerCreatedTeacher(s, teacherId);
+  await registerCreatedTeacher(s, teacherId, {
+    email: "",
+    lastName: "Telefonlimit",
+  });
 
   await expectSavedTeacherPhone(page, "500500500");
 });

@@ -19,9 +19,8 @@ const teacherUrlPattern = new RegExp(
 export const test = base.extend<{
   authSession: AuthSession;
 }>({
-  // Sesja jest sprawdzana przed każdym testem.
-  // ensureSession() najpierw próbuje wykorzystać
-  // zapisaną sesję właściwego środowiska.
+  // Przed każdym testem odczytujemy sesję z pliku bez uruchamiania dodatkowej
+  // przeglądarki. Pełne logowanie następuje tylko tuż przed wygaśnięciem JWT.
   authSession: async ({}, use) => {
     const authSession = await ensureSession();
 

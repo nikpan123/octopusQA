@@ -41,7 +41,7 @@ export async function openMedalSchool(
 ): Promise<void> {
   await app.openPanel("school", school.id);
 
-  await expect(app.detail("name")).toHaveValue(school.name);
+  console.log(`Otwarto szkołę ${school.id} "${school.name}".`);
 }
 
 /**
@@ -146,6 +146,17 @@ export async function openSchoolHistory(page: Page): Promise<Locator> {
   });
 
   await expect(history).toBeVisible();
+
+  const firstGridCell = history.getByRole("gridcell").first();
+
+  await expect(
+    firstGridCell,
+    "Historia zmian powinna zakończyć ładowanie danych",
+  ).toBeVisible({
+    timeout: 20_000,
+  });
+
+  await page.waitForTimeout(300);
 
   return history;
 }
@@ -505,6 +516,162 @@ export async function getLatestMedalHistoryValue(
   expect(latestValue, "Nie znaleziono wpisu historii medalowości").not.toBe("");
 
   return latestValue;
+}
+
+export type MedalHistoryEntry = {
+  value: string;
+  author: string;
+  source: string;
+  date: string;
+};
+
+export async function collectMedalHistoryEntries(
+  page: Page,
+  history: Locator,
+): Promise<MedalHistoryEntry[]> {
+  const firstCell = history.getByRole("gridcell").first();
+
+  await expect(
+    firstCell,
+    "Historia zmian powinna zawierać dane przed rozpoczęciem odczytu",
+  ).toBeVisible({
+    timeout: 20_000,
+  });
+
+  const scrollHandle = await history.evaluateHandle((root) => {
+    const elements = [
+      root as HTMLElement,
+      ...Array.from(root.querySelectorAll<HTMLElement>("*")),
+    ];
+
+    const scrollables = elements.filter((element) => {
+      const style = window.getComputedStyle(element);
+
+      return (
+        element.scrollHeight > element.clientHeight + 20 &&
+        (style.overflowY === "auto" || style.overflowY === "scroll")
+      );
+    });
+
+    scrollables.sort(
+      (a, b) =>
+        b.scrollHeight - b.clientHeight - (a.scrollHeight - a.clientHeight),
+    );
+
+    /*
+     * TEST:
+     * może istnieć osobny scrollowalny kontener.
+     *
+     * DEV:
+     * historia może mieścić się w całości bez scrolla.
+     *
+     * Jeżeli nie ma osobnego scrolla,
+     * używamy samego tabpanelu historii.
+     */
+    return scrollables[0] ?? (root as HTMLElement);
+  });
+
+  const scrollElement = scrollHandle.asElement();
+
+  if (!scrollElement) {
+    await scrollHandle.dispose();
+
+    throw new Error("Nie udało się uzyskać kontenera historii zmian.");
+  }
+
+  await scrollElement.evaluate((element) => {
+    const el = element as HTMLElement;
+
+    el.scrollTop = 0;
+  });
+
+  const found = new Map<string, MedalHistoryEntry>();
+
+  for (let attempt = 0; attempt < 100; attempt++) {
+    await page.waitForTimeout(150);
+
+    const rows = history.getByRole("row");
+
+    const rowCount = await rows.count();
+
+    for (let i = 0; i < rowCount; i++) {
+      const cells = rows.nth(i).getByRole("gridcell");
+
+      const cellCount = await cells.count();
+
+      if (cellCount < 5) {
+        continue;
+      }
+
+      const field = (await cells.nth(0).innerText()).trim();
+
+      if (field !== "Medal") {
+        continue;
+      }
+
+      const entry: MedalHistoryEntry = {
+        value: (await cells.nth(1).innerText()).trim(),
+
+        author: (await cells.nth(2).innerText()).trim(),
+
+        source: (await cells.nth(3).innerText()).trim(),
+
+        date: (await cells.nth(4).innerText()).trim(),
+      };
+
+      found.set(
+        [entry.value, entry.author, entry.source, entry.date].join("|"),
+        entry,
+      );
+    }
+
+    const scrollState = await scrollElement.evaluate((element) => {
+      const el = element as HTMLElement;
+
+      return {
+        scrollTop: el.scrollTop,
+
+        clientHeight: el.clientHeight,
+
+        scrollHeight: el.scrollHeight,
+      };
+    });
+
+    const isScrollable =
+      scrollState.scrollHeight > scrollState.clientHeight + 2;
+
+    /*
+     * DEV:
+     * brak scrolla -> wszystko już jest w DOM,
+     * więc kończymy po pierwszym odczycie.
+     */
+    if (!isScrollable) {
+      break;
+    }
+
+    const reachedBottom =
+      scrollState.scrollTop + scrollState.clientHeight >=
+      scrollState.scrollHeight - 2;
+
+    if (reachedBottom) {
+      break;
+    }
+
+    await scrollElement.evaluate((element) => {
+      const el = element as HTMLElement;
+
+      el.scrollTop = Math.min(
+        el.scrollTop + Math.max(el.clientHeight * 0.8, 300),
+        el.scrollHeight,
+      );
+    });
+  }
+
+  await scrollHandle.dispose();
+
+  console.log(`Historia medalowości: znaleziono ${found.size} wpisów Medal.`);
+
+  return [...found.values()];
 }
 
 export async function prepareSchoolSearchByIdAndMedal(

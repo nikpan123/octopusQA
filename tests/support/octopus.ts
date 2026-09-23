@@ -73,14 +73,9 @@ export class Octopus {
   }
 
   async markTestRecord() {
-    // Flaga doczytuje się osobnym żądaniem. Nie zaznaczaj jej w trakcie
-    // inicjalizacji, ani nie opuszczaj strony przed zakończeniem zapisu.
+    // Flaga doczytuje się osobnym żądaniem. Czekamy na aktywną kontrolkę
+    // zamiast dwukrotnie przeładowywać całą kartę nauczyciela lub szkoły.
     const kind = this.page.url().includes('/teacher/') ? 'Teacher' : 'School';
-    const loaded = this.page.waitForResponse(r => new URL(r.url()).pathname === `/api/${kind}/Get${kind}IsTested`);
-    await this.page.reload();
-    const initial = await loaded;
-    expect(initial.ok()).toBeTruthy();
-    await initial.finished();
     const checkbox = this.page.getByRole('checkbox', { name: 'Testowy', exact: true });
     await expect(checkbox).toBeEnabled();
     if (!(await checkbox.isChecked())) {
@@ -92,7 +87,6 @@ export class Octopus {
       expect(response.ok(), 'Zapis flagi Testowy musi zakończyć się powodzeniem').toBeTruthy();
       await response.finished();
     }
-    await this.page.reload();
     await expect(checkbox).toBeChecked();
   }
 
@@ -113,7 +107,11 @@ export class Octopus {
   }
 
   async prepareTeacher(lastName: string, email: string, schoolId?: string, schoolName?: string) {
-    await this.openPanel('teacher');
+    // Fixture strony otwiera już pusty panel nauczyciela, aby sprawdzić sesję.
+    // Nie pobieramy go ponownie przed każdym formularzem dodawania.
+    if (new URL(this.page.url()).pathname !== '/teacher/teacher-panel') {
+      await this.openPanel('teacher');
+    }
     await this.page.getByRole('button', { name: 'Dodaj', exact: true }).click();
     const form = this.dialog('Dodaj nowego nauczyciela');
     await typeValue(this.field(form, '*Nazwisko'), lastName);

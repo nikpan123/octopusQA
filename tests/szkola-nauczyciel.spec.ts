@@ -51,7 +51,7 @@ test("szkoła → nauczyciel → relacja → wyszukiwanie → nauczyciel → his
         run.schoolId,
         schoolName,
       );
-      run.teacherUrl = `https://octopus.gwodev.pl/teacher/teacher-panel/${run.teacherId}`;
+      run.teacherUrl = `${OCTOPUS_BASE_URL}/teacher/teacher-panel/${run.teacherId}`;
       await saveRun();
       await app.markTestRecord();
     });
