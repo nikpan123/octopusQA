@@ -124,7 +124,7 @@ Każdy przebieg ma unikalny prefiks `REG_...`. ID i linki do rekordów są w `ru
 
 Nie ma automatycznych ponowień. Testy działają kolejno w jednym procesie, by ograniczyć wzajemny wpływ operacji na tej samej sesji. Ponowne uruchomienie to nowy zestaw danych.
 
-Raport HTML znajduje się w `playwright-report`, a zrzut i ślad wykonania nieudanego testu w `test-results`. Kolejne uruchomienie zastępuje bieżący raport; trwały rejestr identyfikatorów pozostaje w `runs`.
+Raport HTML znajduje się w `playwright-report`, a zrzut i ślad wykonania nieudanego testu w osobnym podkatalogu uruchomienia w `test-results`. Dzięki temu drugie uruchomienie nie usuwa diagnostyki działającego zestawu. Kolejne uruchomienie zastępuje bieżący raport; trwały rejestr identyfikatorów pozostaje w `runs`.
 
 Sesja jest lokalnie w `playwright/.auth` i daje dostęp do konta. Nie udostępniaj tego katalogu. Jest wyłączony z Git, podobnie jak `.env` i raporty mogące zawierać dane aplikacji. Kod nie zawiera hasła i nie zapisuje logowania na filmie ani w śladzie wykonania. Zapisywany jest tylko stan Octopusa, bez sesji GitLaba. Po zmianie danych w `.env` uruchom test/panel UI ponownie.
 

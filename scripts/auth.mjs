@@ -45,7 +45,11 @@ const octopusBaseDomain = octopusHost.split(".").slice(-2).join(".");
 // playwright/.auth/test/
 const authDir = path.join(root, "playwright", ".auth", environment);
 
-const minimumSessionLifetimeSeconds = 300;
+// Większość testów kończy się w mniej niż minutę. Pięciominutowy zapas
+// powodował przy krótkim JWT zbędne logowanie co kilka testów i serię żądań
+// do formularza logowania. Odświeżamy dopiero wtedy, gdy do wygaśnięcia
+// pozostało mniej niż 90 sekund.
+const minimumSessionLifetimeSeconds = 90;
 
 export function sessionHasMinimumLifetime(
   authSession,

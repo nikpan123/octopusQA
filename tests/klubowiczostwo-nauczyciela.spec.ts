@@ -1731,7 +1731,7 @@ test("CLUB-27: istniejące potwierdzenie blokuje duplikat dla tego samego roku, 
   page,
   scenario: s,
 }) => {
-  await prepareClubTeacher(page, s);
+  const { teacherId } = await prepareClubTeacher(page, s);
 
   const { form } = await openNewClubForm(page);
   await selectSchool(form, s.schoolName);
@@ -1759,6 +1759,10 @@ test("CLUB-27: istniejące potwierdzenie blokuje duplikat dla tego samego roku, 
   await expect(warning).toHaveCount(0);
   if (await duplicateForm.count()) await cancelClubForm(duplicateForm);
 
+  // Po zamknięciu ostrzeżenia aplikacja potrafi przeładować sekcję
+  // potwierdzeń. Otwieramy nauczyciela ponownie i sprawdzamy stan trwały,
+  // zamiast opierać się na chwilowym stanie tabeli sprzed próby duplikatu.
+  await s.app.openPanel("teacher", teacherId);
   await expect(confirmationRow(page, confirmationId)).toHaveCount(1);
 });
 

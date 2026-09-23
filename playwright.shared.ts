@@ -7,7 +7,8 @@ export type OctopusEnvironment = "dev" | "test";
 export function createPlaywrightConfig(environment: OctopusEnvironment) {
   process.env.OCTOPUS_ENV = environment;
 
-  process.env.OCTOPUS_AUTH_RUN_ID = randomUUID();
+  const runId = randomUUID();
+  process.env.OCTOPUS_AUTH_RUN_ID = runId;
 
   const baseURL =
     environment === "test" ? "https://octopus.gwotest.pl" : "https://octopus.gwodev.pl";
@@ -45,7 +46,10 @@ export function createPlaywrightConfig(environment: OctopusEnvironment) {
       ],
     ],
 
-    outputDir: "test-results",
+    // Każde uruchomienie zapisuje ślady w osobnym katalogu. Dzięki temu
+    // start testu z VS Code nie może skasować plików trwającego pełnego zestawu
+    // jeszcze zanim globalSetup wykryje blokadę równoległego uruchomienia.
+    outputDir: `test-results/${runId}`,
 
     use: {
       baseURL,
