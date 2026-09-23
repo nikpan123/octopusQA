@@ -74,8 +74,6 @@ test("EDIT-04: zmiana imienia jest trwała i widoczna w historii @teacher @edit"
 }) => {
   const teacherId = await s.createTeacher(school.id, school.name);
 
-  await s.app.openPanel("teacher", teacherId);
-
   const newFirstName = "Adam";
 
   /*
@@ -414,8 +412,6 @@ test("EDIT-12: poprawny e-mail można zmienić i zmiana jest widoczna w historii
 }) => {
   const teacherId = await s.createTeacher(school.id, school.name);
 
-  await s.app.openPanel("teacher", teacherId);
-
   const oldEmail = s.email;
 
   const newEmail = `edited_${s.email}`;
@@ -589,8 +585,6 @@ test("EDIT-13: niepoprawny e-mail blokuje zapis @teacher @edit @validation", asy
 }) => {
   const teacherId = await s.createTeacher(school.id, school.name);
 
-  await s.app.openPanel("teacher", teacherId);
-
   const oldEmail = s.email;
 
   /*
@@ -747,8 +741,6 @@ test("EDIT-14: poprawny telefon można dodać @teacher @edit", async ({
 }) => {
   const teacherId = await s.createTeacher(school.id, school.name);
 
-  await s.app.openPanel("teacher", teacherId);
-
   const phone = "500500500";
 
   /*
@@ -863,8 +855,6 @@ test("EDIT-15: można dodać drugi numer telefonu @teacher @edit", async ({
 }) => {
   const teacherId = await s.createTeacher(school.id, school.name);
 
-  await s.app.openPanel("teacher", teacherId);
-
   const firstPhone = "500500500";
 
   const secondPhone = "444444444";
@@ -930,9 +920,7 @@ test("EDIT-16: przy dwóch telefonach nie można dodać trzeciego @teacher @edit
   scenario: s,
   school,
 }) => {
-  const teacherId = await s.createTeacher(school.id, school.name);
-
-  await s.app.openPanel("teacher", teacherId);
+  await s.createTeacher(school.id, school.name);
 
   const firstPhone = "500500500";
 
@@ -1025,8 +1013,6 @@ test("EDIT-17: można usunąć zapisany numer telefonu @teacher @edit", async ({
   school,
 }) => {
   const teacherId = await s.createTeacher(school.id, school.name);
-
-  await s.app.openPanel("teacher", teacherId);
 
   const firstPhone = "500500500";
   const secondPhone = "444444444";
@@ -1177,8 +1163,6 @@ test("EDIT-18: anulowanie usunięcia telefonu nie zmienia danych @teacher @edit"
 }) => {
   const teacherId = await s.createTeacher(school.id, school.name);
 
-  await s.app.openPanel("teacher", teacherId);
-
   const firstPhone = "500500500";
 
   const secondPhone = "444444444";
@@ -1301,8 +1285,6 @@ test("EDIT-19: niepoprawny telefon blokuje dodanie @teacher @edit @validation", 
 }) => {
   const teacherId = await s.createTeacher(school.id, school.name);
 
-  await s.app.openPanel("teacher", teacherId);
-
   const invalidPhone = "123";
 
   const phone = teacherNewPhoneInput(page);
@@ -1407,8 +1389,6 @@ test("EDIT-20: nauczyciel może pozostać bez e-maila jeśli posiada telefon @te
 }) => {
   const teacherId = await s.createTeacher(school.id, school.name);
 
-  await s.app.openPanel("teacher", teacherId);
-
   const phone = "500500500";
 
   /*
@@ -1494,8 +1474,6 @@ test("EDIT-21: nauczyciel może istnieć bez telefonu jeśli posiada e-mail @tea
 }) => {
   const teacherId = await s.createTeacher(school.id, school.name);
 
-  await s.app.openPanel("teacher", teacherId);
-
   /*
    * Fixture tworzy nauczyciela
    * z e-mailem i bez telefonu.
@@ -1534,8 +1512,6 @@ test("EDIT-22: brak e-maila i telefonu wymaga dodatkowego potwierdzenia @teacher
   school,
 }) => {
   const teacherId = await s.createTeacher(school.id, school.name);
-
-  await s.app.openPanel("teacher", teacherId);
 
   const oldEmail = s.email;
 
@@ -1593,8 +1569,6 @@ test("EDIT-23: można usunąć e-mail bez telefonu po potwierdzeniu ostrzeżenia
   school,
 }) => {
   const teacherId = await s.createTeacher(school.id, school.name);
-
-  await s.app.openPanel("teacher", teacherId);
 
   const oldEmail = s.email;
 
@@ -2753,8 +2727,6 @@ test("EDIT-35: zgoda Marketing jest trwała @teacher @edit @rodo", async ({
 }) => {
   const teacherId = await s.createTeacher(school.id, school.name);
 
-  await s.app.openPanel("teacher", teacherId);
-
   await expectTeacherRodoOnCard(page, {
     marketing: false,
     email: false,
@@ -2796,8 +2768,6 @@ test("EDIT-36: zaznaczenie zgody E-mail automatycznie zaznacza Marketing @teache
   school,
 }) => {
   const teacherId = await s.createTeacher(school.id, school.name);
-
-  await s.app.openPanel("teacher", teacherId);
 
   await expectTeacherRodoOnCard(page, {
     marketing: false,
@@ -2857,8 +2827,6 @@ test("EDIT-37: zaznaczenie zgody Telefon automatycznie zaznacza Marketing @teach
 }) => {
   const teacherId = await s.createTeacher(school.id, school.name);
 
-  await s.app.openPanel("teacher", teacherId);
-
   await expectTeacherRodoOnCard(page, {
     marketing: false,
     email: false,
@@ -2914,8 +2882,6 @@ test("EDIT-38: wszystkie zgody RODO można zapisać jednocześnie @teacher @edit
   school,
 }) => {
   const teacherId = await s.createTeacher(school.id, school.name);
-
-  await s.app.openPanel("teacher", teacherId);
 
   const dialog = await openTeacherRodoEdit(page);
 
@@ -3168,9 +3134,7 @@ test("EDIT-41: zapis bez żadnej zgody RODO pokazuje ostrzeżenie @teacher @edit
   scenario: s,
   school,
 }) => {
-  const teacherId = await s.createTeacher(school.id, school.name);
-
-  await s.app.openPanel("teacher", teacherId);
+  await s.createTeacher(school.id, school.name);
 
   const dialog = await openTeacherRodoEdit(page);
 
@@ -3218,9 +3182,7 @@ test("EDIT-42: dropdown Źródło RODO zawiera oczekiwane wartości @teacher @ed
   scenario: s,
   school,
 }) => {
-  const teacherId = await s.createTeacher(school.id, school.name);
-
-  await s.app.openPanel("teacher", teacherId);
+  await s.createTeacher(school.id, school.name);
 
   const dialog = await openTeacherRodoEdit(page);
 
@@ -3413,8 +3375,6 @@ test("EDIT-44: anulowanie wielu zmian zachowuje poprzednie dane i historię @tea
   school,
 }) => {
   const teacherId = await s.createTeacher(school.id, school.name);
-
-  await s.app.openPanel("teacher", teacherId);
 
   const before = {
     firstName: await s.app.detail("firstName").inputValue(),

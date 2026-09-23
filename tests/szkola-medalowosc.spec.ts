@@ -34,16 +34,6 @@ import {
 } from "./support/school-medal";
 
 test.describe("Medalowość szkoły", () => {
-  test("MED-01: szkoła ze złotym medalem wyświetla wartość Złoto w danych podstawowych", async ({
-    page,
-  }) => {
-    const app = new Octopus(page);
-
-    await openMedalSchool(app, GOLD_SCHOOL);
-
-    await expectSchoolMedal(page, GOLD_SCHOOL.expectedMedal);
-  });
-
   test("MED-02: pole Medal dla szkoły ze złotym medalem jest nieedytowalne", async ({ page }) => {
     const app = new Octopus(page);
 
@@ -51,17 +41,6 @@ test.describe("Medalowość szkoły", () => {
 
     await expectSchoolMedal(page, GOLD_SCHOOL.expectedMedal);
     await expectMedalReadOnly(page);
-  });
-
-  test("MED-03: najechanie na złoty medal wyświetla informację o przedmiotach składających się na medal", async ({
-    page,
-  }) => {
-    const app = new Octopus(page);
-
-    await openMedalSchool(app, GOLD_SCHOOL);
-
-    await expectSchoolMedal(page, GOLD_SCHOOL.expectedMedal);
-    await expectMedalTooltip(page);
   });
 
   test("MED-04: tooltip złotego medalu wyświetla przedmioty składające się na medal", async ({
@@ -85,16 +64,6 @@ test.describe("Medalowość szkoły", () => {
     await expect(schoolRow).toContainText("Złoto");
   });
 
-  test("MED-06: szkoła ze srebrnym medalem wyświetla wartość Srebro w danych podstawowych", async ({
-    page,
-  }) => {
-    const app = new Octopus(page);
-
-    await openMedalSchool(app, SILVER_SCHOOL);
-
-    await expectSchoolMedal(page, SILVER_SCHOOL.expectedMedal);
-  });
-
   test("MED-07: pole Medal dla szkoły ze srebrnym medalem jest nieedytowalne", async ({ page }) => {
     const app = new Octopus(page);
 
@@ -102,17 +71,6 @@ test.describe("Medalowość szkoły", () => {
 
     await expectSchoolMedal(page, SILVER_SCHOOL.expectedMedal);
     await expectMedalReadOnly(page);
-  });
-
-  test("MED-08: najechanie na srebrny medal wyświetla informację o przedmiotach składających się na medal", async ({
-    page,
-  }) => {
-    const app = new Octopus(page);
-
-    await openMedalSchool(app, SILVER_SCHOOL);
-
-    await expectSchoolMedal(page, SILVER_SCHOOL.expectedMedal);
-    await expectMedalTooltip(page);
   });
 
   test("MED-09: tooltip srebrnego medalu wyświetla przedmioty składające się na medal", async ({
@@ -136,16 +94,6 @@ test.describe("Medalowość szkoły", () => {
     await expect(schoolRow).toContainText("Srebro");
   });
 
-  test("MED-11: szkoła z brązowym medalem wyświetla wartość Brąz w danych podstawowych", async ({
-    page,
-  }) => {
-    const app = new Octopus(page);
-
-    await openMedalSchool(app, BRONZE_SCHOOL);
-
-    await expectSchoolMedal(page, BRONZE_SCHOOL.expectedMedal);
-  });
-
   test("MED-12: pole Medal dla szkoły z brązowym medalem jest nieedytowalne", async ({ page }) => {
     const app = new Octopus(page);
 
@@ -153,17 +101,6 @@ test.describe("Medalowość szkoły", () => {
 
     await expectSchoolMedal(page, BRONZE_SCHOOL.expectedMedal);
     await expectMedalReadOnly(page);
-  });
-
-  test("MED-13: najechanie na brązowy medal wyświetla informację o przedmiotach składających się na medal", async ({
-    page,
-  }) => {
-    const app = new Octopus(page);
-
-    await openMedalSchool(app, BRONZE_SCHOOL);
-
-    await expectSchoolMedal(page, BRONZE_SCHOOL.expectedMedal);
-    await expectMedalTooltip(page);
   });
 
   test("MED-14: tooltip brązowego medalu wyświetla przedmiot składający się na medal", async ({
@@ -185,16 +122,6 @@ test.describe("Medalowość szkoły", () => {
 
     await expect(schoolRow).toContainText(BRONZE_SCHOOL.name);
     await expect(schoolRow).toContainText("Brąz");
-  });
-
-  test("MED-16: szkoła bez medalu wyświetla wartość Brak w danych podstawowych", async ({
-    page,
-  }) => {
-    const app = new Octopus(page);
-
-    await openMedalSchool(app, NO_MEDAL_SCHOOL);
-
-    await expectSchoolMedal(page, NO_MEDAL_SCHOOL.expectedMedal);
   });
 
   test("MED-17: pole Medal dla szkoły bez medalu jest nieedytowalne", async ({ page }) => {
@@ -481,31 +408,13 @@ test.describe("Medalowość szkoły", () => {
     await expectSchoolResultsMedals(results, ["Złoto", "Srebro"]);
   });
 
-  test("MED-32: API zwraca złoty medal i właściwe przedmioty dla szkoły", async ({ page }) => {
-    const app = new Octopus(page);
-
-    const medalData = await getSchoolMedalApiData(app, GOLD_SCHOOL);
-
-    console.log(
-      `MED-32: szkoła ${GOLD_SCHOOL.id} "${GOLD_SCHOOL.name}". ` +
-        `API zwraca medal: ${medalData.medalCategoryName}. ` +
-        `Liczba przedmiotów medalowych: ${medalData.subjectNames.length}. ` +
-        `Przedmioty: ${medalData.subjectNames.join(", ")}.`,
-    );
-
-    expect(medalData.medalCategoryName).toBe(GOLD_SCHOOL.expectedMedal);
-
-    expect(medalData.subjectNames).toEqual(GOLD_SCHOOL.expectedSubjects);
-  });
-
-  test("MED-33: przedmioty złotego medalu w UI są zgodne z danymi zwracanymi przez API", async ({
-    page,
-  }) => {
+  test("MED-33: złoty medal i jego przedmioty są zgodne między API i UI", async ({ page }) => {
     const app = new Octopus(page);
 
     const apiMedalData = await getSchoolMedalApiData(app, GOLD_SCHOOL);
 
     const uiSubjects = await getMedalTooltipSubjects(page);
+    const uiMedal = await getSchoolMedalValue(page);
 
     console.log(
       `MED-33: API zwraca ${apiMedalData.subjectNames.length} przedmiotów medalowych: ` +
@@ -513,51 +422,19 @@ test.describe("Medalowość szkoły", () => {
         `Tooltip UI pokazuje ${uiSubjects.length}: ${uiSubjects.join(", ")}.`,
     );
 
+    expect(apiMedalData.medalCategoryName).toBe(GOLD_SCHOOL.expectedMedal);
+    expect(apiMedalData.subjectNames).toEqual(GOLD_SCHOOL.expectedSubjects);
+    expect(uiMedal).toBe(apiMedalData.medalCategoryName);
     expect([...uiSubjects].sort()).toEqual([...apiMedalData.subjectNames].sort());
   });
 
-  test("MED-34: wartość złotego medalu w UI jest zgodna z wartością zwracaną przez API", async ({
-    page,
-  }) => {
-    const app = new Octopus(page);
-
-    const apiMedalData = await getSchoolMedalApiData(app, GOLD_SCHOOL);
-
-    const uiMedal = await getSchoolMedalValue(page);
-
-    console.log(
-      `MED-34: medal zwrócony przez API: ${apiMedalData.medalCategoryName}. ` +
-        `Medal wyświetlany w UI: ${uiMedal}.`,
-    );
-
-    expect(uiMedal).toBe(apiMedalData.medalCategoryName);
-  });
-
-  test("MED-35: API zwraca srebrny medal i właściwe przedmioty dla szkoły", async ({ page }) => {
-    const app = new Octopus(page);
-
-    const medalData = await getSchoolMedalApiData(app, SILVER_SCHOOL);
-
-    console.log(
-      `MED-35: szkoła ${SILVER_SCHOOL.id} "${SILVER_SCHOOL.name}". ` +
-        `API zwraca medal: ${medalData.medalCategoryName}. ` +
-        `Liczba przedmiotów medalowych: ${medalData.subjectNames.length}. ` +
-        `Przedmioty: ${medalData.subjectNames.join(", ")}.`,
-    );
-
-    expect(medalData.medalCategoryName).toBe(SILVER_SCHOOL.expectedMedal);
-
-    expect(medalData.subjectNames).toEqual(SILVER_SCHOOL.expectedSubjects);
-  });
-
-  test("MED-36: przedmioty srebrnego medalu w UI są zgodne z danymi zwracanymi przez API", async ({
-    page,
-  }) => {
+  test("MED-36: srebrny medal i jego przedmioty są zgodne między API i UI", async ({ page }) => {
     const app = new Octopus(page);
 
     const apiMedalData = await getSchoolMedalApiData(app, SILVER_SCHOOL);
 
     const uiSubjects = await getMedalTooltipSubjects(page);
+    const uiMedal = await getSchoolMedalValue(page);
 
     console.log(
       `MED-36: API zwraca ${apiMedalData.subjectNames.length} przedmiotów medalowych: ` +
@@ -565,51 +442,19 @@ test.describe("Medalowość szkoły", () => {
         `Tooltip UI pokazuje ${uiSubjects.length}: ${uiSubjects.join(", ")}.`,
     );
 
+    expect(apiMedalData.medalCategoryName).toBe(SILVER_SCHOOL.expectedMedal);
+    expect(apiMedalData.subjectNames).toEqual(SILVER_SCHOOL.expectedSubjects);
+    expect(uiMedal).toBe(apiMedalData.medalCategoryName);
     expect([...uiSubjects].sort()).toEqual([...apiMedalData.subjectNames].sort());
   });
 
-  test("MED-37: wartość srebrnego medalu w UI jest zgodna z wartością zwracaną przez API", async ({
-    page,
-  }) => {
-    const app = new Octopus(page);
-
-    const apiMedalData = await getSchoolMedalApiData(app, SILVER_SCHOOL);
-
-    const uiMedal = await getSchoolMedalValue(page);
-
-    console.log(
-      `MED-37: medal zwrócony przez API: ${apiMedalData.medalCategoryName}. ` +
-        `Medal wyświetlany w UI: ${uiMedal}.`,
-    );
-
-    expect(uiMedal).toBe(apiMedalData.medalCategoryName);
-  });
-
-  test("MED-38: API zwraca brązowy medal i właściwe przedmioty dla szkoły", async ({ page }) => {
-    const app = new Octopus(page);
-
-    const medalData = await getSchoolMedalApiData(app, BRONZE_SCHOOL);
-
-    console.log(
-      `MED-38: szkoła ${BRONZE_SCHOOL.id} "${BRONZE_SCHOOL.name}". ` +
-        `API zwraca medal: ${medalData.medalCategoryName}. ` +
-        `Liczba przedmiotów medalowych: ${medalData.subjectNames.length}. ` +
-        `Przedmioty: ${medalData.subjectNames.join(", ")}.`,
-    );
-
-    expect(medalData.medalCategoryName).toBe(BRONZE_SCHOOL.expectedMedal);
-
-    expect(medalData.subjectNames).toEqual(BRONZE_SCHOOL.expectedSubjects);
-  });
-
-  test("MED-39: przedmioty brązowego medalu w UI są zgodne z danymi zwracanymi przez API", async ({
-    page,
-  }) => {
+  test("MED-39: brązowy medal i jego przedmioty są zgodne między API i UI", async ({ page }) => {
     const app = new Octopus(page);
 
     const apiMedalData = await getSchoolMedalApiData(app, BRONZE_SCHOOL);
 
     const uiSubjects = await getMedalTooltipSubjects(page);
+    const uiMedal = await getSchoolMedalValue(page);
 
     console.log(
       `MED-39: API zwraca ${apiMedalData.subjectNames.length} przedmiot medalowy: ` +
@@ -617,63 +462,17 @@ test.describe("Medalowość szkoły", () => {
         `Tooltip UI pokazuje ${uiSubjects.length}: ${uiSubjects.join(", ")}.`,
     );
 
+    expect(apiMedalData.medalCategoryName).toBe(BRONZE_SCHOOL.expectedMedal);
+    expect(apiMedalData.subjectNames).toEqual(BRONZE_SCHOOL.expectedSubjects);
+    expect(uiMedal).toBe(apiMedalData.medalCategoryName);
     expect([...uiSubjects].sort()).toEqual([...apiMedalData.subjectNames].sort());
   });
 
-  test("MED-40: wartość brązowego medalu w UI jest zgodna z wartością zwracaną przez API", async ({
-    page,
-  }) => {
-    const app = new Octopus(page);
-
-    const apiMedalData = await getSchoolMedalApiData(app, BRONZE_SCHOOL);
-
-    const uiMedal = await getSchoolMedalValue(page);
-
-    console.log(
-      `MED-40: medal zwrócony przez API: ${apiMedalData.medalCategoryName}. ` +
-        `Medal wyświetlany w UI: ${uiMedal}.`,
-    );
-
-    expect(uiMedal).toBe(apiMedalData.medalCategoryName);
-  });
-
-  test("MED-41: API zwraca Brak i pustą listę przedmiotów dla szkoły bez medalu", async ({
-    page,
-  }) => {
-    const app = new Octopus(page);
-
-    const medalData = await getSchoolMedalApiData(app, NO_MEDAL_SCHOOL);
-
-    console.log(
-      `MED-41: szkoła ${NO_MEDAL_SCHOOL.id} "${NO_MEDAL_SCHOOL.name}". ` +
-        `API zwraca medal: ${medalData.medalCategoryName}. ` +
-        `Liczba przedmiotów medalowych: ${medalData.subjectNames.length}.`,
-    );
-
-    expect(medalData.medalCategoryName).toBe(NO_MEDAL_SCHOOL.expectedMedal);
-
-    expect(medalData.subjectNames).toEqual(NO_MEDAL_SCHOOL.expectedSubjects);
-  });
-
-  test("MED-42: wartość Brak w UI jest zgodna z wartością zwracaną przez API", async ({ page }) => {
+  test("MED-43: brak medalu i przedmiotów jest zgodny między API i UI", async ({ page }) => {
     const app = new Octopus(page);
 
     const apiMedalData = await getSchoolMedalApiData(app, NO_MEDAL_SCHOOL);
-
     const uiMedal = await getSchoolMedalValue(page);
-
-    console.log(
-      `MED-42: medal zwrócony przez API: ${apiMedalData.medalCategoryName}. ` +
-        `Wartość wyświetlana w UI: ${uiMedal}.`,
-    );
-
-    expect(uiMedal).toBe(apiMedalData.medalCategoryName);
-  });
-
-  test("MED-43: brak przedmiotów w API jest zgodny z brakiem tooltipa w UI", async ({ page }) => {
-    const app = new Octopus(page);
-
-    const apiMedalData = await getSchoolMedalApiData(app, NO_MEDAL_SCHOOL);
 
     console.log(
       `MED-43: API zwraca medal "${apiMedalData.medalCategoryName}" ` +
@@ -683,6 +482,7 @@ test.describe("Medalowość szkoły", () => {
 
     expect(apiMedalData.medalCategoryName).toBe("Brak");
     expect(apiMedalData.subjectNames).toEqual([]);
+    expect(uiMedal).toBe(apiMedalData.medalCategoryName);
 
     await expectNoMedalTooltip(page);
   });

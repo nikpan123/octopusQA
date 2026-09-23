@@ -19,6 +19,8 @@ Pełna, generowana lista testów znajduje się w [indeksie scenariuszy](scenario
 npm test
 npm run test:dev
 npm run test:test
+npm run test:workers:2
+npm run test:workers:4
 ```
 
 Wybrany obszar można uruchomić przez tag, np.:
@@ -30,4 +32,6 @@ npx playwright test --grep @club
 npx playwright test --grep @annual-medal
 ```
 
-Przed uruchomieniem wymagane są poprawne dane logowania w `.env` oraz aktualna sesja utworzona przez `npm run login`.
+Przed uruchomieniem wymagane są poprawne dane logowania w `.env`. Sesja jest odświeżana jednokrotnie w globalnym setupie, gdy brakuje jej lub zbliża się wygaśnięcie; workery odczytują ten sam gotowy stan bez równoległych logowań. Domyślnie dwa workery wykonują niezależne pliki spec, a zakres 2–4 można kontrolować przez `OCTOPUS_WORKERS`.
+
+Po każdym przebiegu `scripts/performance-reporter.mjs` zapisuje `runs/performance-<run-id>.json`. Raport zawiera czasy całkowite, globalny setup i cleanup, setup/ciało/cleanup testów, p50/p90/p95/maksimum oraz liczniki żądań i statusów HTTP.

@@ -2,7 +2,7 @@
 
 Projekt Playwright uruchamia test w prawdziwej przeglądarce Chromium na **dev: https://octopus.gwodev.pl**. Nie potrzebuje kodu źródłowego Octopusa.
 
-Projekt zawiera **18 testów**. Najnowsze dwa scenariusze (zamówienie szkoły i klubowiczostwo nauczyciela) przeszły razem na dev. Nie uruchamiano jeszcze wszystkich 18 przypadków w jednym przebiegu. Szczegóły i wcześniejsze wyniki w [WERYFIKACJA.md](WERYFIKACJA.md); ograniczenie dotyczące wejścia bezpośrednim linkiem do kartoteki opisano w [OCT-OBS-002](OCT-OBS-002.md). Sesje i lokalne raporty nie są częścią repozytorium. Po sklonowaniu skonfiguruj logowanie według instrukcji poniżej.
+Aktualna, automatycznie generowana liczba i lista scenariuszy znajduje się w [docs/tests/scenario-index.md](docs/tests/scenario-index.md). Szczegóły i wcześniejsze wyniki są w [WERYFIKACJA.md](WERYFIKACJA.md); ograniczenie dotyczące wejścia bezpośrednim linkiem do kartoteki opisano w [OCT-OBS-002](OCT-OBS-002.md). Sesje i lokalne raporty nie są częścią repozytorium.
 
 ## Pierwsze uruchomienie
 
@@ -14,9 +14,9 @@ npm.cmd run install:browser
 Copy-Item .env.example .env
 ```
 
-Uzupełnij lokalny plik `.env`: `GITLAB_USERNAME`, `GITLAB_PASSWORD`, `OCTOPUS_USERNAME`, `OCTOPUS_PASSWORD`. GitLab i Octopus mają osobne dane. Wpisz wartości pomiędzy apostrofami; jeśli hasło zawiera apostrof, użyj podwójnych cudzysłowów. Nie nadpisuj istniejącego, uzupełnionego `.env`. Zmienne środowiskowe (np. sekrety CI) mają pierwszeństwo przed plikiem.
+Uzupełnij lokalny plik `.env`: dane GitLaba oraz `OCTOPUS_DEV_USERNAME` / `OCTOPUS_DEV_PASSWORD`; dla środowiska TEST także `OCTOPUS_TEST_USERNAME` / `OCTOPUS_TEST_PASSWORD`. Starsze `OCTOPUS_USERNAME` i `OCTOPUS_PASSWORD` nadal działają jako fallback dla DEV. GitLab i Octopus mają osobne dane.
 
-Przed każdym testem automat lokalnie sprawdza datę wygaśnięcia JWT, bez uruchamiania dodatkowej przeglądarki. Pełne logowanie wykonuje tylko wtedy, gdy sesji brakuje albo pozostało mniej niż pięć minut jej ważności. Każdy test nadal potwierdza dostęp podczas otwierania właściwego panelu. Jeśli potrzebne jest odświeżenie, automat loguje się przez `https://gitlab.gwo.pl`, a następnie do Octopusa. Dane logowania nie są nagrywane w trace, filmie ani zrzutach raportu. Hasła w `.env` są zapisane jawnym tekstem lokalnie; plik jest wykluczony z Gita. Nie udostępniaj go. W repozytorium jest tylko pusty wzór `.env.example`.
+Przed każdym testem automat lokalnie sprawdza datę wygaśnięcia JWT, bez uruchamiania dodatkowej przeglądarki. Pełne logowanie wykonuje tylko wtedy, gdy sesji brakuje albo pozostało mniej niż 90 sekund jej ważności. Fixture odtwarza `sessionStorage`, ale nie wykonuje już startowej nawigacji do panelu nauczyciela; pierwszą stroną jest panel wymagany przez scenariusz. Jeśli potrzebne jest odświeżenie, automat loguje się przez GitLab, a następnie do Octopusa.
 
 Sprawdzenie samego logowania, bez tworzenia szkół i nauczycieli:
 
@@ -54,13 +54,16 @@ Wybierz test i kliknij przycisk uruchomienia. Panel pokazuje kroki i ich wyniki.
 - `tests/szkola-nauczyciel.spec.ts` — scenariusz i oczekiwane wyniki, opisane przez `test.step`.
 - `tests/walidacja-anulowanie.spec.ts` — 9 przypadków walidacji, anulowania i pustych wyników.
 - `tests/nauczyciel-rozszerzenie.spec.ts` — 6 przypadków zapisu nazwiska, walidacji kontaktu, wyszukiwania i drugiej szkoły.
-- `tests/support/shared-school.ts` — szkoła przygotowywana raz na proces wykonawczy nowych testów.
+- `tests/support/shared-school.ts` — stabilna szkoła referencyjna używana przez testy edycji.
 - `tests/support/scenario.ts` — osobne dane i rejestr przebiegu każdego nowego przypadku.
+- `tests/support/api-factory.ts` — szybkie tworzenie nauczyciela, relacji i przedmioto-poziomów przez API.
+- `tests/support/performance.ts` — pomiary fixture, setupu API i ruchu przeglądarki.
 - `tests/support/octopus.ts` — obsługa formularzy i selektory elementów aplikacji.
 - `tests/support/fixtures.ts` — szybka kontrola ważności JWT, odtworzenie sesji i kontrola dostępu każdego testu.
 - `scripts/login.mjs` — samodzielne logowanie i zapis sesji.
 - `scripts/auth.mjs` — sprawdzenie sesji i automatyczne logowanie.
 - `.env.example` — pusty wzór konfiguracji danych logowania.
+- `scripts/performance-reporter.mjs` — percentyle czasu i obciążenie po przebiegu.
 - `playwright.config.ts` — przeglądarka, limity oczekiwania i raportowanie.
 
 ## Co sprawdza pierwszy test
@@ -112,7 +115,7 @@ Rozszerzenie nauczyciela zwiększyło zestaw do 16 testów. Plik `tests/nauczyci
 
 Reguły walidacji dla podanych przykładów sprawdzono w UI dev. To nie jest pełna specyfikacja dopuszczalnych e-maili ani numerów międzynarodowych. W tym rozszerzeniu pozytywna edycja dotyczy nazwiska, nie zapisu nowego kontaktu.
 
-Testy edycji i relacji korzystają z trwałej szkoły `AUTOMAT TEACHER <ŚRODOWISKO> SP`, wyszukiwanej i przygotowywanej raz na proces wykonawczy. Każdy przypadek tworzy własnego nauczyciela albo własny niezapisany formularz. REL-02 tworzy dodatkową szkołę wymaganą przez scenariusz.
+Testy edycji korzystają ze szkoły referencyjnej właściwej dla środowiska. Nauczyciel, relacja ze szkołą i opcjonalne przedmioto-poziomy są przygotowywane przez API; UI wykonuje wyłącznie operację badaną przez scenariusz. Testy `ADD-*` i pełny smoke nadal tworzą nauczyciela przez interfejs. REL-02 bada dodanie drugiej relacji przez UI.
 
 ```powershell
 npm.cmd test -- nauczyciel-rozszerzenie.spec.ts
@@ -122,7 +125,7 @@ npm.cmd test -- nauczyciel-rozszerzenie.spec.ts
 
 Każdy przebieg ma unikalny prefiks `REG_...`. ID i linki do rekordów są w `runs/<identyfikator>.json` oraz w załączniku raportu. Dopiero po ostatnim teście całego uruchomienia nauczyciele z udanych scenariuszy są usuwani wraz z powiązaniami i formularzami. Szkoły i ich zamówienia pozostają. Dane nieudanych testów zostają do analizy. Przy błędzie przed odczytaniem ID można szukać szkoły po zapisanej w pliku nazwie.
 
-Nie ma automatycznych ponowień. Testy działają kolejno w jednym procesie, by ograniczyć wzajemny wpływ operacji na tej samej sesji. Ponowne uruchomienie to nowy zestaw danych.
+Nie ma automatycznych ponowień. Domyślnie dwa workery wykonują równolegle niezależne pliki spec; testy wewnątrz jednego pliku pozostają sekwencyjne. `OCTOPUS_WORKERS` pozwala wybrać od 2 do 4 workerów.
 
 Raport HTML znajduje się w `playwright-report`, a zrzut i ślad wykonania nieudanego testu w osobnym podkatalogu uruchomienia w `test-results`. Dzięki temu drugie uruchomienie nie usuwa diagnostyki działającego zestawu. Kolejne uruchomienie zastępuje bieżący raport; trwały rejestr identyfikatorów pozostaje w `runs`.
 
@@ -146,21 +149,23 @@ Na macOS/Linux użyj `npm` zamiast `npm.cmd`.
 
 ```powershell
 npm.cmd test                 # bez widocznego okna
+npm.cmd run test:workers:2   # bezpieczny poziom domyślny
+npm.cmd run test:workers:4   # próba obciążeniowa
 npm.cmd run test:list        # lista testów bez wykonywania
 npm.cmd run check            # kontrola TypeScript, bez zmiany danych
 npm.cmd run test:auth        # mechanizm logowania na przechwyconych formularzach, fikcyjne dane
 npm.cmd test -- --grep @smoke # tylko testy oznaczone @smoke
 ```
 
-Jednocześnie może działać tylko jedno uruchomienie testów dla danego środowiska. Jeżeli pełny zestaw działa już w terminalu, test uruchomiony z VS Code zakończy się komunikatem wskazującym aktywny proces. Zapobiega to równoczesnemu odświeżaniu sesji, obciążaniu DEV i wzajemnemu zakłócaniu danych testowych.
+Jednocześnie może działać tylko jedno uruchomienie testów dla danego środowiska. Wewnątrz tego uruchomienia Playwright używa 2–4 workerów. Sesja jest sprawdzana lub odświeżana raz w globalnym setupie, a nie osobno w każdym workerze. Po przebiegu konsola pokazuje p50, p90, p95 i maksimum dla testu, setupu i cleanupu (w tym osobno faz globalnych), a pełny raport wraz z licznikami HTTP trafia do `runs/performance-<run-id>.json`.
 
 ## Zamówienia i klubowiczostwo
 
 Testy zamówień znajdują się w `tests/zamowienia-szkoly.spec.ts`, a testy klubowiczostwa w `tests/klubowiczostwo-nauczyciela.spec.ts`.
 
 - **ORD-01–ORD-03** sprawdzają zapis, edycję i usunięcie zamówień szkoły.
-- **CLUB-01–CLUB-26** sprawdzają przedmioto-poziomy, formularze klubowe, klasy własne i obce, wydawnictwa, walidację oraz trwałość danych.
-- Testy `CLUB-*` używają stałej puli dwóch szkół podstawowych i jednego liceum, osobnej dla każdego środowiska. Szkoły są wyszukiwane po nazwie, tworzone tylko przy pierwszym użyciu i pozostają w bazie.
+- **CLUB-01–CLUB-32** sprawdzają przedmioto-poziomy, formularze klubowe, klasy własne i obce, wydawnictwa, walidację oraz trwałość danych.
+- Testy `CLUB-*` używają stałej puli dwóch szkół podstawowych i jednego liceum, osobnej dla każdego środowiska. Nauczyciele, relacje i przygotowawcze przedmioto-poziomy powstają przez API. `CLUB-01` zachowuje dodawanie przedmioto-poziomu przez UI, ponieważ jest to część celu scenariusza.
 
 Uruchomienie tych sekcji:
 

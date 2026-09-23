@@ -12,6 +12,11 @@ export function createPlaywrightConfig(environment: OctopusEnvironment) {
 
   const baseURL =
     environment === "test" ? "https://octopus.gwotest.pl" : "https://octopus.gwodev.pl";
+  const requestedWorkers = Number(process.env.OCTOPUS_WORKERS ?? 2);
+  const workers = Number.isInteger(requestedWorkers)
+    ? Math.min(4, Math.max(2, requestedWorkers))
+    : 2;
+  process.env.OCTOPUS_EFFECTIVE_WORKERS = String(workers);
 
   console.log(`Playwright: środowisko ${environment.toUpperCase()} → ${baseURL}`);
 
@@ -24,7 +29,7 @@ export function createPlaywrightConfig(environment: OctopusEnvironment) {
 
     fullyParallel: false,
 
-    workers: 1,
+    workers,
 
     retries: 0,
 
@@ -44,6 +49,7 @@ export function createPlaywrightConfig(environment: OctopusEnvironment) {
           open: "never",
         },
       ],
+      ["./scripts/performance-reporter.mjs"],
     ],
 
     // Każde uruchomienie zapisuje ślady w osobnym katalogu. Dzięki temu

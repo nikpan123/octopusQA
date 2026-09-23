@@ -132,11 +132,15 @@ export const test = base.extend<Record<never, never>, { clubSchools: ClubSchools
 
         return school.id;
       },
-      createTeacher: async (schoolId, relatedSchoolName) => {
+      createTeacher: async (schoolId, relatedSchoolName, options) => {
         const schoolName =
           relatedSchoolName ?? schoolById.get(schoolId)?.name ?? clubSchools.spA.name;
 
-        return scenario.createTeacher(schoolId, schoolName);
+        const resolvedOptions = options ?? {
+          subjectLevels: [{ subject: "Matematyka", level: "Szkoła Podstawowa" }],
+        };
+
+        return scenario.createTeacher(schoolId, schoolName, resolvedOptions);
       },
     });
   },

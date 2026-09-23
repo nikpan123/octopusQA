@@ -2,6 +2,7 @@
   "name": "octopus-regression",
   "version": "1.0.0",
   "private": true,
+  "type": "module",
   "description": "Testy regresji Octopus dev przez interfejs przeglądarki",
   "scripts": {
     "login": "node scripts/login.mjs",
@@ -10,6 +11,8 @@
     "test:auth": "node --test scripts/auth.test.mjs",
     "test": "playwright test",
     "test:headed": "playwright test --headed",
+    "test:workers:2": "cross-env OCTOPUS_WORKERS=2 playwright test",
+    "test:workers:4": "cross-env OCTOPUS_WORKERS=4 playwright test",
     "test:ui": "playwright test --ui",
     "test:list": "playwright test --list",
     "cleanup:preview": "node scripts/cleanup-preview.mjs",

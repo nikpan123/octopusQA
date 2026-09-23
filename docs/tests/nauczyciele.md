@@ -25,6 +25,7 @@ tests/walidacja-anulowanie.spec.ts
 tests/support/teacher-add.ts
 tests/support/teacher-edit.ts
 tests/support/scenario.ts
+tests/support/api-factory.ts
 tests/support/octopus.ts
 ```
 
@@ -37,6 +38,8 @@ REG_<timestamp>_<losowy-sufiks>
 ```
 
 Na jego podstawie powstają nazwisko, nazwa szkoły i adres e-mail w domenie `example.invalid`. Dane przebiegu są zapisywane w `runs/*.json`, a utworzone rekordy są oznaczane jako testowe. Rekord po nieudanym teście pozostaje do diagnostyki; rekordy poprawnego przebiegu mogą zostać usunięte przez cleanup zestawu.
+
+Setup testów `EDIT-*` nie przechodzi przez formularz dodawania. Factory API tworzy nauczyciela, relacje ze szkołami i przedmioto-poziomy, po czym scenariusz otwiera bezpośrednio kartę utworzonego rekordu. UI pozostaje warstwą testowaną dla samej edycji. Testy `ADD-*` nadal przygotowują nauczyciela przez UI, ponieważ dodawanie jest ich celem.
 
 Testy `ADD-*` korzystają również ze stałych szkół QA:
 

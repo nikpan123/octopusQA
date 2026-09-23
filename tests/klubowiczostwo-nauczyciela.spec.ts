@@ -5,8 +5,6 @@ import {
   MATH_SP_CLASSES,
   PHYSICS_SP_FOREIGN_CLASSES,
   PHYSICS_SP_OWN_CLASSES,
-  addMathSp,
-  addTeacherSubjectLevel,
   cancelClubForm,
   confirmDeleteIfShown,
   confirmationDetails,
@@ -35,7 +33,7 @@ test("CLUB-01: przedmiotopoziom i formularz klubowy nauczyciela są trwałe @tea
   scenario: s,
 }) => {
   const schoolId = await s.createSchool();
-  const teacherId = await s.createTeacher(schoolId);
+  const teacherId = await s.createTeacher(schoolId, undefined, { subjectLevels: [] });
   const subjects = page.locator("app-teacher-subjects");
   const subjectRow = subjects.getByRole("row").filter({
     has: page.getByRole("cell", { name: "Matematyka", exact: true }),
@@ -120,10 +118,6 @@ test("CLUB-02: edycja klasy 4 na 5 dla Matematyka/SP jest trwała @teacher @club
   const schoolId = await s.createSchool();
   const teacherId = await s.createTeacher(schoolId);
 
-  await addMathSp(page);
-
-  await s.app.openPanel("teacher", teacherId);
-
   const { form, schoolYear } = await openNewClubForm(page);
 
   await selectSchool(form, s.schoolName);
@@ -181,11 +175,7 @@ test("CLUB-03: Matematyka/SP udostępnia wyłącznie klasy 4-8 @teacher @club", 
   scenario: s,
 }) => {
   const schoolId = await s.createSchool();
-  const teacherId = await s.createTeacher(schoolId);
-
-  await addMathSp(page);
-
-  await s.app.openPanel("teacher", teacherId);
+  await s.createTeacher(schoolId);
 
   const { form } = await openNewClubForm(page);
 
@@ -217,10 +207,6 @@ test("CLUB-04: formularz klubowy zachowuje kilka klas 4,5,6 @teacher @club", asy
 }) => {
   const schoolId = await s.createSchool();
   const teacherId = await s.createTeacher(schoolId);
-
-  await addMathSp(page);
-
-  await s.app.openPanel("teacher", teacherId);
 
   const { form } = await openNewClubForm(page);
 
@@ -258,10 +244,6 @@ test("CLUB-05: zaznaczenie wszystkich klas Matematyka/SP wybiera 4-8 @teacher @c
 }) => {
   const schoolId = await s.createSchool();
   const teacherId = await s.createTeacher(schoolId);
-
-  await addMathSp(page);
-
-  await s.app.openPanel("teacher", teacherId);
 
   const { form } = await openNewClubForm(page);
 
@@ -302,10 +284,6 @@ test("CLUB-06: edycja usuwa tylko wskazaną klasę 5 z zestawu 4,5,6 @teacher @c
 }) => {
   const schoolId = await s.createSchool();
   const teacherId = await s.createTeacher(schoolId);
-
-  await addMathSp(page);
-
-  await s.app.openPanel("teacher", teacherId);
 
   const { form } = await openNewClubForm(page);
 
@@ -349,13 +327,9 @@ test("CLUB-07: formularz klubowy dotyczy tylko wybranej szkoły nauczyciela @tea
   await s.record("secondSchoolId", secondSchoolId);
   await s.record("secondSchoolName", secondSchoolName);
 
-  const teacherId = await s.createTeacher(firstSchoolId);
-
-  await s.app.attachSchool(page.locator("body"), secondSchoolId, secondSchoolName);
-
-  await addMathSp(page);
-
-  await s.app.openPanel("teacher", teacherId);
+  const teacherId = await s.createTeacher(firstSchoolId, undefined, {
+    additionalSchoolIds: [secondSchoolId],
+  });
 
   const { form } = await openNewClubForm(page);
 
@@ -416,22 +390,15 @@ test("CLUB-08: formularz klubowy obsługuje dwie szkoły nauczyciela @teacher @c
    * =====================================================
    */
 
-  const teacherId = await s.createTeacher(firstSchoolId, firstSchoolName);
-
-  /*
-   * Dodajemy drugą szkołę.
-   */
-  await s.app.attachSchool(page.locator("body"), secondSchoolId, secondSchoolName);
+  const teacherId = await s.createTeacher(firstSchoolId, firstSchoolName, {
+    additionalSchoolIds: [secondSchoolId],
+  });
 
   /*
    * =====================================================
    * MATEMATYKA / SP
    * =====================================================
    */
-
-  await addMathSp(page);
-
-  await s.app.openPanel("teacher", teacherId);
 
   /*
    * =====================================================
@@ -846,10 +813,6 @@ test("CLUB-09: anulowanie dodawania formularza nie tworzy potwierdzenia @teacher
   const schoolId = await s.createSchool();
   const teacherId = await s.createTeacher(schoolId);
 
-  await addMathSp(page);
-
-  await s.app.openPanel("teacher", teacherId);
-
   const { form } = await openNewClubForm(page);
 
   await selectSchool(form, s.schoolName);
@@ -880,10 +843,6 @@ test("CLUB-10: anulowanie edycji zachowuje klasę 4 @teacher @club @cancel", asy
 }) => {
   const schoolId = await s.createSchool();
   const teacherId = await s.createTeacher(schoolId);
-
-  await addMathSp(page);
-
-  await s.app.openPanel("teacher", teacherId);
 
   const { form } = await openNewClubForm(page);
 
@@ -942,8 +901,6 @@ test("CLUB-11: formularz klubowy można usunąć @teacher @club @delete", async 
    * Dodajemy nauczycielowi przedmioto-poziom:
    * Matematyka / SP.
    */
-  await addMathSp(page);
-
   /*
    * Otwieramy nauczyciela ponownie,
    * żeby formularz klubowy tworzyć na świeżym widoku.
@@ -1132,10 +1089,6 @@ test("CLUB-12A: brak szkoły blokuje utworzenie formularza klubowego @teacher @c
   const schoolId = await s.createSchool();
   const teacherId = await s.createTeacher(schoolId);
 
-  await addMathSp(page);
-
-  await s.app.openPanel("teacher", teacherId);
-
   /*
    * Na początku nie może istnieć żadne potwierdzenie
    * Matematyki.
@@ -1243,10 +1196,6 @@ test("CLUB-12B: brak klasy blokuje utworzenie formularza klubowego @teacher @clu
   const schoolId = await s.createSchool();
   const teacherId = await s.createTeacher(schoolId);
 
-  await addMathSp(page);
-
-  await s.app.openPanel("teacher", teacherId);
-
   /*
    * Przed próbą zapisu nie ma żadnego formularza
    * Matematyki.
@@ -1353,10 +1302,6 @@ test("CLUB-13: formularz klubowy zachowuje klasę obcą i wydawnictwo @teacher @
   const schoolId = await s.createSchool();
   const teacherId = await s.createTeacher(schoolId);
 
-  await addMathSp(page);
-
-  await s.app.openPanel("teacher", teacherId);
-
   const { form } = await openNewClubForm(page);
 
   await selectSchool(form, s.schoolName);
@@ -1436,15 +1381,13 @@ test("CLUB-15: formularz pokazuje wszystkie szkoły i przedmioto-poziomy nauczyc
   page,
   scenario: s,
 }) => {
-  const { teacherId } = await prepareClubTeacher(page, s);
-
-  await addTeacherSubjectLevel(page, "Fizyka", "Szkoła Podstawowa", "SP");
-
   const { id: secondSchoolId, name: secondSchoolName } = clubSchools.spB;
+  await prepareClubTeacher(page, s, {
+    additionalSchoolIds: [secondSchoolId],
+    additionalSubjectLevels: [{ subject: "Fizyka", level: "Szkoła Podstawowa" }],
+  });
 
   await s.record("secondSchoolId", secondSchoolId);
-  await s.app.openPanel("teacher", teacherId);
-  await s.app.attachSchool(page.locator("body"), secondSchoolId, secondSchoolName);
 
   const { form } = await openNewClubForm(page, null);
 

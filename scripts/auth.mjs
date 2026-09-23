@@ -45,6 +45,13 @@ const octopusBaseDomain = octopusHost.split(".").slice(-2).join(".");
 // playwright/.auth/test/
 const authDir = path.join(root, "playwright", ".auth", environment);
 
+export function readStoredSession() {
+  return {
+    storageState: JSON.parse(readFileSync(path.join(authDir, "user.json"), "utf8")),
+    session: JSON.parse(readFileSync(path.join(authDir, "session.json"), "utf8")),
+  };
+}
+
 // Większość testów kończy się w mniej niż minutę. Pięciominutowy zapas
 // powodował przy krótkim JWT zbędne logowanie co kilka testów i serię żądań
 // do formularza logowania. Odświeżamy dopiero wtedy, gdy do wygaśnięcia
@@ -91,11 +98,20 @@ function credentials() {
   const octopusPasswordVariable =
     environment === "test" ? "OCTOPUS_TEST_PASSWORD" : "OCTOPUS_DEV_PASSWORD";
 
+  // Zachowaj zgodność z dotychczasowym .env dla DEV. Zmienne środowiskowe
+  // per środowisko mają pierwszeństwo i są wymagane dla TEST.
+  const octopusUsername =
+    process.env[octopusUsernameVariable] ??
+    (environment === "dev" ? process.env.OCTOPUS_USERNAME : undefined);
+  const octopusPassword =
+    process.env[octopusPasswordVariable] ??
+    (environment === "dev" ? process.env.OCTOPUS_PASSWORD : undefined);
+
   const requiredVariables = [
     "GITLAB_USERNAME",
     "GITLAB_PASSWORD",
-    octopusUsernameVariable,
-    octopusPasswordVariable,
+    ...(octopusUsername ? [] : [octopusUsernameVariable]),
+    ...(octopusPassword ? [] : [octopusPasswordVariable]),
   ];
 
   const missing = requiredVariables.filter((name) => !process.env[name]);
@@ -111,9 +127,9 @@ function credentials() {
 
     GITLAB_PASSWORD: process.env.GITLAB_PASSWORD,
 
-    OCTOPUS_USERNAME: process.env[octopusUsernameVariable],
+    OCTOPUS_USERNAME: octopusUsername,
 
-    OCTOPUS_PASSWORD: process.env[octopusPasswordVariable],
+    OCTOPUS_PASSWORD: octopusPassword,
   };
 }
 

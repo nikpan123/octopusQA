@@ -11,6 +11,25 @@ Zrealizowano:
 - wspólne formatowanie przez Prettier,
 - kontrolę TypeScript, ESLint i reguł Playwright przez `npm run quality`,
 - generowany indeks wszystkich scenariuszy w `docs/tests/scenario-index.md`.
+- API factory tworzące nauczyciela, relacje i przedmioto-poziomy,
+- migrację setupu `EDIT-*` i `CLUB-*` do API,
+- usunięcie startowej nawigacji fixture do panelu nauczyciela,
+- redukcję powtarzających się scenariuszy `MED-*`,
+- kontrolowany zakres 2–4 workerów (domyślnie 2),
+- raport percentyli czasu fixture/setup/test/cleanup i liczników HTTP.
+
+## Pomiar kontrolny 2–4 workerów
+
+Ten sam przekrój czterech testów (`ADD-04`, `EDIT-04`, `CLUB-14`, `MED-33`) uruchomiono na DEV po przeniesieniu logowania do globalnego setupu:
+
+| Workery | p50 testu | p95 testu | p95 setupu | Żądania przeglądarki | Żądania factory API | Cleanup zestawu |
+| ------: | --------: | --------: | ---------: | -------------------: | ------------------: | --------------: |
+|       2 |    3,32 s |    6,00 s |     0,33 s |                  293 |                   8 |         10,60 s |
+|       4 |    3,54 s |    6,48 s |     0,39 s |                  293 |                   8 |         10,74 s |
+
+Próba jest mała, więc nie stanowi benchmarku całej regresji. Pokazuje jednak, że cztery workery są stabilne i nie zwiększają liczby żądań, ale dla takiego przekroju nie dają zysku względem dwóch. Domyślnie pozostają dwa workery; cztery należy włączać dla większych przekrojów i oceniać na podstawie kolejnych raportów percentylowych. Globalny cleanup jest obecnie największym stałym kosztem krótkich przebiegów.
+
+Przed centralizacją sesji każdy z czterech workerów próbował odświeżyć ją osobno, a p95 setupu wynosiło 9,66 s. Po pojedynczym odświeżeniu w globalnym setupie workery wyłącznie odczytują gotowy stan; p95 spadło do 0,39 s.
 
 Osobną, nadal aktualną rekomendacją pozostaje pełna migracja `ORD-03` do helperów z `order.ts`.
 
