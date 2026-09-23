@@ -1,3 +1,3 @@
 import { createPlaywrightConfig } from "./playwright.shared";
 
-export default createPlaywrightConfig("dev");
+export default createPlaywrightConfig("test");

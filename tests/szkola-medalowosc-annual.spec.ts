@@ -1,13 +1,13 @@
 import { test, expect } from "./support/fixtures";
 import { Octopus } from "./support/octopus";
+import { getSchoolMedalApiData, openMedalSchool } from "./support/school-medal";
+
 import {
-  getSchoolMedalApiData,
   GOLD_SCHOOL,
   SILVER_SCHOOL,
   BRONZE_SCHOOL,
   NO_MEDAL_SCHOOL,
-  openMedalSchool,
-} from "./support/school-medal";
+} from "./support/school-medal-data";
 import {
   buildAnnualMedalSnapshot,
   getAnnualMedalTeacherRows,

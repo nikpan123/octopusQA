@@ -9,30 +9,6 @@ export type MedalSchool = {
   city: string;
 };
 
-export const GOLD_SCHOOL: MedalSchool = {
-  id: "57616",
-  name: "Szkoła Podstawowa nr 5",
-  city: "Lębork",
-};
-
-export const SILVER_SCHOOL: MedalSchool = {
-  id: "85263",
-  name: "Szkoła Podstawowa nr 379",
-  city: "Warszawa",
-};
-
-export const BRONZE_SCHOOL: MedalSchool = {
-  id: "66109",
-  name: "Szkoła Podstawowa w Raszkowie",
-  city: "Raszków",
-};
-
-export const NO_MEDAL_SCHOOL: MedalSchool = {
-  id: "92928",
-  name: "Szkoła Podstawowa nr 403",
-  city: "Warszawa",
-};
-
 /**
  * Pole Medal w danych podstawowych szkoły.
  */

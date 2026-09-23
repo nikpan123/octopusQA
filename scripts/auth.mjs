@@ -53,23 +53,37 @@ function credentials() {
     loadEnvFile(envFile);
   }
 
-  const names = [
+  const octopusUsernameVariable =
+    environment === "test" ? "OCTOPUS_TEST_USERNAME" : "OCTOPUS_DEV_USERNAME";
+
+  const octopusPasswordVariable =
+    environment === "test" ? "OCTOPUS_TEST_PASSWORD" : "OCTOPUS_DEV_PASSWORD";
+
+  const requiredVariables = [
     "GITLAB_USERNAME",
     "GITLAB_PASSWORD",
-    "OCTOPUS_USERNAME",
-    "OCTOPUS_PASSWORD",
+    octopusUsernameVariable,
+    octopusPasswordVariable,
   ];
 
-  const missing = names.filter((name) => !process.env[name]);
+  const missing = requiredVariables.filter((name) => !process.env[name]);
 
   if (missing.length) {
     throw new Error(
-      `Uzupełnij lokalny plik .env: ${missing.join(", ")}. ` +
-        "Alternatywnie: npm.cmd run login.",
+      `Brak wymaganych danych w .env dla środowiska ${config.name}: ` +
+        `${missing.join(", ")}.`,
     );
   }
 
-  return Object.fromEntries(names.map((name) => [name, process.env[name]]));
+  return {
+    GITLAB_USERNAME: process.env.GITLAB_USERNAME,
+
+    GITLAB_PASSWORD: process.env.GITLAB_PASSWORD,
+
+    OCTOPUS_USERNAME: process.env[octopusUsernameVariable],
+
+    OCTOPUS_PASSWORD: process.env[octopusPasswordVariable],
+  };
 }
 
 export async function restoreSession(context, session) {

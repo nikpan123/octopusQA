@@ -1,4 +1,5 @@
 import { test, expect } from "./support/fixtures";
+
 import { Octopus } from "./support/octopus";
 
 import {
@@ -6,6 +7,9 @@ import {
   SILVER_SCHOOL,
   BRONZE_SCHOOL,
   NO_MEDAL_SCHOOL,
+} from "./support/school-medal-data";
+
+import {
   expectSchoolMedal,
   expectMedalReadOnly,
   expectMedalTooltip,
@@ -44,7 +48,7 @@ test.describe("Medalowość szkoły", () => {
 
     await openMedalSchool(app, GOLD_SCHOOL);
 
-    await expectSchoolMedal(page, "Złoto");
+    await expectSchoolMedal(page, GOLD_SCHOOL.expectedMedal);
   });
 
   test("MED-02: pole Medal dla szkoły ze złotym medalem jest nieedytowalne", async ({
@@ -54,7 +58,7 @@ test.describe("Medalowość szkoły", () => {
 
     await openMedalSchool(app, GOLD_SCHOOL);
 
-    await expectSchoolMedal(page, "Złoto");
+    await expectSchoolMedal(page, GOLD_SCHOOL.expectedMedal);
     await expectMedalReadOnly(page);
   });
 
@@ -65,7 +69,7 @@ test.describe("Medalowość szkoły", () => {
 
     await openMedalSchool(app, GOLD_SCHOOL);
 
-    await expectSchoolMedal(page, "Złoto");
+    await expectSchoolMedal(page, GOLD_SCHOOL.expectedMedal);
     await expectMedalTooltip(page);
   });
 
@@ -76,15 +80,9 @@ test.describe("Medalowość szkoły", () => {
 
     await openMedalSchool(app, GOLD_SCHOOL);
 
-    await expectSchoolMedal(page, "Złoto");
+    await expectSchoolMedal(page, GOLD_SCHOOL.expectedMedal);
 
-    await expectMedalTooltip(page, [
-      "Matematyka",
-      "Język polski",
-      "Historia",
-      "Fizyka",
-      "Edukacja wczesnoszkolna",
-    ]);
+    await expectMedalTooltip(page, GOLD_SCHOOL.expectedSubjects);
   });
 
   test("MED-05: złoty medal jest widoczny w wynikach wyszukiwania szkół", async ({
@@ -105,7 +103,7 @@ test.describe("Medalowość szkoły", () => {
 
     await openMedalSchool(app, SILVER_SCHOOL);
 
-    await expectSchoolMedal(page, "Srebro");
+    await expectSchoolMedal(page, SILVER_SCHOOL.expectedMedal);
   });
 
   test("MED-07: pole Medal dla szkoły ze srebrnym medalem jest nieedytowalne", async ({
@@ -115,7 +113,7 @@ test.describe("Medalowość szkoły", () => {
 
     await openMedalSchool(app, SILVER_SCHOOL);
 
-    await expectSchoolMedal(page, "Srebro");
+    await expectSchoolMedal(page, SILVER_SCHOOL.expectedMedal);
     await expectMedalReadOnly(page);
   });
 
@@ -126,7 +124,7 @@ test.describe("Medalowość szkoły", () => {
 
     await openMedalSchool(app, SILVER_SCHOOL);
 
-    await expectSchoolMedal(page, "Srebro");
+    await expectSchoolMedal(page, SILVER_SCHOOL.expectedMedal);
     await expectMedalTooltip(page);
   });
 
@@ -137,9 +135,9 @@ test.describe("Medalowość szkoły", () => {
 
     await openMedalSchool(app, SILVER_SCHOOL);
 
-    await expectSchoolMedal(page, "Srebro");
+    await expectSchoolMedal(page, SILVER_SCHOOL.expectedMedal);
 
-    await expectMedalTooltip(page, ["Matematyka", "Geografia"]);
+    await expectMedalTooltip(page, SILVER_SCHOOL.expectedSubjects);
   });
 
   test("MED-10: srebrny medal jest widoczny w wynikach wyszukiwania szkół", async ({
@@ -160,7 +158,7 @@ test.describe("Medalowość szkoły", () => {
 
     await openMedalSchool(app, BRONZE_SCHOOL);
 
-    await expectSchoolMedal(page, "Brąz");
+    await expectSchoolMedal(page, BRONZE_SCHOOL.expectedMedal);
   });
 
   test("MED-12: pole Medal dla szkoły z brązowym medalem jest nieedytowalne", async ({
@@ -170,7 +168,7 @@ test.describe("Medalowość szkoły", () => {
 
     await openMedalSchool(app, BRONZE_SCHOOL);
 
-    await expectSchoolMedal(page, "Brąz");
+    await expectSchoolMedal(page, BRONZE_SCHOOL.expectedMedal);
     await expectMedalReadOnly(page);
   });
 
@@ -181,7 +179,7 @@ test.describe("Medalowość szkoły", () => {
 
     await openMedalSchool(app, BRONZE_SCHOOL);
 
-    await expectSchoolMedal(page, "Brąz");
+    await expectSchoolMedal(page, BRONZE_SCHOOL.expectedMedal);
     await expectMedalTooltip(page);
   });
 
@@ -192,9 +190,9 @@ test.describe("Medalowość szkoły", () => {
 
     await openMedalSchool(app, BRONZE_SCHOOL);
 
-    await expectSchoolMedal(page, "Brąz");
+    await expectSchoolMedal(page, BRONZE_SCHOOL.expectedMedal);
 
-    await expectMedalTooltip(page, ["Matematyka"]);
+    await expectMedalTooltip(page, BRONZE_SCHOOL.expectedSubjects);
   });
 
   test("MED-15: brązowy medal jest widoczny w wynikach wyszukiwania szkół", async ({
@@ -215,7 +213,7 @@ test.describe("Medalowość szkoły", () => {
 
     await openMedalSchool(app, NO_MEDAL_SCHOOL);
 
-    await expectSchoolMedal(page, "Brak");
+    await expectSchoolMedal(page, NO_MEDAL_SCHOOL.expectedMedal);
   });
 
   test("MED-17: pole Medal dla szkoły bez medalu jest nieedytowalne", async ({
@@ -225,7 +223,7 @@ test.describe("Medalowość szkoły", () => {
 
     await openMedalSchool(app, NO_MEDAL_SCHOOL);
 
-    await expectSchoolMedal(page, "Brak");
+    await expectSchoolMedal(page, NO_MEDAL_SCHOOL.expectedMedal);
     await expectMedalReadOnly(page);
   });
 
@@ -236,7 +234,7 @@ test.describe("Medalowość szkoły", () => {
 
     await openMedalSchool(app, NO_MEDAL_SCHOOL);
 
-    await expectSchoolMedal(page, "Brak");
+    await expectSchoolMedal(page, NO_MEDAL_SCHOOL.expectedMedal);
     await expectNoMedalTooltip(page);
   });
 
@@ -474,15 +472,9 @@ test.describe("Medalowość szkoły", () => {
         `Przedmioty: ${medalData.subjectNames.join(", ")}.`,
     );
 
-    expect(medalData.medalCategoryName).toBe("Złoto");
+    expect(medalData.medalCategoryName).toBe(GOLD_SCHOOL.expectedMedal);
 
-    expect(medalData.subjectNames).toEqual([
-      "Matematyka",
-      "Język polski",
-      "Historia",
-      "Fizyka",
-      "Edukacja wczesnoszkolna",
-    ]);
+    expect(medalData.subjectNames).toEqual(GOLD_SCHOOL.expectedSubjects);
   });
 
   test("MED-33: przedmioty złotego medalu w UI są zgodne z danymi zwracanymi przez API", async ({
@@ -536,11 +528,9 @@ test.describe("Medalowość szkoły", () => {
         `Przedmioty: ${medalData.subjectNames.join(", ")}.`,
     );
 
-    expect(medalData.medalCategoryName).toBe("Srebro");
+    expect(medalData.medalCategoryName).toBe(SILVER_SCHOOL.expectedMedal);
 
-    expect([...medalData.subjectNames].sort()).toEqual(
-      ["Matematyka", "Geografia"].sort(),
-    );
+    expect(medalData.subjectNames).toEqual(SILVER_SCHOOL.expectedSubjects);
   });
 
   test("MED-36: przedmioty srebrnego medalu w UI są zgodne z danymi zwracanymi przez API", async ({
@@ -594,9 +584,9 @@ test.describe("Medalowość szkoły", () => {
         `Przedmioty: ${medalData.subjectNames.join(", ")}.`,
     );
 
-    expect(medalData.medalCategoryName).toBe("Brąz");
+    expect(medalData.medalCategoryName).toBe(BRONZE_SCHOOL.expectedMedal);
 
-    expect([...medalData.subjectNames].sort()).toEqual(["Matematyka"].sort());
+    expect(medalData.subjectNames).toEqual(BRONZE_SCHOOL.expectedSubjects);
   });
 
   test("MED-39: przedmioty brązowego medalu w UI są zgodne z danymi zwracanymi przez API", async ({
@@ -649,8 +639,9 @@ test.describe("Medalowość szkoły", () => {
         `Liczba przedmiotów medalowych: ${medalData.subjectNames.length}.`,
     );
 
-    expect(medalData.medalCategoryName).toBe("Brak");
-    expect(medalData.subjectNames).toEqual([]);
+    expect(medalData.medalCategoryName).toBe(NO_MEDAL_SCHOOL.expectedMedal);
+
+    expect(medalData.subjectNames).toEqual(NO_MEDAL_SCHOOL.expectedSubjects);
   });
 
   test("MED-42: wartość Brak w UI jest zgodna z wartością zwracaną przez API", async ({
