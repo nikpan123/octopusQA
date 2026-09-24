@@ -26,9 +26,30 @@ test("koniec zestawu wybiera tylko własny batch i udanych nauczycieli", () => {
 });
 
 test("--all domyślnie pokazuje podgląd; wykonanie wymaga --apply", () => {
-  assert.deepEqual(parseCleanupArgs(["--all"]), { all: true, apply: false, files: [] });
-  assert.deepEqual(parseCleanupArgs(["--all", "--apply"]), { all: true, apply: true, files: [] });
-  assert.deepEqual(parseCleanupArgs([]), { all: false, apply: false, files: [] });
+  assert.deepEqual(parseCleanupArgs(["--all"]), {
+    all: true,
+    apply: false,
+    includeFailed: false,
+    files: [],
+  });
+  assert.deepEqual(parseCleanupArgs(["--all", "--apply"]), {
+    all: true,
+    apply: true,
+    includeFailed: false,
+    files: [],
+  });
+  assert.deepEqual(parseCleanupArgs([]), {
+    all: false,
+    apply: false,
+    includeFailed: false,
+    files: [],
+  });
+  assert.deepEqual(parseCleanupArgs(["--include-failed", "--apply"]), {
+    all: false,
+    apply: true,
+    includeFailed: true,
+    files: [],
+  });
 });
 test("odrzuca niejednoznaczne lub błędne argumenty", () => {
   for (const args of [
@@ -43,6 +64,7 @@ test("odrzuca niejednoznaczne lub błędne argumenty", () => {
   assert.deepEqual(parseCleanupArgs(["REG_123456_abcdef.json", "--apply"]), {
     all: false,
     apply: true,
+    includeFailed: false,
     files: ["REG_123456_abcdef.json"],
   });
 });
@@ -83,6 +105,26 @@ test("odrzuca nieprawidłowe ID i obcy adres e-mail", () => {
     assert.throws(() => validateTeacherRun({ ...run(), ...changes }));
   }
   assert.throws(() => validateTeacherRun({ ...run(), teacherEmail: "" }));
+  const failed = { ...run(), result: "FAILED" };
+  assert.throws(() => validateTeacherRun(failed));
+  assert.doesNotThrow(() => validateTeacherRun(failed, { includeFailed: true }));
+});
+
+test("jawna opcja pozwala usunąć poprawnie zweryfikowany rekord nieudanego testu", async () => {
+  const failed = { ...run(), result: "FAILED" };
+  const page = pageWith([
+    { status: 200, data: { id: 123, email: failed.email } },
+    { status: 200, data: true },
+    { status: 200, data: {} },
+    { status: 204, data: null },
+  ]);
+
+  await cleanupTeacherBatch(page, [{ name: `${failed.id}.json`, run: failed }], async () => {}, {
+    includeFailed: true,
+  });
+
+  assert.equal(failed.cleanupStatus, "DELETED");
+  assert.equal(page.calls.filter((call) => call.method === "DELETE").length, 1);
 });
 test("nie wysyła żądań poza dev", async () => {
   const page = pageWith([], "https://example.com");
