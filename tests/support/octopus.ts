@@ -1,4 +1,4 @@
-import { expect, type Locator, type Page } from "@playwright/test";
+import { expect, type Locator, type Page, type Request } from "@playwright/test";
 
 // fill wpisuje całość atomowo; End emituje keyup wymagany m.in. przez adres.
 // Dialog może zostać jednokrotnie wyrenderowany ponownie po doczytaniu słowników,
@@ -118,16 +118,33 @@ export class Octopus {
     const checkbox = this.page.getByRole("checkbox", { name: "Testowy", exact: true });
     await expect(checkbox).toBeEnabled();
     if (!(await checkbox.isChecked())) {
-      const saved = this.page.waitForResponse(
-        (r) =>
-          new URL(r.url()).pathname.startsWith(`/api/${kind}/`) &&
-          new URL(r.url()).pathname.includes("Test") &&
-          r.request().method() === "POST",
-      );
-      await checkbox.check();
-      const response = await saved;
-      expect(response.ok(), "Zapis flagi Testowy musi zakończyć się powodzeniem").toBeTruthy();
-      await response.finished();
+      let saveRequest: Request | undefined;
+      const captureSaveRequest = (request: Request) => {
+        const pathname = new URL(request.url()).pathname;
+        if (
+          request.method() === "POST" &&
+          pathname.startsWith(`/api/${kind}/`) &&
+          pathname.includes("Test")
+        ) {
+          saveRequest = request;
+        }
+      };
+      this.page.on("request", captureSaveRequest);
+      try {
+        await checkbox.check();
+      } finally {
+        this.page.off("request", captureSaveRequest);
+      }
+
+      // Podczas doczytywania danych checkbox może sam zmienić stan pomiędzy
+      // isChecked() i check(). Wtedy check() niczego nie wysyła i nie ma
+      // odpowiedzi, na którą należałoby czekać.
+      if (saveRequest) {
+        const response = await saveRequest.response();
+        expect(response, "Żądanie zapisu flagi Testowy powinno otrzymać odpowiedź").not.toBeNull();
+        expect(response!.ok(), "Zapis flagi Testowy musi zakończyć się powodzeniem").toBeTruthy();
+        await response!.finished();
+      }
     }
     await expect(checkbox).toBeChecked();
   }

@@ -49,14 +49,16 @@ utworzenie szkoły
 
 ## 5. Fixture współdzielonej szkoły
 
-`shared-school.ts` udostępnia testom jako fixture `school` stabilną, referencyjną szkołę medalową przypisaną do środowiska:
+`shared-school.ts` udostępnia testom dwie stabilne, referencyjne szkoły medalowe przypisane do środowiska:
 
 ```ts
 school.id;
 school.name;
+secondSchool.id;
+secondSchool.name;
 ```
 
-Fixture nie wykonuje nawigacji ani wyszukiwania przez UI i nie tworzy szkoły. Relację nauczyciela ze szkołą przygotowuje factory API razem z rekordem nauczyciela. Dzięki temu testy edycji i relacji nie powtarzają kosztownego setupu interfejsowego.
+Fixture nie wykonuje nawigacji ani wyszukiwania przez UI i nie tworzy szkoły. Relację nauczyciela ze szkołą przygotowuje factory API razem z rekordem nauczyciela. Druga szkoła służy scenariuszom wielu relacji, takim jak `REL-02`. Dzięki temu testy edycji, walidacji, wyszukiwania i relacji nie tworzą kolejnych nieusuwalnych szkół.
 
 ## 6. Asercje relacji
 

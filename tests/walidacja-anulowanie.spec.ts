@@ -1,17 +1,18 @@
-import { test, expect } from "./support/scenario";
+import { test, expect } from "./support/shared-school";
 import { typeValue } from "./support/octopus";
 
 for (const missing of ["imię", "nazwisko", "szkoła", "kontakt"] as const) {
   test(`TEA-02: brak pola ${missing} blokuje zapis nauczyciela @validation`, async ({
     page,
     scenario: s,
+    school,
   }) => {
-    const schoolId = missing === "szkoła" ? undefined : await s.createSchool();
+    const schoolId = missing === "szkoła" ? undefined : school.id;
     const form = await s.app.prepareTeacher(
       s.id,
       missing === "kontakt" ? "" : s.email,
       schoolId,
-      s.schoolName,
+      schoolId ? school.name : undefined,
     );
     if (missing === "imię") await typeValue(s.app.field(form, "*Imię"), "");
     if (missing === "nazwisko") await typeValue(s.app.field(form, "*Nazwisko"), "");
@@ -47,17 +48,13 @@ for (const missing of ["imię", "nazwisko", "szkoła", "kontakt"] as const) {
 
 test("TEA-03: anulowanie kompletnego formularza nie tworzy nauczyciela @cancel", async ({
   scenario: s,
+  school,
 }) => {
-  const schoolId = await s.createSchool();
-  const form = await s.app.prepareTeacher(s.id, s.email, schoolId, s.schoolName);
+  const form = await s.app.prepareTeacher(s.id, s.email, school.id, school.name);
   await form.getByRole("button", { name: "Anuluj", exact: true }).click();
   await expect(form).toHaveCount(0);
   await s.app.openPanel("teacher");
   await s.app.searchMissing("teacher", "Email", s.email);
-  await s.app.openPanel("school", schoolId);
-  await expect(
-    s.app.page.getByRole("button", { name: "Nauczyciele: 0", exact: true }),
-  ).toBeVisible();
 });
 
 test("SCH-02: anulowanie kompletnego formularza nie tworzy szkoły @cancel", async ({
@@ -73,9 +70,9 @@ test("SCH-02: anulowanie kompletnego formularza nie tworzy szkoły @cancel", asy
 test("EDIT-02: anulowanie edycji zachowuje dane i historię @cancel", async ({
   page,
   scenario: s,
+  school,
 }) => {
-  const schoolId = await s.createSchool();
-  const teacherId = await s.createTeacher(schoolId);
+  const teacherId = await s.createTeacher(school.id, school.name);
   await s.app.openPanel("teacher", teacherId);
   // Dane kontaktowe doczytują się niezależnie od ID i przycisku edycji.
   // Nie zapisuj pustego stanu ładowania jako wartości oczekiwanej.
@@ -100,7 +97,7 @@ test("EDIT-02: anulowanie edycji zachowuje dane i historię @cancel", async ({
   await s.app.openPanel("teacher", teacherId);
   for (const [field, value] of Object.entries(before))
     await expect(s.app.detail(field)).toHaveValue(value);
-  await expect(page.getByRole("row").filter({ hasText: s.schoolName })).toHaveCount(1);
+  await expect(page.getByRole("row").filter({ hasText: school.name })).toHaveCount(1);
   await expect(page.getByRole("checkbox", { name: "Testowy", exact: true })).toBeChecked();
   await page.getByRole("tab", { name: "Historia zmian", exact: true }).click();
   await expect(history.getByRole("row")).toHaveText(beforeHistory);
@@ -110,13 +107,13 @@ for (const kind of ["teacher", "school"] as const) {
   test(`FIND-04: brak wyników usuwa poprzednią listę — ${kind} @search`, async ({
     page,
     scenario: s,
+    school,
   }) => {
-    const schoolId = await s.createSchool();
     if (kind === "teacher") {
-      const teacherId = await s.createTeacher(schoolId);
+      const teacherId = await s.createTeacher(school.id, school.name);
       await s.app.searchTeacher(teacherId);
     } else {
-      await s.app.searchSchool(s.schoolName, schoolId);
+      await s.app.searchSchool(school.name, school.id);
     }
     await expect(s.app.results(kind).getByRole("gridcell")).not.toHaveCount(0);
     await expect(page.getByRole("heading", { name: "Rekordów: 1", exact: true })).toBeVisible();
