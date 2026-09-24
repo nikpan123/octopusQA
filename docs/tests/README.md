@@ -2,11 +2,12 @@
 
 Dokumenty opisują cel, dane, reguły biznesowe, zakres scenariuszy i helpery używane przez testy regresji Octopusa.
 
-Pełna, generowana lista 173 testów znajduje się w [indeksie scenariuszy](scenario-index.md). Zwykła regresja wykonuje 171 z nich; dwa scenariusze `MED-YEAR-*` należą do osobnego workflow rocznego.
+Pełna, generowana lista 272 testów znajduje się w [indeksie scenariuszy](scenario-index.md). Zwykła regresja wykonuje 270 z nich; dwa scenariusze `MED-YEAR-*` należą do osobnego workflow rocznego.
 
 | Funkcjonalność                  | Dokument                                                       | Główne identyfikatory                |
 | ------------------------------- | -------------------------------------------------------------- | ------------------------------------ |
 | Dodawanie szkoły                | [dodawanie-szkoly.md](dodawanie-szkoly.md)                     | `SCH-*`                              |
+| Edycja szkoły                   | [edycja-szkoly.md](edycja-szkoly.md)                           | `SCH-EDIT-*`                         |
 | Medalowość szkoły               | [medalowosc-szkoly.md](medalowosc-szkoly.md)                   | `MED-*`                              |
 | Roczne przeliczenie medalowości | [medalowosc-roczna.md](medalowosc-roczna.md)                   | `MED-YEAR-*`                         |
 | Dodawanie i edycja nauczyciela  | [nauczyciele.md](nauczyciele.md)                               | `ADD-*`, `EDIT-*`, `TEA-*`, `FIND-*` |
@@ -39,7 +40,7 @@ Po każdym przebiegu `scripts/performance-reporter.mjs` zapisuje `runs/performan
 
 Scenariusze `@annual-medal` są wyłączone ze zwykłej regresji, ponieważ generują snapshot, wykonują kilka tysięcy żądań i należą do osobnego, dwufazowego procesu rocznego. Uruchamia się je jawnie skryptem `test:annual:dev` albo `test:annual:test`, zawsze na jednym workerze.
 
-Dotyczy to również `npm.cmd run test:test`: polecenie wykonuje 171 testów i pomija `MED-YEAR-PREP` oraz `MED-YEAR-01`. Można to potwierdzić przez `npm.cmd run test:test -- --list`. Skryptów rocznych nie należy uruchamiać bez `--grep`, ponieważ wtedy oba etapy wykonałyby się w jednym przebiegu. Poprawne osobne polecenia znajdują się w [dokumentacji rocznego workflow](medalowosc-roczna.md#14-uruchomienie-med-year-prep).
+Dotyczy to również `npm.cmd run test:test`: polecenie wykonuje zwykły zestaw regresyjny i pomija `MED-YEAR-PREP` oraz `MED-YEAR-01`. Aktualną liczbę można potwierdzić przez `npm.cmd run test:test -- --list`. Skryptów rocznych nie należy uruchamiać bez `--grep`, ponieważ wtedy oba etapy wykonałyby się w jednym przebiegu. Poprawne osobne polecenia znajdują się w [dokumentacji rocznego workflow](medalowosc-roczna.md#14-uruchomienie-med-year-prep).
 
 ## Wynik pomiaru 2–4 workerów
 
