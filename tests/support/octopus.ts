@@ -149,7 +149,7 @@ export class Octopus {
     await expect(checkbox).toBeChecked();
   }
 
-  async searchSchool(name: string, id: string) {
+  async searchSchool(name: string, id: string, expectedResultCount = 1) {
     // Rozpocznij wyszukiwanie w panelu, jak użytkownik z menu aplikacji.
     // Wejście bezpośrednio na URL z ID uruchamia dodatkowe ładowanie rekordu
     // i tabeli, niezależne od nowego formularza wyszukiwania.
@@ -165,7 +165,10 @@ export class Octopus {
     await row.click();
     await expect(this.detail("name")).toHaveValue(name);
     await expect(
-      this.page.getByRole("heading", { name: "Rekordów: 1", exact: true }),
+      this.page.getByRole("heading", {
+        name: `Rekordów: ${expectedResultCount}`,
+        exact: true,
+      }),
     ).toBeVisible();
   }
 

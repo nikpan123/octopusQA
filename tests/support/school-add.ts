@@ -1,4 +1,4 @@
-import { expect, type Locator, type Page } from "@playwright/test";
+import { expect, type Locator, type Page, type Request } from "@playwright/test";
 
 import { Octopus, typeValue } from "./octopus";
 
@@ -33,6 +33,39 @@ export async function fillSchoolName(app: Octopus, form: Locator, name: string) 
   return input;
 }
 
+// Etykieta i mat-form-field są rodzeństwem wewnątrz input-item. Ograniczenie
+// do tego kontenera odróżnia np. pole „Nazwa z SIO” od nagłówka tabeli szkół.
+export function schoolAddTextField(form: Locator, label: string) {
+  return form
+    .locator(".new-school__input-item")
+    .filter({ hasText: label })
+    .locator('input:not([type="checkbox"])');
+}
+
+export async function fillSchoolAddTextField(form: Locator, label: string, value: string) {
+  const input = schoolAddTextField(form, label);
+  await expect(input, `Pole formularza szkoły „${label}” powinno być jednoznaczne`).toHaveCount(1);
+  await expect(input).toBeEditable();
+  await typeValue(input, value);
+  return input;
+}
+
+export async function fillSchoolPhone(form: Locator, digits: string) {
+  const input = schoolAddTextField(form, "Nr telefonu");
+  await expect(input, "Pole numeru telefonu powinno być jednoznaczne").toHaveCount(1);
+  await expect(input).toBeEditable();
+  await input.fill(digits);
+  await input.press("Tab");
+  await expect.poll(async () => (await input.inputValue()).replace(/\D/g, "")).toBe(digits);
+  return input;
+}
+
+export function schoolPanelTextField(scope: Locator, label: string) {
+  return scope
+    .getByText(label, { exact: true })
+    .locator('xpath=following::input[not(@type="checkbox")][1]');
+}
+
 export async function selectSchoolType(
   page: Page,
   form: Locator,
@@ -55,7 +88,30 @@ export async function openSchoolAddressForm(page: Page, form: Locator) {
 }
 
 export async function searchSchoolCity(address: Locator, postalCode: string, city = DEFAULT_CITY) {
-  await typeValue(address.locator('input[id="zip_code_input"]'), postalCode);
+  const postalCodeInput = address.locator('input[id="zip_code_input"]');
+  const cityInput = address.getByRole("combobox").nth(1);
+
+  // Po ponownym otwarciu edycji aplikacja zachowuje kryteria i utworzony
+  // wcześniej adres. Nowy kod był wtedy wyszukiwany razem ze starą
+  // miejscowością, np. „18-312” + „Gdańsk”, co dawało pustą tabelę.
+  await address.getByRole("button", { name: "Wyczyść pola", exact: true }).click();
+  await expect(postalCodeInput).toHaveValue("");
+  await expect(cityInput).toHaveValue("");
+
+  // Pole kodu korzysta z autocomplete. Atomowe fill() ustawia widoczną
+  // wartość, ale nie zawsze uruchamia wyszukiwanie. Wpisanie cyfr jak przez
+  // użytkownika i wybranie podpowiedzi emituje pełną sekwencję zdarzeń.
+  await postalCodeInput.click();
+  await postalCodeInput.pressSequentially(postalCode.replace(/\D/g, ""), { delay: 150 });
+  await expect(postalCodeInput).toHaveValue(postalCode);
+
+  const postalCodeOption = address.page().getByRole("option", {
+    name: postalCode,
+    exact: true,
+  });
+  await expect(postalCodeOption).toBeVisible();
+  await postalCodeOption.click();
+
   const row = address.getByRole("row").filter({ hasText: postalCode }).filter({ hasText: city });
   return row;
 }
@@ -69,6 +125,32 @@ export async function saveSchoolAddress(
   const row = await searchSchoolCity(address, postalCode, city);
   await expect(row).toHaveCount(1);
   await row.click();
+  await typeValue(address.locator('input[id="number"]'), number);
+  await address.getByRole("button", { name: "Zapisz", exact: true }).click();
+  await expect(address).toHaveCount(0);
+}
+
+export async function saveSchoolStreetAddress(
+  address: Locator,
+  postalCode: string,
+  city: string,
+  street: string,
+  number: string,
+) {
+  const cityRow = await searchSchoolCity(address, postalCode, city);
+  await expect(cityRow).toHaveCount(1);
+  await cityRow.click();
+
+  const streetSearch = address
+    .getByText("Ulica:", { exact: true })
+    .locator("xpath=ancestor::*[.//input][1]")
+    .locator("input")
+    .first();
+  await typeValue(streetSearch, street);
+  const streetCell = address.getByRole("cell", { name: street, exact: true });
+  await expect(streetCell).toHaveCount(1);
+  await streetCell.locator("xpath=ancestor::tr[1]").click();
+
   await typeValue(address.locator('input[id="number"]'), number);
   await address.getByRole("button", { name: "Zapisz", exact: true }).click();
   await expect(address).toHaveCount(0);
@@ -95,10 +177,13 @@ export async function saveSchoolAdd(
   clickOptions: { clickCount?: number; delay?: number } = {},
 ) {
   let saveRequestCount = 0;
+  let saveRequestBody = "";
   const isSchoolSave = (url: string, method: string) =>
     method === "POST" && new URL(url).pathname === "/api/Institution/AddNewInstitution";
-  const countRequest = (request: { url(): string; method(): string }) => {
-    if (isSchoolSave(request.url(), request.method())) saveRequestCount += 1;
+  const countRequest = (request: Request) => {
+    if (!isSchoolSave(request.url(), request.method())) return;
+    saveRequestCount += 1;
+    saveRequestBody = request.postData() ?? "";
   };
   page.on("request", countRequest);
 
@@ -119,7 +204,7 @@ export async function saveSchoolAdd(
 
   const schoolId = page.url().split("/").pop() ?? "";
   expect(schoolId).toMatch(/^\d+$/);
-  return { schoolId, saveRequestCount };
+  return { schoolId, saveRequestCount, saveRequestBody };
 }
 
 export async function expectSchoolSaveBlocked(page: Page, form: Locator) {
