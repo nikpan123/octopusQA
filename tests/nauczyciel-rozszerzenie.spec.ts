@@ -88,28 +88,25 @@ for (const criterion of ["Email", "Nazwisko"] as const) {
     school,
   }) => {
     const teacherId = await s.createTeacher(school.id, school.name);
-    await s.app.openPanel("teacher");
-    const search = await s.app.openSearch("teacher");
-    const searchField = s.app.field(search, criterion);
-    if (criterion === "Email") {
-      // W tym formularzu keyup zmienia również model nazwiska. Dla e-maila
-      // wystarcza natywne zdarzenie input oraz opuszczenie pola.
-      await searchField.fill(s.email);
-      await searchField.press("Tab");
-      await expect(searchField).toHaveValue(s.email);
-    } else {
-      await typeValue(searchField, s.id);
-    }
-    await search.getByRole("button", { name: "Szukaj", exact: true }).click();
-    await expect(search).toHaveCount(0);
     const results = s.app.results("teacher");
+    const row = results
+      .getByRole("row")
+      .filter({ has: page.getByRole("gridcell", { name: teacherId, exact: true }) });
+
+    for (let attempt = 0; attempt < 4; attempt += 1) {
+      await s.app.openPanel("teacher");
+      const search = await s.app.openSearch("teacher");
+      await typeValue(s.app.field(search, criterion), criterion === "Email" ? s.email : s.id);
+      await search.getByRole("button", { name: "Szukaj", exact: true }).click();
+      await expect(search).toHaveCount(0);
+      if ((await row.count()) === 1) break;
+      await page.waitForTimeout(500);
+    }
+
     // Własna unikalna wartość: oczekujemy dokładnie jednego wyniku i właściwego ID.
     await expect(results.getByRole("row").filter({ has: page.getByRole("gridcell") })).toHaveCount(
       1,
     );
-    const row = results
-      .getByRole("row")
-      .filter({ has: page.getByRole("gridcell", { name: teacherId, exact: true }) });
     await expect(row).toHaveCount(1);
     await expect(row).toContainText(s.id);
     await expect(page.getByRole("heading", { name: "Rekordów: 1", exact: true })).toBeVisible();

@@ -2,7 +2,7 @@
 
 ## 1. Cel sekcji
 
-Testy nauczycieli weryfikują utworzenie rekordu, jego edycję, walidację danych, normalizację, historię zmian oraz wyszukiwanie.
+Testy nauczycieli weryfikują utworzenie rekordu, jego edycję, walidację danych, normalizację, historię zmian, wyszukiwanie oraz zachowanie przy błędach sesji i operacjach współbieżnych.
 
 | Obszar             | Co sprawdzamy                                             |
 | ------------------ | --------------------------------------------------------- |
@@ -14,6 +14,8 @@ Testy nauczycieli weryfikują utworzenie rekordu, jego edycję, walidację danyc
 | Dodatkowe dane     | adres prywatny, uwagi i notatki                           |
 | Audyt              | trwałość danych, autor, data, źródło i historia zmian     |
 | Wyszukiwanie       | ID, nazwisko i e-mail                                     |
+| Kontrakty ADD/EDIT | różnice walidacji kontaktu i kaskady zgód RODO            |
+| Odporność          | 401/403, dwie karty i podwójny zapis przy wolnej sieci    |
 
 ## 2. Pliki
 
@@ -21,6 +23,8 @@ Testy nauczycieli weryfikują utworzenie rekordu, jego edycję, walidację danyc
 tests/nauczyciel-dodawanie.spec.ts
 tests/nauczyciel-edycja.spec.ts
 tests/nauczyciel-rozszerzenie.spec.ts
+tests/nauczyciel-kontrakty.spec.ts
+tests/sesja-i-odpornosc.spec.ts
 tests/walidacja-anulowanie.spec.ts
 tests/support/teacher-add.ts
 tests/support/teacher-edit.ts
@@ -57,7 +61,7 @@ npm.cmd run cleanup:teachers -- REG_123456_abcdef.json --include-failed --apply
 npm.cmd run cleanup:teachers -- --include-failed --apply
 ```
 
-Do usuwania wyłącznie wybranych błędów należy podać pełne nazwy plików z kolumny `rejestr`. Wariant zbiorczy obejmuje również oczekujące rekordy `PASS`. Każdy nauczyciel jest przed DELETE sprawdzany po ID, unikalnym e-mailu lub zapisanym nazwisku oraz fladze `Testowy`. Brak `--apply` zawsze oznacza wyłącznie lokalny podgląd.
+Do usuwania wyłącznie wybranych błędów należy podać pełne nazwy plików z kolumny `rejestr`. Wariant zbiorczy obejmuje również oczekujące rekordy `PASS`. Każdy nauczyciel jest przed DELETE sprawdzany po ID, unikalnym e-mailu lub zapisanym nazwisku oraz (domyślnie) fladze `Testowy`. Brak `--apply` zawsze oznacza wyłącznie lokalny podgląd. Błąd walidacji jednego nauczyciela nie blokuje pozostałych w tej samej paczce — jest zgłaszany na końcu, po usunięciu wszystkich pozostałych. Opcja `--include-untested` (patrz `README.md`) pozwala usunąć również nauczyciela bez potwierdzonej flagi `Testowy`, o ile jego ID i e-mail (lub nazwisko) nadal zgadzają się z rejestrem.
 
 Setup testów `EDIT-*` nie przechodzi przez formularz dodawania. Factory API tworzy nauczyciela, relacje ze szkołami i przedmioto-poziomy, po czym scenariusz otwiera bezpośrednio kartę utworzonego rekordu. UI pozostaje warstwą testowaną dla samej edycji. Testy `ADD-*` nadal przygotowują nauczyciela przez UI, ponieważ dodawanie jest ich celem.
 
@@ -112,8 +116,24 @@ Numery niewystępujące w pliku są świadomymi lukami w identyfikatorach; nie n
 - Zgody E-mail i Telefon zależą od zgody Marketing podczas edycji.
 - Notatka ma limit 220 znaków, a pusta notatka nie jest zapisywana.
 - Anulowanie formularza nie może zmienić danych ani historii.
+- Przy dodawaniu zaznaczenie zgody E-mail nie zaznacza automatycznie Marketingu; w edycji taka kaskada obowiązuje.
+- Brak ostatniego kontaktu blokuje utworzenie nauczyciela, ale w edycji może zostać zaakceptowany po dodatkowym ostrzeżeniu o rekordzie minimalnym.
+- Źródło „Karta LS” pozwala zapisać edycję bez zaznaczenia zgody RODO.
 
-## 7. Historia zmian
+## 7. Kontrakty i odporność
+
+| Test          | Sprawdzenie                                                                                      |
+| ------------- | ------------------------------------------------------------------------------------------------ |
+| `CONTRACT-01` | jawne porównanie odmiennej kaskady RODO w formularzu dodawania i edycji                          |
+| `CONTRACT-02` | odmienny kontrakt usunięcia jedynego kontaktu podczas dodawania i edycji                         |
+| `CONTRACT-03` | wyjątek dla źródła „Karta LS” przy braku zgód RODO                                               |
+| `AUTH-01`     | kontrolowane 401 i 403 nie tworzą rekordu, nie ponawiają zapisu i pozostawiają formularz otwarty |
+| `AUTH-02`     | dwie karty edytujące to samo pole dokumentują regułę „ostatni zapis wygrywa”                     |
+| `RESIL-01`    | dwa kliknięcia zapisu przy opóźnionej odpowiedzi wysyłają tylko jedno żądanie                    |
+
+Testy 401/403 przechwytują wyłącznie żądanie zapisu nauczyciela i nie testują pełnego logowania ani macierzy ról. Test współbieżności dokumentuje obecne zachowanie; pojawienie się kontroli wersji po stronie backendu wymaga świadomej zmiany oczekiwania.
+
+## 8. Historia zmian
 
 Testy sprawdzają nie tylko aktualny stan karty, ale również wpis audytowy. Typowa weryfikacja obejmuje:
 
@@ -123,7 +143,7 @@ pole → nowa wartość → źródło operacji → autor → data
 
 Do porównania historii przed i po anulowaniu służą snapshoty zwracane przez `teacherHistorySnapshot()`.
 
-## 8. Najważniejsze helpery
+## 9. Najważniejsze helpery
 
 | Helper                                 | Odpowiedzialność                                               |
 | -------------------------------------- | -------------------------------------------------------------- |
@@ -140,10 +160,12 @@ Do porównania historii przed i po anulowaniu służą snapshoty zwracane przez 
 | `expectTeacherHistoryChange()`         | asercja pojedynczej zmiany                                     |
 | `schoolTeacherRow()`                   | wiersz nauczyciela po pokazaniu całej paginowanej listy szkoły |
 
-## 9. Uruchamianie
+## 10. Uruchamianie
 
 ```text
 npx playwright test tests/nauczyciel-dodawanie.spec.ts
 npx playwright test tests/nauczyciel-edycja.spec.ts
+npx playwright test tests/nauczyciel-kontrakty.spec.ts
+npx playwright test tests/sesja-i-odpornosc.spec.ts
 npx playwright test --grep @teacher
 ```

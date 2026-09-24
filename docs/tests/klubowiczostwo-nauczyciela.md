@@ -2,12 +2,13 @@
 
 ## 1. Cel sekcji
 
-Sekcja `CLUB-*` weryfikuje przedmioto-poziomy nauczyciela i formularze klubowe: szkołę, klasy własne i obce, wydawnictwo, trwałość edycji, walidację, anulowanie, usunięcie oraz przywracanie.
+Sekcje `CLUB-*` i `KLUB-DOD-*` weryfikują przedmioto-poziomy nauczyciela i formularze klubowe: szkołę, klasy własne i obce, wydawnictwo, trwałość edycji, walidację, anulowanie, usunięcie, przywracanie i przypadki brzegowe lat szkolnych oraz formularza WSPOM.
 
 ## 2. Pliki
 
 ```text
 tests/klubowiczostwo-nauczyciela.spec.ts
+tests/klubowiczostwo-dodatkowe.spec.ts
 tests/support/club.ts
 tests/support/club-fixtures.ts
 tests/support/club-scenario.ts
@@ -70,82 +71,84 @@ Plik CLUB jawnie używa `test.describe.configure({ mode: "parallel" })`. Każdy 
 
 Domyślnie regresja używa dwóch workerów. Skrypt `npm run test:workers:4` pozwala wykorzystać cztery, jeśli środowisko DEV/TEST i komputer wykonujący testy mają wystarczającą wydajność. Kolejność komunikatów w konsoli nie musi wtedy odpowiadać numeracji CLUB, ale identyfikatory scenariuszy i raport pozostają bez zmian.
 
-## 4. Zakres CLUB-01–CLUB-71
+## 4. Zakres CLUB-01–CLUB-71 i KLUB-DOD-01–02
 
-| Test       | Cel                                                       |
-| ---------- | --------------------------------------------------------- |
-| `CLUB-01`  | trwałość formularza i historia jego utworzenia            |
-| `CLUB-02`  | edycja klasy 4 na 5 oraz historia zmiany                  |
-| `CLUB-03`  | dostępne są wyłącznie klasy 4–8                           |
-| `CLUB-04`  | zapis kilku klas: 4, 5, 6                                 |
-| `CLUB-05`  | zaznaczenie wszystkich klas                               |
-| `CLUB-06`  | usunięcie tylko jednej klasy z zestawu                    |
-| `CLUB-07`  | formularz dotyczy wyłącznie wybranej szkoły               |
-| `CLUB-08`  | dwie szkoły tworzą osobne potwierdzenia                   |
-| `CLUB-09`  | anulowanie dodawania nie tworzy potwierdzenia             |
-| `CLUB-10`  | anulowanie edycji zachowuje poprzednią klasę              |
-| `CLUB-11`  | usunięty formularz pozostaje oznaczony ikoną `backspace`  |
-| `CLUB-12A` | brak szkoły blokuje zapis                                 |
-| `CLUB-12B` | brak klasy blokuje zapis                                  |
-| `CLUB-13`  | prezentacja wszystkich wydawnictw zwykłego potwierdzenia  |
-| `CLUB-14`  | domyślnie wybrany bieżący rok szkolny                     |
-| `CLUB-15`  | lista szkół i przedmioto-poziomów nauczyciela             |
-| `CLUB-16`  | klasy dostępne dopiero po wybraniu szkoły                 |
-| `CLUB-17`  | odznaczenie szkoły czyści wybrane klasy                   |
-| `CLUB-18`  | klasa NASZA blokuje odpowiadającą klasę OBCĄ              |
-| `CLUB-19`  | klasa OBCA blokuje odpowiadającą klasę NASZĄ              |
-| `CLUB-20`  | różne klasy mogą być jednocześnie NASZE i OBCE            |
-| `CLUB-21`  | Fizyka pozwala wybrać dwie NASZE serie tej samej klasy    |
-| `CLUB-22`  | zaznaczenie wszystkich klas Fizyki obejmuje obie serie    |
-| `CLUB-23`  | Matematyka/SŚ pozwala zaznaczyć wszystkie klasy obu typów |
-| `CLUB-24`  | trwałość wszystkich klas Matematyki/SŚ i wydawnictwa      |
-| `CLUB-25`  | trwałość klas Fizyki i kodów serii `GWO F+` / `GWO TNŚ`   |
-| `CLUB-26`  | pusta edycja pokazuje ostrzeżenie i nie zmienia rekordu   |
-| `CLUB-27`  | istniejące potwierdzenie blokuje duplikat                 |
-| `CLUB-28`  | trwałość formularza dla poprzedniego roku szkolnego       |
-| `CLUB-29`  | osobne potwierdzenia dla dwóch różnych lat szkolnych      |
-| `CLUB-30`  | odznaczenie wszystkich klas NASZYCH czyści wybór          |
-| `CLUB-31`  | odznaczenie wszystkich klas OBCYCH czyści wybór           |
-| `CLUB-32`  | edycja klasy NASZEJ na OBCĄ zachowuje wydawnictwo         |
-| `CLUB-33`  | klasa OBCA bez wydawnictwa nie tworzy formularza          |
-| `CLUB-34`  | zmiana wydawnictwa podczas edycji jest trwała             |
-| `CLUB-35`  | usunięcie ostatniej klasy OBCEJ zachowuje klasę NASZĄ     |
-| `CLUB-36`  | edycja dodaje klasę NASZĄ bez utraty poprzedniej          |
-| `CLUB-37`  | zmiana przedmiotu nie przenosi wybranych klas             |
-| `CLUB-38`  | Matematyka i Fizyka tworzą niezależne potwierdzenia       |
-| `CLUB-39`  | usuniętego formularza nie można edytować                  |
-| `CLUB-40`  | po usunięciu można utworzyć nową tę samą kombinację       |
-| `CLUB-41`  | przywrócenie zachowuje klasę i tworzy wpis historii       |
-| `CLUB-42`  | aktywny duplikat blokuje przywrócenie i wskazuje jego ID  |
-| `CLUB-43`  | przywrócenie zachowuje zestaw klas NASZYCH                |
-| `CLUB-44`  | przywrócenie zachowuje klasę OBCĄ i wydawnictwo           |
-| `CLUB-45`  | inny aktywny przedmiot nie blokuje przywrócenia           |
-| `CLUB-46`  | nowsze potwierdzenie blokuje przywrócenie starszego       |
-| `CLUB-47`  | inna aktywna szkoła nie blokuje przywrócenia              |
-| `CLUB-48`  | przywrócone potwierdzenie można ponownie edytować         |
-| `CLUB-49`  | cztery akcje wymagają wskazania potwierdzenia             |
-| `CLUB-50`  | weryfikacja zmienia klasę i tworzy wpis historii          |
-| `CLUB-51`  | weryfikacja negatywna obejmuje wszystkie klasy NASZE      |
-| `CLUB-52`  | edycja klasy z powrotem na NASZĄ przywraca status `Nasz`  |
-| `CLUB-53`  | negatywne potwierdzenie można usunąć i zapisać w historii |
-| `CLUB-54`  | edycja Matematyki nie zmienia potwierdzenia Fizyki        |
-| `CLUB-55`  | negatywna weryfikacja Matematyki nie zmienia Fizyki       |
-| `CLUB-56`  | usunięcie i przywrócenie Matematyki nie zmienia Fizyki    |
-| `CLUB-57`  | dwie szkoły i dwa przedmioty tworzą cztery rekordy        |
-| `CLUB-58`  | dwa przedmioty zachowują rekordy dla dwóch różnych lat    |
-| `CLUB-59`  | mieszany cykl życia zachowuje osobne statusy i historie   |
-| `CLUB-60`  | nowsze potwierdzenie blokuje dodanie starszego            |
-| `CLUB-61`  | Język polski pozwala zapisać jedną serię klasy 4          |
-| `CLUB-62`  | WSPOM tworzy potwierdzenie i funkcję wspomagającą         |
-| `CLUB-63`  | jeden WSPOM zapisuje dwa niezależne przedmioty            |
-| `CLUB-64`  | dwa szybkie kliknięcia zapisu nie tworzą dwóch rekordów   |
-| `CLUB-65`  | wszystkie klasy OBCE Matematyki SP są trwałe              |
-| `CLUB-66`  | edycja polskiego zmienia serię `GWO MN` na `GWO MZ`       |
-| `CLUB-67`  | wszystkie NASZE polskiego wybierają jedną serię klasy 4   |
-| `CLUB-68`  | WSPOM nie pokazuje serii polskiego ani fizyki             |
-| `CLUB-69`  | prezentacja wszystkich wydawnictw potwierdzenia WSPOM     |
-| `CLUB-70`  | WSPOM wymaga szkoły, przedmiotu i klasy                   |
-| `CLUB-71`  | zwykłe potwierdzenie i WSPOM mogą współistnieć            |
+| Test          | Cel                                                                                                    |
+| ------------- | ------------------------------------------------------------------------------------------------------ |
+| `CLUB-01`     | trwałość formularza i historia jego utworzenia                                                         |
+| `CLUB-02`     | edycja klasy 4 na 5 oraz historia zmiany                                                               |
+| `CLUB-03`     | dostępne są wyłącznie klasy 4–8                                                                        |
+| `CLUB-04`     | zapis kilku klas: 4, 5, 6                                                                              |
+| `CLUB-05`     | zaznaczenie wszystkich klas                                                                            |
+| `CLUB-06`     | usunięcie tylko jednej klasy z zestawu                                                                 |
+| `CLUB-07`     | formularz dotyczy wyłącznie wybranej szkoły                                                            |
+| `CLUB-08`     | dwie szkoły tworzą osobne potwierdzenia                                                                |
+| `CLUB-09`     | anulowanie dodawania nie tworzy potwierdzenia                                                          |
+| `CLUB-10`     | anulowanie edycji zachowuje poprzednią klasę                                                           |
+| `CLUB-11`     | usunięty formularz pozostaje oznaczony ikoną `backspace`                                               |
+| `CLUB-12A`    | brak szkoły blokuje zapis                                                                              |
+| `CLUB-12B`    | brak klasy blokuje zapis                                                                               |
+| `CLUB-13`     | prezentacja wszystkich wydawnictw zwykłego potwierdzenia                                               |
+| `CLUB-14`     | domyślnie wybrany bieżący rok szkolny                                                                  |
+| `CLUB-15`     | lista szkół i przedmioto-poziomów nauczyciela                                                          |
+| `CLUB-16`     | klasy dostępne dopiero po wybraniu szkoły                                                              |
+| `CLUB-17`     | odznaczenie szkoły czyści wybrane klasy                                                                |
+| `CLUB-18`     | klasa NASZA blokuje odpowiadającą klasę OBCĄ                                                           |
+| `CLUB-19`     | klasa OBCA blokuje odpowiadającą klasę NASZĄ                                                           |
+| `CLUB-20`     | różne klasy mogą być jednocześnie NASZE i OBCE                                                         |
+| `CLUB-21`     | Fizyka pozwala wybrać dwie NASZE serie tej samej klasy                                                 |
+| `CLUB-22`     | zaznaczenie wszystkich klas Fizyki obejmuje obie serie                                                 |
+| `CLUB-23`     | Matematyka/SŚ pozwala zaznaczyć wszystkie klasy obu typów                                              |
+| `CLUB-24`     | trwałość wszystkich klas Matematyki/SŚ i wydawnictwa                                                   |
+| `CLUB-25`     | trwałość klas Fizyki i kodów serii `GWO F+` / `GWO TNŚ`                                                |
+| `CLUB-26`     | pusta edycja pokazuje ostrzeżenie i nie zmienia rekordu                                                |
+| `CLUB-27`     | istniejące potwierdzenie blokuje duplikat                                                              |
+| `CLUB-28`     | trwałość formularza dla poprzedniego roku szkolnego                                                    |
+| `CLUB-29`     | osobne potwierdzenia dla dwóch różnych lat szkolnych                                                   |
+| `CLUB-30`     | odznaczenie wszystkich klas NASZYCH czyści wybór                                                       |
+| `CLUB-31`     | odznaczenie wszystkich klas OBCYCH czyści wybór                                                        |
+| `CLUB-32`     | edycja klasy NASZEJ na OBCĄ zachowuje wydawnictwo                                                      |
+| `CLUB-33`     | klasa OBCA bez wydawnictwa nie tworzy formularza                                                       |
+| `CLUB-34`     | zmiana wydawnictwa podczas edycji jest trwała                                                          |
+| `CLUB-35`     | usunięcie ostatniej klasy OBCEJ zachowuje klasę NASZĄ                                                  |
+| `CLUB-36`     | edycja dodaje klasę NASZĄ bez utraty poprzedniej                                                       |
+| `CLUB-37`     | zmiana przedmiotu nie przenosi wybranych klas                                                          |
+| `CLUB-38`     | Matematyka i Fizyka tworzą niezależne potwierdzenia                                                    |
+| `CLUB-39`     | usuniętego formularza nie można edytować                                                               |
+| `CLUB-40`     | po usunięciu można utworzyć nową tę samą kombinację                                                    |
+| `CLUB-41`     | przywrócenie zachowuje klasę i tworzy wpis historii                                                    |
+| `CLUB-42`     | aktywny duplikat blokuje przywrócenie i wskazuje jego ID                                               |
+| `CLUB-43`     | przywrócenie zachowuje zestaw klas NASZYCH                                                             |
+| `CLUB-44`     | przywrócenie zachowuje klasę OBCĄ i wydawnictwo                                                        |
+| `CLUB-45`     | inny aktywny przedmiot nie blokuje przywrócenia                                                        |
+| `CLUB-46`     | nowsze potwierdzenie blokuje przywrócenie starszego                                                    |
+| `CLUB-47`     | inna aktywna szkoła nie blokuje przywrócenia                                                           |
+| `CLUB-48`     | przywrócone potwierdzenie można ponownie edytować                                                      |
+| `CLUB-49`     | cztery akcje wymagają wskazania potwierdzenia                                                          |
+| `CLUB-50`     | weryfikacja zmienia klasę i tworzy wpis historii                                                       |
+| `CLUB-51`     | weryfikacja negatywna obejmuje wszystkie klasy NASZE                                                   |
+| `CLUB-52`     | edycja klasy z powrotem na NASZĄ przywraca status `Nasz`                                               |
+| `CLUB-53`     | negatywne potwierdzenie można usunąć i zapisać w historii                                              |
+| `CLUB-54`     | edycja Matematyki nie zmienia potwierdzenia Fizyki                                                     |
+| `CLUB-55`     | negatywna weryfikacja Matematyki nie zmienia Fizyki                                                    |
+| `CLUB-56`     | usunięcie i przywrócenie Matematyki nie zmienia Fizyki                                                 |
+| `CLUB-57`     | dwie szkoły i dwa przedmioty tworzą cztery rekordy                                                     |
+| `CLUB-58`     | dwa przedmioty zachowują rekordy dla dwóch różnych lat                                                 |
+| `CLUB-59`     | mieszany cykl życia zachowuje osobne statusy i historie                                                |
+| `CLUB-60`     | nowsze potwierdzenie blokuje dodanie starszego                                                         |
+| `CLUB-61`     | Język polski pozwala zapisać jedną serię klasy 4                                                       |
+| `CLUB-62`     | WSPOM tworzy potwierdzenie i funkcję wspomagającą                                                      |
+| `CLUB-63`     | jeden WSPOM zapisuje dwa niezależne przedmioty                                                         |
+| `CLUB-64`     | dwa szybkie kliknięcia zapisu nie tworzą dwóch rekordów                                                |
+| `CLUB-65`     | wszystkie klasy OBCE Matematyki SP są trwałe                                                           |
+| `CLUB-66`     | edycja polskiego zmienia serię `GWO MN` na `GWO MZ`                                                    |
+| `CLUB-67`     | wszystkie NASZE polskiego wybierają jedną serię klasy 4                                                |
+| `CLUB-68`     | WSPOM nie pokazuje serii polskiego ani fizyki                                                          |
+| `CLUB-69`     | prezentacja wszystkich wydawnictw potwierdzenia WSPOM                                                  |
+| `CLUB-70`     | WSPOM wymaga szkoły, przedmiotu i klasy                                                                |
+| `CLUB-71`     | zwykłe potwierdzenie i WSPOM mogą współistnieć                                                         |
+| `KLUB-DOD-01` | formularz WSPOM nie oferuje Chemii ani innych przedmiotów spoza zamkniętej listy `SUPPORTING_SUBJECTS` |
+| `KLUB-DOD-02` | dokumentuje wynik próby dodania starszego roku po utworzeniu potwierdzenia dla roku bieżącego          |
 
 ## 5. Reguły biznesowe
 
@@ -189,6 +192,8 @@ Domyślnie regresja używa dwóch workerów. Skrypt `npm run test:workers:4` poz
 - Zwykłe potwierdzenie i potwierdzenie WSPOM mogą współistnieć dla tej samej szkoły, roku i przedmiotu; są zapisywane jako rekordy o różnych ID.
 - Dwa szybkie kliknięcia myszy w `Zapisz`, rozdzielone odstępem 100 ms, nie powinny tworzyć dwóch potwierdzeń tej samej kombinacji.
 - Testy wyłączają wysyłkę e-maila do nauczyciela.
+- Lista przedmiotów WSPOM jest zamknięta i pochodzi z `SUPPORTING_SUBJECTS`; obecnie nie zawiera między innymi Chemii, Wychowania fizycznego, Plastyki, Muzyki ani Informatyki.
+- `KLUB-DOD-02` jest testem dokumentującym bieżącą politykę kolejności lat. Zarówno akceptacja, jak i kontrolowana blokada są rejestrowane; formalna reguła biznesowa wymaga potwierdzenia przed zaostrzeniem oczekiwania.
 
 ## 6. Najważniejsze helpery `club.ts`
 
@@ -235,4 +240,5 @@ W `CLUB-08` test nie zakłada, że pierwszy zwrócony rekord należy do pierwsze
 
 ```text
 npx playwright test tests/klubowiczostwo-nauczyciela.spec.ts --grep @club
+npx playwright test tests/klubowiczostwo-dodatkowe.spec.ts
 ```

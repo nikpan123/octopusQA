@@ -142,6 +142,35 @@ export async function saveOrderEdit(form: Locator): Promise<void> {
   await expect(form).toHaveCount(0);
 }
 
+/*
+ * =========================================================
+ * DODATKOWE HELPERY (przypadki negatywne/brzegowe zamówień)
+ * =========================================================
+ *
+ * Poniższe funkcje są czysto addytywne - nie zmieniają zachowania
+ * żadnej z powyższych, istniejących funkcji, więc nie mogą wpłynąć
+ * na testy ORD-01..03 ani na inne pliki, które ich już używają.
+ */
+
+export function selectedProductRow(form: Locator, code: string): Locator {
+  return selectedProducts(form)
+    .getByRole("gridcell", { name: code, exact: true })
+    .locator("xpath=ancestor::*[@role='row'][1]");
+}
+
+export async function cancelNewOrderForm(form: Locator): Promise<void> {
+  await form.getByRole("button", { name: "Anuluj", exact: true }).click();
+  await expect(form).toHaveCount(0);
+}
+
+export function newOrderSaveButton(form: Locator): Locator {
+  return form.getByRole("button", { name: "Zapisz", exact: true });
+}
+
+export async function countOrderRows(page: Page): Promise<number> {
+  return ordersPanel(page).locator("td.mat-column-id").count();
+}
+
 export async function deleteOrder(
   page: Page,
   orderId: string,

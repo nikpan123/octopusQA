@@ -1,6 +1,6 @@
 # Przegląd jakości i refaktoryzacji testów
 
-## Status realizacji — 2026-09-23
+## Status realizacji — 2026-09-24
 
 Zrealizowano:
 
@@ -17,6 +17,10 @@ Zrealizowano:
 - redukcję powtarzających się scenariuszy `MED-*`,
 - kontrolowany zakres 2–4 workerów (domyślnie 2),
 - raport percentyli czasu fixture/setup/test/cleanup i liczników HTTP.
+- pełną migrację `ORD-03` do helperów `order.ts`,
+- helpery negatywnych i brzegowych przypadków zamówień,
+- fabrykę API szkoły i metodę fixture `createSchoolViaApi()` do setupu poza testami formularza,
+- dodatkowy pakiet 26 przypadków odporności, bezpieczeństwa i luk kontraktowych.
 
 ## Pomiar kontrolny 2–4 workerów
 
@@ -31,36 +35,36 @@ Próba jest mała, więc nie stanowi benchmarku całej regresji. Pokazuje jednak
 
 Przed centralizacją sesji każdy z czterech workerów próbował odświeżyć ją osobno, a p95 setupu wynosiło 9,66 s. Po pojedynczym odświeżeniu w globalnym setupie workery wyłącznie odczytują gotowy stan; p95 spadło do 0,39 s.
 
-Osobną, nadal aktualną rekomendacją pozostaje pełna migracja `ORD-03` do helperów z `order.ts`.
+Pomiar pozostaje historyczny: po dodaniu nowych scenariuszy należy wykonać osobny benchmark pełnego obecnego zestawu 296 testów regularnych.
 
 ## Wprowadzone zmiany
 
 1. Powtarzalna obsługa zamówień została przeniesiona do `tests/support/order.ts`.
-2. `ORD-01` i `ORD-02` używają wspólnych operacji dodawania produktu, ustawiania ilości, zapisu i weryfikacji pozycji.
+2. `ORD-01`–`ORD-03` używają wspólnych operacji dodawania produktu, ustawiania ilości, zapisu, edycji, weryfikacji pozycji i usuwania.
 3. Typ `Scenario` został wyeksportowany, a lokalne helpery dodawania nauczyciela nie używają już `any`.
 4. Adres karty nauczyciela w teście smoke korzysta z `OCTOPUS_BASE_URL`, dzięki czemu działa także dla środowiska `test`.
 5. Dokumentacja funkcjonalna została rozdzielona na obszary i połączona indeksem `docs/tests/README.md`.
 
-## Rekomendacje — priorytet wysoki
+## Zrealizowane wcześniejsze rekomendacje
 
-### 1. Rozdzielić zamówienia i klubowiczostwo
+### 1. Rozdzielenie zamówień i klubowiczostwa
 
-`tests/zamowienia-klubowiczostwo.spec.ts` łączy dwa niezależne obszary i ma ponad dwa tysiące linii. Warto rozdzielić go na:
+Obszary działają już w osobnych plikach:
 
 ```text
 tests/zamowienia-szkoly.spec.ts
 tests/klubowiczostwo-nauczyciela.spec.ts
 ```
 
-Zmiana poprawi nawigację, raporty i możliwość uruchamiania plików bez `--grep`.
+Nowe przypadki negatywne są dodatkowo wydzielone do `tests/zamowienia-negatywne.spec.ts`.
 
-### 2. Dokończyć migrację ORD-03 do `order.ts`
+### 2. Migracja ORD-03 do `order.ts`
 
-`ORD-03` nadal zawiera starszą, rozbudowaną wersję selektorów. Powinien używać `addOrderProduct()`, `setOrderQuantity()`, `expectOrderItems()`, `openOrderEdit()` i `deleteOrder()`. Migrację najlepiej wykonać razem z uruchomieniem testu na stabilnym środowisku, ponieważ scenariusz obejmuje zapis i cleanup danych.
+`ORD-03` używa `addOrderProduct()`, `setOrderQuantity()`, `expectOrderItems()`, `openOrderEdit()` i `deleteOrder()`. Scenariusz zachowuje cleanup w `finally` oraz pierwotny błąd testu.
 
-### 3. Podzielić `teacher-edit.ts` według domen
+### 3. Podział `teacher-edit.ts` według domen
 
-Plik ma ponad 1500 linii i obejmuje kilka niezależnych modułów. Proponowany podział:
+Helpery są rozdzielone na moduły domenowe:
 
 ```text
 teacher-basic.ts
@@ -71,29 +75,33 @@ teacher-rodo.ts
 teacher-history.ts
 ```
 
-Publiczny plik `teacher-edit.ts` może czasowo reeksportować helpery, aby migracja testów była stopniowa.
+Publiczny `teacher-edit.ts` pozostaje warstwą zgodności i reeksportuje helpery.
 
-### 4. Usunąć adresy środowiska z logiki fixture
+### 4. Konfiguracja adresów środowiska
 
-W `scenario.ts` rozpoznawanie `lastUrl` nadal używa wyrażenia zależnego od hosta `octopus.gwodev.pl`. Powinno porównywać `new URL(page.url()).host` z konfiguracją środowiska albo sprawdzać wyłącznie ścieżkę URL.
+Fixture korzysta z `OCTOPUS_BASE_URL`; scenariusze nie są związane na stałe z hostem DEV.
 
-## Rekomendacje — priorytet średni
+## Dalsze rekomendacje
 
-### 5. Przenieść lokalne helpery dodawania nauczyciela
+### 5. Utrzymać helpery dodawania nauczyciela w warstwie support
 
-`registerCreatedTeacher()`, `expectTeacherInSchool()` i `searchTeacherByEmail()` są już typowane, ale pozostają w pliku spec. Jeśli będą potrzebne w kolejnym scenariuszu, należy przenieść je odpowiednio do `scenario.ts`, helpera relacji i helpera wyszukiwania.
+Współdzielone operacje, w tym `registerCreatedTeacher()`, znajdują się w `tests/support`. Nowe helpery należy dodawać tam dopiero wtedy, gdy rzeczywiście są używane przez więcej niż jeden scenariusz.
 
-### 6. Ujednolicić styl i formatowanie
+### 6. Utrzymać styl i formatowanie
 
-W repozytorium występują pojedyncze i podwójne cudzysłowy oraz bardzo różna szczegółowość komentarzy. Warto dodać Prettier i skrypt `format:check`, aby zmiany nie generowały przypadkowych różnic.
+Prettier i `format:check` są częścią `npm run quality`. Należy nadal ograniczać komentarze do uzasadnienia reguły lub ryzyka, zamiast opisywać każdą instrukcję.
 
-### 7. Dodać statyczne reguły jakości
+### 7. Rozszerzać statyczne reguły jakości ostrożnie
 
-TypeScript działa w trybie `strict`, ale brakuje reguł wykrywających nieużywane importy, obietnice bez `await` i zbyt szerokie typy. ESLint dla TypeScript i Playwright może wychwytywać te problemy przed uruchomieniem testów E2E.
+TypeScript, ESLint i reguły Playwright działają w `npm run quality`. Kolejne reguły powinny być dodawane razem z usunięciem istniejących naruszeń, aby kontrola pozostała zielona.
 
-### 8. Ujednolicić indeks scenariuszy
+### 8. Utrzymać generowany indeks scenariuszy
 
-Identyfikatory mają świadome luki, ale brakuje jednej tabeli mapującej ID do pliku i wymagania. Indeks w dokumentacji jest dobrym początkiem; kolejnym krokiem może być automatyczne generowanie listy nazw testów w CI.
+`docs/tests/scenario-index.md` jest generowany przez `npm run docs:scenarios` i kontrolowany przez `docs:scenarios:check`. Identyfikatory mogą mieć świadome luki i powtórzenia dla testów parametryzowanych; nie należy renumerować istniejących scenariuszy.
+
+### 9. Zweryfikować nowy pakiet na stabilnym środowisku
+
+Nowe testy obejmują celowo symulowane błędy HTTP, dwie karty, opóźnienia sieci i dane zależne od środowiska. Przed uznaniem ich za stabilny profil CI należy uruchomić pełny zestaw na DEV i TEST, udokumentować wyniki testów opisowych oraz ponowić pomiar dwóch i czterech workerów.
 
 ## Zasada dalszej refaktoryzacji
 

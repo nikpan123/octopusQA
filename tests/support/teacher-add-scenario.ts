@@ -7,13 +7,11 @@ export async function registerCreatedTeacher(
   teacherId: string,
   identity: { email?: string; lastName?: string } = {},
 ) {
-  await scenario.record("teacherId", teacherId);
-  await scenario.record("teacherEmail", identity.email ?? scenario.email);
-
-  if (identity.lastName) {
-    await scenario.record("teacherLastName", identity.lastName);
-  }
-
+  await scenario.registerTeacher({
+    teacherId,
+    teacherEmail: identity.email ?? scenario.email,
+    teacherLastName: identity.lastName,
+  });
   await scenario.app.markTestRecord();
 }
 
@@ -45,13 +43,6 @@ export async function searchTeacherByEmail(
   email: string,
   teacherId: string,
 ) {
-  await scenario.app.openPanel("teacher");
-
-  const search = await scenario.app.openSearch("teacher");
-  await typeValue(scenario.app.field(search, "Email"), email);
-  await search.getByRole("button", { name: "Szukaj", exact: true }).click();
-  await expect(search).toHaveCount(0);
-
   const row = scenario.app
     .results("teacher")
     .getByRole("row")
@@ -61,6 +52,16 @@ export async function searchTeacherByEmail(
         exact: true,
       }),
     });
+
+  for (let attempt = 0; attempt < 4; attempt += 1) {
+    await scenario.app.openPanel("teacher");
+    const search = await scenario.app.openSearch("teacher");
+    await typeValue(scenario.app.field(search, "Email"), email);
+    await search.getByRole("button", { name: "Szukaj", exact: true }).click();
+    await expect(search).toHaveCount(0);
+    if ((await row.count()) === 1) break;
+    await page.waitForTimeout(500);
+  }
 
   await expect(row).toHaveCount(1);
   await row.click();

@@ -2,18 +2,20 @@
 
 Dokumenty opisują cel, dane, reguły biznesowe, zakres scenariuszy i helpery używane przez testy regresji Octopusa.
 
-Pełna, generowana lista 272 testów znajduje się w [indeksie scenariuszy](scenario-index.md). Zwykła regresja wykonuje 270 z nich; dwa scenariusze `MED-YEAR-*` należą do osobnego workflow rocznego.
+Pełna, generowana lista 299 testów znajduje się w [indeksie scenariuszy](scenario-index.md). Zwykła regresja wykonuje 297 z nich; dwa scenariusze `MED-YEAR-*` należą do osobnego workflow rocznego. Liczby są stanem na 24.09.2026 i należy je aktualizować przez `npm run docs:scenarios`, nie ręcznie.
 
-| Funkcjonalność                  | Dokument                                                       | Główne identyfikatory                |
-| ------------------------------- | -------------------------------------------------------------- | ------------------------------------ |
-| Dodawanie szkoły                | [dodawanie-szkoly.md](dodawanie-szkoly.md)                     | `SCH-*`                              |
-| Edycja szkoły                   | [edycja-szkoly.md](edycja-szkoly.md)                           | `SCH-EDIT-*`                         |
-| Medalowość szkoły               | [medalowosc-szkoly.md](medalowosc-szkoly.md)                   | `MED-*`                              |
-| Roczne przeliczenie medalowości | [medalowosc-roczna.md](medalowosc-roczna.md)                   | `MED-YEAR-*`                         |
-| Dodawanie i edycja nauczyciela  | [nauczyciele.md](nauczyciele.md)                               | `ADD-*`, `EDIT-*`, `TEA-*`, `FIND-*` |
-| Relacje szkoła–nauczyciel       | [relacje-szkola-nauczyciel.md](relacje-szkola-nauczyciel.md)   | `REL-*`, scenariusz `@smoke`         |
-| Zamówienia szkoły               | [zamowienia-szkoly.md](zamowienia-szkoly.md)                   | `ORD-*`                              |
-| Klubowiczostwo nauczyciela      | [klubowiczostwo-nauczyciela.md](klubowiczostwo-nauczyciela.md) | `CLUB-*`                             |
+| Funkcjonalność                  | Dokument                                                       | Główne identyfikatory                                                       |
+| ------------------------------- | -------------------------------------------------------------- | --------------------------------------------------------------------------- |
+| Dodawanie szkoły                | [dodawanie-szkoly.md](dodawanie-szkoly.md)                     | `SCH-*`                                                                     |
+| Edycja szkoły                   | [edycja-szkoly.md](edycja-szkoly.md)                           | `SCH-EDIT-*`                                                                |
+| Medalowość szkoły               | [medalowosc-szkoly.md](medalowosc-szkoly.md)                   | `MED-*`                                                                     |
+| Roczne przeliczenie medalowości | [medalowosc-roczna.md](medalowosc-roczna.md)                   | `MED-YEAR-*`                                                                |
+| Dodawanie i edycja nauczyciela  | [nauczyciele.md](nauczyciele.md)                               | `ADD-*`, `EDIT-*`, `TEA-*`, `FIND-*`                                        |
+| Relacje szkoła–nauczyciel       | [relacje-szkola-nauczyciel.md](relacje-szkola-nauczyciel.md)   | `REL-*`, scenariusz `@smoke`                                                |
+| Zamówienia szkoły               | [zamowienia-szkoly.md](zamowienia-szkoly.md)                   | `ORD-*`                                                                     |
+| Klubowiczostwo nauczyciela      | [klubowiczostwo-nauczyciela.md](klubowiczostwo-nauczyciela.md) | `CLUB-*`                                                                    |
+| Odporność i bezpieczeństwo      | [odpornosc-i-bezpieczenstwo.md](odpornosc-i-bezpieczenstwo.md) | `BRZEG-*`, `CONTRACT-*`, `AUTH-*`, `RESIL-*`, `KLUB-DOD-*`, `SZK-MED-DOD-*` |
+| Próg minimalnego zamówienia     | [prog-minimalnego-zamowienia.md](prog-minimalnego-zamowienia.md) | `TC-SP-*`, `TC-PN-*` (głównie testy jednostkowe `node:test`, poza Playwright; jeden potwierdzony punkt danych ma też prawdziwy test E2E — `tests/prog-minimalnego-zamowienia.spec.ts`, `@school @threshold` — patrz dokument) |
 
 ## Uruchamianie
 
@@ -31,6 +33,8 @@ Wybrany obszar można uruchomić przez tag, np.:
 npx playwright test --grep @teacher
 npx playwright test --grep @order
 npx playwright test --grep @club
+npx playwright test --grep @security
+npx playwright test --grep @concurrency
 npm run test:annual:dev
 ```
 
@@ -42,9 +46,9 @@ Scenariusze `@annual-medal` są wyłączone ze zwykłej regresji, ponieważ gene
 
 Dotyczy to również `npm.cmd run test:test`: polecenie wykonuje zwykły zestaw regresyjny i pomija `MED-YEAR-PREP` oraz `MED-YEAR-01`. Aktualną liczbę można potwierdzić przez `npm.cmd run test:test -- --list`. Skryptów rocznych nie należy uruchamiać bez `--grep`, ponieważ wtedy oba etapy wykonałyby się w jednym przebiegu. Poprawne osobne polecenia znajdują się w [dokumentacji rocznego workflow](medalowosc-roczna.md#14-uruchomienie-med-year-prep).
 
-## Wynik pomiaru 2–4 workerów
+## Historyczny wynik pomiaru 2–4 workerów
 
-Pomiar DEV z 23.09.2026 potwierdził 171/171 testów w 19,7 min na dwóch workerach (`p50=6,99 s`, `p95=17,95 s`). Cztery workery zakończyły przebieg w 15,9 min, ale tylko 166/171 testów przeszło; wystąpił między innymi błąd HTTP 500 optimistic concurrency podczas setupu API, a `p95` wzrosło do 20,05 s. Domyślnym profilem pozostają więc dwa workery. Cztery są dostępne jako świadomy test obciążeniowy, nie jako profil CI.
+Pomiar DEV z 23.09.2026 obejmował wcześniejszy zestaw 171 testów: 171/171 w 19,7 min na dwóch workerach (`p50=6,99 s`, `p95=17,95 s`). Cztery workery zakończyły przebieg w 15,9 min, ale tylko 166/171 testów przeszło; wystąpił między innymi błąd HTTP 500 optimistic concurrency podczas setupu API, a `p95` wzrosło do 20,05 s. Wyniku nie należy interpretować jako weryfikacji obecnego zestawu 296 testów. Domyślnym profilem pozostają dwa workery. Cztery są dostępne jako świadomy test obciążeniowy, nie jako profil CI.
 
 Raporty porównawcze:
 

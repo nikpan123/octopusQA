@@ -434,6 +434,14 @@ expectUniqueMedalSubjects(...)
 
 ## 17. Roczne przeliczenie medalowości
 
+Przed rocznym workflow istnieje też szybki scenariusz `SZK-MED-DOD-01` w `tests/szkola-medalowosc-dodatkowe.spec.ts`. Pobiera szkoły z medalem bez ograniczenia miasta, wybiera do pięciu rekordów spoza Warszawy i dla każdego sprawdza zgodność progu medalu z liczbą unikalnych przedmiotów. Jeżeli dane nie zawierają żadnej takiej szkoły, test jest pomijany z jawną przyczyną; nie udaje wówczas pokrycia geograficznego.
+
+Uruchomienie:
+
+```text
+npx playwright test tests/szkola-medalowosc-dodatkowe.spec.ts
+```
+
 Roczny proces wyliczania medalu jest opisany w osobnym dokumencie:
 
 [**Medalowość roczna — dokumentacja testów automatycznych**](medalowosc-roczna.md)

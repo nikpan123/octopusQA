@@ -1,5 +1,7 @@
 # Raport pierwszego scenariusza Octopus
 
+> Raport historyczny pojedynczego przebiegu z 17.09.2026. Aktualny zakres automatyzacji opisują [dokumentacja testów](docs/tests/README.md) i [generowany indeks scenariuszy](docs/tests/scenario-index.md).
+
 Data: 2026-09-17. Środowisko: dev, https://octopus.gwodev.pl. Przebieg: REG_20260917_01.
 Test wykonany przez interfejs przeglądarki w sesji udostępnionej przez użytkownika. Wersja aplikacji i nazwa roli nieustalone. Nie jest to jeszcze samodzielny skrypt do uruchamiania w CI.
 

@@ -52,12 +52,15 @@ Wybierz test i kliknij przycisk uruchomienia. Panel pokazuje kroki i ich wyniki.
 ## Kod do przeczytania
 
 - `tests/szkola-nauczyciel.spec.ts` — scenariusz i oczekiwane wyniki, opisane przez `test.step`.
-- `docs/tests/dodawanie-szkoly.md` — plan rozwoju testów formularza dodawania szkoły, scenariusze i wymagania dotyczące cleanupu.
+- `docs/tests/dodawanie-szkoly.md` — aktualny zakres i plan rozwoju testów formularza dodawania szkoły wraz z zasadami retencji danych.
 - `tests/walidacja-anulowanie.spec.ts` — 9 przypadków walidacji, anulowania i pustych wyników.
 - `tests/nauczyciel-rozszerzenie.spec.ts` — 6 przypadków zapisu nazwiska, walidacji kontaktu, wyszukiwania i drugiej szkoły.
+- `tests/nauczyciel-kontrakty.spec.ts` — różnice kontraktów dodawania i edycji nauczyciela.
+- `tests/sesja-i-odpornosc.spec.ts` — błędy 401/403, współbieżna edycja i podwójny zapis przy wolnej sieci.
+- `tests/dane-brzegowe-i-bezpieczenstwo.spec.ts` — długie i niebezpieczne dane wejściowe, Unicode, wklejanie oraz sumy kontrolne.
 - `tests/support/shared-school.ts` — stabilna szkoła referencyjna używana przez testy edycji.
 - `tests/support/scenario.ts` — osobne dane i rejestr przebiegu każdego nowego przypadku.
-- `tests/support/api-factory.ts` — szybkie tworzenie nauczyciela, relacji i przedmioto-poziomów przez API.
+- `tests/support/api-factory.ts` — szybkie tworzenie nauczyciela, relacji, przedmioto-poziomów i szkoły przez API; dla szkoły potwierdzono domyślnie wyłącznie Szkołę podstawową w Gdańsku (80-064).
 - `tests/support/performance.ts` — pomiary fixture, setupu API i ruchu przeglądarki.
 - `tests/support/octopus.ts` — obsługa formularzy i selektory elementów aplikacji.
 - `tests/support/fixtures.ts` — szybka kontrola ważności JWT, odtworzenie sesji i kontrola dostępu każdego testu.
@@ -157,6 +160,8 @@ npm.cmd run test:workers:4   # próba obciążeniowa
 npm.cmd run test:annual:dev  # osobny workflow rocznej medalowości, 1 worker
 npm.cmd run test:list        # lista testów bez wykonywania
 npm.cmd run check            # kontrola TypeScript, bez zmiany danych
+npm.cmd run quality          # TypeScript, ESLint, formatowanie i aktualność indeksu scenariuszy
+npm.cmd run docs:scenarios   # odtworzenie generowanego indeksu scenariuszy
 npm.cmd run test:auth        # mechanizm logowania na przechwyconych formularzach, fikcyjne dane
 npm.cmd test -- --grep @smoke # tylko testy oznaczone @smoke
 ```
@@ -165,9 +170,11 @@ Jednocześnie może działać tylko jedno uruchomienie testów dla danego środo
 
 Dwufazowe testy `@annual-medal` są celowo wyłączone ze zwykłego `npm test`. Generują snapshot i kilka tysięcy żądań, dlatego uruchamia się je osobno przez `test:annual:dev` lub `test:annual:test`, zawsze na jednym workerze.
 
-Wykluczenie obowiązuje również dla `npm.cmd run test:test`, `test:dev` oraz profili 2–4 workerów. Lista regularnej regresji powinna zawierać 171 testów i można ją sprawdzić przez `npm.cmd run test:test -- --list`. Roczny skrypt zawsze uruchamiaj z `--grep "MED-YEAR-PREP"` albo `--grep "MED-YEAR-01"`; bez filtra wykona oba etapy w jednym przebiegu.
+Wykluczenie obowiązuje również dla `npm.cmd run test:test`, `test:dev` oraz profili 2–4 workerów. Według indeksu wygenerowanego 24.09.2026 regularna regresja zawiera 296 testów; aktualną liczbę można zawsze sprawdzić przez `npm.cmd run test:test -- --list`. Roczny skrypt zawsze uruchamiaj z `--grep "MED-YEAR-PREP"` albo `--grep "MED-YEAR-01"`; bez filtra wykona oba etapy w jednym przebiegu.
 
-### Pomiar skalowania z 23.09.2026
+### Historyczny pomiar skalowania z 23.09.2026
+
+Pomiar dotyczył wcześniejszego zestawu 171 testów, a nie obecnego katalogu 296 regularnych scenariuszy.
 
 | Workery |   Wynik | Czas całkowity | `test.total` p50 / p95 | Wniosek                                                                                 |
 | ------: | ------: | -------------: | ---------------------: | --------------------------------------------------------------------------------------- |
@@ -178,17 +185,19 @@ Cztery workery skróciły przebieg o około 19%, ale podniosły p95 i ujawniły 
 
 ## Zamówienia i klubowiczostwo
 
-Testy zamówień znajdują się w `tests/zamowienia-szkoly.spec.ts`, a testy klubowiczostwa w `tests/klubowiczostwo-nauczyciela.spec.ts`.
+Testy zamówień znajdują się w `tests/zamowienia-szkoly.spec.ts` oraz `tests/zamowienia-negatywne.spec.ts`, a testy klubowiczostwa w `tests/klubowiczostwo-nauczyciela.spec.ts` i `tests/klubowiczostwo-dodatkowe.spec.ts`.
 
-- **ORD-01–ORD-03** sprawdzają zapis, edycję i usunięcie zamówień szkoły.
-- **CLUB-01–CLUB-32** sprawdzają przedmioto-poziomy, formularze klubowe, klasy własne i obce, wydawnictwa, walidację oraz trwałość danych.
+- **ORD-01–ORD-10** sprawdzają zapis, edycję, usunięcie, walidację ilości i produktów, błędy uprawnień oraz współbieżność zamówień szkoły.
+- **CLUB-01–CLUB-71** oraz **KLUB-DOD-01–02** sprawdzają przedmioto-poziomy, formularze klubowe i WSPOM, klasy własne i obce, wydawnictwa, walidację, lata szkolne oraz trwałość danych.
 - Testy `CLUB-*` używają stałej puli dwóch szkół podstawowych i jednego liceum, osobnej dla każdego środowiska. Nauczyciele, relacje i przygotowawcze przedmioto-poziomy powstają przez API. `CLUB-01` zachowuje dodawanie przedmioto-poziomu przez UI, ponieważ jest to część celu scenariusza.
 
 Uruchomienie tych sekcji:
 
 ```powershell
 npm.cmd test -- tests/zamowienia-szkoly.spec.ts
+npm.cmd test -- tests/zamowienia-negatywne.spec.ts
 npm.cmd test -- tests/klubowiczostwo-nauczyciela.spec.ts
+npm.cmd test -- tests/klubowiczostwo-dodatkowe.spec.ts
 ```
 
 ID i parametry rekordów są zapisane w `runs/REG_*.json` i załączone do raportu. Po zakończeniu całego uruchomienia nauczyciele z udanych scenariuszy `CLUB-*` są usuwani wraz z formularzami; szkoły i zamówienia pozostają. Konto wymaga praw do dodawania tych danych oraz usuwania nauczycieli.
@@ -207,9 +216,18 @@ Polecenie odczytuje lokalne `runs/REG_*.json`, łączy powtarzające się ID i z
 
 Sprzątanie działa w globalTeardown, po zakończeniu wszystkich testów i workerów. Każde uruchomienie dostaje własny cleanupBatchId. Sprzątane są wyłącznie rekordy PASS z tego uruchomienia, także z testu smoke; starsze rejestry pozostają nietknięte. Zweryfikowani nauczyciele są usuwani w paczkach po maksymalnie 10 ID. Odczyty kontrolne przed i po każdej paczce nadal są osobnymi żądaniami GET. Jeśli wszyscy już nie istnieją, DELETE nie jest wysyłany. W trybie UI globalny teardown zależy od zakończenia sesji/globalnego teardown w panelu, a nie od zakończenia pojedynczego testu. Po wymuszonym zamknięciu procesu pozostaje ręczne cleanup:teachers. Korzysta z `DELETE /api/DeleteRecordsDB/DeleteRecordsFromDB`, z query parameters `userId` (zalogowany użytkownik) i `jsonData` (lista własnych `nauczycielId`). Zgodnie z kontraktem potwierdzonym przez programistę endpoint usuwa dane nauczyciela, w tym formularze klubowe i przedmiotopoziomy, oraz odpina szkoły. Szkół i ich zamówień nie usuwa.
 
-Przed DELETE sprawdzane są ID, zgodność e-maila z unikalnym identyfikatorem przebiegu i aktualna flaga Testowy. Po DELETE API musi potwierdzić brak nauczyciela. Błąd sprzątania powoduje niepowodzenie całego uruchomienia, bez zmiany wyniku zakończonego testu; `result` w rejestrze opisuje wynik scenariusza, a `cleanupStatus` wynik sprzątania: `DELETED`, `ALREADY_ABSENT`, `KEPT_FAILED_TEST`, `PENDING_SUITE_END` (oczekuje na koniec zestawu), `UNKNOWN` (niepewny wynik DELETE), `FAILED` albo `RUNNING` (operacja przerwana/niezakończona). Brak nauczyciela potwierdzony przez API oznacza HTTP 204; samo HTTP 200 z DELETE nie wystarcza. Rejestry i raporty nie są kasowane. Załącznik testu jest zapisywany przed końcowym sprzątaniem i może pokazywać PENDING_SUITE_END; końcowy wynik jest w pliku runs/REG_*.json i w konsoli. `ABSENCE_CONFIRMED` w podglądzie odnosi się do zapisanego wyniku sprzątania, nie nowego odczytu API.
+Przed DELETE sprawdzane są ID, zgodność e-maila z unikalnym identyfikatorem przebiegu i (domyślnie) aktualna flaga Testowy. Po DELETE API musi potwierdzić brak nauczyciela. Błąd sprzątania powoduje niepowodzenie całego uruchomienia, bez zmiany wyniku zakończonego testu; `result` w rejestrze opisuje wynik scenariusza, a `cleanupStatus` wynik sprzątania: `DELETED`, `ALREADY_ABSENT`, `KEPT_FAILED_TEST`, `PENDING_SUITE_END` (oczekuje na koniec zestawu), `UNKNOWN` (niepewny wynik DELETE), `FAILED` albo `RUNNING` (operacja przerwana/niezakończona). Brak nauczyciela potwierdzony przez API oznacza HTTP 204; samo HTTP 200 z DELETE nie wystarcza. Rejestry i raporty nie są kasowane. Załącznik testu jest zapisywany przed końcowym sprzątaniem i może pokazywać PENDING_SUITE_END; końcowy wynik jest w pliku runs/REG_*.json i w konsoli. `ABSENCE_CONFIRMED` w podglądzie odnosi się do zapisanego wyniku sprzątania, nie nowego odczytu API.
 
-Domyślny ręczny podgląd obejmuje tylko rejestry `PASS`. Opcja `--include-failed` dodaje zakończone rejestry `FAIL`, `FAILED`, `TIMEDOUT` i `INTERRUPTED`, pozostawione wcześniej jako `KEPT_FAILED_TEST`. Nie osłabia kontroli bezpieczeństwa: przed usunięciem nadal muszą zgadzać się ID, unikalny e-mail lub zapisane nazwisko oraz flaga `Testowy`. Wynik scenariusza pozostaje niezmieniony; aktualizowany jest tylko `cleanupStatus`.
+Ręczne `--apply` na całej paczce (`--all`/`--include-failed`) jest odporne na pojedynczy zły rekord: błąd jednego nauczyciela (niezgodność z rejestrem albo brak flagi Testowy) nie przerywa całej operacji — jest zbierany i zgłaszany na końcu, a pozostali nauczyciele z paczki zostają usunięci. Kod wyjścia jest wtedy niezerowy, żeby pominięty rekord nie umknął uwadze, mimo że reszta się powiodła.
+
+Domyślny ręczny podgląd obejmuje tylko rejestry `PASS`. Opcja `--include-failed` dodaje zakończone rejestry `FAIL`, `FAILED`, `TIMEDOUT` i `INTERRUPTED`, pozostawione wcześniej jako `KEPT_FAILED_TEST`. Nie osłabia kontroli bezpieczeństwa: przed usunięciem nadal muszą zgadzać się ID, unikalny e-mail lub zapisane nazwisko oraz (domyślnie) flaga `Testowy`. Wynik scenariusza pozostaje niezmieniony; aktualizowany jest tylko `cleanupStatus`.
+
+Opcja `--include-untested` pozwala usunąć nauczyciela nawet bez potwierdzonej flagi `Testowy` (np. gdy jej zapis się nie powiódł, mimo że sam test przeszedł). Zgodność ID + e-maila (i nazwiska, jeśli zapisane w rejestrze) pozostaje obowiązkowa nawet z tą opcją — to ona jest właściwym zabezpieczeniem przed usunięciem cudzego rekordu, flaga Testowy to dodatkowa, informacyjna warstwa. Łączy się z `--all`, `--include-failed` i z konkretnymi nazwami rejestrów:
+
+```powershell
+npm.cmd run cleanup:teachers -- --all --include-untested          # podgląd, bez zmian
+npm.cmd run cleanup:teachers -- --all --include-untested --apply  # usuń też nieoflagowanych
+```
 
 #### Usuwanie nauczycieli po nieudanych testach
 
@@ -254,13 +272,14 @@ npm.cmd run cleanup:teachers -- REG_123456_abcdef.json --apply
 Przykładową nazwę zastąp nazwą z podglądu. Można podać kilka rejestrów. Wszystkich nauczycieli z poprawnych lokalnych rejestrów PASS można obsłużyć jednym poleceniem:
 
 ```powershell
-npm.cmd run cleanup:teachers -- --all          # podgląd, bez zmian
-npm.cmd run cleanup:teachers -- --all --apply  # wykonanie
-npm.cmd run cleanup:teachers -- --include-failed          # podgląd PASS i nieudanych
-npm.cmd run cleanup:teachers -- --include-failed --apply  # usuń pokazane rekordy
+npm.cmd run cleanup:teachers -- --all                              # podgląd, bez zmian
+npm.cmd run cleanup:teachers -- --all --apply                      # wykonanie
+npm.cmd run cleanup:teachers -- --include-failed                   # podgląd PASS i nieudanych
+npm.cmd run cleanup:teachers -- --include-failed --apply           # usuń pokazane rekordy
+npm.cmd run cleanup:teachers -- --all --include-untested --apply   # usuń też bez flagi Testowy
 ```
 
-`--all` nie obejmuje wszystkich nauczycieli w bazie: wybiera tylko poprawne rejestry udanych testów, których jeszcze nie oznaczono jako posprzątane. Nauczyciele usunięci wcześniej np. przez Excel otrzymują `ALREADY_ABSENT`, bez ponownego DELETE. Rejestry nieudanych testów są pomijane w trybie `--all`; wymagają `--include-failed`. Nie łącz `--all` z nazwami rejestrów. Narzędzie weryfikuje całą listę przed rozpoczęciem usuwania, a następnie wysyła paczki po maksymalnie 10 ID. Błąd weryfikacji blokuje wysłanie DELETE. Po każdej paczce sprawdza osobno każdego nauczyciela i zachowuje jego wynik. Nie ponawia automatycznie niepewnego DELETE; ponowne uruchomienie pomija już posprzątane rejestry. Szkoły i zamówienia pozostają. Endpoint działa wyłącznie na dev. Testy zabezpieczeń: `npm.cmd run test:cleanup`.
+`--all` nie obejmuje wszystkich nauczycieli w bazie: wybiera tylko poprawne rejestry udanych testów, których jeszcze nie oznaczono jako posprzątane. Nauczyciele usunięci wcześniej np. przez Excel otrzymują `ALREADY_ABSENT`, bez ponownego DELETE. Rejestry nieudanych testów są pomijane w trybie `--all`; wymagają `--include-failed`. Nie łącz `--all` z nazwami rejestrów. Narzędzie weryfikuje każdego nauczyciela z osobna przed jego usunięciem — błąd jednego (niezgodność danych albo, bez `--include-untested`, brak flagi Testowy) pomija tylko jego i nie blokuje pozostałych — a następnie wysyła paczki po maksymalnie 10 ID. Po każdej paczce sprawdza osobno każdego nauczyciela i zachowuje jego wynik. Nie ponawia automatycznie niepewnego DELETE; ponowne uruchomienie pomija już posprzątane rejestry. Szkoły i zamówienia pozostają. Endpoint działa wyłącznie na dev. Testy zabezpieczeń: `npm.cmd run test:cleanup`.
 
 - Błąd automatycznego logowania: sprawdź cztery wartości w `.env` i wykonaj `npm.cmd run login:auto`. Alternatywnie użyj ręcznego `npm.cmd run login`.
 - Po nieudanym logowaniu kolejne testy w tym samym uruchomieniu nie ponawiają próby hasła. Po poprawieniu danych uruchom zestaw/panel UI ponownie.

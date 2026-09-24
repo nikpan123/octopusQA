@@ -1,7 +1,20 @@
 import type { Page } from "@playwright/test";
-type CleanupOptions = { includeFailed?: boolean };
+type CleanupOptions = { includeFailed?: boolean; includeUntested?: boolean };
+export type TeacherEntry = {
+  teacherId: string;
+  teacherEmail: string;
+  teacherLastName?: string;
+  cleanupStatus?: string;
+  cleanupFinishedAt?: string;
+};
+export function getTeacherEntries(run: Record<string, string>): TeacherEntry[];
+export function setTeacherEntries(run: Record<string, string>, entries: TeacherEntry[]): void;
 export function validateTeacherRun(run: Record<string, string>, options?: CleanupOptions): void;
-export function deleteTestTeacher(page: Page, run: Record<string, string>): Promise<string>;
+export function deleteTestTeacher(
+  page: Page,
+  run: Record<string, string>,
+  options?: Pick<CleanupOptions, "includeUntested">,
+): Promise<string>;
 export function cleanupSuccessfulTeacher(
   page: Page,
   run: Record<string, string>,

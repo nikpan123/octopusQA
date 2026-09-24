@@ -1,5 +1,7 @@
 # Weryfikacja projektu testów
 
+> Dokument historyczny: zapisuje wyniki wykonane 17.09.2026 i późniejsze poprawki techniczne. Nie jest raportem bieżącego zestawu. Aktualny katalog 298 scenariuszy znajduje się w [docs/tests/scenario-index.md](docs/tests/scenario-index.md), a dokumentacja obszarów w [docs/tests/README.md](docs/tests/README.md).
+
 ## Timeout zbiorczego usuwania — poprawka nieuruchamiana
 
 Zrzut użytkownika pokazuje 18 PASS i timeout podczas jednego DELETE dla 8 nauczycieli. Dotychczasowy limit klienta wynosił 30 s. Zmieniono limit DELETE na 180 s, pozostawiając 30 s dla GET. Po błędzie DELETE wykonywane są odczyty kontrolne, bez ponawiania usuwania; niepewne wyniki oznaczane są UNKNOWN. Nie ustalono na podstawie zrzutu, czy serwer zakończył usuwanie. Zgodnie z prośbą użytkownika poprawki nie uruchamiano.

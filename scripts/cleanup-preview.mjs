@@ -1,6 +1,7 @@
 import { readdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { getTeacherEntries } from "./cleanup-teachers.mjs";
 
 // Inwentaryzacja lokalnych rejestrów, nie autoryzacja usuwania.
 // Przed operacją w Octopusie trzeba ponownie sprawdzić właściciela i flagę Testowy.
@@ -26,15 +27,19 @@ export function buildInventory(logs) {
     }
     add("school", d.schoolId, file, d.result, undefined, d.relatedSchoolName ?? d.schoolName);
     add("school", d.secondSchoolId, file, d.result, undefined, d.schoolName);
-    add(
-      "teacher",
-      d.teacherId,
-      file,
-      d.result,
-      d.schoolId,
-      d.editedLastName ?? d.lastName ?? d.id,
-      d.cleanupStatus,
-    );
+    // Jeden przebieg może utworzyć wielu nauczycieli (np. test kontraktowy
+    // dodawanie+edycja) - iterujemy po wszystkich, nie tylko po pierwszym.
+    for (const entry of getTeacherEntries(d)) {
+      add(
+        "teacher",
+        entry.teacherId,
+        file,
+        d.result,
+        d.schoolId,
+        entry.teacherLastName ?? d.editedLastName ?? d.lastName ?? d.id,
+        entry.cleanupStatus,
+      );
+    }
     add("order", d.orderId, file, d.result, d.schoolId);
     add("confirmation", d.confirmationId, file, d.result, d.teacherId);
   }

@@ -1,5 +1,6 @@
 import { test, expect } from "./support/shared-school";
 import { typeValue } from "./support/octopus";
+import { searchSchoolById } from "./support/school-medal";
 
 for (const missing of ["imię", "nazwisko", "szkoła", "kontakt"] as const) {
   test(`TEA-02: brak pola ${missing} blokuje zapis nauczyciela @validation`, async ({
@@ -113,7 +114,8 @@ for (const kind of ["teacher", "school"] as const) {
       const teacherId = await s.createTeacher(school.id, school.name);
       await s.app.searchTeacher(teacherId);
     } else {
-      await s.app.searchSchool(school.name, school.id);
+      const row = await searchSchoolById(s.app, { ...school, city: "" });
+      await row.click();
     }
     await expect(s.app.results(kind).getByRole("gridcell")).not.toHaveCount(0);
     await expect(page.getByRole("heading", { name: "Rekordów: 1", exact: true })).toBeVisible();

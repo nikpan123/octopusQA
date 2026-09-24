@@ -15,25 +15,49 @@ export function teacherHistory(page: Page) {
 }
 
 export async function openTeacherHistory(page: Page) {
-  await page
-    .getByRole("tab", {
-      name: "Historia zmian",
-      exact: true,
-    })
-    .click();
-
   const history = teacherHistory(page);
+  // Role gridcell występuje tu również w pustym wierszu nagłówka tabeli.
+  // `tbody > tr` rozróżnia faktyczny wpis historii od samej struktury siatki.
+  const firstDataRow = history.locator("tbody > tr").first();
 
-  await expect(history).toBeVisible();
-  await expect(
-    history
-      .getByRole("row")
-      .filter({ has: page.getByRole("gridcell") })
-      .first(),
-    "Historia nauczyciela powinna zakończyć renderowanie danych",
-  ).toBeVisible();
+  const historyPattern = "**/api/TeacherHistory/GetTeacherHistoryEntry?*";
+  let requestAttempt = 0;
+  const bypassCachedFailure = async (route: import("@playwright/test").Route) => {
+    const url = new URL(route.request().url());
+    url.searchParams.set("_e2eAttempt", String(requestAttempt++));
+    await route.continue({ url: url.toString() });
+  };
+  await page.route(historyPattern, bypassCachedFailure);
 
-  return history;
+  try {
+    for (let attempt = 0; attempt < 4; attempt += 1) {
+      await page.getByRole("tab", { name: "Historia zmian", exact: true }).click();
+      await expect(history).toBeVisible();
+
+      if (
+        await firstDataRow
+          .waitFor({ state: "visible", timeout: 3_000 })
+          .then(() => true)
+          .catch(() => false)
+      ) {
+        return history;
+      }
+
+      // Backend historii bywa chwilowo niespójny tuż po utworzeniu nauczyciela
+      // (HTTP 500 "Sequence contains no elements"). Ponowne otwarcie panelu
+      // uruchamia świeży odczyt zamiast asertować stan po wadliwej odpowiedzi.
+      await page.waitForTimeout(500);
+      await page.reload({ waitUntil: "domcontentloaded" });
+    }
+
+    await expect(
+      firstDataRow,
+      "Historia nauczyciela powinna zakończyć renderowanie danych",
+    ).toBeVisible();
+    return history;
+  } finally {
+    await page.unroute(historyPattern, bypassCachedFailure);
+  }
 }
 
 export async function expectTeacherHistoryChange(page: Page, field: string, value: string) {

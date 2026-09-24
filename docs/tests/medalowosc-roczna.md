@@ -350,7 +350,7 @@ Zakres można sprawdzić bez uruchamiania testów:
 npm.cmd run test:test -- --list
 ```
 
-Regularna regresja powinna zawierać 171 testów. Pełny katalog zawiera 173 scenariusze, z czego dwa `MED-YEAR-*` należą wyłącznie do workflow rocznego.
+Według indeksu wygenerowanego 24.09.2026 regularna regresja zawiera 296 testów. Pełny katalog zawiera 298 scenariuszy, z czego dwa `MED-YEAR-*` należą wyłącznie do workflow rocznego. Aktualną liczbę należy potwierdzić przez `npm.cmd run test:test -- --list`.
 
 Nie ustawiaj globalnie zmiennej `OCTOPUS_INCLUDE_ANNUAL=1`. Jest ona ustawiana tylko na czas jawnego uruchomienia skryptów `test:annual:dev` i `test:annual:test`.
 

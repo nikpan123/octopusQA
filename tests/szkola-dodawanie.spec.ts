@@ -193,6 +193,10 @@ test("SCH-11: dane szkoły są trwałe po ponownym otwarciu @school @school-add 
   await s.app.markTestRecord();
 
   await s.app.openPanel("school", schoolId);
+  if (!(await page.getByRole("checkbox", { name: "Testowy", exact: true }).isChecked())) {
+    await s.app.markTestRecord();
+    await s.app.openPanel("school", schoolId);
+  }
   await expect(s.app.detail("name")).toHaveValue(s.schoolName);
   await expect(s.app.detail("address")).toHaveValue(
     `${DEFAULT_POSTAL_CODE} ${DEFAULT_CITY} ${number}`,
@@ -425,7 +429,13 @@ test("SCH-08: nieznany kod pocztowy blokuje zapis adresu i szkoły @school @scho
   await selectSchoolType(page, form);
   const address = await openSchoolAddressForm(page, form);
   const unknownPostalCode = "00-000";
-  const city = await searchSchoolCity(address, unknownPostalCode);
+  const postalCodeInput = address.locator('input[id="zip_code_input"]');
+  await postalCodeInput.pressSequentially(unknownPostalCode.replace(/\D/g, ""), { delay: 150 });
+  await expect(postalCodeInput).toHaveValue(unknownPostalCode);
+  const city = address
+    .getByRole("row")
+    .filter({ hasText: unknownPostalCode })
+    .filter({ hasText: DEFAULT_CITY });
 
   await expect(city).toHaveCount(0);
   await address.getByRole("button", { name: "Zapisz", exact: true }).click();

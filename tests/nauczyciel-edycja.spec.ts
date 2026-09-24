@@ -566,9 +566,7 @@ test("EDIT-12: poprawny e-mail można zmienić i zmiana jest widoczna w historii
 
   await s.record("editedEmail", newEmail);
 
-  await s.record("teacherEmail", newEmail);
-
-  await s.record("teacherLastName", s.id);
+  await s.updateTeacherIdentity(teacherId, { email: newEmail, lastName: s.id });
 });
 
 /*
@@ -1455,9 +1453,7 @@ test("EDIT-20: nauczyciel może pozostać bez e-maila jeśli posiada telefon @te
    */
   await expectTeacherPhoneHistoryChange(page, "Dodany numer", phone);
 
-  await s.record("teacherEmail", "");
-
-  await s.record("teacherLastName", s.id);
+  await s.updateTeacherIdentity(teacherId, { email: "", lastName: s.id });
 });
 
 /*
@@ -1680,9 +1676,7 @@ test("EDIT-23: można usunąć e-mail bez telefonu po potwierdzeniu ostrzeżenia
 
   await s.record("removedEmailWithoutPhone", "true");
 
-  await s.record("teacherEmail", "");
-
-  await s.record("teacherLastName", s.id);
+  await s.updateTeacherIdentity(teacherId, { email: "", lastName: s.id });
 });
 
 /*

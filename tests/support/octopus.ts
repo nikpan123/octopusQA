@@ -1,4 +1,4 @@
-import { expect, type Locator, type Page, type Request } from "@playwright/test";
+import { expect, type Locator, type Page } from "@playwright/test";
 
 // fill wpisuje całość atomowo; End emituje keyup wymagany m.in. przez adres.
 // Dialog może zostać jednokrotnie wyrenderowany ponownie po doczytaniu słowników,
@@ -114,53 +114,58 @@ export class Octopus {
   async markTestRecord() {
     // Flaga doczytuje się osobnym żądaniem. Czekamy na aktywną kontrolkę
     // zamiast dwukrotnie przeładowywać całą kartę nauczyciela lub szkoły.
+    //
+    // Świadomie NIE łapiemy timeoutu w cichy `null` (jak wcześniej): checkbox
+    // może wizualnie pokazać się jako zaznaczony optymistycznie w UI, zanim
+    // serwer potwierdzi zapis, więc samo `toBeChecked()` na końcu nie
+    // wystarcza jako dowód. Zaobserwowany skutek starej wersji: nauczyciel
+    // 533888 (ADD-09) trafił do bazy bez faktycznie zapisanej flagi Testowy,
+    // mimo że sam test przeszedł - i był potem trwale niemożliwy do
+    // usunięcia przez cleanup:teachers ("brak flagi Testowy"). Brak
+    // potwierdzenia zapisu musi więc być głośnym błędem testu, a nie cichym
+    // sukcesem.
     const kind = this.page.url().includes("/teacher/") ? "Teacher" : "School";
     const checkbox = this.page.getByRole("checkbox", { name: "Testowy", exact: true });
     await expect(checkbox).toBeEnabled();
     if (!(await checkbox.isChecked())) {
-      let saveRequest: Request | undefined;
-      const captureSaveRequest = (request: Request) => {
-        const pathname = new URL(request.url()).pathname;
-        if (
-          request.method() === "POST" &&
-          pathname.startsWith(`/api/${kind}/`) &&
-          pathname.includes("Test")
-        ) {
-          saveRequest = request;
-        }
-      };
-      this.page.on("request", captureSaveRequest);
-      try {
-        await checkbox.check();
-      } finally {
-        this.page.off("request", captureSaveRequest);
-      }
+      const saved = this.page.waitForResponse(
+        (response) => {
+          const request = response.request();
+          const pathname = new URL(response.url()).pathname;
+          return (
+            request.method() !== "GET" &&
+            pathname.startsWith(`/api/${kind}/`) &&
+            pathname.includes("Test")
+          );
+        },
+        { timeout: 10_000 },
+      );
 
-      // Podczas doczytywania danych checkbox może sam zmienić stan pomiędzy
-      // isChecked() i check(). Wtedy check() niczego nie wysyła i nie ma
-      // odpowiedzi, na którą należałoby czekać.
-      if (saveRequest) {
-        const response = await saveRequest.response();
-        expect(response, "Żądanie zapisu flagi Testowy powinno otrzymać odpowiedź").not.toBeNull();
-        expect(response!.ok(), "Zapis flagi Testowy musi zakończyć się powodzeniem").toBeTruthy();
-        await response!.finished();
-      }
+      await checkbox.check();
+      const response = await saved;
+      expect(response.ok(), "Zapis flagi Testowy musi zakończyć się powodzeniem").toBeTruthy();
+      await response.finished();
     }
     await expect(checkbox).toBeChecked();
   }
 
   async searchSchool(name: string, id: string, expectedResultCount = 1) {
-    // Rozpocznij wyszukiwanie w panelu, jak użytkownik z menu aplikacji.
-    // Wejście bezpośrednio na URL z ID uruchamia dodatkowe ładowanie rekordu
-    // i tabeli, niezależne od nowego formularza wyszukiwania.
-    await this.openPanel("school");
-    const search = await this.openSearch("school");
-    await typeValue(this.field(search, "Nazwa szkoły"), name);
-    await search.getByRole("button", { name: "Szukaj", exact: true }).click();
-    await expect(search).toHaveCount(0);
     const row = this.page
       .getByRole("row")
       .filter({ has: this.page.getByRole("gridcell", { name: id, exact: true }) });
+
+    for (let attempt = 0; attempt < 4; attempt += 1) {
+      // Indeks wyszukiwarki jest aktualizowany asynchronicznie po utworzeniu
+      // szkoły, dlatego przy pustym pierwszym wyniku ponawiamy całe zapytanie.
+      await this.openPanel("school");
+      const search = await this.openSearch("school");
+      await typeValue(this.field(search, "Nazwa szkoły"), name);
+      await search.getByRole("button", { name: "Szukaj", exact: true }).click();
+      await expect(search).toHaveCount(0);
+      if ((await row.count()) === 1) break;
+      await this.page.waitForTimeout(500);
+    }
+
     await expect(row).toHaveCount(1);
     await row.click();
     await expect(this.detail("name")).toHaveValue(name);
@@ -267,7 +272,9 @@ export class Octopus {
     await typeValue(form.locator('input[id="firstName"]'), value);
     await form.getByRole("button", { name: "Zapisz", exact: true }).click();
     await expect(form).toHaveCount(0);
-    await expect(this.detail("firstName")).toHaveValue("Jan");
+    const normalized =
+      value.charAt(0).toLocaleUpperCase("pl-PL") + value.slice(1).toLocaleLowerCase("pl-PL");
+    await expect(this.detail("firstName")).toHaveValue(normalized);
   }
 
   results(kind: "teacher" | "school") {

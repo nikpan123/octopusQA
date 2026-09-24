@@ -8,6 +8,72 @@ const origin = "https://octopus.gwodev.pl";
 
 const failedTestResults = new Set(["FAIL", "FAILED", "TIMEDOUT", "INTERRUPTED"]);
 
+/*
+ * =========================================================
+ * WIELU NAUCZYCIELI NA JEDEN PRZEBIEG SCENARIUSZA
+ * =========================================================
+ *
+ * Jeden plik runs/REG_*.json może teraz opisywać WIĘCEJ NIŻ JEDNEGO
+ * utworzonego nauczyciela (np. część "dodawanie" i część "edycja" tego
+ * samego testu kontraktowego) - są oni przechowywani jako tablica JSON
+ * w polu `teachers`, każdy wpis niezależnie ze swoim ID/e-mailem/
+ * nazwiskiem/statusem sprzątania.
+ *
+ * Starszy, płaski format (pojedyncze pola teacherId/teacherEmail/
+ * teacherLastName/cleanupStatus/cleanupFinishedAt wprost w rejestrze)
+ * jest nadal odczytywany dla wstecznej zgodności ze starymi rejestrami
+ * i z testami, które budują ten obiekt ręcznie (np. szkola-nauczyciel.
+ * spec.ts) - patrz getTeacherEntries().
+ */
+export function getTeacherEntries(run) {
+  if (Object.hasOwn(run, "teachers")) {
+    if (!run.teachers) return [];
+    let parsed;
+    try {
+      parsed = JSON.parse(run.teachers);
+    } catch {
+      throw new Error("Rejestr ma niepoprawny format pola teachers (nie jest poprawnym JSON-em).");
+    }
+    if (!Array.isArray(parsed)) throw new Error("Pole teachers w rejestrze musi być tablicą.");
+    return parsed;
+  }
+  if (!run.teacherId) return [];
+  return [
+    {
+      teacherId: run.teacherId,
+      teacherEmail: Object.hasOwn(run, "teacherEmail") ? run.teacherEmail : run.email,
+      teacherLastName: run.teacherLastName,
+      cleanupStatus: run.cleanupStatus,
+      cleanupFinishedAt: run.cleanupFinishedAt,
+    },
+  ];
+}
+
+// Zapisuje listę z powrotem do rejestru w nowym formacie i usuwa stare
+// płaskie pola, żeby nie sugerowały nieaktualnego stanu pojedynczego
+// nauczyciela po migracji na wiele wpisów w jednym przebiegu.
+export function setTeacherEntries(run, entries) {
+  run.teachers = JSON.stringify(entries);
+  delete run.teacherId;
+  delete run.teacherEmail;
+  delete run.teacherLastName;
+  delete run.cleanupStatus;
+  delete run.cleanupFinishedAt;
+}
+
+function validateTeacherEntry(entry) {
+  if (
+    !/^[1-9]\d*$/.test(String(entry.teacherId ?? "")) ||
+    !Number.isSafeInteger(Number(entry.teacherId))
+  )
+    throw new Error("Niepoprawne ID nauczyciela.");
+  if (typeof entry.teacherEmail !== "string")
+    throw new Error("Brak oczekiwanego e-maila nauczyciela.");
+  if (entry.teacherEmail === "" && !entry.teacherLastName) {
+    throw new Error("Nauczyciel bez e-maila wymaga oczekiwanego nazwiska.");
+  }
+}
+
 export function validateTeacherRun(run, { includeFailed = false } = {}) {
   const resultAllowed =
     run.result === "PASS" || (includeFailed && failedTestResults.has(run.result));
@@ -18,31 +84,47 @@ export function validateTeacherRun(run, { includeFailed = false } = {}) {
         : "Sprzątanie wymaga wyniku PASS. Dla nieudanego testu użyj --include-failed.",
     );
   }
-  if (!/^[1-9]\d*$/.test(run.teacherId ?? "") || !Number.isSafeInteger(Number(run.teacherId)))
-    throw new Error("Niepoprawne ID nauczyciela.");
   const runId = run.runId ?? run.id;
   if (
     !/^REG_\d+_[a-f0-9]{6}$/.test(runId ?? "") ||
     run.email !== `${runId.toLowerCase()}@example.invalid`
   ) {
-    throw new Error("Brak jednoznacznych danych własnego nauczyciela testowego.");
+    throw new Error("Brak jednoznacznych danych własnego rejestru testowego.");
   }
-  const expectedEmail = Object.hasOwn(run, "teacherEmail") ? run.teacherEmail : run.email;
-  if (typeof expectedEmail !== "string") throw new Error("Brak oczekiwanego e-maila nauczyciela.");
-  if (expectedEmail === "" && !run.teacherLastName) {
-    throw new Error("Nauczyciel bez e-maila wymaga oczekiwanego nazwiska.");
-  }
+  const entries = getTeacherEntries(run);
+  if (!entries.length) throw new Error("Rejestr nie zawiera żadnego nauczyciela do sprzątania.");
+  for (const entry of entries) validateTeacherEntry(entry);
 }
 
-function teacherMatchesRun(teacher, run) {
-  const expectedEmail = Object.hasOwn(run, "teacherEmail") ? run.teacherEmail : run.email;
+function teacherMatchesEntry(teacher, entry) {
   const emailMatches =
     String(teacher?.email ?? "")
       .trim()
-      .toLowerCase() === expectedEmail.trim().toLowerCase();
+      .toLowerCase() === entry.teacherEmail.trim().toLowerCase();
   const lastNameMatches =
-    !run.teacherLastName || String(teacher?.lastName ?? "").trim() === run.teacherLastName.trim();
-  return String(teacher?.id) === run.teacherId && emailMatches && lastNameMatches;
+    !entry.teacherLastName ||
+    String(teacher?.lastName ?? "").trim() === entry.teacherLastName.trim();
+  return String(teacher?.id) === entry.teacherId && emailMatches && lastNameMatches;
+}
+
+// Diagnostyka do komunikatu błędu - pokazuje, KTÓRE pole się nie zgadza,
+// zamiast tylko "nie zgadza się" (odpowiedzi API nie zawierają danych
+// wrażliwych poza samym nauczycielem, więc bezpiecznie je zalogować).
+function describeMismatch(teacher, entry) {
+  const parts = [];
+  if (String(teacher?.id) !== entry.teacherId)
+    parts.push(`ID: oczekiwano ${entry.teacherId}, API zwróciło ${teacher?.id}`);
+  const actualEmail = String(teacher?.email ?? "").trim();
+  if (actualEmail.toLowerCase() !== entry.teacherEmail.trim().toLowerCase())
+    parts.push(`e-mail: oczekiwano "${entry.teacherEmail}", w Octopusie jest "${actualEmail}"`);
+  if (entry.teacherLastName) {
+    const actualLastName = String(teacher?.lastName ?? "").trim();
+    if (actualLastName !== entry.teacherLastName.trim())
+      parts.push(
+        `nazwisko: oczekiwano "${entry.teacherLastName}", w Octopusie jest "${actualLastName}"`,
+      );
+  }
+  return parts.length ? parts.join("; ") : "nieznana niezgodność (sprawdź surową odpowiedź API)";
 }
 
 // Żądania wykonujemy w zalogowanej przeglądarce; token nie opuszcza strony.
@@ -86,21 +168,39 @@ async function api(page, pathname, method = "GET", params = {}) {
   );
 }
 
-export async function deleteTestTeacher(page, run) {
+// Dla rejestrów z DOKŁADNIE jednym nauczycielem (dominujący przypadek).
+// Rejestry z wieloma nauczycielami idą przez cleanupTeacherBatch.
+//
+// `includeUntested` (domyślnie false, jak --include-failed) pozwala usunąć
+// nauczyciela nawet bez potwierdzonej flagi Testowy - identyfikacja po ID +
+// e-mailu (+ nazwisku, jeśli podane) pozostaje obowiązkowym warunkiem, więc
+// to wciąż nie usunie niewłaściwego rekordu, tylko przestaje wymagać
+// dodatkowego, czysto informacyjnego potwierdzenia flagi.
+export async function deleteTestTeacher(page, run, { includeUntested = false } = {}) {
   validateTeacherRun(run);
-  const endpoint = `/api/Teacher/${run.teacherId}`;
+  const entries = getTeacherEntries(run);
+  if (entries.length > 1)
+    throw new Error(
+      "Rejestr zawiera więcej niż jednego nauczyciela; użyj cleanupTeacherBatch zamiast deleteTestTeacher.",
+    );
+  const [entry] = entries;
+  const endpoint = `/api/Teacher/${entry.teacherId}`;
   const before = await api(page, endpoint);
   if (before.status === 204) return "ALREADY_ABSENT";
-  if (before.status !== 200 || !teacherMatchesRun(before.data, run)) {
-    throw new Error("Dane nauczyciela nie zgadzają się z rejestrem; nie wykonano DELETE.");
+  if (before.status !== 200 || !teacherMatchesEntry(before.data, entry)) {
+    const detail =
+      before.status === 200 ? describeMismatch(before.data, entry) : `HTTP ${before.status}`;
+    throw new Error(`Dane nauczyciela nie zgadzają się z rejestrem (${detail}); nie wykonano DELETE.`);
   }
   const tested = await api(page, "/api/Teacher/GetTeacherIsTested", "GET", {
-    teacherId: run.teacherId,
+    teacherId: entry.teacherId,
   });
-  if (tested.status !== 200 || tested.data !== true)
-    throw new Error("Nauczyciel nie ma flagi Testowy; nie wykonano DELETE.");
+  if (tested.status !== 200 || tested.data !== true) {
+    if (!includeUntested) throw new Error("Nauczyciel nie ma flagi Testowy; nie wykonano DELETE.");
+    console.warn(`${entry.teacherId}: brak flagi Testowy, usuwam mimo to (--include-untested).`);
+  }
   const result = await api(page, "/api/DeleteRecordsDB/DeleteRecordsFromDB", "DELETE", {
-    jsonData: JSON.stringify([{ nauczycielId: Number(run.teacherId) }]),
+    jsonData: JSON.stringify([{ nauczycielId: Number(entry.teacherId) }]),
   });
   // HTTP 200 nie dowodzi sukcesu operacji biznesowej. Potwierdzamy brak rekordu.
   if (result.status < 200 || result.status >= 300)
@@ -112,7 +212,7 @@ export async function deleteTestTeacher(page, run) {
 }
 
 export async function cleanupSuccessfulTeacher(page, run, save) {
-  if (!run.teacherId) return;
+  if (!getTeacherEntries(run).length) return;
   if (run.result !== "PASS") {
     run.cleanupStatus = "KEPT_FAILED_TEST";
     await save();
@@ -135,7 +235,10 @@ export function parseCleanupArgs(args) {
   const apply = args.includes("--apply");
   const all = args.includes("--all");
   const includeFailed = args.includes("--include-failed");
-  const files = args.filter((a) => !["--apply", "--all", "--include-failed"].includes(a));
+  const includeUntested = args.includes("--include-untested");
+  const files = args.filter(
+    (a) => !["--apply", "--all", "--include-failed", "--include-untested"].includes(a),
+  );
   if (files.some((f) => !/^REG_\d+_[a-f0-9]{6}\.json$/.test(f)))
     throw new Error(
       "Podaj pełne nazwy plików z kolumny rejestr albo --all. Wykonanie wymaga --apply (z dwoma myślnikami).",
@@ -145,11 +248,11 @@ export function parseCleanupArgs(args) {
   if (apply && !all && !includeFailed && !files.length) {
     throw new Error("--apply wymaga listy rejestrów, --all albo --include-failed.");
   }
-  return { apply, all, includeFailed, files };
+  return { apply, all, includeFailed, includeUntested, files };
 }
 
 async function main() {
-  const { apply, includeFailed, files } = parseCleanupArgs(process.argv.slice(2));
+  const { apply, includeFailed, includeUntested, files } = parseCleanupArgs(process.argv.slice(2));
   const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
   const dir = path.join(root, "runs");
   const names = files.length
@@ -158,7 +261,10 @@ async function main() {
   const selected = [];
   for (const name of names) {
     const run = JSON.parse(await readFile(path.join(dir, name), "utf8"));
-    if (!run.teacherId || ["DELETED", "ALREADY_ABSENT"].includes(run.cleanupStatus)) continue;
+    const pendingEntries = getTeacherEntries(run).filter(
+      (entry) => entry.teacherId && !["DELETED", "ALREADY_ABSENT"].includes(entry.cleanupStatus),
+    );
+    if (!pendingEntries.length) continue;
     try {
       validateTeacherRun(run, { includeFailed });
     } catch (error) {
@@ -168,11 +274,13 @@ async function main() {
     selected.push({ name, run });
   }
   console.table(
-    selected.map(({ name, run }) => ({
-      rejestr: name,
-      teacherId: run.teacherId,
-      wynik: run.result,
-    })),
+    selected.flatMap(({ name, run }) =>
+      getTeacherEntries(run).map((entry) => ({
+        rejestr: name,
+        teacherId: entry.teacherId,
+        wynik: run.result,
+      })),
+    ),
   );
   if (!apply) {
     console.log(
@@ -192,12 +300,19 @@ async function main() {
         includeFailed ? " --include-failed" : ""
       } --apply`,
     );
+    console.log(
+      "Dodaj --include-untested, żeby usunąć również nauczycieli bez potwierdzonej flagi Testowy (identyfikacja po ID + e-mailu pozostaje wymagana).",
+    );
     return;
   }
-  await cleanupTeacherRecords(dir, selected, { includeFailed });
+  await cleanupTeacherRecords(dir, selected, { includeFailed, includeUntested });
 }
 
-export async function cleanupTeacherRecords(dir, selected, { includeFailed = false } = {}) {
+export async function cleanupTeacherRecords(
+  dir,
+  selected,
+  { includeFailed = false, includeUntested = false } = {},
+) {
   if (!selected.length) return;
   const auth = await ensureSession();
   const browser = await chromium.launch();
@@ -213,52 +328,88 @@ export async function cleanupTeacherRecords(dir, selected, { includeFailed = fal
       async ({ name, run }) => {
         await writeFile(path.join(dir, name), JSON.stringify(run, null, 2));
       },
-      { includeFailed },
+      { includeFailed, includeUntested },
     );
   } finally {
     await browser.close();
   }
 }
 
-export async function cleanupTeacherBatch(page, selected, save, { includeFailed = false } = {}) {
+export async function cleanupTeacherBatch(
+  page,
+  selected,
+  save,
+  { includeFailed = false, includeUntested = false } = {},
+) {
   const pending = [];
-  const unique = new Map();
   // Najpierw walidacja całej listy. Nie usuwamy części przed sprawdzeniem reszty.
-  for (const entry of selected) {
-    validateTeacherRun(entry.run, { includeFailed });
-    const previous = unique.get(entry.run.teacherId);
-    if (previous && previous.run.email !== entry.run.email)
-      throw new Error("Sprzeczne rejestry tego samego nauczyciela.");
-    if (!previous) unique.set(entry.run.teacherId, entry);
+  for (const { run } of selected) {
+    validateTeacherRun(run, { includeFailed });
+  }
+  // Jeden przebieg może zawierać wielu nauczycieli (patrz getTeacherEntries) -
+  // spłaszczamy do jednego wpisu na nauczyciela, scalając duplikaty tego
+  // samego ID między różnymi rejestrami.
+  const unique = new Map();
+  for (const { run } of selected) {
+    for (const entry of getTeacherEntries(run)) {
+      const previous = unique.get(entry.teacherId);
+      if (previous && previous.teacherEmail !== entry.teacherEmail)
+        throw new Error("Sprzeczne rejestry tego samego nauczyciela.");
+      if (!previous) unique.set(entry.teacherId, entry);
+    }
   }
   const update = async (id, status) => {
-    for (const entry of selected.filter((e) => e.run.teacherId === id)) {
-      entry.run.cleanupStatus = status;
+    for (const item of selected) {
+      const entries = getTeacherEntries(item.run);
+      const target = entries.find((entry) => entry.teacherId === id);
+      if (!target) continue;
+      target.cleanupStatus = status;
       if (["DELETED", "ALREADY_ABSENT"].includes(status))
-        entry.run.cleanupFinishedAt = new Date().toISOString();
-      await save(entry);
+        target.cleanupFinishedAt = new Date().toISOString();
+      setTeacherEntries(item.run, entries);
+      await save(item);
     }
   };
-  for (const { run } of unique.values()) {
-    const before = await api(page, `/api/Teacher/${run.teacherId}`);
-    if (before.status === 204) {
-      await update(run.teacherId, "ALREADY_ABSENT");
-      console.log(`${run.teacherId}: ALREADY_ABSENT`);
-      continue;
-    }
-    if (before.status !== 200 || !teacherMatchesRun(before.data, run)) {
-      throw new Error(
-        `Nauczyciel ${run.teacherId}: dane nie zgadzają się z rejestrem; nie wykonano DELETE.`,
+  // Jeden zły/nieoflagowany rekord nie może zablokować sprzątania setek
+  // pozostałych. Sprawdzenie wstępne każdego nauczyciela jest więc odporne:
+  // błąd jednego jest zbierany i zgłaszany na końcu, a przetwarzanie
+  // pozostałych trwa dalej.
+  const precheckFailures = [];
+  for (const [teacherId, entry] of unique) {
+    if (["DELETED", "ALREADY_ABSENT"].includes(entry.cleanupStatus)) continue;
+    try {
+      const before = await api(page, `/api/Teacher/${teacherId}`);
+      if (before.status === 204) {
+        await update(teacherId, "ALREADY_ABSENT");
+        console.log(`${teacherId}: ALREADY_ABSENT`);
+        continue;
+      }
+      if (before.status !== 200 || !teacherMatchesEntry(before.data, entry)) {
+        const detail =
+          before.status === 200 ? describeMismatch(before.data, entry) : `HTTP ${before.status}`;
+        throw new Error(`dane nie zgadzają się z rejestrem (${detail})`);
+      }
+      const tested = await api(page, "/api/Teacher/GetTeacherIsTested", "GET", { teacherId });
+      if (tested.status !== 200 || tested.data !== true) {
+        if (!includeUntested) throw new Error("brak flagi Testowy");
+        console.warn(`${teacherId}: brak flagi Testowy, usuwam mimo to (--include-untested).`);
+      }
+      pending.push(teacherId);
+    } catch (error) {
+      await update(teacherId, "FAILED");
+      precheckFailures.push(`${teacherId} (${error.message})`);
+      console.warn(
+        `Nauczyciel ${teacherId}: pominięto (${error.message}); nie wykonano DELETE. Pozostali nauczyciele są przetwarzani dalej.`,
       );
     }
-    const tested = await api(page, "/api/Teacher/GetTeacherIsTested", "GET", {
-      teacherId: run.teacherId,
-    });
-    if (tested.status !== 200 || tested.data !== true)
-      throw new Error(`Nauczyciel ${run.teacherId}: brak flagi Testowy; nie wykonano DELETE.`);
-    pending.push(run.teacherId);
   }
-  if (!pending.length) return;
+  if (!pending.length) {
+    if (precheckFailures.length)
+      throw new Error(
+        `Nie wykonano DELETE dla żadnego nauczyciela. Pominięci: ${precheckFailures.join("; ")}.`,
+      );
+    return;
+  }
   const failures = [];
   let uncertainFailure;
   // Endpoint usuwa rozbudowany graf zależności. Paczki po 25 rekordów kończyły
@@ -305,11 +456,15 @@ export async function cleanupTeacherBatch(page, selected, save, { includeFailed 
     }
     if (deleteError && batchFailures.length) break;
   }
-  if (failures.length)
+  if (failures.length || precheckFailures.length) {
+    const parts = [];
+    if (failures.length) parts.push(`nie potwierdzono usunięcia: ${failures.join(", ")}`);
+    if (precheckFailures.length) parts.push(`pominięto przed usunięciem: ${precheckFailures.join("; ")}`);
     throw new Error(
-      `Nie potwierdzono usunięcia nauczycieli: ${failures.join(", ")}. ${uncertainFailure ? "Wynik żądania jest niepewny; serwer mógł nadal przetwarzać operację. " : ""}Nie ponawiano DELETE.`,
+      `Sprzątanie zakończone częściowo (${parts.join("; ")}). ${uncertainFailure ? "Wynik żądania DELETE jest niepewny; serwer mógł nadal przetwarzać operację. " : ""}Nie ponawiano DELETE.`,
       { cause: uncertainFailure },
     );
+  }
 }
 
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {

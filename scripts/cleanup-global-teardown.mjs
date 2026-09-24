@@ -2,16 +2,15 @@ import { readdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { performance } from "node:perf_hooks";
 import { fileURLToPath } from "node:url";
-import { cleanupTeacherRecords } from "./cleanup-teachers.mjs";
+import { cleanupTeacherRecords, getTeacherEntries } from "./cleanup-teachers.mjs";
 import { releaseTestRunLock } from "./test-run-lock.mjs";
 
 export function belongsToCleanupBatch(run, batchId) {
-  return (
-    Boolean(batchId) &&
-    run.cleanupBatchId === batchId &&
-    run.result === "PASS" &&
-    Boolean(run.teacherId) &&
-    !["DELETED", "ALREADY_ABSENT"].includes(run.cleanupStatus)
+  if (!batchId || run.cleanupBatchId !== batchId || run.result !== "PASS") return false;
+  // Jeden przebieg może mieć wielu nauczycieli (patrz getTeacherEntries) -
+  // kwalifikuje się, jeśli CHOĆ JEDEN z nich nadal czeka na sprzątanie.
+  return getTeacherEntries(run).some(
+    (entry) => entry.teacherId && !["DELETED", "ALREADY_ABSENT"].includes(entry.cleanupStatus),
   );
 }
 

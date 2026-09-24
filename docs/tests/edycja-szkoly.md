@@ -1,8 +1,8 @@
-# Edycja szkoły — plan testów automatycznych
+# Edycja szkoły — dokumentacja testów automatycznych
 
 ## Cel
 
-Zestaw sprawdza edycję istniejącej szkoły przez interfejs użytkownika. Każdy scenariusz tworzy własną szkołę testową, oznacza ją flagą `Testowy`, a następnie wykonuje edycję na tym rekordzie. Szkoły pozostają w bazie, ponieważ Octopus nie udostępnia operacji ich usuwania.
+Zestaw sprawdza edycję istniejącej szkoły przez interfejs użytkownika. Każdy scenariusz tworzy własną szkołę testową przez UI, oznacza ją flagą `Testowy`, a następnie wykonuje edycję na tym rekordzie. Szkoły pozostają w bazie, ponieważ Octopus nie udostępnia operacji ich usuwania.
 
 ## Scenariusze
 
@@ -23,6 +23,8 @@ Zestaw sprawdza edycję istniejącej szkoły przez interfejs użytkownika. Każd
 - Dane są unikalne dla scenariusza, dlatego testy mogą działać równolegle.
 - Trwałość jest sprawdzana po ponownym pobraniu panelu szkoły, a nie tylko bezpośrednio po zamknięciu dialogu.
 - Anulowanie jest sprawdzane zarówno na bieżącym panelu, jak i po ponownym otwarciu rekordu.
+- Fixture udostępnia również `createSchoolViaApi()` do szybkiego przygotowania szkoły, gdy formularz dodawania nie jest przedmiotem testu. Obecny zestaw `SCH-EDIT-*` nadal świadomie używa ścieżki UI.
+- Domyślne identyfikatory w `createSchoolViaApi()` są potwierdzone wyłącznie dla typu „Szkoła podstawowa” i miasta Gdańsk (80-064). Inny typ lub miasto wymaga jawnych, wcześniej zweryfikowanych `typeId` i `cityId`.
 
 ## Uruchomienie
 

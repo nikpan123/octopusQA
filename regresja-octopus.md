@@ -1,5 +1,7 @@
 # Octopus — plan regresji, wersja robocza
 
+> Dokument historyczny z etapu planowania. Aktualny, zaimplementowany zakres opisują [dokumentacja testów](docs/tests/README.md) i [generowany indeks 298 scenariuszy](docs/tests/scenario-index.md). Niezrealizowanych pozycji poniżej nie należy interpretować jako aktualnej listy wszystkich luk.
+
 Data rozpoznania: 2026-09-17. Środowisko: https://octopus.gwodev.pl.
 Użytkownik potwierdził, że to dev i można tworzyć dane testowe.
 

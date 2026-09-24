@@ -81,7 +81,7 @@ test("CLUB-01: przedmiotopoziom i formularz klubowy nauczyciela są trwałe @tea
   page,
   scenario: s,
 }) => {
-  const schoolId = await s.createSchool();
+  const schoolId = await s.createSchoolViaApi();
   const teacherId = await s.createTeacher(schoolId, undefined, { subjectLevels: [] });
   const subjects = page.locator("app-teacher-subjects");
   const subjectRow = subjects.getByRole("row").filter({
@@ -179,7 +179,7 @@ test("CLUB-02: edycja klasy 4 na 5 dla Matematyka/SP jest trwała @teacher @club
   page,
   scenario: s,
 }) => {
-  const schoolId = await s.createSchool();
+  const schoolId = await s.createSchoolViaApi();
   const teacherId = await s.createTeacher(schoolId);
 
   const { form, schoolYear } = await openNewClubForm(page);
@@ -249,7 +249,7 @@ test("CLUB-03: Matematyka/SP udostępnia wyłącznie klasy 4-8 @teacher @club", 
   page,
   scenario: s,
 }) => {
-  const schoolId = await s.createSchool();
+  const schoolId = await s.createSchoolViaApi();
   await s.createTeacher(schoolId);
 
   const { form } = await openNewClubForm(page);
@@ -280,7 +280,7 @@ test("CLUB-04: formularz klubowy zachowuje kilka klas 4,5,6 @teacher @club", asy
   page,
   scenario: s,
 }) => {
-  const schoolId = await s.createSchool();
+  const schoolId = await s.createSchoolViaApi();
   const teacherId = await s.createTeacher(schoolId);
 
   const { form } = await openNewClubForm(page);
@@ -317,7 +317,7 @@ test("CLUB-05: zaznaczenie wszystkich klas Matematyka/SP wybiera 4-8 @teacher @c
   page,
   scenario: s,
 }) => {
-  const schoolId = await s.createSchool();
+  const schoolId = await s.createSchoolViaApi();
   const teacherId = await s.createTeacher(schoolId);
 
   const { form } = await openNewClubForm(page);
@@ -357,7 +357,7 @@ test("CLUB-06: edycja usuwa tylko wskazaną klasę 5 z zestawu 4,5,6 @teacher @c
   page,
   scenario: s,
 }) => {
-  const schoolId = await s.createSchool();
+  const schoolId = await s.createSchoolViaApi();
   const teacherId = await s.createTeacher(schoolId);
 
   const { form } = await openNewClubForm(page);
@@ -396,7 +396,7 @@ test("CLUB-07: formularz klubowy dotyczy tylko wybranej szkoły nauczyciela @tea
   page,
   scenario: s,
 }) => {
-  const firstSchoolId = await s.createSchool();
+  const firstSchoolId = await s.createSchoolViaApi();
   const { id: secondSchoolId, name: secondSchoolName } = clubSchools.spB;
 
   await s.record("secondSchoolId", secondSchoolId);
@@ -449,7 +449,7 @@ test("CLUB-08: formularz klubowy obsługuje dwie szkoły nauczyciela @teacher @c
    * =====================================================
    */
 
-  const firstSchoolId = await s.createSchool();
+  const firstSchoolId = await s.createSchoolViaApi();
   const firstSchoolName = s.schoolName;
 
   const { id: secondSchoolId, name: secondSchoolName } = clubSchools.spB;
@@ -885,7 +885,7 @@ test("CLUB-09: anulowanie dodawania formularza nie tworzy potwierdzenia @teacher
   page,
   scenario: s,
 }) => {
-  const schoolId = await s.createSchool();
+  const schoolId = await s.createSchoolViaApi();
   const teacherId = await s.createTeacher(schoolId);
 
   const { form } = await openNewClubForm(page);
@@ -916,7 +916,7 @@ test("CLUB-10: anulowanie edycji zachowuje klasę 4 @teacher @club @cancel", asy
   page,
   scenario: s,
 }) => {
-  const schoolId = await s.createSchool();
+  const schoolId = await s.createSchoolViaApi();
   const teacherId = await s.createTeacher(schoolId);
 
   const { form } = await openNewClubForm(page);
@@ -964,7 +964,7 @@ test("CLUB-11: formularz klubowy można usunąć @teacher @club @delete", async 
    * =====================================================
    */
 
-  const schoolId = await s.createSchool();
+  const schoolId = await s.createSchoolViaApi();
 
   const teacherId = await s.createTeacher(schoolId);
 
@@ -1161,7 +1161,7 @@ test("CLUB-12A: brak szkoły blokuje utworzenie formularza klubowego @teacher @c
    * =====================================================
    */
 
-  const schoolId = await s.createSchool();
+  const schoolId = await s.createSchoolViaApi();
   const teacherId = await s.createTeacher(schoolId);
 
   /*
@@ -1268,7 +1268,7 @@ test("CLUB-12B: brak klasy blokuje utworzenie formularza klubowego @teacher @clu
    * =====================================================
    */
 
-  const schoolId = await s.createSchool();
+  const schoolId = await s.createSchoolViaApi();
   const teacherId = await s.createTeacher(schoolId);
 
   /*
@@ -2393,7 +2393,7 @@ test("CLUB-47: aktywne potwierdzenie innej szkoły nie blokuje przywrócenia @te
   page,
   scenario: s,
 }) => {
-  const firstSchoolId = await s.createSchool();
+  const firstSchoolId = await s.createSchoolViaApi();
   const firstSchoolName = s.schoolName;
   const { id: secondSchoolId, name: secondSchoolName } = clubSchools.spB;
   const teacherId = await s.createTeacher(firstSchoolId, firstSchoolName, {
@@ -2773,7 +2773,7 @@ test("CLUB-57: dwie szkoły i dwa przedmioty tworzą cztery niezależne potwierd
   page,
   scenario: s,
 }) => {
-  const firstSchoolId = await s.createSchool();
+  const firstSchoolId = await s.createSchoolViaApi();
   const firstSchoolName = s.schoolName;
   const { id: secondSchoolId, name: secondSchoolName } = clubSchools.spB;
   const teacherId = await s.createTeacher(firstSchoolId, firstSchoolName, {
