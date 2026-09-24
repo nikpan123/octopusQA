@@ -39,6 +39,26 @@ REG_<timestamp>_<losowy-sufiks>
 
 Na jego podstawie powstają nazwisko, nazwa szkoły i adres e-mail w domenie `example.invalid`. Dane przebiegu są zapisywane w `runs/*.json`, a utworzone rekordy są oznaczane jako testowe. Rekord po nieudanym teście pozostaje do diagnostyki; rekordy poprawnego przebiegu mogą zostać usunięte przez cleanup zestawu.
 
+### 3.1. Sprzątanie po nieudanym teście
+
+Globalne sprzątanie nie usuwa automatycznie nauczyciela z testu `FAILED`, `FAIL`, `TIMEDOUT` ani `INTERRUPTED`. Rejestr otrzymuje `cleanupStatus: KEPT_FAILED_TEST`, dzięki czemu dane pozostają dostępne do analizy. Po zakończeniu diagnostyki można użyć jawnej opcji `--include-failed`.
+
+```powershell
+# Podgląd PASS oraz nieudanych — bez zmian w bazie
+npm.cmd run cleanup:teachers -- --include-failed
+
+# Podgląd jednego konkretnego rejestru FAILED
+npm.cmd run cleanup:teachers -- REG_123456_abcdef.json --include-failed
+
+# Usunięcie jednego konkretnego rejestru FAILED
+npm.cmd run cleanup:teachers -- REG_123456_abcdef.json --include-failed --apply
+
+# Usunięcie wszystkich rekordów pokazanych w zbiorczym podglądzie
+npm.cmd run cleanup:teachers -- --include-failed --apply
+```
+
+Do usuwania wyłącznie wybranych błędów należy podać pełne nazwy plików z kolumny `rejestr`. Wariant zbiorczy obejmuje również oczekujące rekordy `PASS`. Każdy nauczyciel jest przed DELETE sprawdzany po ID, unikalnym e-mailu lub zapisanym nazwisku oraz fladze `Testowy`. Brak `--apply` zawsze oznacza wyłącznie lokalny podgląd.
+
 Setup testów `EDIT-*` nie przechodzi przez formularz dodawania. Factory API tworzy nauczyciela, relacje ze szkołami i przedmioto-poziomy, po czym scenariusz otwiera bezpośrednio kartę utworzonego rekordu. UI pozostaje warstwą testowaną dla samej edycji. Testy `ADD-*` nadal przygotowują nauczyciela przez UI, ponieważ dodawanie jest ich celem.
 
 `FIND-05` wyszukuje po unikalnym nazwisku i e-mailu oraz potwierdza dokładnie jeden wynik i właściwe ID. Dla pola e-mail helper emituje natywne zdarzenie `input` i opuszcza pole bez dodatkowego `keyup`; obecny formularz wyszukiwania po `keyup` kopiuje wartość e-maila również do modelu nazwiska, co zmieniałoby semantykę żądania.

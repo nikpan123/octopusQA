@@ -6,8 +6,18 @@ import { ensureSession, restoreSession } from "./auth.mjs";
 
 const origin = "https://octopus.gwodev.pl";
 
-export function validateTeacherRun(run) {
-  if (run.result !== "PASS") throw new Error("Sprzątanie wymaga wyniku PASS.");
+const failedTestResults = new Set(["FAIL", "FAILED", "TIMEDOUT", "INTERRUPTED"]);
+
+export function validateTeacherRun(run, { includeFailed = false } = {}) {
+  const resultAllowed =
+    run.result === "PASS" || (includeFailed && failedTestResults.has(run.result));
+  if (!resultAllowed) {
+    throw new Error(
+      includeFailed
+        ? "Sprzątanie wymaga wyniku PASS albo zakończonego nieudanego testu."
+        : "Sprzątanie wymaga wyniku PASS. Dla nieudanego testu użyj --include-failed.",
+    );
+  }
   if (!/^[1-9]\d*$/.test(run.teacherId ?? "") || !Number.isSafeInteger(Number(run.teacherId)))
     throw new Error("Niepoprawne ID nauczyciela.");
   const runId = run.runId ?? run.id;
@@ -124,19 +134,22 @@ export async function cleanupSuccessfulTeacher(page, run, save) {
 export function parseCleanupArgs(args) {
   const apply = args.includes("--apply");
   const all = args.includes("--all");
-  const files = args.filter((a) => !["--apply", "--all"].includes(a));
+  const includeFailed = args.includes("--include-failed");
+  const files = args.filter((a) => !["--apply", "--all", "--include-failed"].includes(a));
   if (files.some((f) => !/^REG_\d+_[a-f0-9]{6}\.json$/.test(f)))
     throw new Error(
       "Podaj pełne nazwy plików z kolumny rejestr albo --all. Wykonanie wymaga --apply (z dwoma myślnikami).",
     );
   if (all && files.length)
     throw new Error("Wybierz --all albo konkretne nazwy rejestrów, nie oba naraz.");
-  if (apply && !all && !files.length) throw new Error("--apply wymaga listy rejestrów lub --all.");
-  return { apply, all, files };
+  if (apply && !all && !includeFailed && !files.length) {
+    throw new Error("--apply wymaga listy rejestrów, --all albo --include-failed.");
+  }
+  return { apply, all, includeFailed, files };
 }
 
 async function main() {
-  const { apply, files } = parseCleanupArgs(process.argv.slice(2));
+  const { apply, includeFailed, files } = parseCleanupArgs(process.argv.slice(2));
   const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
   const dir = path.join(root, "runs");
   const names = files.length
@@ -147,7 +160,7 @@ async function main() {
     const run = JSON.parse(await readFile(path.join(dir, name), "utf8"));
     if (!run.teacherId || ["DELETED", "ALREADY_ABSENT"].includes(run.cleanupStatus)) continue;
     try {
-      validateTeacherRun(run);
+      validateTeacherRun(run, { includeFailed });
     } catch (error) {
       if (files.length) throw error;
       continue;
@@ -162,15 +175,29 @@ async function main() {
     })),
   );
   if (!apply) {
-    console.log("PODGLĄD lokalny — bez usuwania. Lista obejmuje wyłącznie poprawne rejestry PASS.");
-    console.log("Wszystkie pokazane rejestry: npm.cmd run cleanup:teachers -- --all --apply");
-    console.log("Wybrane: npm.cmd run cleanup:teachers -- <pełna nazwa z kolumny rejestr> --apply");
+    console.log(
+      `PODGLĄD lokalny — bez usuwania. Lista obejmuje ${
+        includeFailed
+          ? "rejestry PASS oraz zakończone nieudane testy"
+          : "wyłącznie poprawne rejestry PASS"
+      }.`,
+    );
+    console.log(
+      includeFailed
+        ? "Wszystkie pokazane rejestry: npm.cmd run cleanup:teachers -- --include-failed --apply"
+        : "Wszystkie pokazane rejestry: npm.cmd run cleanup:teachers -- --all --apply",
+    );
+    console.log(
+      `Wybrane: npm.cmd run cleanup:teachers -- <pełna nazwa z kolumny rejestr>${
+        includeFailed ? " --include-failed" : ""
+      } --apply`,
+    );
     return;
   }
-  await cleanupTeacherRecords(dir, selected);
+  await cleanupTeacherRecords(dir, selected, { includeFailed });
 }
 
-export async function cleanupTeacherRecords(dir, selected) {
+export async function cleanupTeacherRecords(dir, selected, { includeFailed = false } = {}) {
   if (!selected.length) return;
   const auth = await ensureSession();
   const browser = await chromium.launch();
@@ -180,20 +207,25 @@ export async function cleanupTeacherRecords(dir, selected) {
     const page = await context.newPage();
     await page.goto(`${origin}/teacher/teacher-panel`);
     await page.getByRole("button", { name: "Wyloguj", exact: true }).waitFor();
-    await cleanupTeacherBatch(page, selected, async ({ name, run }) => {
-      await writeFile(path.join(dir, name), JSON.stringify(run, null, 2));
-    });
+    await cleanupTeacherBatch(
+      page,
+      selected,
+      async ({ name, run }) => {
+        await writeFile(path.join(dir, name), JSON.stringify(run, null, 2));
+      },
+      { includeFailed },
+    );
   } finally {
     await browser.close();
   }
 }
 
-export async function cleanupTeacherBatch(page, selected, save) {
+export async function cleanupTeacherBatch(page, selected, save, { includeFailed = false } = {}) {
   const pending = [];
   const unique = new Map();
   // Najpierw walidacja całej listy. Nie usuwamy części przed sprawdzeniem reszty.
   for (const entry of selected) {
-    validateTeacherRun(entry.run);
+    validateTeacherRun(entry.run, { includeFailed });
     const previous = unique.get(entry.run.teacherId);
     if (previous && previous.run.email !== entry.run.email)
       throw new Error("Sprzeczne rejestry tego samego nauczyciela.");
