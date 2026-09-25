@@ -1,5 +1,7 @@
 # Octopus — plan regresji, wersja robocza
 
+> Historyczny plan początkowy. Zrealizowany zakres i aktualne zasady projektu opisują [README.md](README.md) oraz [dokumentacja testów](docs/tests/README.md).
+
 Data rozpoznania: 2026-09-17. Środowisko: https://octopus.gwodev.pl.
 Użytkownik potwierdził, że to dev i można tworzyć dane testowe.
 

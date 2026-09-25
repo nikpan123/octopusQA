@@ -55,6 +55,7 @@ export function createPlaywrightConfig(environment: OctopusEnvironment) {
         },
       ],
       ["./scripts/performance-reporter.mjs"],
+      ["./scripts/failure-reporter.mjs"],
     ],
 
     // Każde uruchomienie zapisuje ślady w osobnym katalogu. Dzięki temu

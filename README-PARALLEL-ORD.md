@@ -1,55 +1,38 @@
-# ORD na 2 workerach
+# Zamówienia ORD na dwóch workerach
 
-Ta paczka zmienia wykonywanie testów `ORD-*` tak, aby pakiet Zamówienia mógł działać na 2 workerach bez współdzielenia tej samej szkoły referencyjnej.
+Pakiet `ORD-01`–`ORD-66` jest przystosowany do pracy na jednym lub dwóch workerach. Konfiguracja jest już częścią projektu — nie trzeba podmieniać plików ani uruchamiać skryptu migracyjnego.
 
-## Pliki do podmiany
+## Jak działa izolacja
 
-- `tests/support/order-school.ts`
-- `test-ui/app.js`
-- `scripts/test-ui-server.mjs`
+`tests/zamowienia-szkoly.spec.ts` działa w trybie równoległym. `tests/support/order-school.ts` buduje nazwy szkół na podstawie `TEST_PARALLEL_INDEX` lub `TEST_WORKER_INDEX`:
 
-## Ważne: `zamowienia-szkoly.spec.ts`
+```text
+worker 0 → AUTO_ORD_REFERENCE_DEV_W0
+           AUTO_ORD_REFERENCE_DEV_W0_B
 
-Lokalny plik użytkownika jest nowszy niż ostatnia kopia dostępna w rozmowie, dlatego paczka **nie nadpisuje całego pliku**. Zamiast tego zawiera bezpieczny skrypt, który dodaje wyłącznie:
-
-```ts
-test.describe.configure({
-  mode: "parallel",
-});
+worker 1 → AUTO_ORD_REFERENCE_DEV_W1
+           AUTO_ORD_REFERENCE_DEV_W1_B
 ```
 
-Uruchom z głównego katalogu projektu:
+Na TEST prefiks `DEV` jest zastępowany przez `TEST`. Każdy worker korzysta z własnej pary szkół, dlatego tworzenie i cleanup zamówień nie powinny kolidować między workerami.
+
+## Uruchomienie
 
 ```powershell
-node scripts/enable-orders-parallel.mjs
+npm run test:workers:2 -- tests/zamowienia-szkoly.spec.ts
 ```
 
-Skrypt zachowuje całą aktualną zawartość `tests/zamowienia-szkoly.spec.ts` i tylko włącza równoległy tryb dla testów z tego pliku.
+W panelu wybierz pakiet **Zamówienia** i `2` workery. Wartość `4` jest dla tego pakietu blokowana.
 
-## Efekt
+Pojedynczy scenariusz diagnostyczny najlepiej uruchamiać na jednym workerze:
 
-Przy wyborze w UI:
-
-```text
-Zamówienia
-Workery: 2
+```powershell
+npx playwright test tests/zamowienia-szkoly.spec.ts --grep "ORD-43" --workers=1
 ```
 
-serwer uruchomi:
+## Ważne ograniczenia
 
-```text
---workers=2
-```
-
-a każdy worker będzie korzystał z własnych szkół:
-
-```text
-AUTO_ORD_REFERENCE_DEV_W0
-AUTO_ORD_REFERENCE_DEV_W0_B
-AUTO_ORD_REFERENCE_DEV_W1
-AUTO_ORD_REFERENCE_DEV_W1_B
-```
-
-Analogicznie na TEST.
-
-Dla pakietu Zamówienia UI pozwala na 1 lub 2 workery. Wartość 4 jest blokowana dla tego pakietu.
+- szkoły referencyjne pozostają w bazie;
+- zamówienia utworzone przez test są rejestrowane i sprzątane;
+- pełny zestaw na czterech workerach nie jest profilem wspieranym przez panel ORD;
+- szczegółowy zakres testów znajduje się w [dokumentacji zamówień](docs/tests/zamowienia-szkoly.md).

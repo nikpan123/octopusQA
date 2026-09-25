@@ -1,5 +1,7 @@
 # Przegląd jakości i refaktoryzacji testów
 
+> Migawka stanu z 23.09.2026. Część rekomendacji została już wdrożona, dlatego bieżące komendy, strukturę i liczbę scenariuszy należy sprawdzać w [README](../README.md) oraz [indeksie scenariuszy](tests/scenario-index.md).
+
 ## Status realizacji — 2026-09-23
 
 Zrealizowano:

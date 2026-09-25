@@ -1,123 +1,95 @@
-# Dokumentacja testów automatycznych
+# Dokumentacja testów Octopus
 
-Dokumenty opisują cel, dane, reguły biznesowe, zakres scenariuszy i helpery używane przez testy regresji Octopusa.
+Ten katalog opisuje aktualne obszary testowe. Źródłem prawdy dla nazw, lokalizacji i liczby wykonywanych scenariuszy jest generowany [indeks scenariuszy](scenario-index.md).
 
-Pełna, generowana lista **349 testów** znajduje się w [indeksie scenariuszy](scenario-index.md). Zwykła regresja wykonuje **347** z nich; dwa scenariusze `MED-YEAR-*` należą do osobnego workflow rocznego. Aktualny zestaw został rozszerzony między innymi o scenariusze dodawania i edycji szkoły oraz pełniejszą regresję zamówień szkoły `ORD-01`–`ORD-62`.
+## Aktualny stan
 
-| Funkcjonalność                  | Dokument                                                       | Główne identyfikatory                 |
-| ------------------------------- | -------------------------------------------------------------- | ------------------------------------- |
-| Dodawanie szkoły                | [dodawanie-szkoly.md](dodawanie-szkoly.md)                     | `SCH-*`                               |
-| Edycja szkoły                   | [edycja-szkoly.md](edycja-szkoly.md)                           | `SCH-EDIT-*`                          |
-| Medalowość szkoły               | [medalowosc-szkoly.md](medalowosc-szkoly.md)                   | `MED-*`                               |
-| Roczne przeliczenie medalowości | [medalowosc-roczna.md](medalowosc-roczna.md)                   | `MED-YEAR-*`                          |
-| Dodawanie i edycja nauczyciela  | [nauczyciele.md](nauczyciele.md)                               | `ADD-*`, `EDIT-*`, `TEA-*`, `FIND-*` |
-| Relacje szkoła–nauczyciel       | [relacje-szkola-nauczyciel.md](relacje-szkola-nauczyciel.md)   | `REL-*`, scenariusz `@smoke`          |
-| Zamówienia szkoły               | [zamowienia-szkoly.md](zamowienia-szkoly.md)                   | `ORD-*`                               |
-| Klubowiczostwo nauczyciela      | [klubowiczostwo-nauczyciela.md](klubowiczostwo-nauczyciela.md) | `CLUB-*`                              |
+- **356** scenariuszy we wszystkich 11 plikach;
+- **354** scenariusze w zwykłej regresji;
+- **2** scenariusze rocznej medalowości uruchamiane osobno;
+- domyślnie 2 workery, maksymalnie 4;
+- ORD w panelu: maksymalnie 2 workery;
+- roczna medalowość: zawsze 1 worker.
 
-## Aktualny stan zestawu testów
+| Plik testowy                         | Wykonania | Dokumentacja                                                           |
+| ------------------------------------ | --------: | ---------------------------------------------------------------------- |
+| `klubowiczostwo-nauczyciela.spec.ts` |        72 | [Klubowiczostwo](klubowiczostwo-nauczyciela.md)                        |
+| `nauczyciel-dodawanie.spec.ts`       |        33 | [Nauczyciele](nauczyciele.md)                                          |
+| `nauczyciel-edycja.spec.ts`          |        44 | [Nauczyciele](nauczyciele.md)                                          |
+| `nauczyciel-rozszerzenie.spec.ts`    |         6 | [Nauczyciele](nauczyciele.md), [relacje](relacje-szkola-nauczyciel.md) |
+| `szkola-dodawanie.spec.ts`           |        55 | [Dodawanie szkoły](dodawanie-szkoly.md)                                |
+| `szkola-edycja.spec.ts`              |        26 | [Edycja szkoły](edycja-szkoly.md)                                      |
+| `szkola-medalowosc-annual.spec.ts`   |         2 | [Roczna medalowość](medalowosc-roczna.md)                              |
+| `szkola-medalowosc.spec.ts`          |        42 | [Medalowość szkoły](medalowosc-szkoly.md)                              |
+| `szkola-nauczyciel.spec.ts`          |         1 | [Relacje](relacje-szkola-nauczyciel.md)                                |
+| `walidacja-anulowanie.spec.ts`       |         9 | [Nauczyciele](nauczyciele.md), [relacje](relacje-szkola-nauczyciel.md) |
+| `zamowienia-szkoly.spec.ts`          |        66 | [Zamówienia szkoły](zamowienia-szkoly.md)                              |
+| **Razem**                            |   **356** |                                                                        |
 
-| Plik testowy | Liczba scenariuszy |
-| --- | ---: |
-| `klubowiczostwo-nauczyciela.spec.ts` | 72 |
-| `nauczyciel-dodawanie.spec.ts` | 33 |
-| `nauczyciel-edycja.spec.ts` | 44 |
-| `nauczyciel-rozszerzenie.spec.ts` | 6 |
-| `szkola-dodawanie.spec.ts` | 55 |
-| `szkola-edycja.spec.ts` | 23 |
-| `szkola-medalowosc-annual.spec.ts` | 2 |
-| `szkola-medalowosc.spec.ts` | 42 |
-| `szkola-nauczyciel.spec.ts` | 1 |
-| `walidacja-anulowanie.spec.ts` | 9 |
-| `zamowienia-szkoly.spec.ts` | 62 |
-| **Razem** | **349** |
+Liczba wykonań może być większa od liczby logicznych ID, ponieważ część scenariuszy jest parametryzowana.
 
-Pełne nazwy wszystkich scenariuszy, ich identyfikatory, pliki źródłowe i tagi są utrzymywane w [scenario-index.md](scenario-index.md).
+## Zasady wspólne
 
-### Zamówienia szkoły
+### Przygotowanie danych
 
-Aktualny pakiet `ORD-01`–`ORD-62` obejmuje między innymi:
+- UI służy do przygotowania danych tylko wtedy, gdy dana operacja jest przedmiotem testu.
+- W pozostałych przypadkach używane są API factory lub stabilne rekordy referencyjne.
+- Każdy tworzony rekord ma unikalny identyfikator `REG_*` i jest oznaczany jako testowy.
+- Szkoły pozostają w bazie z powodu braku obsługiwanego endpointu usuwania.
+- Nauczyciele z poprawnego przebiegu są sprzątani globalnie; dane nieudanego testu pozostają do analizy.
 
-- kontrakt formularza dodawania zamówienia i anulowanie operacji;
-- słowniki oraz filtrowanie produktów po przedmiocie, poziomie, klasie, tytule i kodzie;
-- dodawanie, przenoszenie i usuwanie produktów z bieżącego zamówienia;
-- edycję ilości, wartości graniczne i automatyczne uzupełnianie ilości po wyczyszczeniu pola;
-- zapis zamówienia bez konieczności pozostawienia wybranego filtra `Przedmiot`, jeżeli produkt został już dodany;
-- zabezpieczenie przed utworzeniem duplikatu przy dwóch szybkich kliknięciach `Zapisz` z krótkim odstępem;
-- nadawanie różnych ID kolejnym zamówieniom i izolację operacji usuwania;
-- edycję i trwałość zapisanych danych;
-- dodawanie wielu załączników, usuwanie z potwierdzeniem oraz zachowanie pozostałych plików;
-- trwałość załączników po zapisaniu zamówienia, z uwzględnieniem systemowej nazwy pliku widocznej po ponownym otwarciu edycji;
-- odrzucanie niedozwolonych formatów i plików przekraczających 10 MB oraz obsługę wariantów komunikatu błędu uploadu;
-- granicę dokładnie 10 MB dla dozwolonego pliku;
-- cleanup utworzonych zamówień również po niepowodzeniu właściwej części testu.
+### Diagnostyka
 
-## Strategia przygotowania danych: UI a API
+Nieoczekiwany błąd otrzymuje kategorię, polskie podsumowanie i — jeśli da się go wydobyć — nazwę akcji oraz lokator. Panel prezentuje te informacje obok odnośnika do pełnego raportu, screenshota i trace. Kategorie obejmują m.in. brak elementu, niewidoczność, nieaktywność, zasłonięcie, niejednoznaczny lokator, asercję, nawigację, sieć i sesję.
 
-W testach szkoły obowiązuje rozdzielenie przygotowania danych od funkcji będącej celem scenariusza:
+Oczekiwany błąd oznaczony `test.fail()` nie jest traktowany jako rzeczywisty failure.
 
-- `tests/szkola-dodawanie.spec.ts` tworzy szkołę przez **UI**, ponieważ formularz dodawania i żądanie `POST /api/Institution/AddNewInstitution` są bezpośrednim przedmiotem testu;
-- `tests/szkola-edycja.spec.ts` przygotowuje szkołę przez **API**, a samą edycję wykonuje przez UI; dzięki temu test edycji nie powtarza za każdym razem pełnego przepływu dodawania;
-- testy innych modułów korzystają z API albo stabilnych szkół referencyjnych, jeżeli samo tworzenie szkoły nie jest częścią badanego wymagania.
+### Raportowanie
 
-Helper przygotowujący szkołę do edycji nie zakłada konkretnego miasta ani kodu pocztowego. Po utworzeniu rekordu odczytuje rzeczywisty adres z panelu i zapisuje go w danych scenariusza. Dzięki temu test nie zależy od stałych `API_SCHOOL_CITY` ani `API_SCHOOL_POSTAL_CODE`.
-
-W scenariuszach zamówień wykorzystywane są stabilne szkoły referencyjne odpowiednie dla bieżącego środowiska. Zamówienia utworzone przez test są rejestrowane i usuwane w cleanupie, aby nie pozostawiać danych po przebiegu testów. Stan listy zamówień potrzebny do rozpoznania nowego ID jest pobierany przed otwarciem formularza dodawania, dzięki czemu kolejne zamówienia nie mogą zostać pomylone z wcześniej istniejącymi rekordami.
+- `runs/REG_*.json` — dane scenariusza;
+- `runs/performance-*.json` — czasy i liczniki HTTP;
+- `runs/failures-*.json` — sklasyfikowane awarie;
+- `test-results/` — screenshoty i trace;
+- `playwright-report/` lub `runs/html-reports/` — raport HTML.
 
 ## Uruchamianie
 
-```text
+```powershell
+# zwykła regresja DEV
 npm test
-npm run test:dev
-npm run test:test
-npm run test:workers:2
-npm run test:workers:4
+
+# zwykła regresja TEST
+npx playwright test --config=playwright.test.config.ts
+
+# wybrany obszar
+npx playwright test --grep "@teacher"
+npx playwright test --grep "@order"
+
+# panel lokalny
+npm run test-ui
 ```
 
-Wybrany obszar można uruchomić przez tag, np.:
+Roczny workflow:
 
-```text
-npx playwright test --grep @teacher
-npx playwright test --grep @order
-npx playwright test --grep @club
+```powershell
 npm run test:annual:dev
+npm run test:annual:test
 ```
 
-Pojedynczy scenariusz zamówień można uruchomić np. tak:
+## Aktualizacja indeksu
 
-```text
-npx playwright test tests/zamowienia-szkoly.spec.ts -g "ORD-43" --workers=1 --headed
-```
+Po zmianie testów:
 
-Przed uruchomieniem wymagane są poprawne dane logowania w `.env`. Sesja jest sprawdzana w globalnym setupie i przed testami. Gdy zbliża się wygaśnięcie, blokada między procesami pozwala odświeżyć ją jednemu workerowi; pozostałe odczytują ten sam nowy stan bez równoległych logowań. Domyślnie dwa workery wykonują niezależne pliki spec, a zakres 2–4 można kontrolować przez `OCTOPUS_WORKERS`.
-
-Po każdym przebiegu `scripts/performance-reporter.mjs` zapisuje `runs/performance-<run-id>.json`. Raport zawiera czasy całkowite, globalny setup i cleanup, setup/ciało/cleanup testów, p50/p90/p95/maksimum oraz liczniki żądań i statusów HTTP.
-
-Scenariusze `@annual-medal` są wyłączone ze zwykłej regresji, ponieważ generują snapshot, wykonują kilka tysięcy żądań i należą do osobnego, dwufazowego procesu rocznego. Uruchamia się je jawnie skryptem `test:annual:dev` albo `test:annual:test`, zawsze na jednym workerze.
-
-Dotyczy to również `npm.cmd run test:test`: polecenie wykonuje zwykły zestaw regresyjny i pomija `MED-YEAR-PREP` oraz `MED-YEAR-01`. Aktualną liczbę można potwierdzić przez `npm.cmd run test:test -- --list`. Skryptów rocznych nie należy uruchamiać bez `--grep`, ponieważ wtedy oba etapy wykonałyby się w jednym przebiegu. Poprawne osobne polecenia znajdują się w [dokumentacji rocznego workflow](medalowosc-roczna.md#14-uruchomienie-med-year-prep).
-
-## Aktualizacja dokumentacji scenariuszy
-
-Po dodaniu, usunięciu albo zmianie nazw testów należy ponownie wygenerować indeks:
-
-```text
+```powershell
 npm run docs:scenarios
+npm run docs:scenarios:check
 ```
 
-Następnie warto zweryfikować liczbę testów dostępną dla wybranego środowiska:
+Nie edytuj tabeli w `scenario-index.md` ręcznie.
 
-```text
-npm.cmd run test:test -- --list
-```
+## Powiązane dokumenty
 
-Dzięki temu `scenario-index.md` oraz liczby podane w tej dokumentacji pozostają zgodne z faktycznym zestawem regresyjnym.
-
-## Wynik pomiaru 2–4 workerów
-
-Historyczny pomiar DEV z 23.09.2026 dotyczył wcześniejszego zestawu 171 testów: 171/171 przeszło w 19,7 min na dwóch workerach (`p50=6,99 s`, `p95=17,95 s`). Cztery workery zakończyły ten sam ówczesny zestaw w 15,9 min, ale tylko 166/171 testów przeszło; wystąpił między innymi błąd HTTP 500 optimistic concurrency podczas setupu API, a `p95` wzrosło do 20,05 s. Wynik jest zachowany jako punkt odniesienia wydajnościowy, a nie jako aktualna liczba scenariuszy. Domyślnym profilem pozostają dwa workery.
-
-Raporty porównawcze:
-
-- `runs/performance-1d8097ac-dbeb-467d-ab3f-6eb6e7b22763.json` — dwa workery, przebieg zielony;
-- `runs/performance-4a30477c-13cd-43d5-bf3a-1b30b1cac0d6.json` — cztery workery, pomiar granicy obciążenia.
+- [Pokrycie projektu testami i backlog luk](../POKRYCIE-TESTAMI.md)
+- [Główny README](../../README.md)
+- [Panel Test Runner](../../TEST-UI.md)
+- [Indeks wszystkich scenariuszy](scenario-index.md)

@@ -1,28 +1,8 @@
 # Indeks scenariuszy
 
-> Indeks bazuje na wygenerowanej liście scenariuszy; sekcja `ORD-*` została zaktualizowana o zmiany potwierdzone w bieżącej sesji. Po zmianach w testach warto ponownie uruchomić `npm run docs:scenarios`.
+> Plik generowany automatycznie przez `npm run docs:scenarios`. Nie edytuj tabeli ręcznie.
 
-Łącznie: **349 scenariuszy**.
-
-
-## Podsumowanie według plików
-
-| Plik | Liczba scenariuszy |
-|---|---:|
-| `klubowiczostwo-nauczyciela.spec.ts` | 72 |
-| `nauczyciel-dodawanie.spec.ts` | 33 |
-| `nauczyciel-edycja.spec.ts` | 44 |
-| `nauczyciel-rozszerzenie.spec.ts` | 6 |
-| `szkola-dodawanie.spec.ts` | 55 |
-| `szkola-edycja.spec.ts` | 23 |
-| `szkola-medalowosc-annual.spec.ts` | 2 |
-| `szkola-medalowosc.spec.ts` | 42 |
-| `szkola-nauczyciel.spec.ts` | 1 |
-| `walidacja-anulowanie.spec.ts` | 9 |
-| `zamowienia-szkoly.spec.ts` | 62 |
-| **Razem** | **349** |
-
-## Pełna lista scenariuszy
+Łącznie: **356 scenariuszy**.
 
 | ID | Scenariusz | Plik | Tagi |
 |---|---|---|---|
@@ -236,29 +216,32 @@
 | SCH-55 | SCH-55: pola opcjonalne mogą pozostać puste i szkoła nadal jest trwała | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L1159) | `school`, `school-add`, `positive`, `optional-data` |
 | SCH-56 | SCH-56: anulowanie kompletnego formularza po uzupełnieniu danych opcjonalnych nie tworzy szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L1184) | `school`, `school-add`, `cancel`, `optional-data` |
 | SCH-57 | SCH-57: ponowne otwarcie szkoły zachowuje typ, poziom i adres | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L1200) | `school`, `school-add`, `positive`, `persistence` |
-| SCH-EDIT-01 | SCH-EDIT-01: formularz edycji wczytuje nazwę szkoły | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L44) | `school`, `school-edit`, `smoke` |
-| SCH-EDIT-02 | SCH-EDIT-02: anulowanie zmiany nazwy zachowuje poprzednią wartość | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L57) | `school`, `school-edit`, `cancel` |
-| SCH-EDIT-03 | SCH-EDIT-03: zmiana nazwy jest trwała po ponownym otwarciu szkoły | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L73) | `school`, `school-edit`, `positive` |
-| SCH-EDIT-04 | SCH-EDIT-04: zmiana WWW i e-maila jest trwała | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L90) | `school`, `school-edit`, `positive`, `contact` |
-| SCH-EDIT-05 | SCH-EDIT-05: zmiana nazwy z SIO jest trwała | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L125) | `school`, `school-edit`, `positive`, `sio` |
-| SCH-EDIT-06 | SCH-EDIT-06: anulowanie zmiany nazwy z SIO zachowuje poprzednią wartość | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L149) | `school`, `school-edit`, `cancel`, `sio` |
-| SCH-EDIT-07 | SCH-EDIT-07: pusta nazwa nie pozwala zapisać edycji | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L168) | `school`, `school-edit`, `validation` |
-| SCH-EDIT-08 | SCH-EDIT-08: typ i poziom szkoły są nieedytowalne w edycji danych | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L186) | `school`, `school-edit`, `readonly` |
-| SCH-EDIT-09 | SCH-EDIT-09: anulowanie edycji WWW zachowuje poprzednią wartość | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L206) | `school`, `school-edit`, `cancel`, `contact` |
-| SCH-EDIT-10 | SCH-EDIT-10: WWW można wyczyścić i pusta wartość jest trwała | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L223) | `school`, `school-edit`, `positive`, `contact` |
-| SCH-EDIT-11 | SCH-EDIT-11: e-mail można wyczyścić i pusta wartość jest trwała | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L241) | `school`, `school-edit`, `positive`, `contact` |
-| SCH-EDIT-12 | SCH-EDIT-12: e-mail z wielkimi literami jest normalizowany po edycji | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L259) | `school`, `school-edit`, `positive`, `contact` |
-| SCH-EDIT-13 | SCH-EDIT-13: nazwa z polskimi znakami i interpunkcją jest trwała po edycji | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L280) | `school`, `school-edit`, `positive`, `name` |
-| SCH-EDIT-14 | SCH-EDIT-14: spacje na brzegach nazwy są usuwane po edycji | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L296) | `school`, `school-edit`, `positive`, `name` |
-| SCH-EDIT-15 | SCH-EDIT-15: nazwę z SIO można wyczyścić | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L313) | `school`, `school-edit`, `positive`, `sio` |
-| SCH-EDIT-16 | SCH-EDIT-16: typ Szkoła podstawowa i poziom Szkoła Podstawowa są tylko do odczytu | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L340) | `school`, `school-edit`, `readonly`, `school-type` |
-| SCH-EDIT-16 | SCH-EDIT-16: typ Liceum i poziom Szkoła Średnia są tylko do odczytu | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L340) | `school`, `school-edit`, `readonly`, `school-type` |
-| SCH-EDIT-16 | SCH-EDIT-16: typ Technikum i poziom Szkoła Średnia są tylko do odczytu | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L340) | `school`, `school-edit`, `readonly`, `school-type` |
-| SCH-EDIT-16 | SCH-EDIT-16: typ Placówka doskonalenia nauczycieli i poziom Inny są tylko do odczytu | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L340) | `school`, `school-edit`, `readonly`, `school-type` |
-| SCH-EDIT-16 | SCH-EDIT-16: typ Zespół szkół i poziom Zespół Szkół są tylko do odczytu | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L340) | `school`, `school-edit`, `readonly`, `school-type` |
-| SCH-EDIT-16 | SCH-EDIT-16: typ Szkoła NPC i poziom Szkoła Podstawowa są tylko do odczytu | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L340) | `school`, `school-edit`, `readonly`, `school-type` |
-| SCH-EDIT-16 | SCH-EDIT-16: typ Przedszkole i poziom Przedszkole są tylko do odczytu | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L340) | `school`, `school-edit`, `readonly`, `school-type` |
-| SCH-EDIT-17 | SCH-EDIT-17: kolejne edycje różnych pól nie nadpisują wcześniejszych zmian | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L357) | `school`, `school-edit`, `positive`, `regression` |
+| SCH-EDIT-01 | SCH-EDIT-01: formularz edycji wczytuje nazwę szkoły | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L70) | `school`, `school-edit`, `smoke` |
+| SCH-EDIT-02 | SCH-EDIT-02: anulowanie zmiany nazwy zachowuje poprzednią wartość | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L85) | `school`, `school-edit`, `cancel` |
+| SCH-EDIT-03 | SCH-EDIT-03: zmiana nazwy jest trwała po ponownym otwarciu szkoły | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L106) | `school`, `school-edit`, `positive` |
+| SCH-EDIT-04 | SCH-EDIT-04: zmiana WWW i e-maila jest trwała | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L129) | `school`, `school-edit`, `positive`, `contact` |
+| SCH-EDIT-05 | SCH-EDIT-05: zmiana nazwy z SIO jest trwała | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L205) | `school`, `school-edit`, `positive`, `sio` |
+| SCH-EDIT-06 | SCH-EDIT-06: anulowanie zmiany nazwy z SIO zachowuje poprzednią wartość | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L236) | `school`, `school-edit`, `cancel`, `sio` |
+| SCH-EDIT-07 | SCH-EDIT-07: pusta nazwa nie pozwala zapisać edycji | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L259) | `school`, `school-edit`, `validation` |
+| SCH-EDIT-08 | SCH-EDIT-08: typ i poziom szkoły są nieedytowalne w edycji danych | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L289) | `school`, `school-edit`, `readonly` |
+| SCH-EDIT-09 | SCH-EDIT-09: anulowanie edycji WWW zachowuje poprzednią wartość | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L312) | `school`, `school-edit`, `cancel`, `contact` |
+| SCH-EDIT-10 | SCH-EDIT-10: WWW można usunąć i pusta wartość jest trwała | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L345) | `school`, `school-edit`, `positive`, `contact` |
+| SCH-EDIT-10A | SCH-EDIT-10A: rezygnacja z usunięcia WWW zachowuje poprzedni adres | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L380) | `school`, `school-edit`, `cancel`, `contact` |
+| SCH-EDIT-11 | SCH-EDIT-11: e-mail można usunąć i pusta wartość jest trwała | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L423) | `school`, `school-edit`, `positive`, `contact` |
+| SCH-EDIT-11A | SCH-EDIT-11A: anulowanie edycji e-maila zachowuje poprzedni adres | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L458) | `school`, `school-edit`, `cancel`, `contact` |
+| SCH-EDIT-11B | SCH-EDIT-11B: rezygnacja z usunięcia e-maila zachowuje poprzedni adres | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L491) | `school`, `school-edit`, `cancel`, `contact` |
+| SCH-EDIT-12 | SCH-EDIT-12: e-mail z wielkimi literami jest normalizowany po edycji | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L530) | `school`, `school-edit`, `positive`, `contact` |
+| SCH-EDIT-13 | SCH-EDIT-13: nazwa z polskimi znakami i interpunkcją jest trwała po edycji | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L573) | `school`, `school-edit`, `positive`, `name` |
+| SCH-EDIT-14 | SCH-EDIT-14: spacje na brzegach nazwy są usuwane po edycji | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L594) | `school`, `school-edit`, `positive`, `name` |
+| SCH-EDIT-15 | SCH-EDIT-15: nazwę z SIO można wyczyścić | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L617) | `school`, `school-edit`, `positive`, `sio` |
+| SCH-EDIT-16 | SCH-EDIT-16: typ Szkoła podstawowa i poziom Szkoła Podstawowa są tylko do odczytu | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L672) | `school`, `school-edit`, `readonly`, `school-type` |
+| SCH-EDIT-16 | SCH-EDIT-16: typ Liceum i poziom Szkoła Średnia są tylko do odczytu | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L672) | `school`, `school-edit`, `readonly`, `school-type` |
+| SCH-EDIT-16 | SCH-EDIT-16: typ Technikum i poziom Szkoła Średnia są tylko do odczytu | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L672) | `school`, `school-edit`, `readonly`, `school-type` |
+| SCH-EDIT-16 | SCH-EDIT-16: typ Placówka doskonalenia nauczycieli i poziom Inny są tylko do odczytu | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L672) | `school`, `school-edit`, `readonly`, `school-type` |
+| SCH-EDIT-16 | SCH-EDIT-16: typ Zespół szkół i poziom Zespół Szkół są tylko do odczytu | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L672) | `school`, `school-edit`, `readonly`, `school-type` |
+| SCH-EDIT-16 | SCH-EDIT-16: typ Szkoła NPC i poziom Szkoła Podstawowa są tylko do odczytu | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L672) | `school`, `school-edit`, `readonly`, `school-type` |
+| SCH-EDIT-16 | SCH-EDIT-16: typ Przedszkole i poziom Przedszkole są tylko do odczytu | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L672) | `school`, `school-edit`, `readonly`, `school-type` |
+| SCH-EDIT-17 | SCH-EDIT-17: kolejne edycje różnych pól nie nadpisują wcześniejszych zmian | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L692) | `school`, `school-edit`, `positive`, `regression` |
 | MED-YEAR-PREP | MED-YEAR-PREP: przygotuj snapshot 4 szkół referencyjnych i 50 losowych szkół | [szkola-medalowosc-annual.spec.ts](../../tests/szkola-medalowosc-annual.spec.ts#L59) | `annual-medal` |
 | MED-YEAR-01 | MED-YEAR-01: roczne przeliczenie ustawia oczekiwany medal na podstawie snapshotu | [szkola-medalowosc-annual.spec.ts](../../tests/szkola-medalowosc-annual.spec.ts#L173) | `annual-medal` |
 | MED-02 | MED-02: pole Medal dla szkoły ze złotym medalem jest nieedytowalne | [szkola-medalowosc.spec.ts](../../tests/szkola-medalowosc.spec.ts#L38) | — |
@@ -303,7 +286,7 @@
 | MED-55 | MED-55: filtrowanie bez ID zwraca tylko szkoły z wybranym medalem | [szkola-medalowosc.spec.ts](../../tests/szkola-medalowosc.spec.ts#L964) | — |
 | MED-56 | MED-56: multiselect medalu jest poprawnie przekazywany do API i zwraca tylko wybrane medale | [szkola-medalowosc.spec.ts](../../tests/szkola-medalowosc.spec.ts#L1001) | — |
 | MED-60 | MED-60: każda szkoła z medalem Brak nie ma przedmiotów medalowych | [szkola-medalowosc.spec.ts](../../tests/szkola-medalowosc.spec.ts#L1173) | — |
-| — | szkoła → nauczyciel → relacja → wyszukiwanie → nauczyciel → historia | [szkola-nauczyciel.spec.ts](../../tests/szkola-nauczyciel.spec.ts#L7) | `smoke` |
+| — | szkoła → nauczyciel → relacja → wyszukiwanie → nauczyciel → historia | [szkola-nauczyciel.spec.ts](../../tests/szkola-nauczyciel.spec.ts#L8) | `smoke` |
 | TEA-02 | TEA-02: brak pola imię blokuje zapis nauczyciela | [walidacja-anulowanie.spec.ts](../../tests/walidacja-anulowanie.spec.ts#L5) | `validation` |
 | TEA-02 | TEA-02: brak pola nazwisko blokuje zapis nauczyciela | [walidacja-anulowanie.spec.ts](../../tests/walidacja-anulowanie.spec.ts#L5) | `validation` |
 | TEA-02 | TEA-02: brak pola szkoła blokuje zapis nauczyciela | [walidacja-anulowanie.spec.ts](../../tests/walidacja-anulowanie.spec.ts#L5) | `validation` |
@@ -313,66 +296,69 @@
 | EDIT-02 | EDIT-02: anulowanie edycji zachowuje dane i historię | [walidacja-anulowanie.spec.ts](../../tests/walidacja-anulowanie.spec.ts#L70) | `cancel` |
 | FIND-04 | FIND-04: brak wyników usuwa poprzednią listę — teacher | [walidacja-anulowanie.spec.ts](../../tests/walidacja-anulowanie.spec.ts#L107) | `search` |
 | FIND-04 | FIND-04: brak wyników usuwa poprzednią listę — school | [walidacja-anulowanie.spec.ts](../../tests/walidacja-anulowanie.spec.ts#L107) | `search` |
-
-| ORD-01 | ORD-01: zamówienie szkoły zachowuje produkt i ilość po ponownym otwarciu | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts) | `school`, `order`, `smoke` |
-| ORD-02 | ORD-02: zamówienie z dwoma produktami zachowuje produkty i ilości | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts) | `school`, `order`, `positive` |
-| ORD-03 | ORD-03: edycja ilości dwóch produktów i usunięcie zamówienia | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts) | `school`, `order`, `edit` |
-| ORD-04 | ORD-04: formularz Dodaj zamówienie zawiera komplet podstawowych kontrolek | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts) | `school`, `order`, `form` |
-| ORD-05 | ORD-05: anulowanie pustego formularza nie tworzy zamówienia | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts) | `school`, `order`, `cancel` |
-| ORD-06 | ORD-06: anulowanie po wyszukaniu nie tworzy zamówienia | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts) | `school`, `order`, `cancel` |
-| ORD-07 | ORD-07: anulowanie po dodaniu produktu i ilości nie tworzy zamówienia | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts) | `school`, `order`, `cancel` |
-| ORD-08 | ORD-08: ponowne otwarcie po anulowaniu zaczyna od czystego formularza | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts) | `school`, `order`, `cancel` |
-| ORD-09 | ORD-09: lista Przedmiot zawiera oczekiwane pozycje | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts) | `school`, `order`, `dictionary` |
-| ORD-10 | ORD-10: lista Poziom zawiera oczekiwane pozycje | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts) | `school`, `order`, `dictionary` |
-| ORD-11 | ORD-11: lista Klasy zawiera 0-8 i pozwala zaznaczyć kilka klas | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts) | `school`, `order`, `dictionary` |
-| ORD-12 | ORD-12: wyszukiwanie po dokładnym kodzie zwraca właściwy produkt | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts) | `school`, `order`, `search` |
-| ORD-13 | ORD-13: wyszukiwanie po fragmencie kodu zwraca oba produkty fizyki 7 | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts) | `school`, `order`, `search` |
-| ORD-14 | ORD-14: filtr Przedmiot ogranicza wyniki do fizyki | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts) | `school`, `order`, `filter` |
-| ORD-15 | ORD-15: filtr Poziom ogranicza wyniki do szkoły podstawowej | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts) | `school`, `order`, `filter` |
-| ORD-16 | ORD-16: filtr Klasa zwraca produkty klasy 7 | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts) | `school`, `order`, `filter` |
-| ORD-17 | ORD-17: filtr Klasy pozwala wyszukiwać dla kilku klas jednocześnie | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts) | `school`, `order`, `filter` |
-| ORD-18 | ORD-18: Przedmiot i Poziom działają razem | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts) | `school`, `order`, `filter` |
-| ORD-19 | ORD-19: Przedmiot, Poziom i Klasa działają razem | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts) | `school`, `order`, `filter` |
-| ORD-20 | ORD-20: wszystkie filtry razem zwracają oczekiwane produkty | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts) | `school`, `order`, `filter` |
-| ORD-21 | ORD-21: nieistniejący kod daje pustą listę wyników | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts) | `school`, `order`, `search`, `negative` |
-| ORD-22 | ORD-22: drugie wyszukanie zastępuje wyniki pierwszego | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts) | `school`, `order`, `search` |
-| ORD-23 | ORD-23: Wyczyść filtry resetuje wszystkie kryteria | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts) | `school`, `order`, `filter` |
-| ORD-24 | ORD-24: wyszukiwanie działa poprawnie po wyczyszczeniu filtrów | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts) | `school`, `order`, `filter` |
-| ORD-25 | ORD-25: strzałka w prawo przenosi wybrany produkt do Zamówienia | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts) | `school`, `order`, `product` |
-| ORD-26 | ORD-26: kilka produktów można przenieść do Zamówienia jednym ruchem | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts) | `school`, `order`, `product` |
-| ORD-27 | ORD-27: strzałka w lewo cofa zaznaczony produkt | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts) | `school`, `order`, `product` |
-| ORD-28 | ORD-28: kosz usuwa wszystkie produkty z tworzonego zamówienia | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts) | `school`, `order`, `product` |
-| ORD-29 | ORD-29: produkt już dodany do Zamówienia nie pojawia się ponownie w Gratisach | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts) | `school`, `order`, `duplicate` |
-| ORD-30 | ORD-30: wyszukanie kolejnego produktu nie usuwa wcześniej wybranego | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts) | `school`, `order`, `product` |
-| ORD-31 | ORD-31: zmiana filtrów nie usuwa produktów z Zamówienia | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts) | `school`, `order`, `product`, `filter` |
-| ORD-32 | ORD-32: dane produktu są spójne po przeniesieniu do Zamówienia | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts) | `school`, `order`, `product` |
-| ORD-33 | ORD-33: ilość 1 jest zachowywana w edytorze | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts) | `school`, `order`, `quantity` |
-| ORD-34 | ORD-34: różne produkty zachowują niezależne ilości | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts) | `school`, `order`, `quantity` |
-| ORD-35 | ORD-35: ostatnia zmiana ilości przed zapisem jest używana | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts) | `school`, `order`, `quantity` |
-| ORD-36 | ORD-36: Tab kończy edycję ilości w AG Grid | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts) | `school`, `order`, `quantity` |
-| ORD-37 | ORD-37: wpisanie 0 normalizuje ilość do 10 | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts) | `school`, `order`, `quantity`, `boundary` |
-| ORD-38 | ORD-38: wartość ujemna nie powinna być akceptowana — znany bug | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts) | `school`, `order`, `quantity`, `bug` |
-| ORD-39 | ORD-39: wyczyszczenie pola Ilość automatycznie przywraca wartość | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts) | `school`, `order`, `quantity`, `validation` |
-| ORD-40 | ORD-40: pusty formularz nie zapisuje zamówienia i oznacza Przedmiot jako niepoprawny | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts) | `school`, `order`, `validation` |
-| ORD-41 | ORD-41: zamówienie można zapisać bez wybranego Przedmiotu, jeśli produkt został dodany | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts) | `school`, `order`, `positive` |
-| ORD-42 | ORD-42: dwa szybkie kliknięcia Zapisz z krótkim odstępem tworzą tylko jedno zamówienie | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts) | `school`, `order`, `duplicate`, `concurrency` |
-| ORD-43 | ORD-43: dwa kolejne zamówienia dostają różne ID | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts) | `school`, `order`, `identity` |
-| ORD-44 | ORD-44: usunięcie pierwszego z dwóch zamówień nie usuwa drugiego | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts) | `school`, `order`, `isolation` |
-| ORD-45 | ORD-45: zamówienie utworzone dla szkoły A nie pojawia się w szkole B | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts) | `school`, `order`, `isolation` |
-| ORD-46 | ORD-46: reload zachowuje ID, produkt i ilość zamówienia | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts) | `school`, `order`, `persistence` |
-| ORD-47 | ORD-47: zapisane zamówienie ma numeryczne ID i widoczny wiersz na liście | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts) | `school`, `order`, `list` |
-| ORD-48 | ORD-48: poprawny JPG można dodać jako załącznik | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts) | `school`, `order`, `attachment` |
-| ORD-49 | ORD-49: poprawny PNG można dodać jako załącznik | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts) | `school`, `order`, `attachment` |
-| ORD-50 | ORD-50: poprawny PDF można dodać jako załącznik | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts) | `school`, `order`, `attachment` |
-| ORD-51 | ORD-51: można dodać kilka załączników do jednego zamówienia | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts) | `school`, `order`, `attachment` |
-| ORD-52 | ORD-52: można usunąć jeden z kilku załączników po potwierdzeniu | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts) | `school`, `order`, `attachment` |
-| ORD-53 | ORD-53: po usunięciu wszystkich załączników lista jest pusta | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts) | `school`, `order`, `attachment` |
-| ORD-54 | ORD-54: zmiana filtrów nie usuwa załącznika | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts) | `school`, `order`, `attachment`, `filter` |
-| ORD-55 | ORD-55: dodanie produktu nie usuwa załącznika | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts) | `school`, `order`, `attachment`, `product` |
-| ORD-56 | ORD-56: załącznik jest trwały po zapisaniu i ponownym otwarciu edycji zamówienia | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts) | `school`, `order`, `attachment`, `persistence` |
-| ORD-57 | ORD-57: kilka załączników jest trwałych po zapisaniu zamówienia | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts) | `school`, `order`, `attachment`, `persistence` |
-| ORD-58 | ORD-58: anulowanie formularza z załącznikiem nie przenosi pliku do kolejnego formularza | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts) | `school`, `order`, `attachment`, `cancel` |
-| ORD-59 | ORD-59: niedozwolony typ pliku WEBP jest odrzucany | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts) | `school`, `order`, `attachment`, `validation` |
-| ORD-60 | ORD-60: niedozwolony typ pliku TXT jest odrzucany | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts) | `school`, `order`, `attachment`, `validation` |
-| ORD-61 | ORD-61: plik większy niż 10 MB jest odrzucany | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts) | `school`, `order`, `attachment`, `validation` |
-| ORD-62 | ORD-62: plik o rozmiarze dokładnie 10 MB jest akceptowany | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts) | `school`, `order`, `attachment`, `boundary` |
+| ORD-01 | ORD-01: zamówienie szkoły zachowuje produkt i ilość po ponownym otwarciu | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L211) | `school`, `order`, `smoke` |
+| ORD-02 | ORD-02: zamówienie z dwoma produktami zachowuje produkty i ilości | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L240) | `school`, `order`, `positive` |
+| ORD-03 | ORD-03: edycja ilości dwóch produktów i usunięcie zamówienia | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L285) | `school`, `order`, `edit` |
+| ORD-04 | ORD-04: formularz Dodaj zamówienie zawiera komplet podstawowych kontrolek | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L344) | `school`, `order`, `form` |
+| ORD-05 | ORD-05: anulowanie pustego formularza nie tworzy zamówienia | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L453) | `school`, `order`, `cancel` |
+| ORD-06 | ORD-06: anulowanie po wyszukaniu nie tworzy zamówienia | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L470) | `school`, `order`, `cancel` |
+| ORD-07 | ORD-07: anulowanie po dodaniu produktu i ilości nie tworzy zamówienia | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L491) | `school`, `order`, `cancel` |
+| ORD-08 | ORD-08: ponowne otwarcie po anulowaniu zaczyna od czystego formularza | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L514) | `school`, `order`, `cancel` |
+| ORD-09 | ORD-09: lista Przedmiot zawiera oczekiwane pozycje | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L607) | `school`, `order`, `dictionary` |
+| ORD-10 | ORD-10: lista Poziom zawiera oczekiwane pozycje | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L622) | `school`, `order`, `dictionary` |
+| ORD-11 | ORD-11: lista Klasy zawiera 0-8 i pozwala zaznaczyć kilka klas | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L637) | `school`, `order`, `dictionary` |
+| ORD-12 | ORD-12: wyszukiwanie po dokładnym kodzie zwraca właściwy produkt | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L663) | `school`, `order`, `search` |
+| ORD-13 | ORD-13: wyszukiwanie po fragmencie kodu zwraca oba produkty fizyki 7 | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L683) | `school`, `order`, `search` |
+| ORD-14 | ORD-14: filtr Przedmiot ogranicza wyniki do fizyki | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L700) | `school`, `order`, `filter` |
+| ORD-15 | ORD-15: filtr Poziom ogranicza wyniki do szkoły podstawowej | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L723) | `school`, `order`, `filter` |
+| ORD-16 | ORD-16: filtr Klasa zwraca produkty klasy 7 | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L746) | `school`, `order`, `filter` |
+| ORD-17 | ORD-17: filtr Klasy pozwala wyszukiwać dla kilku klas jednocześnie | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L769) | `school`, `order`, `filter` |
+| ORD-18 | ORD-18: Przedmiot i Poziom działają razem | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L794) | `school`, `order`, `filter` |
+| ORD-19 | ORD-19: Przedmiot, Poziom i Klasa działają razem | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L815) | `school`, `order`, `filter` |
+| ORD-20 | ORD-20: wszystkie filtry razem zwracają oczekiwane produkty | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L838) | `school`, `order`, `filter` |
+| ORD-21 | ORD-21: nieistniejący kod daje pustą listę wyników | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L877) | `school`, `order`, `search`, `negative` |
+| ORD-22 | ORD-22: drugie wyszukanie zastępuje wyniki pierwszego | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L892) | `school`, `order`, `search` |
+| ORD-23 | ORD-23: Wyczyść filtry resetuje wszystkie kryteria | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L913) | `school`, `order`, `filter` |
+| ORD-24 | ORD-24: wyszukiwanie działa poprawnie po wyczyszczeniu filtrów | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L940) | `school`, `order`, `filter` |
+| ORD-25 | ORD-25: strzałka w prawo przenosi wybrany produkt do Zamówienia | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L969) | `school`, `order`, `product` |
+| ORD-26 | ORD-26: kilka produktów można przenieść do Zamówienia jednym ruchem | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L988) | `school`, `order`, `product` |
+| ORD-27 | ORD-27: strzałka w lewo cofa zaznaczony produkt | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L1009) | `school`, `order`, `product` |
+| ORD-28 | ORD-28: kosz usuwa wszystkie produkty z tworzonego zamówienia | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L1034) | `school`, `order`, `product` |
+| ORD-29 | ORD-29: produkt już dodany do Zamówienia nie pojawia się ponownie w Gratisach | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L1055) | `school`, `order`, `duplicate` |
+| ORD-30 | ORD-30: wyszukanie kolejnego produktu nie usuwa wcześniej wybranego | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L1076) | `school`, `order`, `product` |
+| ORD-31 | ORD-31: zmiana filtrów nie usuwa produktów z Zamówienia | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L1095) | `school`, `order`, `product`, `filter` |
+| ORD-32 | ORD-32: dane produktu są spójne po przeniesieniu do Zamówienia | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L1116) | `school`, `order`, `product` |
+| ORD-33 | ORD-33: ilość 1 jest zachowywana w edytorze | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L1198) | `school`, `order`, `quantity` |
+| ORD-34 | ORD-34: różne produkty zachowują niezależne ilości | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L1217) | `school`, `order`, `quantity` |
+| ORD-35 | ORD-35: ostatnia zmiana ilości przed zapisem jest używana | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L1242) | `school`, `order`, `quantity` |
+| ORD-36 | ORD-36: Tab kończy edycję ilości w AG Grid | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L1279) | `school`, `order`, `quantity` |
+| ORD-37 | ORD-37: wpisanie 0 normalizuje ilość do 10 | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L1299) | `school`, `order`, `quantity`, `boundary` |
+| ORD-38 | ORD-38: wartość ujemna nie powinna być akceptowana — znany bug | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L1318) | `school`, `order`, `quantity`, `bug` |
+| ORD-39 | ORD-39: wyczyszczenie pola Ilość automatycznie przywraca wartość | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L1339) | `school`, `order`, `quantity`, `boundary` |
+| ORD-40 | ORD-40: pusty formularz nie zapisuje zamówienia i oznacza Przedmiot jako niepoprawny | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L1371) | `school`, `order`, `validation` |
+| ORD-41 | ORD-41: zamówienie można zapisać bez wybranego Przedmiotu, jeśli produkt został dodany | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L1399) | `school`, `order`, `positive` |
+| ORD-42 | ORD-42: dwa szybkie kliknięcia Zapisz z krótkim odstępem tworzą tylko jedno zamówienie | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L1451) | `school`, `order`, `duplicate` |
+| ORD-43 | ORD-43: dwa kolejne zamówienia dostają różne ID | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L1511) | `school`, `order`, `identity` |
+| ORD-44 | ORD-44: usunięcie pierwszego z dwóch zamówień nie usuwa drugiego | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L1551) | `school`, `order`, `isolation` |
+| ORD-45 | ORD-45: zamówienie utworzone dla szkoły A nie pojawia się w szkole B | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L1598) | `school`, `order`, `isolation` |
+| ORD-46 | ORD-46: reload zachowuje ID, produkt i ilość zamówienia | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L1621) | `school`, `order`, `persistence` |
+| ORD-47 | ORD-47: zapisane zamówienie ma numeryczne ID i widoczny wiersz na liście | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L1650) | `school`, `order`, `list` |
+| ORD-48 | ORD-48: poprawny JPG można dodać jako załącznik | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L1688) | `school`, `order`, `attachment` |
+| ORD-49 | ORD-49: poprawny PNG można dodać jako załącznik | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L1688) | `school`, `order`, `attachment` |
+| ORD-50 | ORD-50: poprawny PDF można dodać jako załącznik | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L1688) | `school`, `order`, `attachment` |
+| ORD-51 | ORD-51: można dodać kilka załączników do jednego zamówienia | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L1704) | `school`, `order`, `attachment` |
+| ORD-52 | ORD-52: można usunąć jeden z kilku załączników | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L1727) | `school`, `order`, `attachment` |
+| ORD-53 | ORD-53: po usunięciu wszystkich załączników lista jest pusta | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L1771) | `school`, `order`, `attachment` |
+| ORD-54 | ORD-54: zmiana filtrów nie usuwa załącznika | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L1806) | `school`, `order`, `attachment`, `filter` |
+| ORD-55 | ORD-55: dodanie produktu nie usuwa załącznika | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L1829) | `school`, `order`, `attachment`, `product` |
+| ORD-56 | ORD-56: załącznik jest trwały po zapisaniu i ponownym otwarciu edycji zamówienia | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L1848) | `school`, `order`, `attachment`, `persistence` |
+| ORD-57 | ORD-57: kilka załączników jest trwałych po zapisaniu zamówienia | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L1903) | `school`, `order`, `attachment`, `persistence` |
+| ORD-58 | ORD-58: anulowanie formularza z załącznikiem nie przenosi pliku do kolejnego formularza | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L1957) | `school`, `order`, `attachment`, `cancel` |
+| ORD-59 | ORD-59: niedozwolony typ pliku WEBP jest odrzucany | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L1984) | `school`, `order`, `attachment`, `validation` |
+| ORD-60 | ORD-60: niedozwolony typ pliku TXT jest odrzucany | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L1984) | `school`, `order`, `attachment`, `validation` |
+| ORD-61 | ORD-61: plik większy niż 10 MB jest odrzucany | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L1998) | `school`, `order`, `attachment`, `validation` |
+| ORD-62 | ORD-62: plik o rozmiarze dokładnie 10 MB jest akceptowany | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L2013) | `school`, `order`, `attachment`, `boundary` |
+| ORD-63 | ORD-63: zamówienie z załącznikiem pokazuje ikonę dokumentu na liście | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L2028) | `school`, `order`, `attachment`, `list` |
+| ORD-64 | ORD-64: zamówienie bez załącznika nie pokazuje ikony dokumentu | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L2074) | `school`, `order`, `attachment`, `list`, `negative` |
+| ORD-65 | ORD-65: po usunięciu ostatniego załącznika ikona dokumentu znika | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L2098) | `school`, `order`, `attachment`, `edit`, `list` |
+| ORD-66 | ORD-66: kilka załączników daje pojedynczą ikonę dokumentu na liście | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L2175) | `school`, `order`, `attachment`, `list` |
