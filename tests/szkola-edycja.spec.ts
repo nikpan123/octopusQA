@@ -4,19 +4,32 @@ import { test, expect, type Scenario } from "./support/scenario";
 
 import type { CreateSchoolApiOptions } from "./support/octopus";
 
-import { schoolPanelTextField } from "./support/school-add";
+import {
+  DEFAULT_CITY,
+  DEFAULT_POSTAL_CODE,
+  saveSchoolAddress,
+  schoolPanelTextField,
+} from "./support/school-add";
 
 import {
   cancelSchoolEdit,
   cancelSchoolFieldDelete,
   confirmSchoolFieldDelete,
+  addSchoolPhone,
+  openSchoolAddressEdit,
   openSchoolEditForm,
   openSchoolFieldDeleteConfirmation,
   openSchoolFieldEdit,
+  openSchoolHistory,
+  openSchoolSioForm,
   replaceSchoolEditValue,
+  saveSchoolSioEdit,
   saveSchoolEdit,
+  SCHOOL_SIMPLE_UPDATE_ENDPOINT,
   schoolEditInput,
   schoolFieldEditInputs,
+  schoolPhoneMobileCheckbox,
+  schoolSioInput,
 } from "./support/school-edit";
 
 test.describe.configure({
@@ -775,3 +788,155 @@ test("SCH-EDIT-17: kolejne edycje różnych pól nie nadpisują wcześniejszych 
 
   await expect(schoolPanelTextField(schoolDetails(page), "E-Mail")).toHaveValue(updatedEmail);
 });
+
+// =============================================================================
+// ADRES, TELEFON, DANE SIO I HISTORIA
+// =============================================================================
+
+test("SCH-EDIT-18: zmiana adresu szkoły jest trwała @school @school-edit @positive @address", async ({
+  page,
+  scenario: s,
+}) => {
+  const schoolId = await createSchoolForEdit(s);
+  const updatedNumber = `E${Date.now()}`;
+
+  const address = await openSchoolAddressEdit(page);
+  await saveSchoolAddress(address, DEFAULT_POSTAL_CODE, DEFAULT_CITY, updatedNumber);
+
+  await expect(s.app.detail("address")).toHaveValue(new RegExp(updatedNumber));
+  await s.app.openPanel("school", schoolId);
+  await expect(s.app.detail("address")).toHaveValue(new RegExp(updatedNumber));
+  await expect(s.app.detail("address")).toHaveValue(new RegExp(DEFAULT_CITY, "i"));
+  await s.record("updatedSchoolAddress", await s.app.detail("address").inputValue());
+});
+
+test("SCH-EDIT-19: dane SIO i liczba uczniów można zmienić i ponownie odczytać @school @school-edit @positive @sio @identifier", async ({
+  page,
+  scenario: s,
+}) => {
+  const schoolId = await createSchoolForEdit(s, {
+    quantityOfStudents: 123,
+    rspo: "123456",
+    regon: "123456785",
+    nip: "1234563218",
+  });
+  const updated = {
+    quantityOfStudents: "456",
+    rspo: "654321",
+    regon: "590096454",
+    nip: "5260250995",
+  };
+
+  const form = await openSchoolSioForm(page);
+  await schoolSioInput(form, "quantityOfStudents").fill(updated.quantityOfStudents);
+  await schoolSioInput(form, "rspoNumber").fill(updated.rspo);
+  await schoolSioInput(form, "regon").fill(updated.regon);
+  await schoolSioInput(form, "nip").fill(updated.nip);
+  await saveSchoolSioEdit(form);
+
+  await expect(schoolPanelTextField(schoolDetails(page), "Liczba uczniów")).toHaveValue(
+    updated.quantityOfStudents,
+  );
+  await s.app.openPanel("school", schoolId);
+  const persisted = await openSchoolSioForm(page);
+  await expect(schoolSioInput(persisted, "quantityOfStudents")).toHaveValue(
+    updated.quantityOfStudents,
+  );
+  await expect(schoolSioInput(persisted, "rspoNumber")).toHaveValue(updated.rspo);
+  await expect(schoolSioInput(persisted, "regon")).toHaveValue(updated.regon);
+  await expect(schoolSioInput(persisted, "nip")).toHaveValue(updated.nip);
+  await cancelSchoolEdit(persisted);
+  await s.record("updatedSchoolSioData", JSON.stringify(updated));
+});
+
+test("SCH-EDIT-20: drugi telefon stacjonarny można dodać po przełączeniu typu @school @school-edit @positive @contact", async ({
+  page,
+  scenario: s,
+}) => {
+  const schoolId = await createSchoolForEdit(s, {
+    phoneNumber: "501234567",
+    phoneIsMobile: true,
+  });
+  const landline = "312321412";
+
+  const details = schoolDetails(page);
+  const mobile = schoolPhoneMobileCheckbox(details);
+  await mobile.check();
+  await mobile.uncheck();
+  await addSchoolPhone(details, landline, false);
+
+  await s.app.openPanel("school", schoolId);
+  const storedPhones = await schoolDetails(page)
+    .locator('input[disabled][type="text"]')
+    .evaluateAll((inputs) => inputs.map((input) => (input as HTMLInputElement).value));
+  expect(storedPhones.some((value) => value.replace(/\D/g, "") === "501234567")).toBeTruthy();
+  expect(storedPhones.some((value) => value.replace(/\D/g, "") === landline)).toBeTruthy();
+  await s.record("addedSchoolPhone", landline);
+});
+
+test("SCH-EDIT-21: zmiana nazwy tworzy kompletny wpis historii szkoły @school @school-edit @history", async ({
+  page,
+  scenario: s,
+}) => {
+  await createSchoolForEdit(s);
+  const updatedName = `${s.schoolName} historia`;
+  const form = await openSchoolEditForm(page);
+  await replaceSchoolEditValue(form, s.schoolName, updatedName);
+  await saveSchoolEdit(form);
+
+  const history = await openSchoolHistory(page);
+  const valueCell = history.getByRole("gridcell", { name: updatedName, exact: true });
+  await expect(valueCell).toBeVisible();
+  const row = valueCell.locator('xpath=ancestor::*[@role="row"][1]');
+  const cells = row.getByRole("gridcell");
+  await expect(cells).toHaveCount(5);
+  await expect(cells.nth(0)).toContainText(/Nazwa/i);
+  await expect(cells.nth(1)).toHaveText(updatedName);
+  await expect(cells.nth(2)).not.toHaveText("");
+  await expect(cells.nth(3)).not.toHaveText("");
+  await expect(cells.nth(4)).not.toHaveText("");
+});
+
+// =============================================================================
+// ODPORNOŚĆ TECHNICZNA ZAPISU
+// =============================================================================
+
+const schoolEditFailureCases = [
+  { id: "SCH-EDIT-22", label: "HTTP 422", status: 422 },
+  { id: "SCH-EDIT-23", label: "HTTP 500", status: 500 },
+  { id: "SCH-EDIT-24", label: "timeout sieci", abort: "timedout" as const },
+] as const;
+
+for (const failure of schoolEditFailureCases) {
+  test(`${failure.id}: ${failure.label} nie utrwala zmiany nazwy @school @school-edit @error-handling`, async ({
+    page,
+    scenario: s,
+  }) => {
+    const schoolId = await createSchoolForEdit(s);
+    const rejectedName = `${s.schoolName} odrzucona`;
+    let saveAttempts = 0;
+
+    await page.route(SCHOOL_SIMPLE_UPDATE_ENDPOINT, async (route) => {
+      saveAttempts += 1;
+      if ("abort" in failure) {
+        await route.abort(failure.abort);
+        return;
+      }
+      await route.fulfill({
+        status: failure.status,
+        contentType: "application/json",
+        body: JSON.stringify({ message: `Kontrolowany ${failure.label}` }),
+      });
+    });
+
+    const form = await openSchoolEditForm(page);
+    await replaceSchoolEditValue(form, s.schoolName, rejectedName);
+    await form.getByRole("button", { name: "Zapisz", exact: true }).click();
+    await expect.poll(() => saveAttempts).toBe(1);
+
+    await s.app.openPanel("school", schoolId);
+    await expect(s.app.detail("name")).toHaveValue(s.schoolName);
+    await expect(s.app.detail("name")).not.toHaveValue(rejectedName);
+    await s.record("rejectedSchoolEdit", failure.label);
+  });
+}

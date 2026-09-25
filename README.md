@@ -7,7 +7,7 @@ Repozytorium zawiera testy end-to-end aplikacji Octopus napisane w Playwright i 
 | DEV        | `https://octopus.gwodev.pl`  | `playwright.config.ts`      |
 | TEST       | `https://octopus.gwotest.pl` | `playwright.test.config.ts` |
 
-Aktualny zestaw zawiera **356 scenariuszy** w 11 plikach. Zwykła regresja wykonuje **354 scenariusze**; dwa testy `MED-YEAR-*` należą do osobnego, ciężkiego procesu rocznej medalowości.
+Aktualny zestaw zawiera **365 scenariuszy** w 11 plikach. Zwykła regresja wykonuje **363 scenariusze**; dwa testy `MED-YEAR-*` należą do osobnego, ciężkiego procesu rocznej medalowości.
 
 Pełna lista jest generowana z kodu i znajduje się w [indeksie scenariuszy](docs/tests/scenario-index.md).
 
@@ -19,14 +19,14 @@ Pełna lista jest generowana z kodu i znajduje się w [indeksie scenariuszy](doc
 | Dodawanie nauczyciela                | `nauczyciel-dodawanie.spec.ts`       |             33 |
 | Edycja nauczyciela                   | `nauczyciel-edycja.spec.ts`          |             44 |
 | Rozszerzenia i relacje nauczyciela   | `nauczyciel-rozszerzenie.spec.ts`    |              6 |
-| Dodawanie szkoły                     | `szkola-dodawanie.spec.ts`           |             55 |
-| Edycja szkoły                        | `szkola-edycja.spec.ts`              |             26 |
+| Dodawanie szkoły                     | `szkola-dodawanie.spec.ts`           |             57 |
+| Edycja szkoły                        | `szkola-edycja.spec.ts`              |             33 |
 | Medalowość szkoły                    | `szkola-medalowosc.spec.ts`          |             42 |
 | Roczna medalowość                    | `szkola-medalowosc-annual.spec.ts`   |              2 |
 | Relacja szkoła–nauczyciel            | `szkola-nauczyciel.spec.ts`          |              1 |
 | Walidacja, anulowanie i wyszukiwanie | `walidacja-anulowanie.spec.ts`       |              9 |
 | Zamówienia szkoły                    | `zamowienia-szkoly.spec.ts`          |             66 |
-| **Razem**                            |                                      |        **356** |
+| **Razem**                            |                                      |        **365** |
 
 Szczegółowe opisy domen znajdują się w [dokumentacji testów](docs/tests/README.md).
 

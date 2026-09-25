@@ -2,7 +2,7 @@
 
 > Plik generowany automatycznie przez `npm run docs:scenarios`. Nie edytuj tabeli ręcznie.
 
-Łącznie: **356 scenariuszy**.
+Łącznie: **365 scenariuszy**.
 
 | ID | Scenariusz | Plik | Tagi |
 |---|---|---|---|
@@ -212,36 +212,45 @@
 | SCH-48 | SCH-48: e-mail z subdomeną jest zachowany | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L1012) | `school`, `school-add`, `positive`, `contact` |
 | SCH-50 | SCH-50: e-mail z aliasem plus jest odrzucany przez backend | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L1029) | `school`, `school-add`, `validation`, `contact` |
 | SCH-16 | SCH-16: błąd serwera nie otwiera nieistniejącej szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L1065) | `school`, `school-add`, `error-handling` |
-| SCH-42 | SCH-42: pełny formularz zachowuje wszystkie dane opcjonalne | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L1102) | `school`, `school-add`, `positive`, `optional-data`, `contact`, `identifier` |
-| SCH-55 | SCH-55: pola opcjonalne mogą pozostać puste i szkoła nadal jest trwała | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L1159) | `school`, `school-add`, `positive`, `optional-data` |
-| SCH-56 | SCH-56: anulowanie kompletnego formularza po uzupełnieniu danych opcjonalnych nie tworzy szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L1184) | `school`, `school-add`, `cancel`, `optional-data` |
-| SCH-57 | SCH-57: ponowne otwarcie szkoły zachowuje typ, poziom i adres | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L1200) | `school`, `school-add`, `positive`, `persistence` |
-| SCH-EDIT-01 | SCH-EDIT-01: formularz edycji wczytuje nazwę szkoły | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L70) | `school`, `school-edit`, `smoke` |
-| SCH-EDIT-02 | SCH-EDIT-02: anulowanie zmiany nazwy zachowuje poprzednią wartość | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L85) | `school`, `school-edit`, `cancel` |
-| SCH-EDIT-03 | SCH-EDIT-03: zmiana nazwy jest trwała po ponownym otwarciu szkoły | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L106) | `school`, `school-edit`, `positive` |
-| SCH-EDIT-04 | SCH-EDIT-04: zmiana WWW i e-maila jest trwała | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L129) | `school`, `school-edit`, `positive`, `contact` |
-| SCH-EDIT-05 | SCH-EDIT-05: zmiana nazwy z SIO jest trwała | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L205) | `school`, `school-edit`, `positive`, `sio` |
-| SCH-EDIT-06 | SCH-EDIT-06: anulowanie zmiany nazwy z SIO zachowuje poprzednią wartość | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L236) | `school`, `school-edit`, `cancel`, `sio` |
-| SCH-EDIT-07 | SCH-EDIT-07: pusta nazwa nie pozwala zapisać edycji | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L259) | `school`, `school-edit`, `validation` |
-| SCH-EDIT-08 | SCH-EDIT-08: typ i poziom szkoły są nieedytowalne w edycji danych | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L289) | `school`, `school-edit`, `readonly` |
-| SCH-EDIT-09 | SCH-EDIT-09: anulowanie edycji WWW zachowuje poprzednią wartość | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L312) | `school`, `school-edit`, `cancel`, `contact` |
-| SCH-EDIT-10 | SCH-EDIT-10: WWW można usunąć i pusta wartość jest trwała | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L345) | `school`, `school-edit`, `positive`, `contact` |
-| SCH-EDIT-10A | SCH-EDIT-10A: rezygnacja z usunięcia WWW zachowuje poprzedni adres | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L380) | `school`, `school-edit`, `cancel`, `contact` |
-| SCH-EDIT-11 | SCH-EDIT-11: e-mail można usunąć i pusta wartość jest trwała | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L423) | `school`, `school-edit`, `positive`, `contact` |
-| SCH-EDIT-11A | SCH-EDIT-11A: anulowanie edycji e-maila zachowuje poprzedni adres | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L458) | `school`, `school-edit`, `cancel`, `contact` |
-| SCH-EDIT-11B | SCH-EDIT-11B: rezygnacja z usunięcia e-maila zachowuje poprzedni adres | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L491) | `school`, `school-edit`, `cancel`, `contact` |
-| SCH-EDIT-12 | SCH-EDIT-12: e-mail z wielkimi literami jest normalizowany po edycji | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L530) | `school`, `school-edit`, `positive`, `contact` |
-| SCH-EDIT-13 | SCH-EDIT-13: nazwa z polskimi znakami i interpunkcją jest trwała po edycji | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L573) | `school`, `school-edit`, `positive`, `name` |
-| SCH-EDIT-14 | SCH-EDIT-14: spacje na brzegach nazwy są usuwane po edycji | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L594) | `school`, `school-edit`, `positive`, `name` |
-| SCH-EDIT-15 | SCH-EDIT-15: nazwę z SIO można wyczyścić | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L617) | `school`, `school-edit`, `positive`, `sio` |
-| SCH-EDIT-16 | SCH-EDIT-16: typ Szkoła podstawowa i poziom Szkoła Podstawowa są tylko do odczytu | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L672) | `school`, `school-edit`, `readonly`, `school-type` |
-| SCH-EDIT-16 | SCH-EDIT-16: typ Liceum i poziom Szkoła Średnia są tylko do odczytu | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L672) | `school`, `school-edit`, `readonly`, `school-type` |
-| SCH-EDIT-16 | SCH-EDIT-16: typ Technikum i poziom Szkoła Średnia są tylko do odczytu | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L672) | `school`, `school-edit`, `readonly`, `school-type` |
-| SCH-EDIT-16 | SCH-EDIT-16: typ Placówka doskonalenia nauczycieli i poziom Inny są tylko do odczytu | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L672) | `school`, `school-edit`, `readonly`, `school-type` |
-| SCH-EDIT-16 | SCH-EDIT-16: typ Zespół szkół i poziom Zespół Szkół są tylko do odczytu | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L672) | `school`, `school-edit`, `readonly`, `school-type` |
-| SCH-EDIT-16 | SCH-EDIT-16: typ Szkoła NPC i poziom Szkoła Podstawowa są tylko do odczytu | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L672) | `school`, `school-edit`, `readonly`, `school-type` |
-| SCH-EDIT-16 | SCH-EDIT-16: typ Przedszkole i poziom Przedszkole są tylko do odczytu | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L672) | `school`, `school-edit`, `readonly`, `school-type` |
-| SCH-EDIT-17 | SCH-EDIT-17: kolejne edycje różnych pól nie nadpisują wcześniejszych zmian | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L692) | `school`, `school-edit`, `positive`, `regression` |
+| SCH-58 | SCH-58: HTTP 422 nie otwiera nieutworzonej szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L1104) | `school`, `school-add`, `error-handling` |
+| SCH-59 | SCH-59: timeout sieci nie otwiera nieutworzonej szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L1104) | `school`, `school-add`, `error-handling` |
+| SCH-42 | SCH-42: pełny formularz zachowuje wszystkie dane opcjonalne | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L1139) | `school`, `school-add`, `positive`, `optional-data`, `contact`, `identifier` |
+| SCH-55 | SCH-55: pola opcjonalne mogą pozostać puste i szkoła nadal jest trwała | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L1195) | `school`, `school-add`, `positive`, `optional-data` |
+| SCH-56 | SCH-56: anulowanie kompletnego formularza po uzupełnieniu danych opcjonalnych nie tworzy szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L1220) | `school`, `school-add`, `cancel`, `optional-data` |
+| SCH-57 | SCH-57: ponowne otwarcie szkoły zachowuje typ, poziom i adres | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L1236) | `school`, `school-add`, `positive`, `persistence` |
+| SCH-EDIT-01 | SCH-EDIT-01: formularz edycji wczytuje nazwę szkoły | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L83) | `school`, `school-edit`, `smoke` |
+| SCH-EDIT-02 | SCH-EDIT-02: anulowanie zmiany nazwy zachowuje poprzednią wartość | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L98) | `school`, `school-edit`, `cancel` |
+| SCH-EDIT-03 | SCH-EDIT-03: zmiana nazwy jest trwała po ponownym otwarciu szkoły | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L119) | `school`, `school-edit`, `positive` |
+| SCH-EDIT-04 | SCH-EDIT-04: zmiana WWW i e-maila jest trwała | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L142) | `school`, `school-edit`, `positive`, `contact` |
+| SCH-EDIT-05 | SCH-EDIT-05: zmiana nazwy z SIO jest trwała | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L218) | `school`, `school-edit`, `positive`, `sio` |
+| SCH-EDIT-06 | SCH-EDIT-06: anulowanie zmiany nazwy z SIO zachowuje poprzednią wartość | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L249) | `school`, `school-edit`, `cancel`, `sio` |
+| SCH-EDIT-07 | SCH-EDIT-07: pusta nazwa nie pozwala zapisać edycji | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L272) | `school`, `school-edit`, `validation` |
+| SCH-EDIT-08 | SCH-EDIT-08: typ i poziom szkoły są nieedytowalne w edycji danych | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L302) | `school`, `school-edit`, `readonly` |
+| SCH-EDIT-09 | SCH-EDIT-09: anulowanie edycji WWW zachowuje poprzednią wartość | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L325) | `school`, `school-edit`, `cancel`, `contact` |
+| SCH-EDIT-10 | SCH-EDIT-10: WWW można usunąć i pusta wartość jest trwała | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L358) | `school`, `school-edit`, `positive`, `contact` |
+| SCH-EDIT-10A | SCH-EDIT-10A: rezygnacja z usunięcia WWW zachowuje poprzedni adres | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L393) | `school`, `school-edit`, `cancel`, `contact` |
+| SCH-EDIT-11 | SCH-EDIT-11: e-mail można usunąć i pusta wartość jest trwała | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L436) | `school`, `school-edit`, `positive`, `contact` |
+| SCH-EDIT-11A | SCH-EDIT-11A: anulowanie edycji e-maila zachowuje poprzedni adres | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L471) | `school`, `school-edit`, `cancel`, `contact` |
+| SCH-EDIT-11B | SCH-EDIT-11B: rezygnacja z usunięcia e-maila zachowuje poprzedni adres | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L504) | `school`, `school-edit`, `cancel`, `contact` |
+| SCH-EDIT-12 | SCH-EDIT-12: e-mail z wielkimi literami jest normalizowany po edycji | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L543) | `school`, `school-edit`, `positive`, `contact` |
+| SCH-EDIT-13 | SCH-EDIT-13: nazwa z polskimi znakami i interpunkcją jest trwała po edycji | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L586) | `school`, `school-edit`, `positive`, `name` |
+| SCH-EDIT-14 | SCH-EDIT-14: spacje na brzegach nazwy są usuwane po edycji | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L607) | `school`, `school-edit`, `positive`, `name` |
+| SCH-EDIT-15 | SCH-EDIT-15: nazwę z SIO można wyczyścić | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L630) | `school`, `school-edit`, `positive`, `sio` |
+| SCH-EDIT-16 | SCH-EDIT-16: typ Szkoła podstawowa i poziom Szkoła Podstawowa są tylko do odczytu | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L685) | `school`, `school-edit`, `readonly`, `school-type` |
+| SCH-EDIT-16 | SCH-EDIT-16: typ Liceum i poziom Szkoła Średnia są tylko do odczytu | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L685) | `school`, `school-edit`, `readonly`, `school-type` |
+| SCH-EDIT-16 | SCH-EDIT-16: typ Technikum i poziom Szkoła Średnia są tylko do odczytu | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L685) | `school`, `school-edit`, `readonly`, `school-type` |
+| SCH-EDIT-16 | SCH-EDIT-16: typ Placówka doskonalenia nauczycieli i poziom Inny są tylko do odczytu | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L685) | `school`, `school-edit`, `readonly`, `school-type` |
+| SCH-EDIT-16 | SCH-EDIT-16: typ Zespół szkół i poziom Zespół Szkół są tylko do odczytu | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L685) | `school`, `school-edit`, `readonly`, `school-type` |
+| SCH-EDIT-16 | SCH-EDIT-16: typ Szkoła NPC i poziom Szkoła Podstawowa są tylko do odczytu | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L685) | `school`, `school-edit`, `readonly`, `school-type` |
+| SCH-EDIT-16 | SCH-EDIT-16: typ Przedszkole i poziom Przedszkole są tylko do odczytu | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L685) | `school`, `school-edit`, `readonly`, `school-type` |
+| SCH-EDIT-17 | SCH-EDIT-17: kolejne edycje różnych pól nie nadpisują wcześniejszych zmian | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L705) | `school`, `school-edit`, `positive`, `regression` |
+| SCH-EDIT-18 | SCH-EDIT-18: zmiana adresu szkoły jest trwała | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L796) | `school`, `school-edit`, `positive`, `address` |
+| SCH-EDIT-19 | SCH-EDIT-19: dane SIO i liczba uczniów można zmienić i ponownie odczytać | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L813) | `school`, `school-edit`, `positive`, `sio`, `identifier` |
+| SCH-EDIT-20 | SCH-EDIT-20: drugi telefon stacjonarny można dodać po przełączeniu typu | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L852) | `school`, `school-edit`, `positive`, `contact` |
+| SCH-EDIT-21 | SCH-EDIT-21: zmiana nazwy tworzy kompletny wpis historii szkoły | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L877) | `school`, `school-edit`, `history` |
+| SCH-EDIT-22 | SCH-EDIT-22: HTTP 422 nie utrwala zmiany nazwy | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L911) | `school`, `school-edit`, `error-handling` |
+| SCH-EDIT-23 | SCH-EDIT-23: HTTP 500 nie utrwala zmiany nazwy | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L911) | `school`, `school-edit`, `error-handling` |
+| SCH-EDIT-24 | SCH-EDIT-24: timeout sieci nie utrwala zmiany nazwy | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L911) | `school`, `school-edit`, `error-handling` |
 | MED-YEAR-PREP | MED-YEAR-PREP: przygotuj snapshot 4 szkół referencyjnych i 50 losowych szkół | [szkola-medalowosc-annual.spec.ts](../../tests/szkola-medalowosc-annual.spec.ts#L59) | `annual-medal` |
 | MED-YEAR-01 | MED-YEAR-01: roczne przeliczenie ustawia oczekiwany medal na podstawie snapshotu | [szkola-medalowosc-annual.spec.ts](../../tests/szkola-medalowosc-annual.spec.ts#L173) | `annual-medal` |
 | MED-02 | MED-02: pole Medal dla szkoły ze złotym medalem jest nieedytowalne | [szkola-medalowosc.spec.ts](../../tests/szkola-medalowosc.spec.ts#L38) | — |
