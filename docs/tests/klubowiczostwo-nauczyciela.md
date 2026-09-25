@@ -57,7 +57,7 @@ Proces przygotowania szkół wygląda następująco:
 2. Jeżeli zapis jest poprawny i został zweryfikowany w ciągu ostatnich 24 godzin, zwraca ID natychmiast — bez otwierania panelu szkoły i bez wyszukiwania.
 3. Po upływie 24 godzin każde zapisane ID jest sprawdzane przez bezpośrednie otwarcie panelu szkoły i porównanie pełnej nazwy.
 4. Poprawne ID są zachowywane. Tylko brakująca lub niezgodna szkoła jest wyszukiwana po pełnej nazwie.
-5. Jeśli wyszukiwanie niczego nie zwróci, fixture tworzy szkołę, oznacza ją jako testową i zapisuje nowe ID.
+5. Jeśli wyszukiwanie niczego nie zwróci, fixture tworzy szkołę przez wspólny helper `app.createSchool()` (obecnie ścieżka API), oznacza ją jako testową i zapisuje nowe ID.
 6. Odświeżony cache jest zapisywany atomowo, aby przerwanie procesu nie pozostawiło częściowego pliku.
 
 Pierwszy przebieg na nowym środowisku nadal wykonuje trzy wyszukania, ponieważ musi poznać ID istniejących szkół. Kolejne uruchomienia w tym samym dniu pomijają ten etap. Gdy baza środowiska zostanie odtworzona albo ID przestanie wskazywać oczekiwaną szkołę, mechanizm sam wróci do wyszukania lub utworzenia właściwego rekordu.

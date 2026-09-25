@@ -249,6 +249,7 @@ test("SCH-14: formularz tworzy liceum z właściwym typem @school @school-add @p
   const form = await prepareCompleteSchoolAdd(page, s.app, s.schoolName, number, "Liceum");
   const { schoolId } = await saveSchoolAdd(page, form);
   await s.app.markTestRecord();
+  await s.app.openPanel("school", schoolId);
 
   await expect(s.app.detail("level")).toHaveValue("Szkoła Średnia");
   await expect(s.app.detail("name")).toHaveValue(s.schoolName);
@@ -265,6 +266,7 @@ for (const { id, formType, panelLevel } of additionalSchoolTypeCases) {
     const form = await prepareCompleteSchoolAdd(page, s.app, s.schoolName, number, formType);
     const { schoolId } = await saveSchoolAdd(page, form);
     await s.app.markTestRecord();
+    await s.app.openPanel("school", schoolId);
 
     await expect(s.app.detail("name")).toHaveValue(s.schoolName);
     await expect(s.app.detail("address")).toHaveValue(
@@ -1128,6 +1130,10 @@ test("SCH-42: pełny formularz zachowuje wszystkie dane opcjonalne @school @scho
   for (const value of [sioName, website, email, studentCount, rspo, regon, nip])
     expect(saveRequestBody).toContain(value);
   expect(saveRequestBody.replace(/\D/g, "")).toContain(phone);
+
+  // Kluczowe pola sprawdzamy po ponownym otwarciu rekordu, a nie tylko
+  // bezpośrednio po odpowiedzi POST AddNewInstitution.
+  await s.app.openPanel("school", schoolId);
   await expect(schoolPanelTextField(schoolDetails(page), "Nazwa z SIO")).toHaveValue(sioName);
   await expect(schoolPanelTextField(schoolDetails(page), "WWW")).toHaveValue(website);
   await expect(schoolPanelTextField(schoolDetails(page), "E-Mail")).toHaveValue(email);
@@ -1142,5 +1148,69 @@ test("SCH-42: pełny formularz zachowuje wszystkie dane opcjonalne @school @scho
     "schoolOptionalData",
     JSON.stringify({ sioName, website, email, studentCount, rspo, regon, nip, phone }),
   );
+  await recordRetainedSchool(s, schoolId, number);
+});
+
+
+// =============================================================================
+// DODATKOWE SCENARIUSZE REGRESYJNE
+// =============================================================================
+
+test("SCH-55: pola opcjonalne mogą pozostać puste i szkoła nadal jest trwała @school @school-add @positive @optional-data", async ({
+  page,
+  scenario: s,
+}) => {
+  const number = String(Date.now());
+  const form = await prepareCompleteSchoolAdd(page, s.app, s.schoolName, number);
+  const { schoolId, saveRequestBody } = await saveSchoolAdd(page, form);
+  await s.app.markTestRecord();
+
+  const body = JSON.parse(saveRequestBody) as Record<string, unknown>;
+  expect(body.fullName ?? "").toBe("");
+  expect(body.email ?? "").toBe("");
+  expect(body.www ?? "").toBe("");
+  expect(body.regon ?? "").toBe("");
+  expect(body.nip ?? "").toBe("");
+  expect(body.rspo ?? "").toBe("");
+
+  await s.app.openPanel("school", schoolId);
+  await expect(s.app.detail("name")).toHaveValue(s.schoolName);
+  await expect(s.app.detail("address")).toHaveValue(
+    `${DEFAULT_POSTAL_CODE} ${DEFAULT_CITY} ${number}`,
+  );
+  await recordRetainedSchool(s, schoolId, number);
+});
+
+test("SCH-56: anulowanie kompletnego formularza po uzupełnieniu danych opcjonalnych nie tworzy szkoły @school @school-add @cancel @optional-data", async ({
+  page,
+  scenario: s,
+}) => {
+  const number = String(Date.now());
+  const form = await prepareCompleteSchoolAdd(page, s.app, s.schoolName, number);
+  await fillSchoolAddTextField(form, "Nazwa z SIO", `${s.id} anulowane SIO`);
+  await fillSchoolAddTextField(form, "WWW", "https://cancelled.example.com");
+  await fillSchoolAddTextField(form, "E-mail", `cancelled_${number}@example.com`);
+  await fillSchoolAddTextField(form, "Liczba uczniów", "123");
+
+  await cancelSchoolAdd(form);
+  await expect(page).toHaveURL(/\/school\/school-panel$/);
+  await s.app.searchMissing("school", "Nazwa szkoły", s.schoolName);
+});
+
+test("SCH-57: ponowne otwarcie szkoły zachowuje typ, poziom i adres @school @school-add @positive @persistence", async ({
+  page,
+  scenario: s,
+}) => {
+  const number = String(Date.now());
+  const form = await prepareCompleteSchoolAdd(page, s.app, s.schoolName, number, "Technikum");
+  const { schoolId } = await saveSchoolAdd(page, form);
+  await s.app.markTestRecord();
+
+  await s.app.openPanel("school", schoolId);
+  await expect(s.app.detail("name")).toHaveValue(s.schoolName);
+  await expect(s.app.detail("address")).toHaveValue(
+    `${DEFAULT_POSTAL_CODE} ${DEFAULT_CITY} ${number}`,
+  );
+  await expect(s.app.detail("level")).toHaveValue(/Szkoła Średnia/i);
   await recordRetainedSchool(s, schoolId, number);
 });

@@ -1,14 +1,14 @@
-# Dodawanie szkoły — plan testów automatycznych
+# Dodawanie szkoły — dokumentacja testów automatycznych
 
 ## 1. Cel dokumentu
 
-Dokument opisuje rekomendowaną metodykę oraz zakres testów funkcji dodawania szkoły. Jest planem rozwoju automatyzacji, a nie deklaracją, że wszystkie wymienione scenariusze są już zaimplementowane.
+Dokument opisuje aktualnie zaimplementowane testy funkcji dodawania szkoły oraz zasady dalszego rozwoju tego zestawu. Scenariusze wymienione w sekcji „Stan obecny” są częścią bieżącego pokrycia automatycznego.
 
 Głównym celem zestawu jest sprawdzenie kontraktu formularza dodawania szkoły przy możliwie krótkim czasie wykonania, pełnej izolacji danych oraz wiarygodnej diagnostyce błędów.
 
 ## 2. Stan obecny
 
-Projekt zawiera obecnie pięćdziesiąt cztery przypadki związane bezpośrednio z dodawaniem szkoły:
+Projekt zawiera obecnie **57 przypadków** związanych bezpośrednio z dodawaniem szkoły:
 
 | Identyfikator                        | Lokalizacja                              | Obecne sprawdzenie                                                                                       |
 | ------------------------------------ | ---------------------------------------- | -------------------------------------------------------------------------------------------------------- |
@@ -74,7 +74,10 @@ Projekt zawiera obecnie pięćdziesiąt cztery przypadki związane bezpośrednio
 | **Odporność techniczna**             |                                          |                                                                                                          |
 | `SCH-16`                             | `tests/szkola-dodawanie.spec.ts`         | kontrolowany błąd serwera wraca do pustego panelu i nie otwiera nieistniejącej szkoły                    |
 | **Pełny przepływ regresyjny**        |                                          |                                                                                                          |
-| `SCH-42`                             | `tests/szkola-dodawanie.spec.ts`         | jeden zapis zachowuje komplet danych opcjonalnych, kontaktowych i identyfikacyjnych                      |
+| `SCH-42`                             | `tests/szkola-dodawanie.spec.ts`         | jeden zapis zachowuje komplet danych opcjonalnych, kontaktowych i identyfikacyjnych także po ponownym otwarciu |
+| `SCH-55`                             | `tests/szkola-dodawanie.spec.ts`         | pola opcjonalne mogą pozostać puste, a szkoła nadal zostaje poprawnie zapisana i ponownie odczytana      |
+| `SCH-56`                             | `tests/szkola-dodawanie.spec.ts`         | anulowanie kompletnego formularza po uzupełnieniu danych opcjonalnych nie tworzy szkoły                  |
+| `SCH-57`                             | `tests/szkola-dodawanie.spec.ts`         | Technikum zachowuje po ponownym otwarciu nazwę, adres i poziom `Szkoła Średnia`                         |
 
 `SCH-01` jest częścią długiego testu smoke obejmującego również nauczyciela, relację i historię zmian. Zapewnia pokrycie procesu end-to-end, ale nie powinien zastępować krótkich, samodzielnych testów kontraktu formularza szkoły.
 
@@ -101,7 +104,7 @@ Dodawanie szkoły jest badaną funkcją, dlatego właściwy zapis szkoły musi p
 - sprawdzenia braku rekordu po walidacji lub anulowaniu,
 - odczytu danych potrzebnych do diagnostyki testu.
 
-Nie należy tworzyć szkoły przez API w scenariuszu, którego celem jest sprawdzenie jej dodania przez użytkownika.
+Nie należy tworzyć szkoły przez API w scenariuszu, którego celem jest sprawdzenie jej dodania przez użytkownika. Odwrotna zasada obowiązuje w `szkola-edycja.spec.ts`: tam szkoła jest wyłącznie danymi wejściowymi, dlatego setup powstaje przez API, a przez UI wykonywana jest dopiero badana edycja.
 
 Octopus nie udostępnia endpointu usuwania szkół. W zestawie `@school-add` szkoła może być tworzona dla każdego odrębnego przypadku biznesowego, ponieważ właśnie zapis nowej szkoły jest badaną funkcją. W testach innych modułów nadal preferowana jest stabilna szkoła referencyjna, jeżeli utworzenie nowej placówki nie jest częścią badanego przepływu. Każdy nowy rekord otrzymuje unikalną nazwę, flagę `Testowy` i wpis diagnostyczny w `runs/`.
 
@@ -158,9 +161,9 @@ Octopus nie pozwala usuwać szkół i nie ma endpointu cleanupu. Zespół świad
 
 Nie należy kopiować cleanupu nauczycieli ani zgadywać endpointu dla szkół.
 
-## 5. Rekomendowany zakres pierwszej iteracji
+## 5. Zakres bazowy — scenariusze zaimplementowane
 
-Poniższa numeracja kontynuuje istniejące `SCH-01` i `SCH-02`. Nazwy komunikatów walidacyjnych oraz dokładne zachowanie dla duplikatu trzeba potwierdzić w wymaganiach lub aktualnym kontrakcie aplikacji przed implementacją asercji.
+Poniższa tabela dokumentuje bazowy zestaw scenariuszy `SCH-03`–`SCH-12`, który jest już zaimplementowany. `SCH-01` i `SCH-02` pozostają w innych plikach, zgodnie z tabelą w sekcji „Stan obecny”.
 
 | ID       | Priorytet | Scenariusz                                                       | Najważniejsze sprawdzenie                                                                                    |
 | -------- | --------- | ---------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
@@ -175,9 +178,9 @@ Poniższa numeracja kontynuuje istniejące `SCH-01` i `SCH-02`. Nazwy komunikat�
 | `SCH-11` | P0        | Trwałość danych po ponownym otwarciu                             | nazwa, typ i pełny adres są zgodne po odczycie świeżego stanu rekordu                                        |
 | `SCH-12` | P1        | Wyszukanie nowej szkoły po nazwie i identyfikacja po ID          | wynik zawiera dokładnie utworzony rekord, bez dopasowania innej szkoły o podobnej nazwie                     |
 
-Pierwsza iteracja powinna objąć wszystkie przypadki P0. `SCH-09` i `SCH-12` można dodać po ustabilizowaniu podstawowego zestawu, ponieważ anulowanie całego formularza jest już pokryte przez `SCH-02`, a wyszukanie szkoły występuje w `SCH-01`.
+Cały powyższy zakres jest obecnie objęty automatyzacją. Priorytety pozostawiono jako informację o wadze regresyjnej poszczególnych przypadków.
 
-## 6. Dalsze scenariusze po potwierdzeniu kontraktu biznesowego
+## 6. Dalsze pokrycie i luki
 
 ### 6.1. Typ szkoły
 
@@ -204,24 +207,20 @@ Po ustaleniu reguł walidacji warto rozważyć:
 
 ### 6.3. Adres
 
-Po potwierdzeniu pól i walidacji adresu warto dodać:
+Zaimplementowane są już: wymagany numer budynku, numer z literą, numer z separatorem, pełny adres z ulicą, wyczyszczenie, zastąpienie adresu oraz anulowanie zmiany przed utworzeniem szkoły. Do dalszego rozważenia pozostają:
 
 - kod z wieloma pasującymi miejscowościami,
-- zmianę kodu po wcześniejszym wyborze miejscowości,
-- zmianę wybranej miejscowości,
-- wymagany numer budynku,
-- numer z literą lub separatorem, jeśli jest dozwolony,
-- opcjonalny numer lokalu,
-- ponowne otwarcie i edycję adresu przed zapisaniem szkoły.
+- zmiana kodu po wcześniejszym wyborze miejscowości,
+- zmiana wybranej miejscowości,
+- opcjonalny numer lokalu.
 
 ### 6.4. Odporność techniczna
 
-Osobny, niewielki zestaw może sprawdzać:
+Zaimplementowany `SCH-16` sprawdza kontrolowany błąd 500 podczas zapisu szkoły. Do dalszego rozszerzenia pozostają:
 
-- błąd odpowiedzi podczas zapisu szkoły,
 - błąd lub timeout wyszukiwania miejscowości,
 - ponowienie przez użytkownika po kontrolowanym błędzie,
-- zachowanie wpisanych danych po błędzie serwera.
+- ewentualne zachowanie wpisanych danych po błędzie serwera, jeśli kontrakt aplikacji zostanie zmieniony.
 
 Takie przypadki powinny korzystać z przechwycenia ruchu sieciowego i kontrolowanej odpowiedzi. Nie wolno wywoływać rzeczywistej awarii środowiska współdzielonego.
 
@@ -284,16 +283,16 @@ Proponowane kryteria przyjęcia pierwszej iteracji:
 5. Wzrost p95 regularnej regresji jest zmierzony i zaakceptowany.
 6. Próba na czterech workerach nie powoduje duplikatów ani błędów współbieżności; jeżeli powoduje, profil pozostaje eksperymentalny.
 
-## 10. Kolejność wdrożenia
+## 10. Stan wdrożenia i dalsze kroki
 
-1. Potwierdzić kontrakt API zapisu i odczytu szkoły.
-2. Ograniczyć tworzenie szkół w innych zestawach przez zastosowanie szkół referencyjnych.
-3. Wydzielić helper formularza bez ukrytych asercji biznesowych.
-4. Zaimplementować przypadki P0: `SCH-03`–`SCH-08`, `SCH-10` i `SCH-11`.
-5. Uruchomić serię pomiarową na dwóch workerach i przeanalizować p50/p95.
-6. Dodać `SCH-09` i `SCH-12`, jeśli wnoszą wartość ponad `SCH-01`, `SCH-02` i `FIND-04`.
-7. Dopiero po potwierdzeniu reguł biznesowych rozszerzyć macierz nazw, typów, adresów i duplikatów.
-8. Zaktualizować indeks scenariuszy po faktycznym dodaniu testów.
+Aktualnie wdrożono pełny zakres `SCH-01`–`SCH-57`. Ostatnie rozszerzenie dodało:
+
+1. `SCH-55` — poprawny zapis przy pustych polach opcjonalnych.
+2. `SCH-56` — anulowanie kompletnego formularza po uzupełnieniu pól opcjonalnych.
+3. `SCH-57` — trwałość typu, poziomu i adresu Technikum po ponownym otwarciu.
+4. Mocniejszą weryfikację trwałości w istniejących scenariuszach typów szkół oraz w pełnym scenariuszu `SCH-42`.
+
+Dalsze prace powinny skupiać się przede wszystkim na brakujących walidacjach granicznych (np. długości pól i niepoprawne formaty identyfikatorów) oraz na scenariuszach odporności sieciowej, a nie na powielaniu już pokrytych przepływów pozytywnych. Po każdej zmianie listy testów należy ponownie uruchomić `npm run docs:scenarios`.
 
 ## 11. Definicja ukończenia scenariusza
 

@@ -14,7 +14,7 @@ export function createPlaywrightConfig(environment: OctopusEnvironment) {
     environment === "test" ? "https://octopus.gwotest.pl" : "https://octopus.gwodev.pl";
   const requestedWorkers = Number(process.env.OCTOPUS_WORKERS ?? 2);
   const workers = Number.isInteger(requestedWorkers)
-    ? Math.min(4, Math.max(2, requestedWorkers))
+    ? Math.min(4, Math.max(1, requestedWorkers))
     : 2;
   process.env.OCTOPUS_EFFECTIVE_WORKERS = String(workers);
   const includeAnnualMedal = process.env.OCTOPUS_INCLUDE_ANNUAL === "1";

@@ -1,4 +1,4 @@
-import { expect, type Locator, type Page, type Request } from "@playwright/test";
+import { expect, type Locator, type Page, type Request, type Route } from "@playwright/test";
 
 export type CreateSchoolApiOptions = {
   fullName?: string;
@@ -12,99 +12,40 @@ export type CreateSchoolApiOptions = {
   phoneIsMobile?: boolean;
 };
 
-const schoolTypeDictionaries = new Map<string, unknown>();
+type SchoolPayloadTemplate = {
+  payload: Record<string, unknown>;
+  seedName: string;
+  seedNumber: string;
+};
 
-function normalizeStoredToken(value: string | null) {
-  if (!value) return null;
+const schoolPayloadTemplates = new Map<string, SchoolPayloadTemplate>();
 
-  let token: unknown = value;
-  try {
-    token = JSON.parse(value);
-  } catch {
-    // Token może być zapisany jako zwykły string, bez otaczającego JSON-a.
+function cloneJson<T>(value: T): T {
+  return JSON.parse(JSON.stringify(value)) as T;
+}
+
+function replaceTemplateStrings(
+  value: unknown,
+  replacements: ReadonlyArray<readonly [string, string]>,
+): unknown {
+  if (typeof value === "string") {
+    return replacements.reduce(
+      (result, [from, to]) => (from ? result.replaceAll(from, to) : result),
+      value,
+    );
   }
 
-  if (typeof token !== "string") return null;
-  return token.replace(/^Bearer\s+/i, "").trim() || null;
-}
-
-function decodeJwtPayload(token: string): Record<string, unknown> | null {
-  const parts = token.split(".");
-  if (parts.length !== 3) return null;
-
-  try {
-    return JSON.parse(Buffer.from(parts[1], "base64url").toString("utf8")) as Record<
-      string,
-      unknown
-    >;
-  } catch {
-    return null;
-  }
-}
-
-function createdByFromToken(token: string) {
-  const payload = decodeJwtPayload(token);
-  if (!payload) return 0;
-
-  const candidateKeys = [
-    "nameid",
-    "nameId",
-    "userId",
-    "UserId",
-    "id",
-    "Id",
-    "sub",
-    "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier",
-  ];
-
-  for (const key of candidateKeys) {
-    const value = payload[key];
-    const parsed = typeof value === "number" ? value : Number(value);
-    if (Number.isSafeInteger(parsed) && parsed > 0) return parsed;
-  }
-
-  return 0;
-}
-
-function normalizeDictionaryLabel(value: string) {
-  return value.trim().replace(/\s+/g, " ").toLocaleLowerCase("pl-PL");
-}
-
-function findDictionaryId(value: unknown, expectedLabel: string): number | null {
   if (Array.isArray(value)) {
-    for (const item of value) {
-      const id = findDictionaryId(item, expectedLabel);
-      if (id !== null) return id;
-    }
-    return null;
+    return value.map((item) => replaceTemplateStrings(item, replacements));
   }
 
-  if (!value || typeof value !== "object") return null;
-
-  const object = value as Record<string, unknown>;
-  const expected = normalizeDictionaryLabel(expectedLabel);
-  const labelKeys = ["name", "label", "text", "description", "schoolTypeName", "typeName"];
-  const idKeys = ["id", "typeId", "schoolTypeId", "institutionTypeId", "key", "value"];
-
-  const matches = labelKeys.some((key) => {
-    const candidate = object[key];
-    return typeof candidate === "string" && normalizeDictionaryLabel(candidate) === expected;
-  });
-
-  if (matches) {
-    for (const key of idKeys) {
-      const candidate = object[key];
-      const parsed = typeof candidate === "number" ? candidate : Number(candidate);
-      if (Number.isSafeInteger(parsed) && parsed > 0) return parsed;
-    }
+  if (value && typeof value === "object") {
+    return Object.fromEntries(
+      Object.entries(value).map(([key, item]) => [key, replaceTemplateStrings(item, replacements)]),
+    );
   }
 
-  for (const nested of Object.values(object)) {
-    const id = findDictionaryId(nested, expectedLabel);
-    if (id !== null) return id;
-  }
-
-  return null;
+  return value;
 }
 
 function positiveId(value: unknown): string | null {
@@ -144,21 +85,6 @@ export async function typeValue(input: Locator, value: string) {
   }).toPass({ timeout: 20_000 });
 }
 
-export async function waitForOctopusIdle(page: Page, timeout = 20_000): Promise<void> {
-  const spinner = page.locator("#spinner.backdrop");
-
-  await spinner
-    .waitFor({
-      state: "hidden",
-      timeout,
-    })
-    .catch(async () => {
-      if (await spinner.isVisible().catch(() => false)) {
-        throw new Error("Spinner Octopusa nie zniknął przed wykonaniem akcji");
-      }
-    });
-}
-
 export class Octopus {
   constructor(readonly page: Page) {}
 
@@ -182,41 +108,43 @@ export class Octopus {
   }
 
   async openPanel(kind: "teacher" | "school", id?: string) {
-    const url = `/${kind}/${kind}-panel${id ? `/${id}` : ""}`;
+    const relatedData = id
+      ? this.page.waitForResponse((response) => {
+          const url = new URL(response.url());
+          if (response.request().method() !== "GET") return false;
+          return kind === "teacher"
+            ? url.pathname === "/api/TeacherSubject/GetTeacherStatusHistory" &&
+                url.searchParams.get("teacherId") === id
+            : url.pathname === "/api/SchoolTeachers/GetSchoolTeachers" &&
+                url.searchParams.get("schoolId") === id;
+        })
+      : undefined;
 
-    await this.page.goto(url, {
-      waitUntil: "domcontentloaded",
-    });
-
-    const heading = this.page.getByRole("heading", {
-      name: kind === "school" ? "Dane podstawowe szkoły" : "Dane podstawowe",
-      exact: true,
-    });
-
-    await expect(heading, `Panel ${kind} powinien się załadować`).toBeVisible();
-
-    if (!id) {
-      return;
+    await this.page.goto(`/${kind}/${kind}-panel${id ? `/${id}` : ""}`);
+    if (relatedData) {
+      const response = await relatedData;
+      expect(response.ok(), `Dane powiązane panelu ${kind} powinny się załadować`).toBeTruthy();
+      await response.finished();
     }
-
-    const idInput = this.page
-      .locator(".info-row")
-      .filter({
-        has: this.page.getByText("ID", {
-          exact: true,
-        }),
-      })
-      .locator('input[type="text"]');
-
-    await expect(idInput, `Panel powinien zawierać rekord o ID ${id}`).toHaveValue(id);
-
     await expect(
-      this.page.getByRole("button", {
-        name: "Edycja danych",
+      this.page.getByRole("heading", {
+        name: kind === "school" ? "Dane podstawowe szkoły" : "Dane podstawowe",
         exact: true,
       }),
-      `Panel rekordu ${id} powinien być gotowy do edycji`,
     ).toBeVisible();
+    if (id) {
+      await expect(
+        this.page
+          .locator(".info-row")
+          .filter({
+            has: this.page.getByText("ID", { exact: true }),
+          })
+          .locator('input[type="text"]'),
+      ).toHaveValue(id);
+      await expect(
+        this.page.getByRole("button", { name: "Edycja danych", exact: true }),
+      ).toBeVisible();
+    }
   }
 
   async prepareSchool(name: string, number: string, schoolType = "Szkoła podstawowa") {
@@ -246,124 +174,97 @@ export class Octopus {
     return form;
   }
 
-  private async octopusAuth() {
-    const storageState = await this.page.context().storageState();
-
-    const originState = storageState.origins.find((item) =>
-      item.localStorage.some((entry) => entry.name === "token"),
-    );
-
-    if (!originState) {
-      throw new Error("Nie znaleziono originu Octopusa zawierającego token w storageState.");
-    }
-
-    const rawToken =
-      originState.localStorage.find((entry) => entry.name === "token")?.value ?? null;
-
-    const token = normalizeStoredToken(rawToken);
-
-    if (!token) {
-      throw new Error('Brak poprawnego tokena Octopusa w storageState.localStorage["token"].');
-    }
-
-    return {
-      origin: originState.origin,
-      token,
-    };
+  private schoolPayloadTemplateKey(schoolType: string) {
+    return `${new URL(this.page.url()).origin}::${schoolType}`;
   }
 
-  private async bearerToken() {
-    return (await this.octopusAuth()).token;
-  }
-
-  private async schoolTypesDictionary() {
-    const { origin, token } = await this.octopusAuth();
-
-    const cached = schoolTypeDictionaries.get(origin);
-    if (cached) return cached;
-
-    const endpoint = new URL("/api/Dictionary/GetSchoolTypes", origin).toString();
-
-    const response = await this.page.context().request.get(endpoint, {
-      failOnStatusCode: false,
-      headers: {
-        Accept: "application/json, text/plain, */*",
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    const responseText = await response.text();
-
-    expect(
-      response.ok(),
-      `API GetSchoolTypes zwróciło ${response.status()}: ${responseText.slice(0, 2_000)}`,
-    ).toBeTruthy();
-
-    let dictionary: unknown;
-
-    try {
-      dictionary = JSON.parse(responseText);
-    } catch {
-      throw new Error(
-        `API GetSchoolTypes nie zwróciło poprawnego JSON: ${responseText.slice(0, 2_000)}`,
-      );
-    }
-
-    schoolTypeDictionaries.set(origin, dictionary);
-
-    return dictionary;
-  }
-
-  private async schoolTypeId(schoolType: string) {
-    const dictionary = await this.schoolTypesDictionary();
-    const typeId = findDictionaryId(dictionary, schoolType);
-
-    if (typeId === null) {
-      throw new Error(`Nie znaleziono typeId dla typu szkoły „${schoolType}” w GetSchoolTypes.`);
-    }
-
-    return typeId;
-  }
-
-  private async buildSchoolApiPayload(
+  private async captureSchoolPayloadTemplate(
     name: string,
     number: string,
     schoolType: string,
+  ): Promise<SchoolPayloadTemplate> {
+    const key = this.schoolPayloadTemplateKey(schoolType);
+    const cached = schoolPayloadTemplates.get(key);
+    if (cached) return cached;
+
+    let capturedPayload: Record<string, unknown> | null = null;
+    const routeHandler = async (route: Route) => {
+      const request = route.request();
+      if (request.method() !== "POST") {
+        await route.continue();
+        return;
+      }
+
+      const postData = request.postData();
+      if (!postData) throw new Error("AddNewInstitution nie wysłał body requestu");
+      capturedPayload = JSON.parse(postData) as Record<string, unknown>;
+
+      // Ten request jest tylko wzorcem payloadu. Nie pozwalamy UI utworzyć szkoły.
+      await route.abort();
+    };
+
+    await this.page.route("**/api/Institution/AddNewInstitution", routeHandler);
+    try {
+      const form = await this.prepareSchool(name, number, schoolType);
+      await form.getByRole("button", { name: "Zapisz", exact: true }).click();
+
+      await expect
+        .poll(() => capturedPayload, {
+          timeout: 20_000,
+          message: "Formularz powinien wygenerować payload AddNewInstitution",
+        })
+        .not.toBeNull();
+    } finally {
+      await this.page.unroute("**/api/Institution/AddNewInstitution", routeHandler);
+    }
+
+    const template: SchoolPayloadTemplate = {
+      payload: cloneJson(capturedPayload!),
+      seedName: name,
+      seedNumber: number,
+    };
+    schoolPayloadTemplates.set(key, template);
+    return template;
+  }
+
+  private buildSchoolApiPayload(
+    template: SchoolPayloadTemplate,
+    name: string,
+    number: string,
     options: CreateSchoolApiOptions,
   ) {
-    const token = await this.bearerToken();
-    const typeId = await this.schoolTypeId(schoolType);
-    const createdBy = createdByFromToken(token);
+    const payload = replaceTemplateStrings(cloneJson(template.payload), [
+      [template.seedName, name],
+      [template.seedNumber, number],
+    ]) as Record<string, unknown>;
 
-    return {
-      name,
-      fullName: options.fullName ?? "",
-      typeId,
-      zipCode: "61-534",
-      postName: "Poznań",
-      city: "Poznań",
-      street: "",
-      number,
-      cityId: 6,
-      quantityOfStudents: options.quantityOfStudents ?? "",
-      rspo: options.rspo ?? "",
-      nip: options.nip ?? "",
-      regon: options.regon ?? "",
-      createdBy,
-      createdAt: new Date().toISOString(),
-      email: options.email ?? "",
-      www: options.www ?? "",
-      institutionPhoneNumbers:
-        options.phoneNumber === undefined
-          ? [null]
-          : [
-              {
-                phoneNumber: options.phoneNumber,
-                isMobile: options.phoneIsMobile ?? true,
-                createdBy,
-              },
-            ],
-    };
+    // Pola dynamiczne ustawiamy jawnie, niezależnie od kształtu payloadu UI.
+    payload.id = 0;
+    payload.institutionUnitId = 0;
+    payload.name = name;
+    payload.number = number;
+    if ("createdAt" in payload) payload.createdAt = new Date().toISOString();
+
+    if (options.fullName !== undefined) payload.fullName = options.fullName;
+    if (options.email !== undefined) payload.email = options.email;
+    if (options.www !== undefined) payload.www = options.www;
+    if (options.regon !== undefined) payload.regon = options.regon;
+    if (options.nip !== undefined) payload.nip = options.nip;
+    if (options.rspo !== undefined) payload.rspo = Number(options.rspo);
+    if (options.quantityOfStudents !== undefined) {
+      payload.quantityOfStudents = options.quantityOfStudents;
+    }
+    if (options.phoneNumber !== undefined) {
+      payload.institutionPhoneNumbers = [
+        {
+          phoneNumber: options.phoneNumber,
+          isMobile: options.phoneIsMobile ?? true,
+          createdBy: 0,
+        },
+      ];
+    }
+
+    return payload;
   }
 
   private async findCreatedSchoolIdByName(name: string) {
@@ -389,31 +290,28 @@ export class Octopus {
     schoolType = "Szkoła podstawowa",
     options: CreateSchoolApiOptions = {},
   ) {
-    const { origin, token } = await this.octopusAuth();
-
-    const payload = await this.buildSchoolApiPayload(name, number, schoolType, options);
-
-    const endpoint = new URL("/api/Institution/AddNewInstitution", origin).toString();
+    const template = await this.captureSchoolPayloadTemplate(name, number, schoolType);
+    const payload = this.buildSchoolApiPayload(template, name, number, options);
+    const endpoint = new URL(
+      "/api/Institution/AddNewInstitution",
+      new URL(this.page.url()).origin,
+    ).toString();
 
     const response = await this.page.context().request.post(endpoint, {
       data: payload,
       failOnStatusCode: false,
       headers: {
-        Accept: "application/json, text/plain, */*",
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
+        "Content-Type": "application/json-patch+json",
       },
     });
 
     const responseText = await response.text();
-
     expect(
       response.ok(),
       `API AddNewInstitution zwróciło ${response.status()}: ${responseText.slice(0, 2_000)}`,
     ).toBeTruthy();
 
     let responseJson: unknown = null;
-
     if (responseText.trim()) {
       try {
         responseJson = JSON.parse(responseText);
@@ -423,23 +321,16 @@ export class Octopus {
     }
 
     let schoolId = extractCreatedSchoolId(responseJson);
-
     if (!schoolId) {
       const location = response.headers()["location"];
-
       const fromLocation = location?.match(/(?:school-panel\/|\/)(\d+)(?:$|[?#])/);
-
       schoolId = fromLocation?.[1] ?? null;
     }
 
-    if (!schoolId) {
-      schoolId = await this.findCreatedSchoolIdByName(name);
-    } else {
-      await this.openPanel("school", schoolId);
-    }
+    if (!schoolId) schoolId = await this.findCreatedSchoolIdByName(name);
+    else await this.openPanel("school", schoolId);
 
     await expect(this.detail("name")).toHaveValue(name);
-
     return schoolId;
   }
 
@@ -453,92 +344,40 @@ export class Octopus {
   }
 
   async markTestRecord() {
+    // Flaga doczytuje się osobnym żądaniem. Czekamy na aktywną kontrolkę
+    // zamiast dwukrotnie przeładowywać całą kartę nauczyciela lub szkoły.
     const kind = this.page.url().includes("/teacher/") ? "Teacher" : "School";
-
-    const checkbox = this.page.getByRole("checkbox", {
-      name: "Testowy",
-      exact: true,
-    });
-
-    /*
-     * Najpierw czekamy aż Octopus zakończy
-     * bieżące ładowanie danych.
-     */
-    await waitForOctopusIdle(this.page);
-
-    await expect(checkbox).toBeVisible();
-
+    const checkbox = this.page.getByRole("checkbox", { name: "Testowy", exact: true });
     await expect(checkbox).toBeEnabled();
-
-    if (await checkbox.isChecked()) {
-      return;
-    }
-
-    let saveRequest: Request | undefined;
-
-    const captureSaveRequest = (request: Request) => {
-      const pathname = new URL(request.url()).pathname;
-
-      if (
-        request.method() === "POST" &&
-        pathname.startsWith(`/api/${kind}/`) &&
-        pathname.includes("Test")
-      ) {
-        saveRequest = request;
-      }
-    };
-
-    this.page.on("request", captureSaveRequest);
-
-    try {
-      await expect(async () => {
-        await waitForOctopusIdle(this.page);
-
-        /*
-         * Stan mógł zmienić się podczas
-         * doczytywania panelu.
-         */
-        if (await checkbox.isChecked()) {
-          return;
+    if (!(await checkbox.isChecked())) {
+      let saveRequest: Request | undefined;
+      const captureSaveRequest = (request: Request) => {
+        const pathname = new URL(request.url()).pathname;
+        if (
+          request.method() === "POST" &&
+          pathname.startsWith(`/api/${kind}/`) &&
+          pathname.includes("Test")
+        ) {
+          saveRequest = request;
         }
+      };
+      this.page.on("request", captureSaveRequest);
+      try {
+        await checkbox.check();
+      } finally {
+        this.page.off("request", captureSaveRequest);
+      }
 
-        /*
-         * Używamy click zamiast check.
-         *
-         * check() dodatkowo sam weryfikuje,
-         * czy stan zmienił się natychmiast,
-         * co przy Angularze i spinnerze
-         * bywa niestabilne.
-         */
-        await checkbox.click();
-
-        await expect(checkbox).toBeChecked({
-          timeout: 2_000,
-        });
-      }).toPass({
-        timeout: 20_000,
-        intervals: [100, 250, 500],
-      });
-    } finally {
-      this.page.off("request", captureSaveRequest);
+      // Podczas doczytywania danych checkbox może sam zmienić stan pomiędzy
+      // isChecked() i check(). Wtedy check() niczego nie wysyła i nie ma
+      // odpowiedzi, na którą należałoby czekać.
+      if (saveRequest) {
+        const response = await saveRequest.response();
+        expect(response, "Żądanie zapisu flagi Testowy powinno otrzymać odpowiedź").not.toBeNull();
+        expect(response!.ok(), "Zapis flagi Testowy musi zakończyć się powodzeniem").toBeTruthy();
+        await response!.finished();
+      }
     }
-
-    if (saveRequest) {
-      const response = await saveRequest.response();
-
-      expect(response, "Żądanie zapisu flagi Testowy powinno otrzymać odpowiedź").not.toBeNull();
-
-      expect(response!.ok(), "Zapis flagi Testowy musi zakończyć się powodzeniem").toBeTruthy();
-
-      await response!.finished();
-    }
-
-    /*
-     * Po zapisie również czekamy aż spinner
-     * całkowicie zniknie.
-     */
-    await waitForOctopusIdle(this.page);
-
     await expect(checkbox).toBeChecked();
   }
 
