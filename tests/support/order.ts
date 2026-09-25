@@ -101,6 +101,99 @@ export function orderFilterCombobox(form: Locator, key: OrderFilterKey): Locator
   return form.getByRole("combobox").nth(filterIndexes[key]);
 }
 
+/**
+ * Otwiera dropdown przypisany do konkretnego comboboxa
+ * i zwraca dokładnie jego listę opcji.
+ *
+ * Nie korzystamy z:
+ *
+ *   page.locator('[role="listbox"]:visible').last()
+ *
+ * ponieważ Angular Material może przez chwilę pozostawić
+ * w DOM overlay poprzedniego selecta.
+ */
+async function orderFilterListbox(page: Page, combobox: Locator): Promise<Locator> {
+  await expect(combobox, "Filtr powinien być widoczny").toBeVisible();
+
+  await expect(combobox, "Filtr powinien być aktywny").toBeEnabled();
+
+  const expanded = await combobox.getAttribute("aria-expanded");
+
+  /*
+   * Otwieramy tylko wtedy, gdy dropdown
+   * faktycznie jest zamknięty.
+   */
+  if (expanded !== "true") {
+    await combobox.click();
+  }
+
+  await expect(combobox, "Dropdown powinien zostać otwarty").toHaveAttribute(
+    "aria-expanded",
+    "true",
+  );
+
+  /*
+   * Angular Material wiąże combobox
+   * z jego panelem przez aria-controls
+   * albo aria-owns.
+   */
+  await expect
+    .poll(
+      async () => {
+        const controls = await combobox.getAttribute("aria-controls");
+
+        if (controls) {
+          return controls;
+        }
+
+        return (await combobox.getAttribute("aria-owns")) ?? "";
+      },
+      {
+        timeout: 5_000,
+        intervals: [50, 100, 250],
+        message: "Combobox powinien wskazywać swój panel opcji",
+      },
+    )
+    .not.toBe("");
+
+  const panelId =
+    (await combobox.getAttribute("aria-controls")) ?? (await combobox.getAttribute("aria-owns"));
+
+  expect(panelId, "Nie udało się ustalić ID panelu dropdownu").toBeTruthy();
+
+  const listbox = page.locator(`[id="${panelId}"]`);
+
+  await expect(listbox, "Właściwa lista opcji powinna być widoczna").toBeVisible();
+
+  return listbox;
+}
+
+/**
+ * Kliknięcie opcji Angular Material przez współrzędne.
+ *
+ * mat-option może zostać odłączony od DOM
+ * natychmiast po kliknięciu. Standardowe:
+ *
+ *   option.click()
+ *
+ * potrafi wtedy zakończyć się:
+ *
+ *   element was detached from the DOM
+ */
+async function clickOrderFilterOption(
+  page: Page,
+  option: Locator,
+  description: string,
+): Promise<void> {
+  await expect(option, description).toBeVisible();
+
+  const box = await option.boundingBox();
+
+  expect(box, `${description} — nie udało się ustalić pozycji elementu`).not.toBeNull();
+
+  await page.mouse.click(box!.x + box!.width / 2, box!.y + box!.height / 2);
+}
+
 export async function selectOrderSingleFilter(
   page: Page,
   form: Locator,
@@ -109,15 +202,28 @@ export async function selectOrderSingleFilter(
 ): Promise<void> {
   const combobox = orderFilterCombobox(form, key);
 
-  await combobox.click();
+  const listbox = await orderFilterListbox(page, combobox);
 
-  const option = page.getByRole("option", {
+  const option = listbox.getByRole("option", {
     name: value,
     exact: true,
   });
 
-  await expect(option).toBeVisible();
-  await option.click();
+  await clickOrderFilterOption(page, option, `Opcja "${value}" powinna być dostępna`);
+
+  /*
+   * Single-select po wyborze powinien
+   * automatycznie zamknąć dropdown.
+   */
+  await expect(combobox, `Po wybraniu "${value}" dropdown powinien się zamknąć`).toHaveAttribute(
+    "aria-expanded",
+    "false",
+  );
+
+  /*
+   * Sprawdzamy efekt końcowy.
+   */
+  await expect(combobox, `Filtr powinien mieć ustawioną wartość "${value}"`).toContainText(value);
 }
 
 export async function selectOrderClasses(
@@ -127,29 +233,66 @@ export async function selectOrderClasses(
 ): Promise<void> {
   const combobox = orderFilterCombobox(form, "classes");
 
+  await expect(combobox, "Pole Klasy powinno być widoczne").toBeVisible();
+
+  await expect(combobox, "Pole Klasy powinno być aktywne").toBeEnabled();
+
   for (const value of values) {
-    let option = page.getByRole("option", {
+    /*
+     * Jeżeli wartość jest już zaznaczona,
+     * nie zaznaczamy jej ponownie.
+     */
+    const currentText = (await combobox.innerText()).trim();
+
+    const selectedValues = currentText
+      .split(/[\s,;]+/)
+      .map((item) => item.trim())
+      .filter(Boolean);
+
+    if (selectedValues.includes(value)) {
+      continue;
+    }
+
+    /*
+     * Dla każdej klasy pobieramy panel
+     * przypisany bezpośrednio do comboboxa Klasy.
+     *
+     * Nie wykorzystujemy starego locatora panelu,
+     * ponieważ Angular może przebudować overlay
+     * po każdym kliknięciu.
+     */
+    const listbox = await orderFilterListbox(page, combobox);
+
+    const option = listbox.getByRole("option", {
       name: value,
       exact: true,
     });
 
-    if (!(await option.isVisible().catch(() => false))) {
-      await combobox.click();
-      option = page.getByRole("option", {
-        name: value,
-        exact: true,
-      });
-    }
+    await clickOrderFilterOption(page, option, `Klasa ${value} powinna być dostępna na liście`);
 
-    await expect(option).toBeVisible();
-
-    const ariaSelected = await option.getAttribute("aria-selected");
-    if (ariaSelected !== "true") {
-      await option.click();
-    }
+    /*
+     * Nie sprawdzamy starego mat-option,
+     * ponieważ mógł już zostać usunięty z DOM.
+     *
+     * Sprawdzamy efekt wyboru na samym comboboxie.
+     */
+    await expect(combobox, `Klasa ${value} powinna zostać zaznaczona`).toContainText(value);
   }
 
-  await page.keyboard.press("Escape").catch(() => undefined);
+  /*
+   * Multiselect Klasy może pozostać otwarty
+   * po wybraniu ostatniej wartości.
+   */
+  const expanded = await combobox.getAttribute("aria-expanded");
+
+  if (expanded === "true") {
+    await page.keyboard.press("Escape");
+
+    await expect(combobox, "Lista klas powinna zostać zamknięta").toHaveAttribute(
+      "aria-expanded",
+      "false",
+    );
+  }
 }
 
 export async function readOrderFilterOptions(
@@ -158,15 +301,28 @@ export async function readOrderFilterOptions(
   key: OrderFilterKey,
 ): Promise<string[]> {
   const combobox = orderFilterCombobox(form, key);
-  await combobox.click();
 
-  const options = page.getByRole("option");
+  /*
+   * Otwieramy dokładnie panel należący
+   * do tego comboboxa.
+   */
+  const listbox = await orderFilterListbox(page, combobox);
 
-  await expect(options.first()).toBeVisible();
+  const options = listbox.getByRole("option");
+
+  await expect(options.first(), "Lista powinna zawierać co najmniej jedną opcję").toBeVisible();
 
   const values = (await options.allTextContents()).map((value) => value.trim()).filter(Boolean);
 
-  await page.keyboard.press("Escape").catch(() => undefined);
+  /*
+   * Zamykamy dokładnie otwarty select.
+   */
+  await page.keyboard.press("Escape");
+
+  await expect(combobox, "Dropdown powinien zostać zamknięty po odczytaniu opcji").toHaveAttribute(
+    "aria-expanded",
+    "false",
+  );
 
   return values;
 }
@@ -998,4 +1154,18 @@ export function savedOrderAttachments(form: Locator): Locator {
    * 2026/BOK/1020379_1
    */
   return form.getByText(/^\d{4}\/BOK\/\d+_\d+$/);
+}
+
+export function orderAttachmentIndicator(orders: Locator, orderId: string): Locator {
+  const row = orderRow(orders, orderId);
+
+  /*
+   * Ikona załącznika znajduje się
+   * w ostatniej kolumnie wiersza zamówienia.
+   *
+   * Nie szukamy wszystkich ikon w wierszu,
+   * ponieważ pierwsza kolumna zawiera również
+   * strzałkę rozwijającą pozycje zamówienia.
+   */
+  return row.getByRole("cell").last().locator("mat-icon, svg, img");
 }

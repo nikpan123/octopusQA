@@ -21,6 +21,7 @@ import {
   openOrderEdit,
   openOrders,
   orderAttachmentIcon,
+  orderAttachmentIndicator,
   orderFilterCombobox,
   orderQuantityInput,
   orderRow,
@@ -51,6 +52,10 @@ import {
   ORDER_PRODUCTS,
   ORDER_SUBJECT_OPTIONS,
 } from "./data/order-product-data";
+
+test.describe.configure({
+  mode: "parallel",
+});
 
 type TrackOrder = (orderId: string) => Promise<void>;
 
@@ -512,26 +517,84 @@ test("ORD-08: ponowne otwarcie po anulowaniu zaczyna od czystego formularza @sch
 }) => {
   await prepareOrderSchool(page, s);
 
+  /*
+   * =====================================================
+   * 1. OTWIERAMY PIERWSZY FORMULARZ
+   * =====================================================
+   */
+
   const first = await openNewOrderForm(page);
 
+  /*
+   * Ustawiamy kilka wartości, żeby formularz
+   * nie był pusty.
+   *
+   * Nie używamy tutaj filtra Klasy,
+   * ponieważ nie jest on przedmiotem ORD-08.
+   */
   await selectOrderSingleFilter(page, first, "subject", ORDER_PRODUCTS.physics7.subject);
 
   await selectOrderSingleFilter(page, first, "level", ORDER_PRODUCTS.physics7.level);
 
-  await selectOrderClasses(page, first, [ORDER_PRODUCTS.physics7.class]);
-
+  /*
+   * Wpisujemy frazę wyszukiwania.
+   */
   await searchOrderProducts(first, ORDER_PRODUCTS.physics7.search);
 
+  /*
+   * Dodajemy produkt do zamówienia,
+   * żeby zmienić również prawą tabelę.
+   */
   await addOrderProductsFromCurrentResults(first, [ORDER_PRODUCTS.physics7.products[1].code]);
+
+  /*
+   * Kontrola stanu przed anulowaniem.
+   */
+  await expect(orderFilterCombobox(first, "subject")).toContainText(
+    ORDER_PRODUCTS.physics7.subject,
+  );
+
+  await expect(orderFilterCombobox(first, "level")).toContainText(ORDER_PRODUCTS.physics7.level);
+
+  await expect(selectedProductRows(first)).toHaveCount(1);
+
+  /*
+   * =====================================================
+   * 2. ANULUJEMY FORMULARZ
+   * =====================================================
+   */
 
   await cancelOrderForm(first);
 
+  /*
+   * =====================================================
+   * 3. OTWIERAMY FORMULARZ PONOWNIE
+   * =====================================================
+   */
+
   const second = await openNewOrderForm(page);
 
+  /*
+   * Wszystkie filtry powinny wrócić
+   * do wartości początkowych.
+   *
+   * expectFilterReset sprawdza:
+   * - Przedmiot
+   * - Poziom
+   * - Klasy
+   * - Tytuł/Kod
+   */
   await expectFilterReset(second);
 
+  /*
+   * Nie może zostać produkt
+   * z poprzedniego formularza.
+   */
   await expect(selectedProductRows(second)).toHaveCount(0);
 
+  /*
+   * Nie mogą zostać załączniki.
+   */
   await expect(second).toContainText("Brak załączników");
 
   await cancelOrderForm(second);
@@ -784,6 +847,22 @@ test("ORD-20: wszystkie filtry razem zwracają oczekiwane produkty @school @orde
 
   await selectOrderSingleFilter(page, form, "level", ORDER_PRODUCTS.polish5.level);
 
+  /*
+   * Po ustawieniu Przedmiotu i Poziomu
+   * odczytujemy aktualnie dostępne klasy.
+   *
+   * Dzięki temu, jeżeli aplikacja dynamicznie
+   * ogranicza słownik klas, błąd pokaże nam
+   * faktyczny stan zamiast wisieć 20 sekund
+   * w selectOrderClasses().
+   */
+  const availableClasses = await readOrderFilterOptions(page, form, "classes");
+
+  expect(
+    availableClasses,
+    `Dla ${ORDER_PRODUCTS.polish5.subject} / ${ORDER_PRODUCTS.polish5.level} powinna być dostępna klasa ${ORDER_PRODUCTS.polish5.class}. Dostępne klasy: ${availableClasses.join(", ")}`,
+  ).toContain(ORDER_PRODUCTS.polish5.class);
+
   await selectOrderClasses(page, form, [ORDER_PRODUCTS.polish5.class]);
 
   await searchOrderProducts(form, ORDER_PRODUCTS.polish5.search);
@@ -843,7 +922,7 @@ test("ORD-23: Wyczyść filtry resetuje wszystkie kryteria @school @order @filte
 
   await selectOrderSingleFilter(page, form, "level", ORDER_PRODUCTS.physics7.level);
 
-  await selectOrderClasses(page, form, ["5", "7"]);
+  await selectOrderClasses(page, form, [ORDER_PRODUCTS.physics7.class]);
 
   await form
     .getByPlaceholder("Wpisz", {
@@ -1028,8 +1107,6 @@ test("ORD-31: zmiana filtrów nie usuwa produktów z Zamówienia @school @order 
   await selectOrderSingleFilter(page, form, "subject", ORDER_PRODUCTS.polish5.subject);
 
   await selectOrderSingleFilter(page, form, "level", ORDER_PRODUCTS.polish5.level);
-
-  await selectOrderClasses(page, form, [ORDER_PRODUCTS.polish5.class]);
 
   await expect(selectedProductRow(form, selectedCode)).toHaveCount(1);
 
@@ -1991,5 +2068,155 @@ test("ORD-63: zamówienie z załącznikiem pokazuje ikonę dokumentu na liście 
       orderAttachmentIcon(orders, orderId),
       "Zamówienie z załącznikiem powinno mieć ikonę dokumentu",
     ).toBeVisible();
+  });
+});
+
+test("ORD-64: zamówienie bez załącznika nie pokazuje ikony dokumentu @school @order @attachment @list @negative", async ({
+  page,
+  scenario: s,
+}) => {
+  const school = await prepareOrderSchool(page, s);
+
+  await withOrderCleanup(page, s, school, async (track) => {
+    const created = await createSimpleOrder(page, ORDER_PRODUCTS.physics7.products[1].code, "1");
+
+    await track(created.orderId);
+
+    await s.app.openPanel("school", school.id);
+
+    const orders = await openOrders(page);
+
+    await expect(orderRow(orders, created.orderId)).toHaveCount(1);
+
+    await expect(
+      orderAttachmentIndicator(orders, created.orderId),
+      "Zamówienie bez załącznika nie powinno mieć ikony dokumentu",
+    ).toHaveCount(0);
+  });
+});
+
+test("ORD-65: po usunięciu ostatniego załącznika ikona dokumentu znika @school @order @attachment @edit @list", async ({
+  page,
+  scenario: s,
+}) => {
+  const school = await prepareOrderSchool(page, s);
+
+  await withOrderCleanup(page, s, school, async (track) => {
+    await openOrders(page);
+
+    const beforeIds = await getOrderIds(page);
+
+    const form = await openNewOrderForm(page);
+
+    const file = makeUpload("ord-remove-icon.jpg", "image/jpeg");
+
+    await uploadOrderAttachment(page, form, file);
+
+    const code = ORDER_PRODUCTS.physics7.products[1].code;
+
+    await addOrderProduct(form, code);
+
+    await setOrderQuantity(form, code, "1");
+
+    const orderId = await saveNewOrder(page, form, beforeIds);
+
+    await track(orderId);
+
+    /*
+     * Najpierw potwierdzamy,
+     * że ikona faktycznie istnieje.
+     */
+    await s.app.openPanel("school", school.id);
+
+    let orders = await openOrders(page);
+
+    await expect(orderAttachmentIndicator(orders, orderId)).toHaveCount(1);
+
+    /*
+     * Otwieramy edycję.
+     */
+    const edit = await openOrderEdit(page, orderId);
+
+    /*
+     * Po zapisie Octopus pokazuje systemową
+     * nazwę załącznika.
+     *
+     * Pobieramy faktycznie widoczną nazwę.
+     */
+    const attachments = savedOrderAttachments(edit);
+
+    await expect(attachments).toHaveCount(1);
+
+    const savedFileName = (await attachments.first().innerText()).trim();
+
+    expect(savedFileName).not.toBe("");
+
+    /*
+     * Usuwamy ostatni istniejący załącznik.
+     */
+    await removeOrderAttachment(page, edit, savedFileName);
+
+    await saveOrderEdit(edit);
+
+    /*
+     * Ponowne otwarcie listy.
+     */
+    await s.app.openPanel("school", school.id);
+
+    orders = await openOrders(page);
+
+    await expect(
+      orderAttachmentIndicator(orders, orderId),
+      "Po usunięciu ostatniego załącznika ikona dokumentu powinna zniknąć",
+    ).toHaveCount(0);
+  });
+});
+
+test("ORD-66: kilka załączników daje pojedynczą ikonę dokumentu na liście @school @order @attachment @list", async ({
+  page,
+  scenario: s,
+}) => {
+  const school = await prepareOrderSchool(page, s);
+
+  await withOrderCleanup(page, s, school, async (track) => {
+    await openOrders(page);
+
+    const beforeIds = await getOrderIds(page);
+
+    const form = await openNewOrderForm(page);
+
+    const first = makeUpload("ord-icon-multi-1.jpg", "image/jpeg");
+
+    const second = makeUpload("ord-icon-multi-2.png", "image/png");
+
+    await uploadOrderAttachment(page, form, first);
+
+    await uploadOrderAttachment(page, form, second);
+
+    const code = ORDER_PRODUCTS.physics7.products[1].code;
+
+    await addOrderProduct(form, code);
+
+    await setOrderQuantity(form, code, "1");
+
+    const orderId = await saveNewOrder(page, form, beforeIds);
+
+    await track(orderId);
+
+    await s.app.openPanel("school", school.id);
+
+    const orders = await openOrders(page);
+
+    /*
+     * Niezależnie od liczby plików
+     * lista pokazuje jeden wskaźnik,
+     * że zamówienie posiada załączniki.
+     */
+    await expect(
+      orderAttachmentIndicator(orders, orderId),
+      "Kilka załączników powinno być reprezentowane pojedynczą ikoną dokumentu",
+    ).toHaveCount(1);
+
+    await expect(orderAttachmentIndicator(orders, orderId)).toBeVisible();
   });
 });

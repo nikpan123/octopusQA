@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Octopus Test Runner</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div>
+      <div class="eyebrow">GWO · Playwright</div>
+      <h1>Octopus Test Runner</h1>
+    </div>
+    <div id="runBadge" class="badge idle">IDLE</div>
+  </header>
+
+  <main class="layout">
+    <section class="card controls">
+      <div class="section-head">
+        <div>
+          <h2>Uruchom testy</h2>
+          <p>Wybierz środowisko, pakiet i sposób wykonania.</p>
+        </div>
+      </div>
+
+      <div class="grid two">
+        <label class="field">
+          <span>Środowisko</span>
+          <select id="environment">
+            <option value="dev">DEV</option>
+            <option value="test">TEST</option>
+          </select>
+        </label>
+        <label class="field">
+          <span>Workery</span>
+          <select id="workers">
+            <option value="1">1</option>
+            <option value="2" selected>2</option>
+            <option value="4">4</option>
+          </select>
+          <p id="workersHint" class="workers-hint" hidden></p>
+        </label>
+      </div>
+
+      <div class="field">
+        <span>Pakiet</span>
+        <div class="suite-grid" id="suiteGrid">
+          <button class="suite active" data-suite="all">Cała regresja</button>
+          <button class="suite" data-suite="teachers">Nauczyciele</button>
+          <button class="suite" data-suite="schools">Szkoły</button>
+          <button class="suite" data-suite="orders">Zamówienia</button>
+          <button class="suite" data-suite="clubs">Klubowiczostwo</button>
+          <button class="suite" data-suite="medals">Medalowość</button>
+        </div>
+      </div>
+
+      <div class="grid two">
+        <label class="field">
+          <span>Grep / ID testu</span>
+          <input id="grep" placeholder="np. ORD-43 albo @order" />
+        </label>
+        <label class="toggle-row">
+          <input id="headed" type="checkbox" />
+          <span>Headed (widoczna przeglądarka)</span>
+        </label>
+      </div>
+
+      <div class="actions">
+        <button id="startBtn" class="primary">▶ Uruchom testy</button>
+        <button id="stopBtn" class="danger" disabled>■ Stop</button>
+        <button id="rerunFailedBtn" class="secondary" disabled>↻ Ponów failed</button>
+      </div>
+    </section>
+
+    <section class="card status-card">
+      <div class="section-head">
+        <div>
+          <h2>Status</h2>
+          <p id="statusDescription">Brak aktywnego przebiegu.</p>
+        </div>
+        <div class="timer" id="timer">00:00</div>
+      </div>
+      <div class="metric-grid">
+        <div class="metric pass"><span>Passed</span><strong id="passed">0</strong></div>
+        <div class="metric fail"><span>Failed</span><strong id="failed">0</strong></div>
+        <div class="metric skip"><span>Skipped</span><strong id="skipped">0</strong></div>
+      </div>
+      <div class="actions compact">
+        <a id="reportBtn" class="button-link secondary disabled" href="#" target="_blank" rel="noopener">Otwórz raport HTML</a>
+        <button id="performanceBtn" class="secondary">Raport wydajności</button>
+      </div>
+    </section>
+
+    <section class="card tests-card">
+      <div class="section-head">
+        <div>
+          <h2>Lista testów</h2>
+          <p>Zaznaczone testy mają pierwszeństwo przed pakietem i polem grep.</p>
+        </div>
+        <div class="test-toolbar">
+          <button id="refreshTestsBtn" class="ghost">Odśwież</button>
+          <button id="clearSelectionBtn" class="ghost">Wyczyść zaznaczenie</button>
+        </div>
+      </div>
+      <input id="testSearch" class="wide-search" placeholder="Szukaj po ID, nazwie lub pliku..." />
+      <div class="test-summary"><span id="testsCount">0 testów</span><span id="selectedCount">0 zaznaczonych</span></div>
+      <div id="testsList" class="tests-list"><div class="empty">Kliknij „Odśwież”, aby pobrać listę.</div></div>
+    </section>
+
+    <section class="card annual-card">
+      <div class="section-head">
+        <div>
+          <h2>⚠ Roczna medalowość</h2>
+          <p>Oddzielny workflow. Nigdy nie jest uruchamiany przez „Całą regresję”.</p>
+        </div>
+      </div>
+      <div class="annual-actions">
+        <button class="warning" data-annual="MED-YEAR-PREP">MED-YEAR-PREP</button>
+        <button class="warning" data-annual="MED-YEAR-01">MED-YEAR-01</button>
+      </div>
+    </section>
+
+    <section class="card log-card">
+      <div class="section-head">
+        <div><h2>Log na żywo</h2><p>Wyjście Playwrighta bezpośrednio z procesu.</p></div>
+        <button id="clearLogBtn" class="ghost">Wyczyść</button>
+      </div>
+      <pre id="log"></pre>
+    </section>
+
+    <section class="card history-card">
+      <div class="section-head">
+        <div><h2>Historia</h2><p>Ostatnie lokalne uruchomienia.</p></div>
+        <button id="refreshHistoryBtn" class="ghost">Odśwież</button>
+      </div>
+      <div id="history" class="history-table"><div class="empty">Brak historii.</div></div>
+    </section>
+  </main>
+
+  <dialog id="performanceDialog">
+    <div class="dialog-head">
+      <div><h3>Raport wydajności</h3><p id="performanceFile"></p></div>
+      <button id="closePerformanceBtn" class="ghost">Zamknij</button>
+    </div>
+    <pre id="performanceJson"></pre>
+  </dialog>
+
+  <script type="module" src="/app.js"></script>
+</body>
+</html>

@@ -144,6 +144,21 @@ export async function typeValue(input: Locator, value: string) {
   }).toPass({ timeout: 20_000 });
 }
 
+export async function waitForOctopusIdle(page: Page, timeout = 20_000): Promise<void> {
+  const spinner = page.locator("#spinner.backdrop");
+
+  await spinner
+    .waitFor({
+      state: "hidden",
+      timeout,
+    })
+    .catch(async () => {
+      if (await spinner.isVisible().catch(() => false)) {
+        throw new Error("Spinner Octopusa nie zniknął przed wykonaniem akcji");
+      }
+    });
+}
+
 export class Octopus {
   constructor(readonly page: Page) {}
 
@@ -438,40 +453,92 @@ export class Octopus {
   }
 
   async markTestRecord() {
-    // Flaga doczytuje się osobnym żądaniem. Czekamy na aktywną kontrolkę
-    // zamiast dwukrotnie przeładowywać całą kartę nauczyciela lub szkoły.
     const kind = this.page.url().includes("/teacher/") ? "Teacher" : "School";
-    const checkbox = this.page.getByRole("checkbox", { name: "Testowy", exact: true });
-    await expect(checkbox).toBeEnabled();
-    if (!(await checkbox.isChecked())) {
-      let saveRequest: Request | undefined;
-      const captureSaveRequest = (request: Request) => {
-        const pathname = new URL(request.url()).pathname;
-        if (
-          request.method() === "POST" &&
-          pathname.startsWith(`/api/${kind}/`) &&
-          pathname.includes("Test")
-        ) {
-          saveRequest = request;
-        }
-      };
-      this.page.on("request", captureSaveRequest);
-      try {
-        await checkbox.check();
-      } finally {
-        this.page.off("request", captureSaveRequest);
-      }
 
-      // Podczas doczytywania danych checkbox może sam zmienić stan pomiędzy
-      // isChecked() i check(). Wtedy check() niczego nie wysyła i nie ma
-      // odpowiedzi, na którą należałoby czekać.
-      if (saveRequest) {
-        const response = await saveRequest.response();
-        expect(response, "Żądanie zapisu flagi Testowy powinno otrzymać odpowiedź").not.toBeNull();
-        expect(response!.ok(), "Zapis flagi Testowy musi zakończyć się powodzeniem").toBeTruthy();
-        await response!.finished();
-      }
+    const checkbox = this.page.getByRole("checkbox", {
+      name: "Testowy",
+      exact: true,
+    });
+
+    /*
+     * Najpierw czekamy aż Octopus zakończy
+     * bieżące ładowanie danych.
+     */
+    await waitForOctopusIdle(this.page);
+
+    await expect(checkbox).toBeVisible();
+
+    await expect(checkbox).toBeEnabled();
+
+    if (await checkbox.isChecked()) {
+      return;
     }
+
+    let saveRequest: Request | undefined;
+
+    const captureSaveRequest = (request: Request) => {
+      const pathname = new URL(request.url()).pathname;
+
+      if (
+        request.method() === "POST" &&
+        pathname.startsWith(`/api/${kind}/`) &&
+        pathname.includes("Test")
+      ) {
+        saveRequest = request;
+      }
+    };
+
+    this.page.on("request", captureSaveRequest);
+
+    try {
+      await expect(async () => {
+        await waitForOctopusIdle(this.page);
+
+        /*
+         * Stan mógł zmienić się podczas
+         * doczytywania panelu.
+         */
+        if (await checkbox.isChecked()) {
+          return;
+        }
+
+        /*
+         * Używamy click zamiast check.
+         *
+         * check() dodatkowo sam weryfikuje,
+         * czy stan zmienił się natychmiast,
+         * co przy Angularze i spinnerze
+         * bywa niestabilne.
+         */
+        await checkbox.click();
+
+        await expect(checkbox).toBeChecked({
+          timeout: 2_000,
+        });
+      }).toPass({
+        timeout: 20_000,
+        intervals: [100, 250, 500],
+      });
+    } finally {
+      this.page.off("request", captureSaveRequest);
+    }
+
+    if (saveRequest) {
+      const response = await saveRequest.response();
+
+      expect(response, "Żądanie zapisu flagi Testowy powinno otrzymać odpowiedź").not.toBeNull();
+
+      expect(response!.ok(), "Zapis flagi Testowy musi zakończyć się powodzeniem").toBeTruthy();
+
+      await response!.finished();
+    }
+
+    /*
+     * Po zapisie również czekamy aż spinner
+     * całkowicie zniknie.
+     */
+    await waitForOctopusIdle(this.page);
+
     await expect(checkbox).toBeChecked();
   }
 

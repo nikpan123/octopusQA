@@ -50,6 +50,10 @@ async function createSchoolForEdit(
 
   await scenario.record("schoolId", schoolId);
 
+  /*
+   * Nie zakładamy konkretnego miasta ani kodu.
+   * Odczytujemy faktyczny adres utworzonej szkoły.
+   */
   const schoolAddress = await scenario.app.detail("address").inputValue();
 
   await scenario.record("schoolAddress", schoolAddress);

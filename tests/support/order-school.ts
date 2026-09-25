@@ -10,14 +10,25 @@ export type OrderTestSchool = {
 
 export type OrderTestSchoolKey = "primary" | "secondary";
 
-const definitions: Record<OrderTestSchoolKey, { name: string }> = {
-  primary: {
-    name: `AUTO_ORD_REFERENCE_${OCTOPUS_ENV.toUpperCase()}`,
-  },
-  secondary: {
-    name: `AUTO_ORD_REFERENCE_${OCTOPUS_ENV.toUpperCase()}_B`,
-  },
-};
+function orderWorkerSuffix(): string {
+  const parallelIndex =
+    process.env.TEST_PARALLEL_INDEX ??
+    process.env.TEST_WORKER_INDEX ??
+    "0";
+
+  return `W${parallelIndex}`;
+}
+
+function definitionFor(
+  key: OrderTestSchoolKey,
+): { name: string } {
+  const worker = orderWorkerSuffix();
+  const base = `AUTO_ORD_REFERENCE_${OCTOPUS_ENV.toUpperCase()}_${worker}`;
+
+  return {
+    name: key === "primary" ? base : `${base}_B`,
+  };
+}
 
 const cachedSchools = new Map<OrderTestSchoolKey, OrderTestSchool>();
 
@@ -116,7 +127,7 @@ export async function ensureOrderTestSchool(
     return cached;
   }
 
-  const definition = definitions[key];
+  const definition = definitionFor(key);
 
   const existing = await searchExactSchool(
     page,
