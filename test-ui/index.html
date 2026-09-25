@@ -83,9 +83,11 @@
       </div>
       <div class="metric-grid">
         <div class="metric pass"><span>Passed</span><strong id="passed">0</strong></div>
+        <div class="metric xfail"><span>Expected failed</span><strong id="expectedFailed">0</strong></div>
         <div class="metric fail"><span>Failed</span><strong id="failed">0</strong></div>
         <div class="metric skip"><span>Skipped</span><strong id="skipped">0</strong></div>
       </div>
+      <p class="metric-note">Expected failed to testy oznaczone przez <code>test.fail()</code>. Są oczekiwanym wynikiem i są już zawarte w liczbie Passed Playwrighta.</p>
       <div class="actions compact">
         <a id="reportBtn" class="button-link secondary disabled" href="#" target="_blank" rel="noopener">Otwórz raport HTML</a>
         <button id="performanceBtn" class="secondary">Raport wydajności</button>
@@ -119,6 +121,32 @@
         <button class="warning" data-annual="MED-YEAR-PREP">MED-YEAR-PREP</button>
         <button class="warning" data-annual="MED-YEAR-01">MED-YEAR-01</button>
       </div>
+    </section>
+
+    <section class="card test-data-card">
+      <div class="section-head">
+        <div>
+          <h2>Dane testowe</h2>
+          <p>Podgląd rekordów zapisanych w <code>runs/*.json</code>. Nauczycieli DEV można bezpiecznie usuwać przez istniejący cleanup projektu.</p>
+        </div>
+        <button id="refreshTestDataBtn" class="ghost">Odśwież</button>
+      </div>
+
+      <div class="test-data-toolbar">
+        <div class="test-data-tabs" role="tablist" aria-label="Dane testowe">
+          <button class="test-data-tab active" data-test-data-tab="teachers">Nauczyciele <span id="teachersTabCount" class="tab-count">0</span></button>
+          <button class="test-data-tab" data-test-data-tab="schools">Szkoły <span id="schoolsTabCount" class="tab-count">0</span></button>
+        </div>
+        <button id="deleteSelectedTeachersBtn" class="danger" disabled>Usuń zaznaczonych</button>
+      </div>
+
+      <input id="testDataSearch" class="wide-search" placeholder="Szukaj po ID, nazwie, e-mailu, teście lub statusie..." />
+      <div class="test-summary">
+        <span id="testDataSummary">0 rekordów</span>
+        <span>Szkoły są tylko do podglądu — projekt nie ma endpointu ich usuwania.</span>
+      </div>
+      <div id="testDataMessage" class="test-data-message" aria-live="polite"></div>
+      <div id="testDataTable" class="data-table"><div class="empty">Odczytywanie danych testowych…</div></div>
     </section>
 
     <section class="card log-card">

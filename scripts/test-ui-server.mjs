@@ -54,6 +54,13 @@ const state = {
   clients: new Set(),
   logLines: [],
   cachedTests: new Map(),
+  progress: {
+    xCount: 0,
+    xIds: [],
+    summaryPassedSeen: false,
+    summaryFailedSeen: false,
+    failureDetailRemaining: 0,
+  },
 };
 
 function configForEnvironment(environment) {
@@ -145,24 +152,126 @@ function parseProgressLine(line) {
   if (!state.run) return;
   const trimmed = line.trim();
 
-  if (/^ok\s+\d+\s+\[/.test(trimmed) || /^✓/.test(trimmed)) {
+  const isPassedProgress = /^ok\s+\d+\s+\[/.test(trimmed) || /^✓/.test(trimmed);
+  const isXProgress = /^x\s+\d+\s+\[/.test(trimmed) || /^✘/.test(trimmed);
+  const isSkippedProgress = /^-\s+\d+\s+\[/.test(trimmed);
+
+  if (isPassedProgress) {
     state.run.counts.passed += 1;
-  } else if (/^x\s+\d+\s+\[/.test(trimmed) || /^✘/.test(trimmed)) {
-    state.run.counts.failed += 1;
+  } else if (isXProgress) {
+    /*
+     * Playwright używa znaku `x` zarówno dla zwykłego failure,
+     * jak i dla testu oznaczonego test.fail(), który zakończył się
+     * zgodnie z oczekiwaniem. Nie klasyfikujemy go tutaj jako FAILED.
+     * Ostateczną liczbę prawdziwych failure bierzemy z podsumowania
+     * Playwrighta (`N failed`).
+     */
+    state.progress.xCount += 1;
     const id = extractTestId(trimmed);
-    if (id && !state.run.failedTestIds.includes(id)) state.run.failedTestIds.push(id);
-  } else if (/^-\s+\d+\s+\[/.test(trimmed)) {
+    if (id && !state.progress.xIds.includes(id)) state.progress.xIds.push(id);
+  } else if (isSkippedProgress) {
     state.run.counts.skipped += 1;
   }
 
   const summaryPassed = trimmed.match(/^(\d+) passed\b/);
   const summaryFailed = trimmed.match(/^(\d+) failed\b/);
   const summarySkipped = trimmed.match(/^(\d+) skipped\b/);
-  if (summaryPassed) state.run.counts.passed = Number(summaryPassed[1]);
-  if (summaryFailed) state.run.counts.failed = Number(summaryFailed[1]);
-  if (summarySkipped) state.run.counts.skipped = Number(summarySkipped[1]);
+
+  if (summaryPassed) {
+    state.run.counts.passed = Number(summaryPassed[1]);
+    state.progress.summaryPassedSeen = true;
+  }
+
+  if (summaryFailed) {
+    const failed = Number(summaryFailed[1]);
+    state.run.counts.failed = failed;
+    state.progress.summaryFailedSeen = true;
+    state.progress.failureDetailRemaining = failed;
+    state.run.failedTestIds = [];
+  }
+
+  if (summarySkipped) {
+    state.run.counts.skipped = Number(summarySkipped[1]);
+  }
+
+  /*
+   * Po wierszu `N failed` Playwright wypisuje listę faktycznie
+   * nieudanych testów. Tylko te ID trafiają do „Ponów failed”.
+   * Expected failure z test.fail() nie pojawia się w tej liście.
+   */
+  if (
+    state.progress.failureDetailRemaining > 0 &&
+    !isXProgress &&
+    !summaryFailed &&
+    /^(?:\d+\)\s*)?\[[^\]]+\]\s*[›>]/.test(trimmed)
+  ) {
+    const id = extractTestId(trimmed);
+    if (id && !state.run.failedTestIds.includes(id)) {
+      state.run.failedTestIds.push(id);
+      state.progress.failureDetailRemaining -= 1;
+    }
+  }
+
+  /*
+   * expectedFailed jest informacją dodatkową i jest podzbiorem Passed.
+   * Playwright w końcowym `N passed` uwzględnia expected failures.
+   */
+  state.run.counts.expectedFailed =
+    state.progress.summaryPassedSeen || state.progress.summaryFailedSeen
+      ? Math.max(0, state.progress.xCount - state.run.counts.failed)
+      : 0;
 
   emit('status', publicStatus());
+}
+
+function finalizeRunCounts(exitCode) {
+  if (!state.run) return;
+
+  /*
+   * Jeżeli proces zakończył się sukcesem i nie było `N failed`,
+   * wszystkie linie `x` są expected failures.
+   */
+  if (exitCode === 0 && !state.progress.summaryFailedSeen) {
+    state.run.counts.failed = 0;
+    state.run.failedTestIds = [];
+  }
+
+  /*
+   * Fallback dla nietypowego outputu reportera: gdy proces kończy się
+   * błędem, ale nie pojawiło się podsumowanie `N failed`, traktujemy
+   * zarejestrowane `x` jako prawdziwe failures.
+   */
+  if (
+    exitCode !== 0 &&
+    !state.progress.summaryFailedSeen &&
+    state.run.counts.failed === 0 &&
+    state.progress.xCount > 0
+  ) {
+    state.run.counts.failed = state.progress.xCount;
+  }
+
+  state.run.counts.expectedFailed = Math.max(
+    0,
+    state.progress.xCount - state.run.counts.failed,
+  );
+
+  if (state.run.counts.failed === 0) {
+    state.run.failedTestIds = [];
+    return;
+  }
+
+  /*
+   * Awaryjnie uzupełniamy ID z linii `x`, gdy reporter nie wypisał
+   * końcowej listy failures.
+   */
+  if (state.run.failedTestIds.length < state.run.counts.failed) {
+    for (const id of state.progress.xIds) {
+      if (!state.run.failedTestIds.includes(id)) {
+        state.run.failedTestIds.push(id);
+      }
+      if (state.run.failedTestIds.length >= state.run.counts.failed) break;
+    }
+  }
 }
 
 function extractTestId(text) {
@@ -197,9 +306,33 @@ function publicStatus() {
   };
 }
 
+function normalizeHistoryEntry(entry) {
+  const counts = {
+    passed: 0,
+    failed: 0,
+    expectedFailed: 0,
+    skipped: 0,
+    ...(entry?.counts || {}),
+  };
+
+  /*
+   * Migracja wpisów zapisanych przez starszą wersję UI.
+   * Stary parser liczył linię `x` z test.fail() jako FAILED, mimo że
+   * proces Playwrighta kończył się statusem PASSED.
+   */
+  if (entry?.status === 'PASSED' && counts.failed > 0) {
+    counts.expectedFailed = Math.max(counts.expectedFailed, counts.failed);
+    counts.failed = 0;
+    return { ...entry, counts, failedTestIds: [] };
+  }
+
+  return { ...entry, counts };
+}
+
 async function loadHistory() {
   try {
-    return JSON.parse(await readFile(historyFile, 'utf8'));
+    const parsed = JSON.parse(await readFile(historyFile, 'utf8'));
+    return Array.isArray(parsed) ? parsed.map(normalizeHistoryEntry) : [];
   } catch {
     return [];
   }
@@ -238,6 +371,271 @@ async function readPerformance(fileName) {
   } catch {
     return null;
   }
+}
+
+
+const TEST_RUN_FILE_RE = /^REG_\d+_[a-f0-9]{6}\.json$/i;
+const TEACHER_CLEANUP_RESULTS = new Set(['PASS', 'FAIL', 'FAILED', 'TIMEDOUT', 'INTERRUPTED']);
+const TEACHER_REMOVED_STATUSES = new Set(['DELETED', 'ALREADY_ABSENT']);
+
+function detectRunEnvironment(run) {
+  const urls = [run?.teacherUrl, run?.schoolUrl, run?.lastUrl]
+    .filter(Boolean)
+    .map(String);
+
+  if (urls.some((value) => value.includes('octopus.gwotest.pl'))) return 'test';
+  if (urls.some((value) => value.includes('octopus.gwodev.pl'))) return 'dev';
+
+  // Dotychczasowe rejestry często nie zapisywały środowiska jawnie.
+  // Projekt domyślnie pracuje na DEV, a właściwy cleanup dodatkowo
+  // weryfikuje rekord po ID, e-mailu i fladze Testowy przed DELETE.
+  return 'dev';
+}
+
+function originForEnvironment(environment) {
+  return environment === 'test'
+    ? 'https://octopus.gwotest.pl'
+    : 'https://octopus.gwodev.pl';
+}
+
+function runIdentifier(run, fileName) {
+  return String(run?.runId || run?.id || fileName.replace(/\.json$/i, ''));
+}
+
+function safeString(value) {
+  return value == null ? '' : String(value);
+}
+
+function teacherDeleteState(fileName, run, environment) {
+  if (!TEST_RUN_FILE_RE.test(fileName)) {
+    return { deletable: false, reason: 'Nieobsługiwany format rejestru.' };
+  }
+
+  if (!/^\d+$/.test(safeString(run?.teacherId))) {
+    return { deletable: false, reason: 'Brak poprawnego ID nauczyciela.' };
+  }
+
+  if (TEACHER_REMOVED_STATUSES.has(safeString(run?.cleanupStatus))) {
+    return { deletable: false, reason: 'Nauczyciel został już usunięty.' };
+  }
+
+  if (!TEACHER_CLEANUP_RESULTS.has(safeString(run?.result))) {
+    return { deletable: false, reason: `Stan ${safeString(run?.result) || 'brak'} nie pozwala na cleanup.` };
+  }
+
+  if (environment !== 'dev') {
+    return { deletable: false, reason: 'Usuwanie z UI jest obecnie dostępne tylko dla DEV.' };
+  }
+
+  const id = runIdentifier(run, fileName);
+  const expectedEmail = `${id.toLowerCase()}@example.invalid`;
+  if (safeString(run?.email).toLowerCase() !== expectedEmail) {
+    return { deletable: false, reason: 'Rejestr nie ma jednoznacznego testowego e-maila.' };
+  }
+
+  return {
+    deletable: true,
+    reason: 'Przed DELETE cleanup ponownie zweryfikuje ID, e-mail, nazwisko i flagę Testowy.',
+  };
+}
+
+function teacherRecord(fileName, run, fileStat) {
+  const environment = detectRunEnvironment(run);
+  const deleteState = teacherDeleteState(fileName, run, environment);
+  const id = safeString(run.teacherId);
+  const origin = originForEnvironment(environment);
+
+  return {
+    key: fileName,
+    fileName,
+    id,
+    email: safeString(Object.hasOwn(run, 'teacherEmail') ? run.teacherEmail : run.email),
+    lastName: safeString(run.teacherLastName || run.lastName || run.id || run.runId),
+    title: safeString(run.title),
+    runId: runIdentifier(run, fileName),
+    result: safeString(run.result),
+    cleanupStatus: safeString(run.cleanupStatus || 'BRAK'),
+    environment,
+    createdAt: safeString(run.startedAt || run.createdAt || new Date(fileStat.mtimeMs).toISOString()),
+    finishedAt: safeString(run.finishedAt || ''),
+    url: safeString(run.teacherUrl) || `${origin}/teacher/teacher-panel/${encodeURIComponent(id)}`,
+    deletable: deleteState.deletable,
+    deleteReason: deleteState.reason,
+  };
+}
+
+function schoolCandidates(fileName, run, fileStat) {
+  const environment = detectRunEnvironment(run);
+  const origin = originForEnvironment(environment);
+  const common = {
+    fileName,
+    runId: runIdentifier(run, fileName),
+    title: safeString(run.title),
+    result: safeString(run.result),
+    environment,
+    createdAt: safeString(run.startedAt || run.createdAt || new Date(fileStat.mtimeMs).toISOString()),
+    cleanupStatus: safeString(run.schoolRetentionStatus || ''),
+  };
+
+  const values = [
+    {
+      source: 'schoolId',
+      id: run.schoolId,
+      name: run.schoolName || run.relatedSchoolName,
+      url: run.schoolUrl,
+      kind: 'Szkoła z rejestru testu',
+    },
+    {
+      source: 'orderSchoolId',
+      id: run.orderSchoolId,
+      name: run.orderSchoolName,
+      url: null,
+      kind: 'Szkoła referencyjna ORD',
+    },
+    {
+      source: 'orderSecondarySchoolId',
+      id: run.orderSecondarySchoolId,
+      name: run.orderSecondarySchoolName,
+      url: null,
+      kind: 'Druga szkoła referencyjna ORD',
+    },
+  ];
+
+  return values
+    .filter((item) => /^\d+$/.test(safeString(item.id)))
+    .map((item) => ({
+      ...common,
+      source: item.source,
+      id: safeString(item.id),
+      name: safeString(item.name),
+      kind: item.kind,
+      url: safeString(item.url) || `${origin}/school/school-panel/${encodeURIComponent(item.id)}`,
+    }));
+}
+
+async function loadTestDataRegistry() {
+  if (!existsSync(runsDir)) {
+    return { teachers: [], schools: [], generatedAt: new Date().toISOString() };
+  }
+
+  const names = (await readdir(runsDir))
+    .filter((name) => TEST_RUN_FILE_RE.test(name))
+    .sort();
+
+  const teachers = [];
+  const schoolMap = new Map();
+
+  for (const fileName of names) {
+    const filePath = path.join(runsDir, fileName);
+    const fileStat = await stat(filePath).catch(() => null);
+    if (!fileStat?.isFile()) continue;
+
+    let run;
+    try {
+      run = JSON.parse(await readFile(filePath, 'utf8'));
+    } catch {
+      continue;
+    }
+
+    if (/^\d+$/.test(safeString(run.teacherId))) {
+      teachers.push(teacherRecord(fileName, run, fileStat));
+    }
+
+    for (const school of schoolCandidates(fileName, run, fileStat)) {
+      const key = `${school.environment}:${school.id}`;
+      const previous = schoolMap.get(key);
+      if (!previous) {
+        schoolMap.set(key, { ...school, seenIn: 1, registries: [fileName] });
+        continue;
+      }
+
+      previous.seenIn += 1;
+      previous.registries.push(fileName);
+      if (new Date(school.createdAt).getTime() > new Date(previous.createdAt).getTime()) {
+        previous.name = school.name || previous.name;
+        previous.title = school.title || previous.title;
+        previous.result = school.result || previous.result;
+        previous.createdAt = school.createdAt;
+        previous.url = school.url || previous.url;
+        previous.kind = school.kind || previous.kind;
+      }
+    }
+  }
+
+  teachers.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+  const schools = [...schoolMap.values()].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+  return {
+    teachers,
+    schools,
+    generatedAt: new Date().toISOString(),
+  };
+}
+
+function runNodeScript(scriptPath, args, envOverrides = {}) {
+  return new Promise((resolve, reject) => {
+    const child = spawn(process.execPath, [scriptPath, ...args], {
+      cwd: root,
+      env: { ...process.env, ...envOverrides },
+      stdio: ['ignore', 'pipe', 'pipe'],
+      windowsHide: false,
+    });
+
+    let stdout = '';
+    let stderr = '';
+
+    child.stdout.on('data', (data) => (stdout += data.toString('utf8')));
+    child.stderr.on('data', (data) => (stderr += data.toString('utf8')));
+    child.on('error', reject);
+    child.on('close', (code, signal) => resolve({ code, signal, stdout, stderr }));
+  });
+}
+
+async function deleteTeachersFromRegistry(fileNames) {
+  if (state.child) {
+    throw new Error('Nie można uruchomić cleanupu podczas aktywnego przebiegu testów.');
+  }
+
+  const files = [...new Set((Array.isArray(fileNames) ? fileNames : []).map(String))];
+  if (!files.length) throw new Error('Nie wybrano nauczycieli do usunięcia.');
+  if (files.length > 50) throw new Error('Jednorazowo można usunąć maksymalnie 50 rejestrów.');
+
+  for (const fileName of files) {
+    if (!TEST_RUN_FILE_RE.test(fileName) || path.basename(fileName) !== fileName) {
+      throw new Error(`Niepoprawna nazwa rejestru: ${fileName}`);
+    }
+
+    const filePath = path.join(runsDir, fileName);
+    if (!existsSync(filePath)) throw new Error(`Nie znaleziono rejestru ${fileName}.`);
+
+    const run = JSON.parse(await readFile(filePath, 'utf8'));
+    const environment = detectRunEnvironment(run);
+    const stateInfo = teacherDeleteState(fileName, run, environment);
+    if (!stateInfo.deletable) {
+      throw new Error(`${fileName}: ${stateInfo.reason}`);
+    }
+  }
+
+  const cleanupScript = path.join(__dirname, 'cleanup-teachers.mjs');
+  if (!existsSync(cleanupScript)) {
+    throw new Error('Brak scripts/cleanup-teachers.mjs. UI nie może wykonać bezpiecznego DELETE.');
+  }
+
+  const result = await runNodeScript(
+    cleanupScript,
+    [...files, '--include-failed', '--apply'],
+    { OCTOPUS_ENV: 'dev' },
+  );
+
+  if (result.code !== 0) {
+    const detail = (result.stderr || result.stdout || `cleanup zakończył się kodem ${result.code}`).trim();
+    throw new Error(detail);
+  }
+
+  return {
+    output: (result.stdout || '').trim(),
+    registry: await loadTestDataRegistry(),
+  };
 }
 
 function buildRunArguments(options) {
@@ -302,6 +700,13 @@ async function startRun(options) {
   await mkdir(reportDir, { recursive: true });
 
   state.logLines = [];
+  state.progress = {
+    xCount: 0,
+    xIds: [],
+    summaryPassedSeen: false,
+    summaryFailedSeen: false,
+    failureDetailRemaining: 0,
+  };
   state.run = {
     id: runId,
     startedAt,
@@ -314,7 +719,7 @@ async function startRun(options) {
     headed: Boolean(options.headed),
     grep: options.grep ? String(options.grep) : '',
     selectedTestIds: Array.isArray(options.selectedTestIds) ? options.selectedTestIds : [],
-    counts: { passed: 0, failed: 0, skipped: 0 },
+    counts: { passed: 0, failed: 0, expectedFailed: 0, skipped: 0 },
     failedTestIds: [],
     performanceFile: null,
     reportUrl: `/report/${runId}/`,
@@ -349,6 +754,9 @@ async function startRun(options) {
 
   child.on('close', async (code, signal) => {
     const endedAt = new Date().toISOString();
+
+    finalizeRunCounts(code);
+
     state.run.endedAt = endedAt;
     state.run.status = signal ? 'STOPPED' : code === 0 ? 'PASSED' : 'FAILED';
 
@@ -505,6 +913,22 @@ const server = http.createServer(async (req, res) => {
 
     if (url.pathname === '/api/history' && req.method === 'GET') {
       sendJson(res, 200, { history: await loadHistory() });
+      return;
+    }
+
+    if (url.pathname === '/api/test-data' && req.method === 'GET') {
+      sendJson(res, 200, await loadTestDataRegistry());
+      return;
+    }
+
+    if (url.pathname === '/api/test-data/teachers/delete' && req.method === 'POST') {
+      const body = await readJsonBody(req);
+      try {
+        const result = await deleteTeachersFromRegistry(body.files);
+        sendJson(res, 200, result);
+      } catch (error) {
+        sendJson(res, 409, { error: error?.message || String(error) });
+      }
       return;
     }
 

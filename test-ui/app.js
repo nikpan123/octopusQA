@@ -7,6 +7,12 @@ const state = {
   selected: new Set(),
   status: null,
   timerHandle: null,
+  testData: {
+    teachers: [],
+    schools: [],
+  },
+  testDataTab: 'teachers',
+  selectedTeacherFiles: new Set(),
 };
 
 function formatDuration(ms = 0) {
@@ -19,6 +25,13 @@ function formatDuration(ms = 0) {
     : `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
 }
 
+function formatDate(value) {
+  if (!value) return '—';
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return String(value);
+  return date.toLocaleString('pl-PL');
+}
+
 async function api(path, options = {}) {
   const response = await fetch(path, {
     headers: { 'Content-Type': 'application/json', ...(options.headers || {}) },
@@ -27,6 +40,19 @@ async function api(path, options = {}) {
   const data = await response.json().catch(() => ({}));
   if (!response.ok) throw new Error(data.error || `HTTP ${response.status}`);
   return data;
+}
+
+function escapeHtml(value) {
+  return String(value)
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#039;');
+}
+
+function escapeRegexForJs(value) {
+  return String(value).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
 function setBadge(status, running) {
@@ -45,15 +71,8 @@ function updateWorkersForSuite(suite) {
   workers.disabled = false;
 
   if (ordersSelected) {
-    // Dla ORD wspieramy 1 lub 2 workery. Każdy worker korzysta
-    // z własnej szkoły referencyjnej, więc testy mogą działać równolegle.
-    if (workers.value === '4') {
-      workers.value = '2';
-    }
-
-    if (option4) {
-      option4.disabled = true;
-    }
+    if (workers.value === '4') workers.value = '2';
+    if (option4) option4.disabled = true;
 
     hint.textContent =
       'Zamówienia mogą działać na 2 workerach. Każdy worker korzysta z osobnej szkoły referencyjnej; dla ORD dostępne są 1 lub 2 workery.';
@@ -61,10 +80,7 @@ function updateWorkersForSuite(suite) {
     return;
   }
 
-  if (option4) {
-    option4.disabled = false;
-  }
-
+  if (option4) option4.disabled = false;
   hint.textContent = '';
   hint.hidden = true;
 }
@@ -87,9 +103,11 @@ function renderStatus(payload) {
   $('#startBtn').disabled = payload.running;
   $('#stopBtn').disabled = !payload.running;
   $('#rerunFailedBtn').disabled = payload.running || !(run?.failedTestIds?.length);
+  $('#deleteSelectedTeachersBtn').disabled = payload.running || state.selectedTeacherFiles.size === 0;
 
   $('#passed').textContent = run?.counts?.passed ?? 0;
   $('#failed').textContent = run?.counts?.failed ?? 0;
+  $('#expectedFailed').textContent = run?.counts?.expectedFailed ?? 0;
   $('#skipped').textContent = run?.counts?.skipped ?? 0;
   $('#statusDescription').textContent = run
     ? `${run.environment.toUpperCase()} · ${run.suiteLabel || run.suite} · ${run.workers} worker${run.workers === 1 ? '' : 'y'}`
@@ -147,19 +165,6 @@ function renderTests() {
       $('#selectedCount').textContent = `${state.selected.size} zaznaczonych`;
     });
   });
-}
-
-function escapeHtml(value) {
-  return String(value)
-    .replaceAll('&', '&amp;')
-    .replaceAll('<', '&lt;')
-    .replaceAll('>', '&gt;')
-    .replaceAll('"', '&quot;')
-    .replaceAll("'", '&#039;');
-}
-
-function escapeRegexForJs(value) {
-  return String(value).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
 async function loadTests() {
@@ -242,7 +247,7 @@ async function loadHistory() {
           <div class="history-row">
             <span>${escapeHtml(new Date(run.startedAt).toLocaleString('pl-PL'))}</span>
             <span>${escapeHtml(run.environment.toUpperCase())} · ${escapeHtml(run.suiteLabel || run.suite)}</span>
-            <span class="history-status ${String(run.status).toLowerCase()}">${escapeHtml(run.status)} · ${run.counts?.passed ?? 0}/${(run.counts?.passed ?? 0) + (run.counts?.failed ?? 0) + (run.counts?.skipped ?? 0)}</span>
+            <span class="history-status ${String(run.status).toLowerCase()}">${escapeHtml(run.status)} · ${run.counts?.passed ?? 0}/${(run.counts?.passed ?? 0) + (run.counts?.failed ?? 0) + (run.counts?.skipped ?? 0)}${(run.counts?.expectedFailed ?? 0) > 0 ? ` · expected fail: ${run.counts.expectedFailed}` : ''}</span>
             <span>${formatDuration(run.durationMs)}</span>
             <span class="history-actions">
               ${run.reportAvailable && run.reportUrl ? `<a class="button-link ghost" href="${escapeHtml(run.reportUrl)}" target="_blank" rel="noopener">Raport</a>` : ''}
@@ -269,12 +274,225 @@ async function showPerformance() {
   }
 }
 
+function testDataSearchTerm() {
+  return $('#testDataSearch').value.trim().toLowerCase();
+}
+
+function resultBadge(value) {
+  const safe = escapeHtml(value || 'BRAK');
+  const css = String(value || '').toLowerCase().replace(/[^a-z0-9_-]+/g, '-');
+  return `<span class="data-badge ${css}">${safe}</span>`;
+}
+
+function renderTeachers() {
+  const term = testDataSearchTerm();
+  const teachers = state.testData.teachers.filter((teacher) => {
+    if (!term) return true;
+    return `${teacher.id} ${teacher.email} ${teacher.lastName} ${teacher.title} ${teacher.runId} ${teacher.result} ${teacher.cleanupStatus}`
+      .toLowerCase()
+      .includes(term);
+  });
+
+  $('#testDataSummary').textContent = `${state.testData.teachers.length} nauczycieli · ${state.selectedTeacherFiles.size} zaznaczonych`;
+  $('#deleteSelectedTeachersBtn').hidden = false;
+  $('#deleteSelectedTeachersBtn').disabled = Boolean(state.status?.running) || state.selectedTeacherFiles.size === 0;
+
+  if (!teachers.length) {
+    $('#testDataTable').innerHTML = '<div class="empty">Brak nauczycieli pasujących do filtra.</div>';
+    return;
+  }
+
+  $('#testDataTable').innerHTML = `
+    <div class="data-row teacher-row data-head">
+      <span></span><span>ID</span><span>Dane nauczyciela</span><span>Test / wynik</span><span>Cleanup</span><span>Akcje</span>
+    </div>
+    ${teachers
+      .map(
+        (teacher) => `
+        <div class="data-row teacher-row">
+          <span>
+            <input
+              type="checkbox"
+              data-teacher-select="${escapeHtml(teacher.fileName)}"
+              ${state.selectedTeacherFiles.has(teacher.fileName) ? 'checked' : ''}
+              ${teacher.deletable ? '' : 'disabled'}
+              title="${escapeHtml(teacher.deleteReason || '')}"
+            />
+          </span>
+          <span class="mono strong">${escapeHtml(teacher.id)}</span>
+          <span>
+            <strong>${escapeHtml(teacher.lastName || '—')}</strong>
+            <small>${escapeHtml(teacher.email || '—')}</small>
+            <small>${escapeHtml(teacher.environment.toUpperCase())} · ${escapeHtml(formatDate(teacher.createdAt))}</small>
+          </span>
+          <span>
+            <strong>${escapeHtml(teacher.title || teacher.runId)}</strong>
+            <small>${resultBadge(teacher.result)}</small>
+          </span>
+          <span>
+            ${resultBadge(teacher.cleanupStatus)}
+            <small>${escapeHtml(teacher.deleteReason || '')}</small>
+          </span>
+          <span class="data-actions">
+            <a class="button-link ghost" href="${escapeHtml(teacher.url)}" target="_blank" rel="noopener">Otwórz</a>
+            <button
+              class="danger-outline delete-teacher"
+              data-teacher-file="${escapeHtml(teacher.fileName)}"
+              data-teacher-id="${escapeHtml(teacher.id)}"
+              ${teacher.deletable && !state.status?.running ? '' : 'disabled'}
+              title="${escapeHtml(teacher.deleteReason || '')}"
+            >Usuń</button>
+          </span>
+        </div>`,
+      )
+      .join('')}`;
+
+  $$('[data-teacher-select]').forEach((checkbox) => {
+    checkbox.addEventListener('change', () => {
+      checkbox.checked
+        ? state.selectedTeacherFiles.add(checkbox.dataset.teacherSelect)
+        : state.selectedTeacherFiles.delete(checkbox.dataset.teacherSelect);
+      renderTeachers();
+    });
+  });
+
+  $$('.delete-teacher').forEach((button) => {
+    button.addEventListener('click', () => deleteTeachers([button.dataset.teacherFile], [button.dataset.teacherId]));
+  });
+}
+
+function renderSchools() {
+  const term = testDataSearchTerm();
+  const schools = state.testData.schools.filter((school) => {
+    if (!term) return true;
+    return `${school.id} ${school.name} ${school.title} ${school.runId} ${school.result} ${school.kind}`
+      .toLowerCase()
+      .includes(term);
+  });
+
+  $('#testDataSummary').textContent = `${state.testData.schools.length} szkół zapisanych w rejestrach testów`;
+  $('#deleteSelectedTeachersBtn').hidden = true;
+
+  if (!schools.length) {
+    $('#testDataTable').innerHTML = '<div class="empty">Brak szkół pasujących do filtra.</div>';
+    return;
+  }
+
+  $('#testDataTable').innerHTML = `
+    <div class="data-row school-row data-head">
+      <span>ID</span><span>Nazwa</span><span>Źródło</span><span>Test / wynik</span><span>Wystąpienia</span><span>Akcje</span>
+    </div>
+    ${schools
+      .map(
+        (school) => `
+        <div class="data-row school-row">
+          <span class="mono strong">${escapeHtml(school.id)}</span>
+          <span>
+            <strong>${escapeHtml(school.name || '—')}</strong>
+            <small>${escapeHtml(school.environment.toUpperCase())} · ${escapeHtml(formatDate(school.createdAt))}</small>
+          </span>
+          <span>${escapeHtml(school.kind || school.source || '—')}</span>
+          <span>
+            <strong>${escapeHtml(school.title || school.runId)}</strong>
+            <small>${resultBadge(school.result)}</small>
+          </span>
+          <span>${escapeHtml(school.seenIn ?? 1)}</span>
+          <span class="data-actions">
+            <a class="button-link ghost" href="${escapeHtml(school.url)}" target="_blank" rel="noopener">Otwórz</a>
+          </span>
+        </div>`,
+      )
+      .join('')}`;
+}
+
+function renderTestData() {
+  $$('.test-data-tab').forEach((button) => {
+    button.classList.toggle('active', button.dataset.testDataTab === state.testDataTab);
+  });
+
+  if (state.testDataTab === 'schools') renderSchools();
+  else renderTeachers();
+}
+
+async function loadTestData() {
+  $('#testDataTable').innerHTML = '<div class="empty">Odczytywanie runs/*.json…</div>';
+  $('#testDataMessage').textContent = '';
+
+  try {
+    const result = await api('/api/test-data');
+    state.testData = {
+      teachers: result.teachers || [],
+      schools: result.schools || [],
+    };
+
+    const availableFiles = new Set(state.testData.teachers.filter((item) => item.deletable).map((item) => item.fileName));
+    state.selectedTeacherFiles = new Set(
+      [...state.selectedTeacherFiles].filter((fileName) => availableFiles.has(fileName)),
+    );
+
+    $('#teachersTabCount').textContent = state.testData.teachers.length;
+    $('#schoolsTabCount').textContent = state.testData.schools.length;
+    renderTestData();
+  } catch (error) {
+    $('#testDataTable').innerHTML = `<div class="empty error">${escapeHtml(error.message)}</div>`;
+  }
+}
+
+async function deleteTeachers(files, teacherIds = []) {
+  const cleanFiles = [...new Set(files)].filter(Boolean);
+  if (!cleanFiles.length) return;
+
+  const ids = teacherIds.length
+    ? teacherIds.join(', ')
+    : state.testData.teachers
+        .filter((teacher) => cleanFiles.includes(teacher.fileName))
+        .map((teacher) => teacher.id)
+        .join(', ');
+
+  const confirmed = confirm(
+    `Usunąć ${cleanFiles.length === 1 ? 'nauczyciela' : `${cleanFiles.length} nauczycieli`} ${ids ? `(${ids})` : ''}?\n\n` +
+      'Przed DELETE cleanup ponownie sprawdzi ID, dane z rejestru i flagę Testowy. Operacja dotyczy wyłącznie DEV.',
+  );
+  if (!confirmed) return;
+
+  const bulkButton = $('#deleteSelectedTeachersBtn');
+  bulkButton.disabled = true;
+  $('#testDataMessage').className = 'test-data-message info';
+  $('#testDataMessage').textContent = 'Usuwanie nauczycieli… Operacja może potrwać kilkadziesiąt sekund.';
+
+  try {
+    const result = await api('/api/test-data/teachers/delete', {
+      method: 'POST',
+      body: JSON.stringify({ files: cleanFiles }),
+    });
+
+    state.testData = result.registry || state.testData;
+    state.selectedTeacherFiles.clear();
+    $('#teachersTabCount').textContent = state.testData.teachers?.length ?? 0;
+    $('#schoolsTabCount').textContent = state.testData.schools?.length ?? 0;
+    $('#testDataMessage').className = 'test-data-message success';
+    $('#testDataMessage').textContent = 'Cleanup zakończony. Stan rejestrów został odświeżony.';
+    renderTestData();
+  } catch (error) {
+    await loadTestData();
+    $('#testDataMessage').className = 'test-data-message error';
+    $('#testDataMessage').textContent = error.message;
+  }
+}
+
 $$('.suite').forEach((button) => {
   button.addEventListener('click', () => {
     $$('.suite').forEach((item) => item.classList.remove('active'));
     button.classList.add('active');
     state.suite = button.dataset.suite;
     updateWorkersForSuite(state.suite);
+  });
+});
+
+$$('.test-data-tab').forEach((button) => {
+  button.addEventListener('click', () => {
+    state.testDataTab = button.dataset.testDataTab;
+    renderTestData();
   });
 });
 
@@ -292,6 +510,9 @@ $('#clearLogBtn').addEventListener('click', () => ($('#log').textContent = ''));
 $('#refreshHistoryBtn').addEventListener('click', loadHistory);
 $('#performanceBtn').addEventListener('click', showPerformance);
 $('#closePerformanceBtn').addEventListener('click', () => $('#performanceDialog').close());
+$('#refreshTestDataBtn').addEventListener('click', loadTestData);
+$('#testDataSearch').addEventListener('input', renderTestData);
+$('#deleteSelectedTeachersBtn').addEventListener('click', () => deleteTeachers([...state.selectedTeacherFiles]));
 $$('[data-annual]').forEach((button) => button.addEventListener('click', () => startRun({ annualMode: button.dataset.annual })));
 $('#reportBtn').addEventListener('click', (event) => {
   if ($('#reportBtn').classList.contains('disabled')) event.preventDefault();
@@ -300,9 +521,13 @@ $('#reportBtn').addEventListener('click', (event) => {
 const events = new EventSource('/api/events');
 events.addEventListener('log', (event) => appendLog(JSON.parse(event.data)));
 events.addEventListener('status', (event) => renderStatus(JSON.parse(event.data)));
-events.addEventListener('finished', () => loadHistory());
+events.addEventListener('finished', () => {
+  loadHistory();
+  loadTestData();
+});
 
 updateWorkersForSuite(state.suite);
 api('/api/status').then(renderStatus).catch(() => {});
 loadTests();
+loadTestData();
 loadHistory();
