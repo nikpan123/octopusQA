@@ -27,6 +27,9 @@ tests/support/teacher-edit.ts
 tests/support/scenario.ts
 tests/support/api-factory.ts
 tests/support/octopus.ts
+scripts/cleanup-teachers.mjs
+scripts/cleanup-teachers.test.mjs
+scripts/cleanup-global-teardown.mjs
 ```
 
 ## 3. Dane i cykl życia scenariusza
@@ -57,7 +60,28 @@ npm.cmd run cleanup:teachers -- REG_123456_abcdef.json --include-failed --apply
 npm.cmd run cleanup:teachers -- --include-failed --apply
 ```
 
-Do usuwania wyłącznie wybranych błędów należy podać pełne nazwy plików z kolumny `rejestr`. Wariant zbiorczy obejmuje również oczekujące rekordy `PASS`. Każdy nauczyciel jest przed DELETE sprawdzany po ID, unikalnym e-mailu lub zapisanym nazwisku oraz fladze `Testowy`. Brak `--apply` zawsze oznacza wyłącznie lokalny podgląd.
+Domyślnie cleanup nadal wymaga flagi `Testowy`. Przed wykonaniem `DELETE` skrypt sprawdza, czy rekord jednoznacznie należy do automatu: musi istnieć poprawny rejestr `REG_<timestamp>_<sufiks>`, identyfikator `teacherId` musi zgadzać się z rekordem w Octopusie, e-mail musi odpowiadać danym zapisanym w rejestrze, a dla nauczyciela bez e-maila wymagane jest zgodne nazwisko. Brak `--apply` zawsze oznacza wyłącznie lokalny podgląd.
+
+Jeżeli nauczyciel został utworzony przez automat, ale z powodu błędu aplikacji lub przerwanego przebiegu nie otrzymał flagi `Testowy`, można użyć dodatkowej, jawnej opcji `--allow-unmarked`. Opcja omija wyłącznie wymóg flagi `Testowy`; pozostałe sprawdzenia własności rekordu nadal są obowiązkowe.
+
+```powershell
+# Podgląd nieudanych rekordów; brak zmian w bazie
+npm.cmd run cleanup:teachers -- --include-failed --allow-unmarked
+
+# Usunięcie jednego konkretnego rekordu bez flagi Testowy
+# tylko jeśli ID i dane nauczyciela dokładnie pasują do rejestru automatu
+npm.cmd run cleanup:teachers -- REG_123456_abcdef.json --include-failed --allow-unmarked --apply
+
+# Zbiorcze usunięcie PASS oraz zakończonych nieudanych testów,
+# z możliwością usunięcia poprawnie zweryfikowanych rekordów bez flagi Testowy
+npm.cmd run cleanup:teachers -- --include-failed --allow-unmarked --apply
+```
+
+`--allow-unmarked` powinno być używane wyłącznie świadomie, po zakończeniu diagnostyki. Nie oznacza ono „usuń dowolnego nauczyciela bez flagi Testowy”. Jeżeli dane pobrane z Octopusa nie zgadzają się z rejestrem testu, `DELETE` nadal jest blokowany. Jeżeli endpoint sprawdzający flagę `Testowy` zwróci błąd zamiast poprawnej odpowiedzi, cleanup również nie przechodzi do usuwania.
+
+Automatyczny `cleanup-global-teardown.mjs` nie korzysta z `--allow-unmarked`. Oznacza to, że automatyczne sprzątanie po zestawie nadal wymaga flagi `Testowy`; możliwość usunięcia rekordu bez tej flagi jest dostępna tylko podczas jawnie uruchomionego ręcznego cleanupu.
+
+Do usuwania wyłącznie wybranych błędów należy podać pełne nazwy plików z kolumny `rejestr`. Wariant zbiorczy obejmuje również oczekujące rekordy `PASS`. Po `DELETE` skrypt dodatkowo odczytuje nauczyciela ponownie i uznaje operację za zakończoną dopiero wtedy, gdy brak rekordu zostanie potwierdzony.
 
 Setup testów `EDIT-*` nie przechodzi przez formularz dodawania. Factory API tworzy nauczyciela, relacje ze szkołami i przedmioto-poziomy, po czym scenariusz otwiera bezpośrednio kartę utworzonego rekordu. UI pozostaje warstwą testowaną dla samej edycji. Testy `ADD-*` nadal przygotowują nauczyciela przez UI, ponieważ dodawanie jest ich celem.
 

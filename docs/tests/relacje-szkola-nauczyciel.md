@@ -58,7 +58,7 @@ secondSchool.id;
 secondSchool.name;
 ```
 
-Fixture nie wykonuje nawigacji ani wyszukiwania przez UI i nie tworzy szkoły. Relację nauczyciela ze szkołą przygotowuje factory API razem z rekordem nauczyciela. Druga szkoła służy scenariuszom wielu relacji, takim jak `REL-02`. Dzięki temu testy edycji, walidacji, wyszukiwania i relacji nie tworzą kolejnych nieusuwalnych szkół.
+Fixture nie wykonuje nawigacji ani wyszukiwania przez UI i nie tworzy szkoły. Relację nauczyciela ze szkołą przygotowuje factory API razem z rekordem nauczyciela. Jest to zgodne z ogólną zasadą projektu: jeśli utworzenie szkoły nie jest celem scenariusza, setup powinien korzystać z API lub stabilnych danych referencyjnych zamiast powtarzać formularz dodawania. Druga szkoła służy scenariuszom wielu relacji, takim jak `REL-02`. Dzięki temu testy edycji, walidacji, wyszukiwania i relacji nie tworzą kolejnych nieusuwalnych szkół.
 
 ## 6. Asercje relacji
 

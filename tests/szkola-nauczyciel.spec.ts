@@ -1,7 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { mkdir, writeFile } from "node:fs/promises";
 import { test, expect } from "./support/fixtures";
-import { Octopus } from "./support/octopus";
+import { API_SCHOOL_CITY, API_SCHOOL_POSTAL_CODE, Octopus } from "./support/octopus";
 import { OCTOPUS_BASE_URL } from "./support/environment";
 
 test("szkoła → nauczyciel → relacja → wyszukiwanie → nauczyciel → historia @smoke", async ({
@@ -36,7 +36,7 @@ test("szkoła → nauczyciel → relacja → wyszukiwanie → nauczyciel → his
       await app.searchSchool(schoolName, run.schoolId);
       await app.openPanel("school", run.schoolId);
       await expect(page.getByRole("checkbox", { name: "Testowy", exact: true })).toBeChecked();
-      await expect(app.detail("address")).toHaveValue(`80-064 Gdańsk ${number}`);
+      await expect(app.detail("address")).toHaveValue(`${API_SCHOOL_POSTAL_CODE} ${API_SCHOOL_CITY} ${number}`);
     });
 
     await test.step("TEA-01 / REL-01: dodaj nauczyciela i powiąż ze szkołą", async () => {

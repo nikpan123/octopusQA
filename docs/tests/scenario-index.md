@@ -1,8 +1,28 @@
 # Indeks scenariuszy
 
-> Plik generowany automatycznie przez `npm run docs:scenarios`. Nie edytuj tabeli ręcznie.
+> Indeks bazuje na wygenerowanej liście scenariuszy; sekcja `ORD-*` została zaktualizowana o zmiany potwierdzone w bieżącej sesji. Po zmianach w testach warto ponownie uruchomić `npm run docs:scenarios`.
 
-Łącznie: **272 scenariuszy**.
+Łącznie: **349 scenariuszy**.
+
+
+## Podsumowanie według plików
+
+| Plik | Liczba scenariuszy |
+|---|---:|
+| `klubowiczostwo-nauczyciela.spec.ts` | 72 |
+| `nauczyciel-dodawanie.spec.ts` | 33 |
+| `nauczyciel-edycja.spec.ts` | 44 |
+| `nauczyciel-rozszerzenie.spec.ts` | 6 |
+| `szkola-dodawanie.spec.ts` | 55 |
+| `szkola-edycja.spec.ts` | 23 |
+| `szkola-medalowosc-annual.spec.ts` | 2 |
+| `szkola-medalowosc.spec.ts` | 42 |
+| `szkola-nauczyciel.spec.ts` | 1 |
+| `walidacja-anulowanie.spec.ts` | 9 |
+| `zamowienia-szkoly.spec.ts` | 62 |
+| **Razem** | **349** |
+
+## Pełna lista scenariuszy
 
 | ID | Scenariusz | Plik | Tagi |
 |---|---|---|---|
@@ -171,56 +191,74 @@
 | SCH-12 | SCH-12: nową szkołę można znaleźć po nazwie i zidentyfikować po ID | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L204) | `school`, `school-add`, `search` |
 | SCH-13 | SCH-13: słownik zawiera wszystkie obsługiwane typy szkół | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L228) | `school`, `school-add`, `dictionary` |
 | SCH-14 | SCH-14: formularz tworzy liceum z właściwym typem | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L244) | `school`, `school-add`, `positive`, `school-type` |
-| SCH-21 | SCH-21: formularz tworzy szkołę typu Technikum | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L260) | `school`, `school-add`, `positive`, `school-type` |
-| SCH-22 | SCH-22: formularz tworzy szkołę typu Placówka doskonalenia nauczycieli | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L260) | `school`, `school-add`, `positive`, `school-type` |
-| SCH-23 | SCH-23: formularz tworzy szkołę typu Zespół szkół | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L260) | `school`, `school-add`, `positive`, `school-type` |
-| SCH-24 | SCH-24: formularz tworzy szkołę typu Szkoła NPC | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L260) | `school`, `school-add`, `positive`, `school-type` |
-| SCH-25 | SCH-25: formularz tworzy szkołę typu Przedszkole | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L260) | `school`, `school-add`, `positive`, `school-type` |
-| SCH-17 | SCH-17: nazwa złożona wyłącznie ze spacji nie pozwala utworzyć szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L284) | `school`, `school-add`, `validation` |
-| SCH-18 | SCH-18: nazwa z polskimi znakami i interpunkcją jest zachowana | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L306) | `school`, `school-add`, `positive`, `name` |
-| SCH-27 | SCH-27: spacje na brzegach nazwy są usuwane przy zapisie | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L321) | `school`, `school-add`, `positive`, `name` |
-| SCH-28 | SCH-28: identyczna nazwa i adres mogą utworzyć dwa różne rekordy | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L337) | `school`, `school-add`, `positive`, `duplicate` |
-| SCH-29 | SCH-29: identyczna nazwa pod różnymi adresami tworzy dwa różne rekordy | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L361) | `school`, `school-add`, `positive`, `duplicate` |
-| SCH-07 | SCH-07: poprawny kod pocztowy pozwala wybrać miejscowość i zapisać adres | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L395) | `school`, `school-add`, `address` |
-| SCH-08 | SCH-08: nieznany kod pocztowy blokuje zapis adresu i szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L419) | `school`, `school-add`, `validation`, `address` |
-| SCH-19 | SCH-19: numer budynku z literą jest zachowany w adresie | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L456) | `school`, `school-add`, `address` |
-| SCH-20 | SCH-20: wyczyszczenie wyszukiwania adresu usuwa wpisane kryteria | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L477) | `school`, `school-add`, `address`, `clear` |
-| SCH-26 | SCH-26: numer budynku z separatorem jest zachowany po utworzeniu szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L499) | `school`, `school-add`, `positive`, `address` |
-| SCH-41 | SCH-41: brak numeru budynku blokuje zapis adresu i szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L514) | `school`, `school-add`, `validation`, `address` |
-| SCH-43 | SCH-43: pełny adres z ulicą jest zachowany po utworzeniu szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L539) | `school`, `school-add`, `positive`, `address` |
-| SCH-44 | SCH-44: wyczyszczenie wybranego adresu usuwa utworzony adres | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L570) | `school`, `school-add`, `validation`, `address`, `clear` |
-| SCH-45 | SCH-45: ponowne dodanie adresu zastępuje adres przed utworzeniem szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L597) | `school`, `school-add`, `positive`, `address` |
-| SCH-46 | SCH-46: anulowanie zmiany adresu zachowuje poprzedni adres | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L628) | `school`, `school-add`, `positive`, `address`, `cancel` |
-| SCH-47 | SCH-47: wyczyszczenie adresu i anulowanie zachowuje poprzedni adres | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L652) | `school`, `school-add`, `positive`, `address`, `cancel`, `clear` |
-| SCH-15 | SCH-15: usunięcie dodanego adresu ponownie blokuje zapis szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L674) | `school`, `school-add`, `address`, `validation` |
-| SCH-30 | SCH-30: nazwa z SIO jest zachowana po utworzeniu szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L699) | `school`, `school-add`, `positive`, `optional-data` |
-| SCH-32 | SCH-32: liczba uczniów jest zachowana po utworzeniu szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L715) | `school`, `school-add`, `positive`, `optional-data` |
-| SCH-33 | SCH-33: numer RSPO jest przekazywany podczas tworzenia szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L733) | `school`, `school-add`, `positive`, `identifier` |
-| SCH-34 | SCH-34: numer REGON jest przekazywany podczas tworzenia szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L751) | `school`, `school-add`, `positive`, `identifier` |
-| SCH-35 | SCH-35: numer NIP jest przekazywany podczas tworzenia szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L769) | `school`, `school-add`, `positive`, `identifier` |
-| SCH-51 | SCH-51: REGON z wiodącymi zerami zachowuje pełną długość | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L787) | `school`, `school-add`, `positive`, `identifier` |
-| SCH-52 | SCH-52: NIP z wiodącymi zerami zachowuje pełną długość | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L805) | `school`, `school-add`, `positive`, `identifier` |
-| SCH-49 | SCH-49: zerowa liczba uczniów jest zachowana | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L823) | `school`, `school-add`, `positive`, `optional-data` |
-| SCH-31 | SCH-31: WWW i e-mail są zachowane po utworzeniu szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L845) | `school`, `school-add`, `positive`, `contact` |
-| SCH-53 | SCH-53: pełny adres WWW ze ścieżką i parametrami jest zachowany | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L865) | `school`, `school-add`, `positive`, `contact` |
-| SCH-54 | SCH-54: e-mail z wielkimi literami jest normalizowany do małych liter | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L882) | `school`, `school-add`, `positive`, `contact` |
-| SCH-36 | SCH-36: przełącznik komórka ustawia format numeru i resetuje się po zapisie | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L901) | `school`, `school-add`, `positive`, `contact` |
-| SCH-37 | SCH-37: telefon stacjonarny zachowuje właściwy format po utworzeniu szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L927) | `school`, `school-add`, `positive`, `contact` |
-| SCH-38 | SCH-38: niepoprawny e-mail blokuje utworzenie szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L954) | `school`, `school-add`, `validation`, `contact` |
-| SCH-39 | SCH-39: niepełny telefon blokuje utworzenie szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L971) | `school`, `school-add`, `validation`, `contact` |
-| SCH-40 | SCH-40: przełączenie komórka zmienia maskę bez utraty cyfr | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L991) | `school`, `school-add`, `contact`, `format` |
-| SCH-48 | SCH-48: e-mail z subdomeną jest zachowany | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L1010) | `school`, `school-add`, `positive`, `contact` |
-| SCH-50 | SCH-50: e-mail z aliasem plus jest odrzucany przez backend | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L1027) | `school`, `school-add`, `validation`, `contact` |
-| SCH-16 | SCH-16: błąd serwera nie otwiera nieistniejącej szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L1063) | `school`, `school-add`, `error-handling` |
-| SCH-42 | SCH-42: pełny formularz zachowuje wszystkie dane opcjonalne | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L1100) | `school`, `school-add`, `positive`, `optional-data`, `contact`, `identifier` |
-| SCH-EDIT-01 | SCH-EDIT-01: formularz edycji wczytuje nazwę szkoły | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L46) | `school`, `school-edit`, `smoke` |
-| SCH-EDIT-02 | SCH-EDIT-02: anulowanie zmiany nazwy zachowuje poprzednią wartość | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L59) | `school`, `school-edit`, `cancel` |
-| SCH-EDIT-03 | SCH-EDIT-03: zmiana nazwy jest trwała po ponownym otwarciu szkoły | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L75) | `school`, `school-edit`, `positive` |
-| SCH-EDIT-04 | SCH-EDIT-04: zmiana WWW i e-maila jest trwała | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L92) | `school`, `school-edit`, `positive`, `contact` |
-| SCH-EDIT-05 | SCH-EDIT-05: zmiana nazwy z SIO jest trwała | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L127) | `school`, `school-edit`, `positive`, `sio` |
-| SCH-EDIT-06 | SCH-EDIT-06: anulowanie zmiany nazwy z SIO zachowuje poprzednią wartość | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L151) | `school`, `school-edit`, `cancel`, `sio` |
-| SCH-EDIT-07 | SCH-EDIT-07: pusta nazwa nie pozwala zapisać edycji | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L170) | `school`, `school-edit`, `validation` |
-| SCH-EDIT-08 | SCH-EDIT-08: typ i poziom szkoły są nieedytowalne w edycji danych | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L188) | `school`, `school-edit`, `readonly` |
+| SCH-21 | SCH-21: formularz tworzy szkołę typu Technikum | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L261) | `school`, `school-add`, `positive`, `school-type` |
+| SCH-22 | SCH-22: formularz tworzy szkołę typu Placówka doskonalenia nauczycieli | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L261) | `school`, `school-add`, `positive`, `school-type` |
+| SCH-23 | SCH-23: formularz tworzy szkołę typu Zespół szkół | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L261) | `school`, `school-add`, `positive`, `school-type` |
+| SCH-24 | SCH-24: formularz tworzy szkołę typu Szkoła NPC | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L261) | `school`, `school-add`, `positive`, `school-type` |
+| SCH-25 | SCH-25: formularz tworzy szkołę typu Przedszkole | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L261) | `school`, `school-add`, `positive`, `school-type` |
+| SCH-17 | SCH-17: nazwa złożona wyłącznie ze spacji nie pozwala utworzyć szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L286) | `school`, `school-add`, `validation` |
+| SCH-18 | SCH-18: nazwa z polskimi znakami i interpunkcją jest zachowana | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L308) | `school`, `school-add`, `positive`, `name` |
+| SCH-27 | SCH-27: spacje na brzegach nazwy są usuwane przy zapisie | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L323) | `school`, `school-add`, `positive`, `name` |
+| SCH-28 | SCH-28: identyczna nazwa i adres mogą utworzyć dwa różne rekordy | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L339) | `school`, `school-add`, `positive`, `duplicate` |
+| SCH-29 | SCH-29: identyczna nazwa pod różnymi adresami tworzy dwa różne rekordy | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L363) | `school`, `school-add`, `positive`, `duplicate` |
+| SCH-07 | SCH-07: poprawny kod pocztowy pozwala wybrać miejscowość i zapisać adres | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L397) | `school`, `school-add`, `address` |
+| SCH-08 | SCH-08: nieznany kod pocztowy blokuje zapis adresu i szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L421) | `school`, `school-add`, `validation`, `address` |
+| SCH-19 | SCH-19: numer budynku z literą jest zachowany w adresie | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L458) | `school`, `school-add`, `address` |
+| SCH-20 | SCH-20: wyczyszczenie wyszukiwania adresu usuwa wpisane kryteria | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L479) | `school`, `school-add`, `address`, `clear` |
+| SCH-26 | SCH-26: numer budynku z separatorem jest zachowany po utworzeniu szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L501) | `school`, `school-add`, `positive`, `address` |
+| SCH-41 | SCH-41: brak numeru budynku blokuje zapis adresu i szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L516) | `school`, `school-add`, `validation`, `address` |
+| SCH-43 | SCH-43: pełny adres z ulicą jest zachowany po utworzeniu szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L541) | `school`, `school-add`, `positive`, `address` |
+| SCH-44 | SCH-44: wyczyszczenie wybranego adresu usuwa utworzony adres | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L572) | `school`, `school-add`, `validation`, `address`, `clear` |
+| SCH-45 | SCH-45: ponowne dodanie adresu zastępuje adres przed utworzeniem szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L599) | `school`, `school-add`, `positive`, `address` |
+| SCH-46 | SCH-46: anulowanie zmiany adresu zachowuje poprzedni adres | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L630) | `school`, `school-add`, `positive`, `address`, `cancel` |
+| SCH-47 | SCH-47: wyczyszczenie adresu i anulowanie zachowuje poprzedni adres | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L654) | `school`, `school-add`, `positive`, `address`, `cancel`, `clear` |
+| SCH-15 | SCH-15: usunięcie dodanego adresu ponownie blokuje zapis szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L676) | `school`, `school-add`, `address`, `validation` |
+| SCH-30 | SCH-30: nazwa z SIO jest zachowana po utworzeniu szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L701) | `school`, `school-add`, `positive`, `optional-data` |
+| SCH-32 | SCH-32: liczba uczniów jest zachowana po utworzeniu szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L717) | `school`, `school-add`, `positive`, `optional-data` |
+| SCH-33 | SCH-33: numer RSPO jest przekazywany podczas tworzenia szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L735) | `school`, `school-add`, `positive`, `identifier` |
+| SCH-34 | SCH-34: numer REGON jest przekazywany podczas tworzenia szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L753) | `school`, `school-add`, `positive`, `identifier` |
+| SCH-35 | SCH-35: numer NIP jest przekazywany podczas tworzenia szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L771) | `school`, `school-add`, `positive`, `identifier` |
+| SCH-51 | SCH-51: REGON z wiodącymi zerami zachowuje pełną długość | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L789) | `school`, `school-add`, `positive`, `identifier` |
+| SCH-52 | SCH-52: NIP z wiodącymi zerami zachowuje pełną długość | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L807) | `school`, `school-add`, `positive`, `identifier` |
+| SCH-49 | SCH-49: zerowa liczba uczniów jest zachowana | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L825) | `school`, `school-add`, `positive`, `optional-data` |
+| SCH-31 | SCH-31: WWW i e-mail są zachowane po utworzeniu szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L847) | `school`, `school-add`, `positive`, `contact` |
+| SCH-53 | SCH-53: pełny adres WWW ze ścieżką i parametrami jest zachowany | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L867) | `school`, `school-add`, `positive`, `contact` |
+| SCH-54 | SCH-54: e-mail z wielkimi literami jest normalizowany do małych liter | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L884) | `school`, `school-add`, `positive`, `contact` |
+| SCH-36 | SCH-36: przełącznik komórka ustawia format numeru i resetuje się po zapisie | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L903) | `school`, `school-add`, `positive`, `contact` |
+| SCH-37 | SCH-37: telefon stacjonarny zachowuje właściwy format po utworzeniu szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L929) | `school`, `school-add`, `positive`, `contact` |
+| SCH-38 | SCH-38: niepoprawny e-mail blokuje utworzenie szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L956) | `school`, `school-add`, `validation`, `contact` |
+| SCH-39 | SCH-39: niepełny telefon blokuje utworzenie szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L973) | `school`, `school-add`, `validation`, `contact` |
+| SCH-40 | SCH-40: przełączenie komórka zmienia maskę bez utraty cyfr | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L993) | `school`, `school-add`, `contact`, `format` |
+| SCH-48 | SCH-48: e-mail z subdomeną jest zachowany | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L1012) | `school`, `school-add`, `positive`, `contact` |
+| SCH-50 | SCH-50: e-mail z aliasem plus jest odrzucany przez backend | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L1029) | `school`, `school-add`, `validation`, `contact` |
+| SCH-16 | SCH-16: błąd serwera nie otwiera nieistniejącej szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L1065) | `school`, `school-add`, `error-handling` |
+| SCH-42 | SCH-42: pełny formularz zachowuje wszystkie dane opcjonalne | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L1102) | `school`, `school-add`, `positive`, `optional-data`, `contact`, `identifier` |
+| SCH-55 | SCH-55: pola opcjonalne mogą pozostać puste i szkoła nadal jest trwała | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L1159) | `school`, `school-add`, `positive`, `optional-data` |
+| SCH-56 | SCH-56: anulowanie kompletnego formularza po uzupełnieniu danych opcjonalnych nie tworzy szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L1184) | `school`, `school-add`, `cancel`, `optional-data` |
+| SCH-57 | SCH-57: ponowne otwarcie szkoły zachowuje typ, poziom i adres | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L1200) | `school`, `school-add`, `positive`, `persistence` |
+| SCH-EDIT-01 | SCH-EDIT-01: formularz edycji wczytuje nazwę szkoły | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L44) | `school`, `school-edit`, `smoke` |
+| SCH-EDIT-02 | SCH-EDIT-02: anulowanie zmiany nazwy zachowuje poprzednią wartość | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L57) | `school`, `school-edit`, `cancel` |
+| SCH-EDIT-03 | SCH-EDIT-03: zmiana nazwy jest trwała po ponownym otwarciu szkoły | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L73) | `school`, `school-edit`, `positive` |
+| SCH-EDIT-04 | SCH-EDIT-04: zmiana WWW i e-maila jest trwała | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L90) | `school`, `school-edit`, `positive`, `contact` |
+| SCH-EDIT-05 | SCH-EDIT-05: zmiana nazwy z SIO jest trwała | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L125) | `school`, `school-edit`, `positive`, `sio` |
+| SCH-EDIT-06 | SCH-EDIT-06: anulowanie zmiany nazwy z SIO zachowuje poprzednią wartość | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L149) | `school`, `school-edit`, `cancel`, `sio` |
+| SCH-EDIT-07 | SCH-EDIT-07: pusta nazwa nie pozwala zapisać edycji | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L168) | `school`, `school-edit`, `validation` |
+| SCH-EDIT-08 | SCH-EDIT-08: typ i poziom szkoły są nieedytowalne w edycji danych | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L186) | `school`, `school-edit`, `readonly` |
+| SCH-EDIT-09 | SCH-EDIT-09: anulowanie edycji WWW zachowuje poprzednią wartość | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L206) | `school`, `school-edit`, `cancel`, `contact` |
+| SCH-EDIT-10 | SCH-EDIT-10: WWW można wyczyścić i pusta wartość jest trwała | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L223) | `school`, `school-edit`, `positive`, `contact` |
+| SCH-EDIT-11 | SCH-EDIT-11: e-mail można wyczyścić i pusta wartość jest trwała | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L241) | `school`, `school-edit`, `positive`, `contact` |
+| SCH-EDIT-12 | SCH-EDIT-12: e-mail z wielkimi literami jest normalizowany po edycji | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L259) | `school`, `school-edit`, `positive`, `contact` |
+| SCH-EDIT-13 | SCH-EDIT-13: nazwa z polskimi znakami i interpunkcją jest trwała po edycji | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L280) | `school`, `school-edit`, `positive`, `name` |
+| SCH-EDIT-14 | SCH-EDIT-14: spacje na brzegach nazwy są usuwane po edycji | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L296) | `school`, `school-edit`, `positive`, `name` |
+| SCH-EDIT-15 | SCH-EDIT-15: nazwę z SIO można wyczyścić | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L313) | `school`, `school-edit`, `positive`, `sio` |
+| SCH-EDIT-16 | SCH-EDIT-16: typ Szkoła podstawowa i poziom Szkoła Podstawowa są tylko do odczytu | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L340) | `school`, `school-edit`, `readonly`, `school-type` |
+| SCH-EDIT-16 | SCH-EDIT-16: typ Liceum i poziom Szkoła Średnia są tylko do odczytu | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L340) | `school`, `school-edit`, `readonly`, `school-type` |
+| SCH-EDIT-16 | SCH-EDIT-16: typ Technikum i poziom Szkoła Średnia są tylko do odczytu | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L340) | `school`, `school-edit`, `readonly`, `school-type` |
+| SCH-EDIT-16 | SCH-EDIT-16: typ Placówka doskonalenia nauczycieli i poziom Inny są tylko do odczytu | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L340) | `school`, `school-edit`, `readonly`, `school-type` |
+| SCH-EDIT-16 | SCH-EDIT-16: typ Zespół szkół i poziom Zespół Szkół są tylko do odczytu | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L340) | `school`, `school-edit`, `readonly`, `school-type` |
+| SCH-EDIT-16 | SCH-EDIT-16: typ Szkoła NPC i poziom Szkoła Podstawowa są tylko do odczytu | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L340) | `school`, `school-edit`, `readonly`, `school-type` |
+| SCH-EDIT-16 | SCH-EDIT-16: typ Przedszkole i poziom Przedszkole są tylko do odczytu | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L340) | `school`, `school-edit`, `readonly`, `school-type` |
+| SCH-EDIT-17 | SCH-EDIT-17: kolejne edycje różnych pól nie nadpisują wcześniejszych zmian | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L357) | `school`, `school-edit`, `positive`, `regression` |
 | MED-YEAR-PREP | MED-YEAR-PREP: przygotuj snapshot 4 szkół referencyjnych i 50 losowych szkół | [szkola-medalowosc-annual.spec.ts](../../tests/szkola-medalowosc-annual.spec.ts#L59) | `annual-medal` |
 | MED-YEAR-01 | MED-YEAR-01: roczne przeliczenie ustawia oczekiwany medal na podstawie snapshotu | [szkola-medalowosc-annual.spec.ts](../../tests/szkola-medalowosc-annual.spec.ts#L173) | `annual-medal` |
 | MED-02 | MED-02: pole Medal dla szkoły ze złotym medalem jest nieedytowalne | [szkola-medalowosc.spec.ts](../../tests/szkola-medalowosc.spec.ts#L38) | — |
@@ -275,6 +313,66 @@
 | EDIT-02 | EDIT-02: anulowanie edycji zachowuje dane i historię | [walidacja-anulowanie.spec.ts](../../tests/walidacja-anulowanie.spec.ts#L70) | `cancel` |
 | FIND-04 | FIND-04: brak wyników usuwa poprzednią listę — teacher | [walidacja-anulowanie.spec.ts](../../tests/walidacja-anulowanie.spec.ts#L107) | `search` |
 | FIND-04 | FIND-04: brak wyników usuwa poprzednią listę — school | [walidacja-anulowanie.spec.ts](../../tests/walidacja-anulowanie.spec.ts#L107) | `search` |
-| ORD-01 | ORD-01: zamówienie szkoły zachowuje produkt i ilość po ponownym otwarciu | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L13) | `school`, `order` |
-| ORD-02 | ORD-02: zamówienie szkoły z dwoma produktami zachowuje produkty i ilości po ponownym otwarciu | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L42) | `school`, `order` |
-| ORD-03 | ORD-03: edycja ilości dwóch produktów w zamówieniu i usunięcie zamówienia | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L101) | `school`, `order` |
+
+| ORD-01 | ORD-01: zamówienie szkoły zachowuje produkt i ilość po ponownym otwarciu | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts) | `school`, `order`, `smoke` |
+| ORD-02 | ORD-02: zamówienie z dwoma produktami zachowuje produkty i ilości | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts) | `school`, `order`, `positive` |
+| ORD-03 | ORD-03: edycja ilości dwóch produktów i usunięcie zamówienia | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts) | `school`, `order`, `edit` |
+| ORD-04 | ORD-04: formularz Dodaj zamówienie zawiera komplet podstawowych kontrolek | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts) | `school`, `order`, `form` |
+| ORD-05 | ORD-05: anulowanie pustego formularza nie tworzy zamówienia | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts) | `school`, `order`, `cancel` |
+| ORD-06 | ORD-06: anulowanie po wyszukaniu nie tworzy zamówienia | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts) | `school`, `order`, `cancel` |
+| ORD-07 | ORD-07: anulowanie po dodaniu produktu i ilości nie tworzy zamówienia | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts) | `school`, `order`, `cancel` |
+| ORD-08 | ORD-08: ponowne otwarcie po anulowaniu zaczyna od czystego formularza | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts) | `school`, `order`, `cancel` |
+| ORD-09 | ORD-09: lista Przedmiot zawiera oczekiwane pozycje | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts) | `school`, `order`, `dictionary` |
+| ORD-10 | ORD-10: lista Poziom zawiera oczekiwane pozycje | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts) | `school`, `order`, `dictionary` |
+| ORD-11 | ORD-11: lista Klasy zawiera 0-8 i pozwala zaznaczyć kilka klas | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts) | `school`, `order`, `dictionary` |
+| ORD-12 | ORD-12: wyszukiwanie po dokładnym kodzie zwraca właściwy produkt | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts) | `school`, `order`, `search` |
+| ORD-13 | ORD-13: wyszukiwanie po fragmencie kodu zwraca oba produkty fizyki 7 | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts) | `school`, `order`, `search` |
+| ORD-14 | ORD-14: filtr Przedmiot ogranicza wyniki do fizyki | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts) | `school`, `order`, `filter` |
+| ORD-15 | ORD-15: filtr Poziom ogranicza wyniki do szkoły podstawowej | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts) | `school`, `order`, `filter` |
+| ORD-16 | ORD-16: filtr Klasa zwraca produkty klasy 7 | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts) | `school`, `order`, `filter` |
+| ORD-17 | ORD-17: filtr Klasy pozwala wyszukiwać dla kilku klas jednocześnie | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts) | `school`, `order`, `filter` |
+| ORD-18 | ORD-18: Przedmiot i Poziom działają razem | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts) | `school`, `order`, `filter` |
+| ORD-19 | ORD-19: Przedmiot, Poziom i Klasa działają razem | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts) | `school`, `order`, `filter` |
+| ORD-20 | ORD-20: wszystkie filtry razem zwracają oczekiwane produkty | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts) | `school`, `order`, `filter` |
+| ORD-21 | ORD-21: nieistniejący kod daje pustą listę wyników | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts) | `school`, `order`, `search`, `negative` |
+| ORD-22 | ORD-22: drugie wyszukanie zastępuje wyniki pierwszego | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts) | `school`, `order`, `search` |
+| ORD-23 | ORD-23: Wyczyść filtry resetuje wszystkie kryteria | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts) | `school`, `order`, `filter` |
+| ORD-24 | ORD-24: wyszukiwanie działa poprawnie po wyczyszczeniu filtrów | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts) | `school`, `order`, `filter` |
+| ORD-25 | ORD-25: strzałka w prawo przenosi wybrany produkt do Zamówienia | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts) | `school`, `order`, `product` |
+| ORD-26 | ORD-26: kilka produktów można przenieść do Zamówienia jednym ruchem | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts) | `school`, `order`, `product` |
+| ORD-27 | ORD-27: strzałka w lewo cofa zaznaczony produkt | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts) | `school`, `order`, `product` |
+| ORD-28 | ORD-28: kosz usuwa wszystkie produkty z tworzonego zamówienia | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts) | `school`, `order`, `product` |
+| ORD-29 | ORD-29: produkt już dodany do Zamówienia nie pojawia się ponownie w Gratisach | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts) | `school`, `order`, `duplicate` |
+| ORD-30 | ORD-30: wyszukanie kolejnego produktu nie usuwa wcześniej wybranego | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts) | `school`, `order`, `product` |
+| ORD-31 | ORD-31: zmiana filtrów nie usuwa produktów z Zamówienia | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts) | `school`, `order`, `product`, `filter` |
+| ORD-32 | ORD-32: dane produktu są spójne po przeniesieniu do Zamówienia | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts) | `school`, `order`, `product` |
+| ORD-33 | ORD-33: ilość 1 jest zachowywana w edytorze | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts) | `school`, `order`, `quantity` |
+| ORD-34 | ORD-34: różne produkty zachowują niezależne ilości | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts) | `school`, `order`, `quantity` |
+| ORD-35 | ORD-35: ostatnia zmiana ilości przed zapisem jest używana | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts) | `school`, `order`, `quantity` |
+| ORD-36 | ORD-36: Tab kończy edycję ilości w AG Grid | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts) | `school`, `order`, `quantity` |
+| ORD-37 | ORD-37: wpisanie 0 normalizuje ilość do 10 | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts) | `school`, `order`, `quantity`, `boundary` |
+| ORD-38 | ORD-38: wartość ujemna nie powinna być akceptowana — znany bug | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts) | `school`, `order`, `quantity`, `bug` |
+| ORD-39 | ORD-39: wyczyszczenie pola Ilość automatycznie przywraca wartość | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts) | `school`, `order`, `quantity`, `validation` |
+| ORD-40 | ORD-40: pusty formularz nie zapisuje zamówienia i oznacza Przedmiot jako niepoprawny | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts) | `school`, `order`, `validation` |
+| ORD-41 | ORD-41: zamówienie można zapisać bez wybranego Przedmiotu, jeśli produkt został dodany | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts) | `school`, `order`, `positive` |
+| ORD-42 | ORD-42: dwa szybkie kliknięcia Zapisz z krótkim odstępem tworzą tylko jedno zamówienie | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts) | `school`, `order`, `duplicate`, `concurrency` |
+| ORD-43 | ORD-43: dwa kolejne zamówienia dostają różne ID | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts) | `school`, `order`, `identity` |
+| ORD-44 | ORD-44: usunięcie pierwszego z dwóch zamówień nie usuwa drugiego | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts) | `school`, `order`, `isolation` |
+| ORD-45 | ORD-45: zamówienie utworzone dla szkoły A nie pojawia się w szkole B | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts) | `school`, `order`, `isolation` |
+| ORD-46 | ORD-46: reload zachowuje ID, produkt i ilość zamówienia | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts) | `school`, `order`, `persistence` |
+| ORD-47 | ORD-47: zapisane zamówienie ma numeryczne ID i widoczny wiersz na liście | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts) | `school`, `order`, `list` |
+| ORD-48 | ORD-48: poprawny JPG można dodać jako załącznik | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts) | `school`, `order`, `attachment` |
+| ORD-49 | ORD-49: poprawny PNG można dodać jako załącznik | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts) | `school`, `order`, `attachment` |
+| ORD-50 | ORD-50: poprawny PDF można dodać jako załącznik | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts) | `school`, `order`, `attachment` |
+| ORD-51 | ORD-51: można dodać kilka załączników do jednego zamówienia | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts) | `school`, `order`, `attachment` |
+| ORD-52 | ORD-52: można usunąć jeden z kilku załączników po potwierdzeniu | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts) | `school`, `order`, `attachment` |
+| ORD-53 | ORD-53: po usunięciu wszystkich załączników lista jest pusta | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts) | `school`, `order`, `attachment` |
+| ORD-54 | ORD-54: zmiana filtrów nie usuwa załącznika | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts) | `school`, `order`, `attachment`, `filter` |
+| ORD-55 | ORD-55: dodanie produktu nie usuwa załącznika | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts) | `school`, `order`, `attachment`, `product` |
+| ORD-56 | ORD-56: załącznik jest trwały po zapisaniu i ponownym otwarciu edycji zamówienia | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts) | `school`, `order`, `attachment`, `persistence` |
+| ORD-57 | ORD-57: kilka załączników jest trwałych po zapisaniu zamówienia | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts) | `school`, `order`, `attachment`, `persistence` |
+| ORD-58 | ORD-58: anulowanie formularza z załącznikiem nie przenosi pliku do kolejnego formularza | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts) | `school`, `order`, `attachment`, `cancel` |
+| ORD-59 | ORD-59: niedozwolony typ pliku WEBP jest odrzucany | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts) | `school`, `order`, `attachment`, `validation` |
+| ORD-60 | ORD-60: niedozwolony typ pliku TXT jest odrzucany | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts) | `school`, `order`, `attachment`, `validation` |
+| ORD-61 | ORD-61: plik większy niż 10 MB jest odrzucany | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts) | `school`, `order`, `attachment`, `validation` |
+| ORD-62 | ORD-62: plik o rozmiarze dokładnie 10 MB jest akceptowany | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts) | `school`, `order`, `attachment`, `boundary` |
