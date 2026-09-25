@@ -240,6 +240,7 @@ test-results/               artefakty Playwrighta
 
 ## Mapa dokumentacji
 
+- [Pokrycie projektu testami i backlog luk](docs/POKRYCIE-TESTAMI.md)
 - [Dokumentacja obszarów testowych](docs/tests/README.md)
 - [Pełny indeks scenariuszy](docs/tests/scenario-index.md)
 - [Panel Test Runner](TEST-UI.md)

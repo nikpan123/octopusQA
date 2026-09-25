@@ -89,6 +89,7 @@ Nie edytuj tabeli w `scenario-index.md` ręcznie.
 
 ## Powiązane dokumenty
 
+- [Pokrycie projektu testami i backlog luk](../POKRYCIE-TESTAMI.md)
 - [Główny README](../../README.md)
 - [Panel Test Runner](../../TEST-UI.md)
 - [Indeks wszystkich scenariuszy](scenario-index.md)
