@@ -1095,6 +1095,43 @@ test("SCH-16: błąd serwera nie otwiera nieistniejącej szkoły @school @school
   await expect(s.app.detail("address")).toHaveValue("");
 });
 
+const schoolAddFailureCases = [
+  { id: "SCH-58", label: "HTTP 422", status: 422 },
+  { id: "SCH-59", label: "timeout sieci", abort: "timedout" as const },
+] as const;
+
+for (const failure of schoolAddFailureCases) {
+  test(`${failure.id}: ${failure.label} nie otwiera nieutworzonej szkoły @school @school-add @error-handling`, async ({
+    page,
+    scenario: s,
+  }) => {
+    const number = String(Date.now());
+    const form = await prepareCompleteSchoolAdd(page, s.app, s.schoolName, number);
+    let saveAttempts = 0;
+
+    await page.route("**/api/Institution/AddNewInstitution", async (route) => {
+      saveAttempts += 1;
+      if ("abort" in failure) {
+        await route.abort(failure.abort);
+        return;
+      }
+      await route.fulfill({
+        status: failure.status,
+        contentType: "application/json",
+        body: JSON.stringify({ message: `Kontrolowany ${failure.label}` }),
+      });
+    });
+
+    await form.getByRole("button", { name: "Zapisz", exact: true }).click();
+    await expect.poll(() => saveAttempts).toBe(1);
+    await expect(form).toHaveCount(0);
+    await expect(page).toHaveURL(/\/school\/school-panel$/);
+    await expect(s.app.detail("name")).toHaveValue("");
+    await expect(s.app.detail("address")).toHaveValue("");
+    await s.record("rejectedSchoolCreation", failure.label);
+  });
+}
+
 // =============================================================================
 // PEŁNY PRZEPŁYW REGRESYJNY
 // =============================================================================
@@ -1150,7 +1187,6 @@ test("SCH-42: pełny formularz zachowuje wszystkie dane opcjonalne @school @scho
   );
   await recordRetainedSchool(s, schoolId, number);
 });
-
 
 // =============================================================================
 // DODATKOWE SCENARIUSZE REGRESYJNE

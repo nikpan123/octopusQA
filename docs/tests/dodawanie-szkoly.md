@@ -8,76 +8,78 @@ Głównym celem zestawu jest sprawdzenie kontraktu formularza dodawania szkoły 
 
 ## 2. Stan obecny
 
-Projekt zawiera obecnie **57 przypadków** związanych bezpośrednio z dodawaniem szkoły:
+Projekt zawiera obecnie **59 przypadków** związanych bezpośrednio z dodawaniem szkoły: 57 wykonań w dedykowanym pliku oraz dwa przepływy wspólne w innych plikach.
 
-| Identyfikator                        | Lokalizacja                              | Obecne sprawdzenie                                                                                       |
-| ------------------------------------ | ---------------------------------------- | -------------------------------------------------------------------------------------------------------- |
-| **Przepływy w innych plikach**       |                                          |                                                                                                          |
-| `SCH-01`                             | krok w `tests/szkola-nauczyciel.spec.ts` | utworzenie szkoły podstawowej, oznaczenie jej jako Testowy, wyszukanie po nazwie oraz sprawdzenie adresu |
-| `SCH-02`                             | `tests/walidacja-anulowanie.spec.ts`     | anulowanie kompletnego formularza i potwierdzenie, że szkoła nie powstała                                |
-| **Podstawowy przepływ i zapis**      |                                          |                                                                                                          |
-| `SCH-03`                             | `tests/szkola-dodawanie.spec.ts`         | minimalny poprawny formularz tworzy jedną szkołę oznaczoną jako Testowy                                  |
-| `SCH-04`                             | `tests/szkola-dodawanie.spec.ts`         | brak nazwy blokuje zapis, a szkoła nie powstaje                                                          |
-| `SCH-05`                             | `tests/szkola-dodawanie.spec.ts`         | brak typu blokuje zapis, a szkoła nie powstaje                                                           |
-| `SCH-06`                             | `tests/szkola-dodawanie.spec.ts`         | brak adresu blokuje zapis, a szkoła nie powstaje                                                         |
-| `SCH-09`                             | `tests/szkola-dodawanie.spec.ts`         | anulowanie okna adresu nie przenosi jego danych do formularza szkoły                                     |
-| `SCH-10`                             | `tests/szkola-dodawanie.spec.ts`         | dwa szybkie kliknięcia zapisu wysyłają jedno skuteczne żądanie i tworzą jeden rekord                     |
-| `SCH-11`                             | `tests/szkola-dodawanie.spec.ts`         | nazwa i adres pozostają trwałe po ponownym otwarciu szkoły                                               |
-| `SCH-12`                             | `tests/szkola-dodawanie.spec.ts`         | wyszukiwanie po unikalnej nazwie zwraca dokładnie rekord o zapisanym ID                                  |
-| **Typy szkół**                       |                                          |                                                                                                          |
-| `SCH-13`                             | `tests/szkola-dodawanie.spec.ts`         | słownik udostępnia dokładnie siedem obsługiwanych typów szkół we właściwej kolejności                    |
-| `SCH-14`                             | `tests/szkola-dodawanie.spec.ts`         | reprezentatywna szkoła ponadpodstawowa zapisuje i prezentuje typ Liceum                                  |
-| `SCH-21`                             | `tests/szkola-dodawanie.spec.ts`         | formularz tworzy Technikum i prezentuje poziom Szkoła Średnia                                            |
-| `SCH-22`                             | `tests/szkola-dodawanie.spec.ts`         | formularz tworzy Placówkę doskonalenia nauczycieli                                                       |
-| `SCH-23`                             | `tests/szkola-dodawanie.spec.ts`         | formularz tworzy Zespół szkół                                                                            |
-| `SCH-24`                             | `tests/szkola-dodawanie.spec.ts`         | formularz tworzy Szkołę NPC                                                                              |
-| `SCH-25`                             | `tests/szkola-dodawanie.spec.ts`         | formularz tworzy Przedszkole                                                                             |
-| **Nazwa i duplikaty**                |                                          |                                                                                                          |
-| `SCH-17`                             | `tests/szkola-dodawanie.spec.ts`         | nazwa złożona wyłącznie ze spacji nie powoduje wysłania żądania zapisu                                   |
-| `SCH-18`                             | `tests/szkola-dodawanie.spec.ts`         | polskie znaki i typowa interpunkcja pozostają niezmienione po zapisie                                    |
-| `SCH-27`                             | `tests/szkola-dodawanie.spec.ts`         | spacje na początku i końcu nazwy są usuwane podczas zapisu                                               |
-| `SCH-28`                             | `tests/szkola-dodawanie.spec.ts`         | identyczna nazwa i adres mogą utworzyć dwa rekordy o różnych ID                                          |
-| `SCH-29`                             | `tests/szkola-dodawanie.spec.ts`         | identyczna nazwa pod różnymi adresami tworzy dwa rekordy o różnych ID                                    |
-| **Adres**                            |                                          |                                                                                                          |
-| `SCH-07`                             | `tests/szkola-dodawanie.spec.ts`         | poprawny kod pocztowy pozwala wybrać miejscowość i przenieść pełny adres do formularza szkoły            |
-| `SCH-08`                             | `tests/szkola-dodawanie.spec.ts`         | nieznany kod wyświetla komunikat o braku adresu i nie pozwala utworzyć szkoły                            |
-| `SCH-19`                             | `tests/szkola-dodawanie.spec.ts`         | numer budynku z literą zostaje przeniesiony do formularza szkoły                                         |
-| `SCH-20`                             | `tests/szkola-dodawanie.spec.ts`         | wyczyszczenie wyszukiwania adresu usuwa kod, miejscowość i ulicę                                         |
-| `SCH-26`                             | `tests/szkola-dodawanie.spec.ts`         | numer budynku z separatorem pozostaje w zapisanym adresie                                                |
-| `SCH-41`                             | `tests/szkola-dodawanie.spec.ts`         | wybranie miejscowości bez numeru budynku nie pozwala zapisać adresu ani szkoły                           |
-| `SCH-43`                             | `tests/szkola-dodawanie.spec.ts`         | pełny adres zawierający ulicę pozostaje zachowany po utworzeniu szkoły                                   |
-| `SCH-44`                             | `tests/szkola-dodawanie.spec.ts`         | wyczyszczenie wybranego adresu usuwa utworzony adres i blokuje zapis szkoły                              |
-| `SCH-45`                             | `tests/szkola-dodawanie.spec.ts`         | ponowne dodanie adresu przed zapisem szkoły zastępuje poprzedni adres                                    |
-| `SCH-46`                             | `tests/szkola-dodawanie.spec.ts`         | anulowanie rozpoczętej zmiany adresu zachowuje wcześniej dodany adres                                    |
-| `SCH-47`                             | `tests/szkola-dodawanie.spec.ts`         | wyczyszczenie adresu i anulowanie okna nie usuwa wcześniej dodanego adresu                               |
-| `SCH-15`                             | `tests/szkola-dodawanie.spec.ts`         | usunięcie wcześniej dodanego adresu ponownie blokuje utworzenie szkoły                                   |
-| **Dane opcjonalne i identyfikatory** |                                          |                                                                                                          |
-| `SCH-30`                             | `tests/szkola-dodawanie.spec.ts`         | opcjonalna nazwa z SIO pozostaje niezmieniona po utworzeniu szkoły                                       |
-| `SCH-32`                             | `tests/szkola-dodawanie.spec.ts`         | liczba uczniów pozostaje niezmieniona po utworzeniu szkoły                                               |
-| `SCH-33`                             | `tests/szkola-dodawanie.spec.ts`         | numer RSPO jest przekazywany w skutecznym żądaniu utworzenia szkoły                                      |
-| `SCH-34`                             | `tests/szkola-dodawanie.spec.ts`         | poprawny formalnie REGON jest przekazywany w skutecznym żądaniu utworzenia szkoły                        |
-| `SCH-35`                             | `tests/szkola-dodawanie.spec.ts`         | poprawny formalnie NIP jest przekazywany w skutecznym żądaniu utworzenia szkoły                          |
-| `SCH-51`                             | `tests/szkola-dodawanie.spec.ts`         | poprawny REGON z wiodącymi zerami jest przekazywany jako pełny dziewięciocyfrowy identyfikator           |
-| `SCH-52`                             | `tests/szkola-dodawanie.spec.ts`         | poprawny NIP z wiodącymi zerami jest przekazywany jako pełny dziesięciocyfrowy identyfikator             |
-| `SCH-49`                             | `tests/szkola-dodawanie.spec.ts`         | graniczna liczba uczniów równa zero pozostaje zapisana jako zero                                         |
-| **Dane kontaktowe**                  |                                          |                                                                                                          |
-| `SCH-31`                             | `tests/szkola-dodawanie.spec.ts`         | adres WWW i e-mail pozostają niezmienione po utworzeniu szkoły                                           |
-| `SCH-53`                             | `tests/szkola-dodawanie.spec.ts`         | pełny adres WWW ze ścieżką i parametrami pozostaje niezmieniony po utworzeniu szkoły                     |
-| `SCH-54`                             | `tests/szkola-dodawanie.spec.ts`         | e-mail z wielkimi literami jest wysyłany bez zmian, a zapisany rekord prezentuje go małymi literami      |
-| `SCH-36`                             | `tests/szkola-dodawanie.spec.ts`         | przełącznik komórka ustawia maskę numeru komórkowego i po zapisie wraca do stanu odznaczonego            |
-| `SCH-37`                             | `tests/szkola-dodawanie.spec.ts`         | telefon stacjonarny zachowuje odrębną maskę, a przełącznik pozostaje odznaczony                          |
-| `SCH-38`                             | `tests/szkola-dodawanie.spec.ts`         | niepoprawny adres e-mail blokuje wysłanie żądania utworzenia szkoły                                      |
-| `SCH-39`                             | `tests/szkola-dodawanie.spec.ts`         | niepełny numer telefonu blokuje wysłanie żądania utworzenia szkoły                                       |
-| `SCH-40`                             | `tests/szkola-dodawanie.spec.ts`         | przełączenie maski telefonu w obie strony nie zmienia wpisanych cyfr                                     |
-| `SCH-48`                             | `tests/szkola-dodawanie.spec.ts`         | poprawny e-mail z subdomeną pozostaje niezmieniony po utworzeniu szkoły                                  |
-| `SCH-50`                             | `tests/szkola-dodawanie.spec.ts`         | backend odrzuca e-mail z aliasem `+`, pokazuje komunikat i nie tworzy szkoły                             |
-| **Odporność techniczna**             |                                          |                                                                                                          |
-| `SCH-16`                             | `tests/szkola-dodawanie.spec.ts`         | kontrolowany błąd serwera wraca do pustego panelu i nie otwiera nieistniejącej szkoły                    |
-| **Pełny przepływ regresyjny**        |                                          |                                                                                                          |
+| Identyfikator                        | Lokalizacja                              | Obecne sprawdzenie                                                                                             |
+| ------------------------------------ | ---------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| **Przepływy w innych plikach**       |                                          |                                                                                                                |
+| `SCH-01`                             | krok w `tests/szkola-nauczyciel.spec.ts` | utworzenie szkoły podstawowej, oznaczenie jej jako Testowy, wyszukanie po nazwie oraz sprawdzenie adresu       |
+| `SCH-02`                             | `tests/walidacja-anulowanie.spec.ts`     | anulowanie kompletnego formularza i potwierdzenie, że szkoła nie powstała                                      |
+| **Podstawowy przepływ i zapis**      |                                          |                                                                                                                |
+| `SCH-03`                             | `tests/szkola-dodawanie.spec.ts`         | minimalny poprawny formularz tworzy jedną szkołę oznaczoną jako Testowy                                        |
+| `SCH-04`                             | `tests/szkola-dodawanie.spec.ts`         | brak nazwy blokuje zapis, a szkoła nie powstaje                                                                |
+| `SCH-05`                             | `tests/szkola-dodawanie.spec.ts`         | brak typu blokuje zapis, a szkoła nie powstaje                                                                 |
+| `SCH-06`                             | `tests/szkola-dodawanie.spec.ts`         | brak adresu blokuje zapis, a szkoła nie powstaje                                                               |
+| `SCH-09`                             | `tests/szkola-dodawanie.spec.ts`         | anulowanie okna adresu nie przenosi jego danych do formularza szkoły                                           |
+| `SCH-10`                             | `tests/szkola-dodawanie.spec.ts`         | dwa szybkie kliknięcia zapisu wysyłają jedno skuteczne żądanie i tworzą jeden rekord                           |
+| `SCH-11`                             | `tests/szkola-dodawanie.spec.ts`         | nazwa i adres pozostają trwałe po ponownym otwarciu szkoły                                                     |
+| `SCH-12`                             | `tests/szkola-dodawanie.spec.ts`         | wyszukiwanie po unikalnej nazwie zwraca dokładnie rekord o zapisanym ID                                        |
+| **Typy szkół**                       |                                          |                                                                                                                |
+| `SCH-13`                             | `tests/szkola-dodawanie.spec.ts`         | słownik udostępnia dokładnie siedem obsługiwanych typów szkół we właściwej kolejności                          |
+| `SCH-14`                             | `tests/szkola-dodawanie.spec.ts`         | reprezentatywna szkoła ponadpodstawowa zapisuje i prezentuje typ Liceum                                        |
+| `SCH-21`                             | `tests/szkola-dodawanie.spec.ts`         | formularz tworzy Technikum i prezentuje poziom Szkoła Średnia                                                  |
+| `SCH-22`                             | `tests/szkola-dodawanie.spec.ts`         | formularz tworzy Placówkę doskonalenia nauczycieli                                                             |
+| `SCH-23`                             | `tests/szkola-dodawanie.spec.ts`         | formularz tworzy Zespół szkół                                                                                  |
+| `SCH-24`                             | `tests/szkola-dodawanie.spec.ts`         | formularz tworzy Szkołę NPC                                                                                    |
+| `SCH-25`                             | `tests/szkola-dodawanie.spec.ts`         | formularz tworzy Przedszkole                                                                                   |
+| **Nazwa i duplikaty**                |                                          |                                                                                                                |
+| `SCH-17`                             | `tests/szkola-dodawanie.spec.ts`         | nazwa złożona wyłącznie ze spacji nie powoduje wysłania żądania zapisu                                         |
+| `SCH-18`                             | `tests/szkola-dodawanie.spec.ts`         | polskie znaki i typowa interpunkcja pozostają niezmienione po zapisie                                          |
+| `SCH-27`                             | `tests/szkola-dodawanie.spec.ts`         | spacje na początku i końcu nazwy są usuwane podczas zapisu                                                     |
+| `SCH-28`                             | `tests/szkola-dodawanie.spec.ts`         | identyczna nazwa i adres mogą utworzyć dwa rekordy o różnych ID                                                |
+| `SCH-29`                             | `tests/szkola-dodawanie.spec.ts`         | identyczna nazwa pod różnymi adresami tworzy dwa rekordy o różnych ID                                          |
+| **Adres**                            |                                          |                                                                                                                |
+| `SCH-07`                             | `tests/szkola-dodawanie.spec.ts`         | poprawny kod pocztowy pozwala wybrać miejscowość i przenieść pełny adres do formularza szkoły                  |
+| `SCH-08`                             | `tests/szkola-dodawanie.spec.ts`         | nieznany kod wyświetla komunikat o braku adresu i nie pozwala utworzyć szkoły                                  |
+| `SCH-19`                             | `tests/szkola-dodawanie.spec.ts`         | numer budynku z literą zostaje przeniesiony do formularza szkoły                                               |
+| `SCH-20`                             | `tests/szkola-dodawanie.spec.ts`         | wyczyszczenie wyszukiwania adresu usuwa kod, miejscowość i ulicę                                               |
+| `SCH-26`                             | `tests/szkola-dodawanie.spec.ts`         | numer budynku z separatorem pozostaje w zapisanym adresie                                                      |
+| `SCH-41`                             | `tests/szkola-dodawanie.spec.ts`         | wybranie miejscowości bez numeru budynku nie pozwala zapisać adresu ani szkoły                                 |
+| `SCH-43`                             | `tests/szkola-dodawanie.spec.ts`         | pełny adres zawierający ulicę pozostaje zachowany po utworzeniu szkoły                                         |
+| `SCH-44`                             | `tests/szkola-dodawanie.spec.ts`         | wyczyszczenie wybranego adresu usuwa utworzony adres i blokuje zapis szkoły                                    |
+| `SCH-45`                             | `tests/szkola-dodawanie.spec.ts`         | ponowne dodanie adresu przed zapisem szkoły zastępuje poprzedni adres                                          |
+| `SCH-46`                             | `tests/szkola-dodawanie.spec.ts`         | anulowanie rozpoczętej zmiany adresu zachowuje wcześniej dodany adres                                          |
+| `SCH-47`                             | `tests/szkola-dodawanie.spec.ts`         | wyczyszczenie adresu i anulowanie okna nie usuwa wcześniej dodanego adresu                                     |
+| `SCH-15`                             | `tests/szkola-dodawanie.spec.ts`         | usunięcie wcześniej dodanego adresu ponownie blokuje utworzenie szkoły                                         |
+| **Dane opcjonalne i identyfikatory** |                                          |                                                                                                                |
+| `SCH-30`                             | `tests/szkola-dodawanie.spec.ts`         | opcjonalna nazwa z SIO pozostaje niezmieniona po utworzeniu szkoły                                             |
+| `SCH-32`                             | `tests/szkola-dodawanie.spec.ts`         | liczba uczniów pozostaje niezmieniona po utworzeniu szkoły                                                     |
+| `SCH-33`                             | `tests/szkola-dodawanie.spec.ts`         | numer RSPO jest przekazywany w skutecznym żądaniu utworzenia szkoły                                            |
+| `SCH-34`                             | `tests/szkola-dodawanie.spec.ts`         | poprawny formalnie REGON jest przekazywany w skutecznym żądaniu utworzenia szkoły                              |
+| `SCH-35`                             | `tests/szkola-dodawanie.spec.ts`         | poprawny formalnie NIP jest przekazywany w skutecznym żądaniu utworzenia szkoły                                |
+| `SCH-51`                             | `tests/szkola-dodawanie.spec.ts`         | poprawny REGON z wiodącymi zerami jest przekazywany jako pełny dziewięciocyfrowy identyfikator                 |
+| `SCH-52`                             | `tests/szkola-dodawanie.spec.ts`         | poprawny NIP z wiodącymi zerami jest przekazywany jako pełny dziesięciocyfrowy identyfikator                   |
+| `SCH-49`                             | `tests/szkola-dodawanie.spec.ts`         | graniczna liczba uczniów równa zero pozostaje zapisana jako zero                                               |
+| **Dane kontaktowe**                  |                                          |                                                                                                                |
+| `SCH-31`                             | `tests/szkola-dodawanie.spec.ts`         | adres WWW i e-mail pozostają niezmienione po utworzeniu szkoły                                                 |
+| `SCH-53`                             | `tests/szkola-dodawanie.spec.ts`         | pełny adres WWW ze ścieżką i parametrami pozostaje niezmieniony po utworzeniu szkoły                           |
+| `SCH-54`                             | `tests/szkola-dodawanie.spec.ts`         | e-mail z wielkimi literami jest wysyłany bez zmian, a zapisany rekord prezentuje go małymi literami            |
+| `SCH-36`                             | `tests/szkola-dodawanie.spec.ts`         | przełącznik komórka ustawia maskę numeru komórkowego i po zapisie wraca do stanu odznaczonego                  |
+| `SCH-37`                             | `tests/szkola-dodawanie.spec.ts`         | telefon stacjonarny zachowuje odrębną maskę, a przełącznik pozostaje odznaczony                                |
+| `SCH-38`                             | `tests/szkola-dodawanie.spec.ts`         | niepoprawny adres e-mail blokuje wysłanie żądania utworzenia szkoły                                            |
+| `SCH-39`                             | `tests/szkola-dodawanie.spec.ts`         | niepełny numer telefonu blokuje wysłanie żądania utworzenia szkoły                                             |
+| `SCH-40`                             | `tests/szkola-dodawanie.spec.ts`         | przełączenie maski telefonu w obie strony nie zmienia wpisanych cyfr                                           |
+| `SCH-48`                             | `tests/szkola-dodawanie.spec.ts`         | poprawny e-mail z subdomeną pozostaje niezmieniony po utworzeniu szkoły                                        |
+| `SCH-50`                             | `tests/szkola-dodawanie.spec.ts`         | backend odrzuca e-mail z aliasem `+`, pokazuje komunikat i nie tworzy szkoły                                   |
+| **Odporność techniczna**             |                                          |                                                                                                                |
+| `SCH-16`                             | `tests/szkola-dodawanie.spec.ts`         | kontrolowany błąd serwera wraca do pustego panelu i nie otwiera nieistniejącej szkoły                          |
+| `SCH-58`                             | `tests/szkola-dodawanie.spec.ts`         | kontrolowana odpowiedź HTTP 422 nie otwiera nieutworzonej szkoły                                               |
+| `SCH-59`                             | `tests/szkola-dodawanie.spec.ts`         | kontrolowany timeout zapisu nie otwiera nieutworzonej szkoły                                                   |
+| **Pełny przepływ regresyjny**        |                                          |                                                                                                                |
 | `SCH-42`                             | `tests/szkola-dodawanie.spec.ts`         | jeden zapis zachowuje komplet danych opcjonalnych, kontaktowych i identyfikacyjnych także po ponownym otwarciu |
-| `SCH-55`                             | `tests/szkola-dodawanie.spec.ts`         | pola opcjonalne mogą pozostać puste, a szkoła nadal zostaje poprawnie zapisana i ponownie odczytana      |
-| `SCH-56`                             | `tests/szkola-dodawanie.spec.ts`         | anulowanie kompletnego formularza po uzupełnieniu danych opcjonalnych nie tworzy szkoły                  |
-| `SCH-57`                             | `tests/szkola-dodawanie.spec.ts`         | Technikum zachowuje po ponownym otwarciu nazwę, adres i poziom `Szkoła Średnia`                         |
+| `SCH-55`                             | `tests/szkola-dodawanie.spec.ts`         | pola opcjonalne mogą pozostać puste, a szkoła nadal zostaje poprawnie zapisana i ponownie odczytana            |
+| `SCH-56`                             | `tests/szkola-dodawanie.spec.ts`         | anulowanie kompletnego formularza po uzupełnieniu danych opcjonalnych nie tworzy szkoły                        |
+| `SCH-57`                             | `tests/szkola-dodawanie.spec.ts`         | Technikum zachowuje po ponownym otwarciu nazwę, adres i poziom `Szkoła Średnia`                                |
 
 `SCH-01` jest częścią długiego testu smoke obejmującego również nauczyciela, relację i historię zmian. Zapewnia pokrycie procesu end-to-end, ale nie powinien zastępować krótkich, samodzielnych testów kontraktu formularza szkoły.
 
@@ -216,7 +218,7 @@ Zaimplementowane są już: wymagany numer budynku, numer z literą, numer z sepa
 
 ### 6.4. Odporność techniczna
 
-Zaimplementowany `SCH-16` sprawdza kontrolowany błąd 500 podczas zapisu szkoły. Do dalszego rozszerzenia pozostają:
+Scenariusze `SCH-16`, `SCH-58` i `SCH-59` sprawdzają odpowiednio kontrolowany błąd 500, odpowiedź 422 oraz timeout podczas zapisu szkoły. Do dalszego rozszerzenia pozostają:
 
 - błąd lub timeout wyszukiwania miejscowości,
 - ponowienie przez użytkownika po kontrolowanym błędzie,
@@ -224,7 +226,7 @@ Zaimplementowany `SCH-16` sprawdza kontrolowany błąd 500 podczas zapisu szkoł
 
 Takie przypadki powinny korzystać z przechwycenia ruchu sieciowego i kontrolowanej odpowiedzi. Nie wolno wywoływać rzeczywistej awarii środowiska współdzielonego.
 
-`SCH-16` dokumentuje aktualne zachowanie aplikacji: po błędzie zapisu formularz jest zamykany, a użytkownik wraca do pustego panelu szkoły. Zachowanie wpisanych danych po błędzie pozostaje rekomendowanym usprawnieniem, ale nie jest obecnie kontraktem regresyjnym.
+Te scenariusze dokumentują aktualne zachowanie aplikacji: po nieudanym zapisie formularz jest zamykany, a użytkownik wraca do pustego panelu szkoły. Zachowanie wpisanych danych po błędzie pozostaje rekomendowanym usprawnieniem, ale nie jest obecnie kontraktem regresyjnym.
 
 ## 7. Ograniczanie redundancji
 
@@ -285,12 +287,11 @@ Proponowane kryteria przyjęcia pierwszej iteracji:
 
 ## 10. Stan wdrożenia i dalsze kroki
 
-Aktualnie wdrożono pełny zakres `SCH-01`–`SCH-57`. Ostatnie rozszerzenie dodało:
+Aktualnie wdrożono zakres `SCH-01`–`SCH-59`. Ostatnie rozszerzenie dodało:
 
-1. `SCH-55` — poprawny zapis przy pustych polach opcjonalnych.
-2. `SCH-56` — anulowanie kompletnego formularza po uzupełnieniu pól opcjonalnych.
-3. `SCH-57` — trwałość typu, poziomu i adresu Technikum po ponownym otwarciu.
-4. Mocniejszą weryfikację trwałości w istniejących scenariuszach typów szkół oraz w pełnym scenariuszu `SCH-42`.
+1. `SCH-58` — kontrolowaną odpowiedź HTTP 422 przy tworzeniu szkoły.
+2. `SCH-59` — kontrolowany timeout żądania utworzenia szkoły.
+3. Pełną macierz 422/500/timeout dla kluczowego zapisu tworzenia szkoły.
 
 Dalsze prace powinny skupiać się przede wszystkim na brakujących walidacjach granicznych (np. długości pól i niepoprawne formaty identyfikatorów) oraz na scenariuszach odporności sieciowej, a nie na powielaniu już pokrytych przepływów pozytywnych. Po każdej zmianie listy testów należy ponownie uruchomić `npm run docs:scenarios`.
 

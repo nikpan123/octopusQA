@@ -1,6 +1,6 @@
 # Pokrycie projektu testami
 
-Dokument przedstawia funkcjonalności objęte automatyzacją oraz obszary, które nadal wymagają testów. Stan został ustalony na podstawie aktualnego kodu, [indeksu 356 scenariuszy](tests/scenario-index.md) i dokumentacji domenowej.
+Dokument przedstawia funkcjonalności objęte automatyzacją oraz obszary, które nadal wymagają testów. Stan został ustalony na podstawie aktualnego kodu, [indeksu 365 scenariuszy](tests/scenario-index.md) i dokumentacji domenowej.
 
 ## Jak interpretować ocenę
 
@@ -20,8 +20,8 @@ Stosowane poziomy:
 | Obszar                    |                  Liczba wykonań | Ocena      | Najważniejsze pokrycie                                              | Najważniejsza luka                                                                 |
 | ------------------------- | ------------------------------: | ---------- | ------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
 | Nauczyciele               |        83 + scenariusze wspólne | Szerokie   | dodawanie, edycja, kontakty, adres, notatki, RODO, historia         | uprawnienia, awarie API i równoczesna edycja                                       |
-| Szkoły — dodawanie        |        55 + scenariusze wspólne | Szerokie   | typy, adres, dane kontaktowe, identyfikatory, walidacje             | granice długości, część walidacji formatów i błędy wyszukiwania adresu             |
-| Szkoły — edycja           |                              26 | Częściowe  | nazwa, SIO, WWW, e-mail, anulowanie, readonly                       | adres, telefon, identyfikatory, historia i odporność techniczna                    |
+| Szkoły — dodawanie        |        57 + scenariusze wspólne | Szerokie   | typy, adres, kontakty, identyfikatory, walidacje, 422/500/timeout   | granice długości, część walidacji formatów i błędy wyszukiwania adresu             |
+| Szkoły — edycja           |                              33 | Szerokie   | dane podstawowe, adres, telefon, SIO, historia, 422/500/timeout     | walidacje graniczne, retry, podwójny zapis, konflikty i uprawnienia                |
 | Relacja szkoła–nauczyciel | kilka scenariuszy przekrojowych | Częściowe  | jedna i wiele szkół, widok z obu stron, trwałość relacji            | usuwanie istniejącej relacji, duplikaty i konflikty równoległe                     |
 | Klubowiczostwo            |                              72 | Szerokie   | klasy, lata, szkoły, przedmioty, historia, usuwanie, restore, WSPOM | błędy API, uprawnienia, pełny kontrakt słowników i wysyłka e-mail                  |
 | Zamówienia szkoły         |                              66 | Szerokie   | produkty, filtry, ilości, zapis, edycja, izolacja, załączniki       | błędy sieciowe, pobieranie załączników, uprawnienia i konflikty wielu użytkowników |
@@ -29,7 +29,7 @@ Stosowane poziomy:
 | Medalowość roczna         |                               2 | Operacyjne | snapshot przed jobem i porównanie po jobie na DEV/TEST              | automat nie uruchamia joba ani nie kontroluje daty systemowej                      |
 | Infrastruktura testowa    |   testy jednostkowe i reportery | Częściowe  | sesja, cleanup, diagnostyka błędów, performance                     | brak testów panelu jako osobnej aplikacji i brak progów wydajności                 |
 
-Łączna liczba **356** obejmuje 354 testy zwykłej regresji i dwa testy rocznego workflow.
+Łączna liczba **365** obejmuje 363 testy zwykłej regresji i dwa testy rocznego workflow.
 
 ## 1. Nauczyciele
 
@@ -89,7 +89,7 @@ Dokumentacja domenowa: [dodawanie-szkoly.md](tests/dodawanie-szkoly.md).
 - błędny e-mail i niepełny telefon;
 - pełny formularz, puste pola opcjonalne i anulowanie;
 - dwa szybkie kliknięcia zapisu;
-- kontrolowany błąd HTTP 500 przy zapisie.
+- kontrolowane błędy HTTP 422 i 500 oraz timeout przy zapisie.
 
 ### Wymaga pokrycia
 
@@ -100,7 +100,7 @@ Dokumentacja domenowa: [dodawanie-szkoly.md](tests/dodawanie-szkoly.md).
 - zmiana wybranej miejscowości;
 - opcjonalny numer lokalu;
 - błąd lub timeout wyszukiwania adresu;
-- ponowienie zapisu po kontrolowanym błędzie serwera;
+- ponowienie zapisu po kontrolowanym błędzie lub timeoucie;
 - zachowanie danych formularza po błędzie, jeżeli stanie się częścią kontraktu produktu;
 - role i uprawnienia do tworzenia szkoły.
 
@@ -119,20 +119,20 @@ Dokumentacja domenowa: [edycja-szkoly.md](tests/edycja-szkoly.md).
 - pusta nazwa jako błąd walidacji;
 - readonly typu i poziomu dla wszystkich siedmiu typów szkół;
 - kolejne edycje różnych pól bez nadpisania wcześniejszych zmian.
+- trwała zmiana adresu;
+- dodanie drugiego telefonu i przełączenie typu komórkowy/stacjonarny;
+- trwała zmiana liczby uczniów, RSPO, REGON i NIP;
+- kompletny wpis historii zmiany nazwy;
+- brak utrwalenia zmiany po kontrolowanych odpowiedziach 422, 500 i timeoucie.
 
-### Potwierdzone luki
+### Wymaga dalszego pokrycia
 
-- edycja adresu;
-- edycja telefonu i przełączanie komórka/stacjonarny;
-- edycja liczby uczniów;
-- edycja RSPO, REGON i NIP;
-- historia zmian szkoły;
-- odpowiedź 5xx i timeout podczas zapisu;
+- usuwanie lub zastępowanie istniejącego telefonu;
+- walidacje graniczne danych SIO podczas edycji;
 - dwa szybkie kliknięcia `Zapisz`;
+- ponowienie zapisu po błędzie;
 - konflikt równoczesnej edycji;
 - role i uprawnienia.
-
-To obecnie najważniejszy funkcjonalny obszar do rozszerzenia.
 
 ## 4. Relacje szkoła–nauczyciel
 
@@ -314,7 +314,7 @@ W aktualnym zestawie nie znaleziono systematycznego pokrycia następujących kla
 1. **Role i uprawnienia** — większość testów działa na jednym koncie z szerokimi prawami.
 2. **Przeglądarki i urządzenia** — konfiguracja obejmuje Desktop Chrome/Chromium; brak Firefox, WebKit, urządzeń mobilnych i responsywności.
 3. **Dostępność** — brak automatycznych testów klawiatury, nazw dostępności i kontrastu jako kompletnego audytu WCAG.
-4. **Odporność sieciowa** — pojedyncze kontrolowane błędy istnieją, ale nie ma spójnej macierzy timeout/4xx/5xx/retry dla operacji zapisu.
+4. **Odporność sieciowa** — tworzenie i edycja szkoły mają macierz 4xx/5xx/timeout, ale pozostałe moduły oraz retry nadal nie są pokryte systematycznie.
 5. **Współbieżność użytkowników** — zabezpieczenie przed podwójnym kliknięciem jest testowane, lecz nie konflikty dwóch niezależnych sesji.
 6. **Bezpieczeństwo aplikacji** — brak testów autoryzacji obiektowej, dostępu bez sesji i separacji ról; powinny być projektowane z zespołem bezpieczeństwa.
 7. **Wydajność kontraktowa** — metryki są zbierane, ale brak zaakceptowanych progów czasu i obciążenia.
@@ -327,8 +327,6 @@ Priorytety są rekomendacją QA i wymagają potwierdzenia z właścicielem produ
 
 | Priorytet | Zadanie                                                                 | Uzasadnienie                                                             |
 | --------- | ----------------------------------------------------------------------- | ------------------------------------------------------------------------ |
-| P0        | Rozszerzyć edycję szkoły o adres, telefon, identyfikatory i historię    | duża część formularza edycji pozostaje bez ochrony regresyjnej           |
-| P0        | Dodać kontrolowane 4xx/5xx/timeout dla kluczowych zapisów               | obecne happy paths nie wykrywają regresji obsługi awarii                 |
 | P0        | Ustalić i przetestować macierz ról oraz uprawnień                       | jeden użytkownik nie potwierdza zasad autoryzacji                        |
 | P1        | Dodać konflikty dwóch sesji dla nauczyciela, szkoły, klubu i zamówienia | obecne testy podwójnego kliknięcia nie sprawdzają optimistic concurrency |
 | P1        | Domknąć granice walidacji szkoły                                        | długości i formaty identyfikatorów są tylko częściowo pokryte            |
@@ -339,6 +337,8 @@ Priorytety są rekomendacją QA i wymagają potwierdzenia z właścicielem produ
 | P2        | Dodać podstawowy audyt dostępności i nawigację klawiaturą               | obecny zestaw nie mierzy WCAG                                            |
 | P2        | Ustalić progi p95 i maksymalny czas kluczowych operacji                 | obecne raportowanie nie blokuje regresji wydajnościowej                  |
 | P2        | Dodać testy wizualne wybranych ekranów                                  | ochrona logiki nie wykrywa regresji układu                               |
+
+Zrealizowano dwa wcześniejsze zadania P0: rozszerzenie edycji szkoły o adres, telefon, dane SIO i historię (`SCH-EDIT-18`–`SCH-EDIT-21`) oraz kontrolowane 422/500/timeout dla tworzenia i edycji szkoły (`SCH-16`, `SCH-58`, `SCH-59`, `SCH-EDIT-22`–`SCH-EDIT-24`). Odporność pozostałych modułów nadal figuruje w ich sekcjach jako luka.
 
 ## 12. Zasady utrzymania dokumentu
 

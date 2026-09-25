@@ -2,6 +2,8 @@ import { expect, type Locator, type Page } from "@playwright/test";
 
 import { typeValue } from "./octopus";
 
+export const SCHOOL_SIMPLE_UPDATE_ENDPOINT = "**/api/School/UpdateSchoolSimpleData";
+
 export async function openSchoolEditForm(page: Page) {
   await page
     .getByRole("button", {
@@ -90,6 +92,85 @@ export async function saveSchoolEdit(form: Locator) {
     .click();
 
   await expect(form).toHaveCount(0);
+}
+
+export async function openSchoolAddressEdit(page: Page) {
+  const addressRow = page
+    .getByText("Adres", { exact: true })
+    .locator('xpath=ancestor::*[.//mat-icon[normalize-space()="edit"]][1]');
+  const edit = addressRow.locator("mat-icon").filter({ hasText: /^edit$/ });
+
+  await expect(edit, "Adres szkoły powinien mieć jedną akcję edycji").toHaveCount(1);
+  await edit.click();
+
+  const dialog = page.locator("mat-dialog-container").filter({
+    has: page.getByRole("heading", { name: "Edycja adresu", exact: true }),
+  });
+  await expect(dialog).toBeVisible();
+  return dialog;
+}
+
+export async function openSchoolSioForm(page: Page) {
+  await page.getByRole("button", { name: "Akcja SIO", exact: true }).click();
+
+  const form = page.locator("mat-dialog-container").filter({
+    has: page.getByText("Dane do akcji SIO", { exact: true }),
+  });
+  await expect(form).toBeVisible();
+  return form;
+}
+
+export function schoolSioInput(
+  form: Locator,
+  id: "rspoNumber" | "nip" | "regon" | "quantityOfStudents",
+) {
+  return form.locator(`input[id="${id}"]`);
+}
+
+export async function saveSchoolSioEdit(form: Locator) {
+  await form.getByRole("button", { name: "Zapisz", exact: true }).click();
+  await expect(form).toHaveCount(0);
+}
+
+export function schoolPhoneMobileCheckbox(schoolDetails: Locator) {
+  return schoolDetails
+    .getByText("komórka", { exact: true })
+    .locator('xpath=preceding::input[@type="checkbox" and not(@disabled)][1]');
+}
+
+export async function addSchoolPhone(schoolDetails: Locator, digits: string, mobile: boolean) {
+  const input = schoolDetails.locator(
+    'input:not([disabled]):not([readonly]):not([type="checkbox"])',
+  );
+  await expect(input, "Na karcie szkoły powinno być jedno pole dodawania telefonu").toHaveCount(1);
+
+  const mobileCheckbox = schoolPhoneMobileCheckbox(schoolDetails);
+  await expect(
+    mobileCheckbox,
+    "Przełącznik typu dodawanego telefonu powinien być dostępny",
+  ).toHaveCount(1);
+  await mobileCheckbox.setChecked(mobile);
+  await input.fill(digits);
+  await input.press("Tab");
+  await expect.poll(async () => (await input.inputValue()).replace(/\D/g, "")).toBe(digits);
+
+  await schoolDetails.getByRole("button", { name: "Dodaj", exact: true }).click();
+  await expect
+    .poll(async () => {
+      const values = await schoolDetails
+        .locator('input[disabled][type="text"]')
+        .evaluateAll((inputs) => inputs.map((input) => (input as HTMLInputElement).value));
+      return values.some((value) => value.replace(/\D/g, "") === digits);
+    })
+    .toBeTruthy();
+}
+
+export async function openSchoolHistory(page: Page) {
+  await page.getByRole("tab", { name: "Historia zmian", exact: true }).click();
+  const history = page.getByRole("tabpanel", { name: "Historia zmian", exact: true });
+  await expect(history).toBeVisible();
+  await expect(history.getByRole("gridcell").first()).toBeVisible({ timeout: 20_000 });
+  return history;
 }
 
 export type SchoolContactField = "WWW" | "E-Mail";
