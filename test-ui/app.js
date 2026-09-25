@@ -96,6 +96,41 @@ function updateTimer(run) {
   if (run && !run.endedAt) state.timerHandle = setInterval(render, 1000);
 }
 
+function renderFailures(failures = [], reportUrl = '#') {
+  const container = $('#failureSummary');
+  if (!failures.length) {
+    container.hidden = true;
+    container.innerHTML = '';
+    return;
+  }
+
+  container.hidden = false;
+  container.innerHTML = `
+    <h3>Dlaczego testy się nie powiodły</h3>
+    <div class="failure-list">
+      ${failures
+        .map(
+          (failure) => `
+            <article class="failure-item">
+              <div class="failure-title">
+                <span class="failure-category">${escapeHtml(failure.label)}</span>
+                <strong>${escapeHtml(failure.id || failure.title)}</strong>
+              </div>
+              <p>${escapeHtml(failure.summary)}</p>
+              ${failure.locator ? `<div class="failure-meta"><span>Lokator</span><code>${escapeHtml(failure.locator)}</code></div>` : ''}
+              ${failure.action ? `<div class="failure-meta"><span>Akcja</span><code>${escapeHtml(failure.action)}</code></div>` : ''}
+              <div class="failure-hint">${escapeHtml(failure.suggestion)}</div>
+              <details>
+                <summary>Szczegóły techniczne</summary>
+                <pre>${escapeHtml(failure.message || 'Brak dodatkowych danych.')}</pre>
+              </details>
+            </article>`,
+        )
+        .join('')}
+    </div>
+    ${reportUrl && reportUrl !== '#' ? `<a class="failure-report-link" href="${escapeHtml(reportUrl)}" target="_blank" rel="noopener">Otwórz pełny raport ze screenshotem i trace</a>` : ''}`;
+}
+
 function renderStatus(payload) {
   state.status = payload;
   const run = payload.run;
@@ -116,6 +151,7 @@ function renderStatus(payload) {
   $('#reportBtn').classList.toggle('disabled', !run?.reportAvailable);
   $('#reportBtn').setAttribute('aria-disabled', String(!run?.reportAvailable));
   $('#reportBtn').setAttribute('href', run?.reportUrl || '#');
+  renderFailures(run?.failures || [], run?.reportUrl);
   updateTimer(run);
 }
 
@@ -247,7 +283,10 @@ async function loadHistory() {
           <div class="history-row">
             <span>${escapeHtml(new Date(run.startedAt).toLocaleString('pl-PL'))}</span>
             <span>${escapeHtml(run.environment.toUpperCase())} · ${escapeHtml(run.suiteLabel || run.suite)}</span>
-            <span class="history-status ${String(run.status).toLowerCase()}">${escapeHtml(run.status)} · ${run.counts?.passed ?? 0}/${(run.counts?.passed ?? 0) + (run.counts?.failed ?? 0) + (run.counts?.skipped ?? 0)}${(run.counts?.expectedFailed ?? 0) > 0 ? ` · expected fail: ${run.counts.expectedFailed}` : ''}</span>
+            <span class="history-status ${String(run.status).toLowerCase()}">
+              ${escapeHtml(run.status)} · ${run.counts?.passed ?? 0}/${(run.counts?.passed ?? 0) + (run.counts?.failed ?? 0) + (run.counts?.skipped ?? 0)}${(run.counts?.expectedFailed ?? 0) > 0 ? ` · expected fail: ${run.counts.expectedFailed}` : ''}
+              ${run.failures?.length ? `<small title="${escapeHtml(run.failures[0].summary)}">${escapeHtml(run.failures[0].label)} · ${escapeHtml(run.failures[0].id)}</small>` : ''}
+            </span>
             <span>${formatDuration(run.durationMs)}</span>
             <span class="history-actions">
               ${run.reportAvailable && run.reportUrl ? `<a class="button-link ghost" href="${escapeHtml(run.reportUrl)}" target="_blank" rel="noopener">Raport</a>` : ''}

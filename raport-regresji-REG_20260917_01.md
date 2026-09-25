@@ -1,5 +1,7 @@
 # Raport pierwszego scenariusza Octopus
 
+> Raport historyczny z pierwszego przebiegu. Nie jest instrukcją obsługi aktualnego zestawu; bieżący stan znajduje się w [README.md](README.md).
+
 Data: 2026-09-17. Środowisko: dev, https://octopus.gwodev.pl. Przebieg: REG_20260917_01.
 Test wykonany przez interfejs przeglądarki w sesji udostępnionej przez użytkownika. Wersja aplikacji i nazwa roli nieustalone. Nie jest to jeszcze samodzielny skrypt do uruchamiania w CI.
 

@@ -33,7 +33,7 @@ Każdy scenariusz tworzy własny rekord, więc plik może działać równolegle.
 
 ## 4. Zakres SCH-EDIT-01–SCH-EDIT-17
 
-`SCH-EDIT-16` jest testem parametryzowanym dla siedmiu typów szkół. Oznacza to **17 logicznych identyfikatorów**, ale **23 wykonywane testy Playwright**.
+Zestaw zawiera **20 logicznych identyfikatorów** (`SCH-EDIT-01`–`SCH-EDIT-17`, w tym warianty `10A`, `11A` i `11B`). `SCH-EDIT-16` jest parametryzowany dla siedmiu typów szkół, dlatego plik wykonuje łącznie **26 testów Playwright**.
 
 | ID | Sprawdzenie |
 | --- | --- |
@@ -47,7 +47,10 @@ Każdy scenariusz tworzy własny rekord, więc plik może działać równolegle.
 | `SCH-EDIT-08` | typ i poziom szkoły podstawowej są tylko do odczytu |
 | `SCH-EDIT-09` | anulowanie edycji WWW zachowuje poprzednią wartość |
 | `SCH-EDIT-10` | WWW można wyczyścić, a pusta wartość pozostaje trwała |
+| `SCH-EDIT-10A` | rezygnacja z usunięcia WWW zachowuje poprzedni adres |
 | `SCH-EDIT-11` | e-mail można wyczyścić, a pusta wartość pozostaje trwała |
+| `SCH-EDIT-11A` | anulowanie edycji e-maila zachowuje poprzedni adres |
+| `SCH-EDIT-11B` | rezygnacja z usunięcia e-maila zachowuje poprzedni adres |
 | `SCH-EDIT-12` | e-mail z wielkimi literami jest normalizowany do małych liter po edycji |
 | `SCH-EDIT-13` | nazwa z polskimi znakami i interpunkcją jest trwała |
 | `SCH-EDIT-14` | spacje na początku i końcu nazwy są usuwane po zapisie |

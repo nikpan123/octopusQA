@@ -82,6 +82,22 @@ button, .button-link { border: 0; border-radius: 9px; padding: 10px 14px; cursor
 .metric-note { margin: 10px 0 0; color: var(--muted); font-size: 12px; line-height: 1.45; }
 .metric-note code { background: #eef1f4; padding: 1px 5px; border-radius: 5px; }
 
+.failure-summary { margin-top: 18px; border-top: 1px solid var(--border); padding-top: 16px; }
+.failure-summary h3 { margin-bottom: 10px; font-size: 15px; }
+.failure-list { display: grid; gap: 10px; }
+.failure-item { border: 1px solid #e2bcbc; border-radius: 10px; padding: 12px; background: #fff8f8; }
+.failure-title { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+.failure-category { border-radius: 999px; padding: 3px 8px; background: #f1d5d5; color: #852f2f; font-size: 11px; font-weight: 800; }
+.failure-item p { margin: 8px 0; color: #4c3030; font-size: 13px; line-height: 1.45; }
+.failure-meta { display: grid; grid-template-columns: 58px minmax(0, 1fr); gap: 8px; align-items: start; margin-top: 6px; font-size: 12px; }
+.failure-meta span { color: var(--muted); }
+.failure-meta code { overflow-wrap: anywhere; }
+.failure-hint { margin-top: 9px; color: #6c4b18; font-size: 12px; }
+.failure-item details { margin-top: 9px; font-size: 12px; }
+.failure-item summary { cursor: pointer; color: #596772; font-weight: 700; }
+.failure-item pre { max-height: 260px; margin: 8px 0 0; overflow: auto; white-space: pre-wrap; border-radius: 8px; background: #201818; color: #f1dddd; padding: 10px; font: 11px/1.45 "Cascadia Code", Consolas, monospace; }
+.failure-report-link { display: inline-block; margin-top: 10px; color: var(--primary); font-size: 12px; font-weight: 800; }
+
 .test-toolbar { display: flex; gap: 8px; }
 .wide-search { margin-bottom: 10px; }
 .test-summary { display: flex; justify-content: space-between; color: var(--muted); font-size: 12px; margin-bottom: 8px; }
@@ -107,6 +123,7 @@ button, .button-link { border: 0; border-radius: 9px; padding: 10px 14px; cursor
 .history-status.passed { color: #27784c; font-weight: 800; }
 .history-status.failed { color: #a23c3c; font-weight: 800; }
 .history-status.stopped { color: #6d7580; font-weight: 800; }
+.history-status small { display: block; margin-top: 3px; color: #7f3737; font-weight: 650; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .history-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
 .empty { padding: 24px; text-align: center; color: var(--muted); }
 .empty.error { color: var(--danger); }

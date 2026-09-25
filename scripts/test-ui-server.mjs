@@ -297,6 +297,7 @@ function publicStatus() {
           selectedTestIds: run.selectedTestIds,
           counts: run.counts,
           failedTestIds: run.failedTestIds,
+          failures: run.failures || [],
           durationMs: run.endedAt ? new Date(run.endedAt) - new Date(run.startedAt) : Date.now() - new Date(run.startedAt),
           performanceFile: run.performanceFile || null,
           reportUrl: run.reportUrl || null,
@@ -365,6 +366,17 @@ async function readPerformance(fileName) {
   if (!fileName) return null;
   const safeName = path.basename(fileName);
   const filePath = path.join(runsDir, safeName);
+  if (!existsSync(filePath)) return null;
+  try {
+    return JSON.parse(await readFile(filePath, 'utf8'));
+  } catch {
+    return null;
+  }
+}
+
+async function readFailureReport(runId) {
+  if (!runId || !/^[0-9a-f-]+$/i.test(runId)) return null;
+  const filePath = path.join(runsDir, `failures-${runId}.json`);
   if (!existsSync(filePath)) return null;
   try {
     return JSON.parse(await readFile(filePath, 'utf8'));
@@ -721,6 +733,7 @@ async function startRun(options) {
     selectedTestIds: Array.isArray(options.selectedTestIds) ? options.selectedTestIds : [],
     counts: { passed: 0, failed: 0, expectedFailed: 0, skipped: 0 },
     failedTestIds: [],
+    failures: [],
     performanceFile: null,
     reportUrl: `/report/${runId}/`,
     command: `npx playwright ${built.args.join(' ')}`,
@@ -730,6 +743,7 @@ async function startRun(options) {
     ...process.env,
     OCTOPUS_ENV: built.environment,
     OCTOPUS_WORKERS: String(state.run.workers),
+    OCTOPUS_UI_RUN_ID: state.run.id,
     PLAYWRIGHT_HTML_OUTPUT_DIR: reportDir,
     ...(options.annualMode ? { OCTOPUS_INCLUDE_ANNUAL: '1' } : {}),
   };
@@ -762,6 +776,9 @@ async function startRun(options) {
 
     const perf = await newestPerformanceFile(new Date(startedAt).getTime());
     if (perf) state.run.performanceFile = perf.name;
+
+    const failureReport = await readFailureReport(state.run.id);
+    state.run.failures = failureReport?.failures ?? [];
 
     const historyEntry = {
       ...state.run,

@@ -20,6 +20,7 @@
     "cleanup:preview": "node scripts/cleanup-preview.mjs",
     "cleanup:teachers": "node scripts/cleanup-teachers.mjs",
     "test:cleanup": "node --test scripts/cleanup-teachers.test.mjs",
+    "test:failures": "node --test scripts/failure-classifier.test.mjs",
     "report": "playwright show-report",
     "check": "tsc --noEmit",
     "lint": "eslint .",

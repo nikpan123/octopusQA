@@ -1,5 +1,7 @@
 # OCT-OBS-002: komunikat o braku wyników znika przy czyszczeniu wybranego rekordu
 
+> Dokument konkretnej obserwacji z wcześniejszego przebiegu. Aktualny zakres automatyzacji i sposób diagnostyki opisuje [README.md](README.md).
+
 Status: obserwacja ograniczona do ścieżki rozpoczętej bezpośrednim adresem kartoteki z ID. Nie należy uogólniać jej na każde wyszukiwanie. Aktualizacja diagnostyki: 2026-09-17.
 
 ## Uściślenie po analizie testów
