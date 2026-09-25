@@ -124,12 +124,13 @@ test("REL-02: druga szkoła zachowuje pierwszą relację i pokazuje nauczyciela 
   page,
   scenario: s,
   school,
+  secondSchool,
 }) => {
-  const secondId = await s.createSchool();
+  const secondId = secondSchool.id;
   await s.record("secondSchoolId", secondId);
   const teacherId = await s.createTeacher(school.id, school.name);
   await test.step("Dodaj drugą szkołę istniejącemu nauczycielowi", async () => {
-    await s.app.attachSchool(page.locator("body"), secondId, s.schoolName);
+    await s.app.attachSchool(page.locator("body"), secondId, secondSchool.name);
     await expect(page.getByRole("row").filter({ hasText: school.name })).toHaveCount(1);
   });
   await test.step("Potwierdź trwałość dokładnie dwóch powiązań", async () => {
