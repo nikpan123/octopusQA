@@ -1,6 +1,6 @@
 # Pokrycie projektu testami
 
-Dokument przedstawia funkcjonalności objęte automatyzacją oraz obszary, które nadal wymagają testów. Stan został ustalony na podstawie aktualnego kodu, [indeksu 365 scenariuszy](tests/scenario-index.md) i dokumentacji domenowej.
+Dokument przedstawia funkcjonalności objęte automatyzacją oraz obszary, które nadal wymagają testów. Stan został ustalony na podstawie aktualnego kodu, [indeksu 422 scenariuszy](tests/scenario-index.md) i dokumentacji domenowej.
 
 ## Jak interpretować ocenę
 
@@ -23,13 +23,16 @@ Stosowane poziomy:
 | Szkoły — dodawanie        |        57 + scenariusze wspólne | Szerokie   | typy, adres, kontakty, identyfikatory, walidacje, 422/500/timeout   | granice długości, część walidacji formatów i błędy wyszukiwania adresu             |
 | Szkoły — edycja           |                              33 | Szerokie   | dane podstawowe, adres, telefon, SIO, historia, 422/500/timeout     | walidacje graniczne, retry, podwójny zapis, konflikty i uprawnienia                |
 | Relacja szkoła–nauczyciel | kilka scenariuszy przekrojowych | Częściowe  | jedna i wiele szkół, widok z obu stron, trwałość relacji            | usuwanie istniejącej relacji, duplikaty i konflikty równoległe                     |
+| Struktura szkoły          |   57 (26 aktywnych, 31 `fixme`) | Częściowe  | UI, wyszukiwanie, wybór relacji, payload zapisu i typy relacji      | trwałość, cykle, soft delete, audyt, role i trzy znane defekty                     |
 | Klubowiczostwo            |                              72 | Szerokie   | klasy, lata, szkoły, przedmioty, historia, usuwanie, restore, WSPOM | błędy API, uprawnienia, pełny kontrakt słowników i wysyłka e-mail                  |
 | Zamówienia szkoły         |                              66 | Szerokie   | produkty, filtry, ilości, zapis, edycja, izolacja, załączniki       | błędy sieciowe, pobieranie załączników, uprawnienia i konflikty wielu użytkowników |
 | Medalowość szkoły         |                              42 | Szerokie   | UI/API, tooltip, historia, filtry, progi i duplikaty przedmiotów    | błędy API, role oraz niezależne wymuszenie przeliczenia                            |
 | Medalowość roczna         |                               2 | Operacyjne | snapshot przed jobem i porównanie po jobie na DEV/TEST              | automat nie uruchamia joba ani nie kontroluje daty systemowej                      |
 | Infrastruktura testowa    |   testy jednostkowe i reportery | Częściowe  | sesja, cleanup, diagnostyka błędów, performance                     | brak testów panelu jako osobnej aplikacji i brak progów wydajności                 |
 
-Łączna liczba **365** obejmuje 363 testy zwykłej regresji i dwa testy rocznego workflow.
+Łączna liczba **422** obejmuje 420 scenariuszy zwykłej regresji i dwa testy rocznego workflow. Scenariusze `fixme` są widoczne w indeksie, ale Playwright świadomie je pomija do czasu usunięcia opisanego blockera.
+
+Zaimplementowane oraz planowane scenariusze zakładki `Struktura` są opisane w [dokumencie obszaru](tests/struktura-szkoly.md).
 
 ## 1. Nauczyciele
 

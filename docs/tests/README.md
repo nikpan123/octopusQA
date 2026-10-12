@@ -4,8 +4,8 @@ Ten katalog opisuje aktualne obszary testowe. Źródłem prawdy dla nazw, lokali
 
 ## Aktualny stan
 
-- **365** scenariuszy we wszystkich 22 plikach;
-- **363** scenariusze w zwykłej regresji;
+- **422** scenariusze we wszystkich 23 plikach;
+- **420** scenariuszy w zwykłej regresji;
 - **2** scenariusze rocznej medalowości uruchamiane osobno;
 - domyślnie 2 workery, maksymalnie 4;
 - ORD w panelu: maksymalnie 2 workery;
@@ -22,11 +22,14 @@ Ten katalog opisuje aktualne obszary testowe. Źródłem prawdy dla nazw, lokali
 | `szkola-medalowosc-annual.spec.ts` |         2 | [Roczna medalowość](medalowosc-roczna.md)                              |
 | `szkola-medalowosc.spec.ts`        |        42 | [Medalowość szkoły](medalowosc-szkoly.md)                              |
 | `szkola-nauczyciel.spec.ts`        |         1 | [Relacje](relacje-szkola-nauczyciel.md)                                |
+| `szkola-struktura.spec.ts`         |        57 | [Struktura szkoły](struktura-szkoly.md)                                |
 | `walidacja-anulowanie.spec.ts`     |         9 | [Nauczyciele](nauczyciele.md), [relacje](relacje-szkola-nauczyciel.md) |
 | `zamowienia-*.spec.ts`             |        66 | [Zamówienia szkoły](zamowienia-szkoly.md)                              |
-| **Razem**                          |   **365** |                                                                        |
+| **Razem**                          |   **422** |                                                                        |
 
 Liczba wykonań może być większa od liczby logicznych ID, ponieważ część scenariuszy jest parametryzowana.
+
+W obszarze `Struktura szkoły` 26 scenariuszy jest aktywnych, trzy dokumentują znane defekty, a 28 pozostaje jako `fixme` z konkretnym blockerem. Szczegóły zawiera dokument [Struktura szkoły](struktura-szkoly.md).
 
 ## Zasady wspólne
 

@@ -7,7 +7,7 @@ Repozytorium zawiera testy end-to-end aplikacji Octopus napisane w Playwright i 
 | DEV        | `https://octopus.gwodev.pl`  | `playwright.config.ts`      |
 | TEST       | `https://octopus.gwotest.pl` | `playwright.test.config.ts` |
 
-Aktualny zestaw zawiera **365 scenariuszy** w 22 plikach. Zwykła regresja wykonuje **363 scenariusze**; dwa testy `MED-YEAR-*` należą do osobnego, ciężkiego procesu rocznej medalowości.
+Aktualny zestaw zawiera **422 scenariusze** w 23 plikach. Zwykła regresja obejmuje **420 scenariuszy**; dwa testy `MED-YEAR-*` należą do osobnego, ciężkiego procesu rocznej medalowości. Liczba obejmuje również jawnie pomijane kontrakty `fixme` z opisanym blockerem.
 
 Pełna lista jest generowana z kodu i znajduje się w [indeksie scenariuszy](docs/tests/scenario-index.md).
 
@@ -24,9 +24,10 @@ Pełna lista jest generowana z kodu i znajduje się w [indeksie scenariuszy](doc
 | Medalowość szkoły                    | `szkola-medalowosc.spec.ts`        |             42 |
 | Roczna medalowość                    | `szkola-medalowosc-annual.spec.ts` |              2 |
 | Relacja szkoła–nauczyciel            | `szkola-nauczyciel.spec.ts`        |              1 |
+| Struktura szkoły                     | `szkola-struktura.spec.ts`         |             57 |
 | Walidacja, anulowanie i wyszukiwanie | `walidacja-anulowanie.spec.ts`     |              9 |
 | Zamówienia szkoły                    | `zamowienia-*.spec.ts`             |             66 |
-| **Razem**                            |                                    |        **365** |
+| **Razem**                            |                                    |        **422** |
 
 Szczegółowe opisy domen znajdują się w [dokumentacji testów](docs/tests/README.md).
 
@@ -254,6 +255,7 @@ test-results/               artefakty Playwrighta
 - [Panel Test Runner](TEST-UI.md)
 - [Zamówienia na dwóch workerach](README-PARALLEL-ORD.md)
 - [Roczna medalowość](docs/tests/medalowosc-roczna.md)
+- [Plan testów struktury szkoły](docs/tests/struktura-szkoly.md)
 - [Przegląd jakości i refaktoryzacji](docs/przeglad-refaktoryzacji.md)
 - [Defekt MED-30/MED-60 — filtr Medal = Brak](docs/issues/MED-30-MED-60-filtr-medal-brak.md)
 
