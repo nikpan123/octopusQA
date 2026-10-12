@@ -5,7 +5,10 @@ import { test, expect } from "./support/fixtures";
 import { GOLD_SCHOOL, NO_MEDAL_SCHOOL, SILVER_SCHOOL } from "./support/school-medal-data";
 import {
   addStructureSchoolCandidate,
+  createStructureRelation,
+  deleteStructureRelation,
   dismissWarning,
+  expectStructureRelationVisible,
   expectStructureSchoolResult,
   expectVisibleStructureAddressesContain,
   fillStructureSearch,
@@ -20,6 +23,7 @@ import {
   structureSchoolRow,
   submitStructureSearch,
 } from "./support/school-structure";
+import { ensureStructureTestSchools } from "./support/school-structure-data";
 import { Octopus } from "./support/octopus";
 
 type StructureSaveItem = {
@@ -298,8 +302,24 @@ test.describe("Struktura szkoły", () => {
     await expect(dialog).toHaveCount(0);
   });
 
-  test("STR-17: trwałość relacji po ponownym otwarciu @school @structure @blocked", async () => {
-    test.fixme(true, "brak seeda relacji i endpointu cleanup/undo");
+  test("STR-17: trwałość relacji po ponownym otwarciu @school @structure @persistence", async ({
+    page,
+  }) => {
+    const app = new Octopus(page);
+    const schools = await ensureStructureTestSchools(page, app, ["group", "primary"]);
+    const group = schools.group!;
+    const primary = schools.primary!;
+
+    await deleteStructureRelation(app, group, primary, { ifExists: true });
+    try {
+      await createStructureRelation(app, group, primary, "Zespół szkół", "Podrzędna");
+      await expectStructureRelationVisible(app, group, primary);
+
+      await app.openPanel("school", primary.id);
+      await expectStructureRelationVisible(app, group, primary);
+    } finally {
+      await deleteStructureRelation(app, group, primary, { ifExists: true });
+    }
   });
 
   test("STR-18: anulowanie po dodaniu szkoły nie zachowuje planowanego powiązania @school @structure @cancel", async ({
@@ -428,16 +448,44 @@ test.describe("Struktura szkoły", () => {
     test.fixme(true, "brak seeda istniejącej relacji i cleanupu");
   });
 
-  test("STR-34: soft delete relacji @school @structure @blocked", async () => {
-    test.fixme(true, "brak technicznego odczytu stanu nieaktywnego");
+  test("STR-34: ikona śmietnika usuwa relację ze struktury @school @structure @delete", async ({
+    page,
+  }) => {
+    const app = new Octopus(page);
+    const schools = await ensureStructureTestSchools(page, app, ["group", "primary"]);
+    const group = schools.group!;
+    const primary = schools.primary!;
+
+    await deleteStructureRelation(app, group, primary, { ifExists: true });
+    await createStructureRelation(app, group, primary, "Zespół szkół", "Podrzędna");
+    await expectStructureRelationVisible(app, group, primary);
+    await deleteStructureRelation(app, group, primary);
+
+    const panel = await openSchoolStructure(app, group);
+    await expect(panel.getByText("Brak struktury organizacyjnej.", { exact: true })).toBeVisible();
   });
 
   test("STR-35: przywrócenie relacji @school @structure @blocked", async () => {
     test.fixme(true, "nieznany endpoint i położenie akcji undo");
   });
 
-  test("STR-36: ponowne dodanie po soft delete @school @structure @blocked", async () => {
-    test.fixme(true, "niepotwierdzony kontrakt reaktywacji");
+  test("STR-36: relację można ponownie dodać po usunięciu @school @structure @delete", async ({
+    page,
+  }) => {
+    const app = new Octopus(page);
+    const schools = await ensureStructureTestSchools(page, app, ["group", "primary"]);
+    const group = schools.group!;
+    const primary = schools.primary!;
+
+    await deleteStructureRelation(app, group, primary, { ifExists: true });
+    try {
+      await createStructureRelation(app, group, primary, "Zespół szkół", "Podrzędna");
+      await deleteStructureRelation(app, group, primary);
+      await createStructureRelation(app, group, primary, "Zespół szkół", "Podrzędna");
+      await expectStructureRelationVisible(app, group, primary);
+    } finally {
+      await deleteStructureRelation(app, group, primary, { ifExists: true });
+    }
   });
 
   test("STR-37: brak wpływu nieaktywnej relacji na biznes @school @structure @blocked", async () => {

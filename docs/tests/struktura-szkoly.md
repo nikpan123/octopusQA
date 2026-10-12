@@ -16,10 +16,10 @@ Identyfikatory `STR-*` są zarezerwowane dla tego obszaru.
 Stan automatyzacji:
 
 - wszystkie scenariusze `STR-01`–`STR-57` są zdefiniowane w zestawie Playwright;
-- 26 scenariuszy jest aktywnych i potwierdzonych na DEV;
+- 29 scenariuszy jest aktywnych i potwierdzonych na DEV;
 - trzy scenariusze są oznaczone `fixme` jako znane defekty: `STR-49`, `STR-50` i `STR-53`;
-- 28 scenariuszy jest oznaczonych `fixme` z opisanym brakiem seeda, cleanupu, kontraktu backendowego albo wymaganej roli;
-- testy aktywne nie zapisują relacji na DEV: żądania zapisu są przechwytywane i otrzymują kontrolowaną odpowiedź;
+- 25 scenariuszy jest oznaczonych `fixme` z opisanym brakiem kontraktu backendowego, reguły biznesowej albo wymaganej roli;
+- scenariusze zapisu korzystają z dedykowanych szkół `AUTO_STR_<ŚRODOWISKO>_*`; szkoły są współdzielone, natomiast relacje są usuwane po teście przez obsługiwaną akcję aplikacji;
 - backlog bez reprezentacji w kodzie: 0 scenariuszy.
 
 ## 2. Obserwowany interfejs
@@ -37,9 +37,8 @@ Zakładka `Struktura` udostępnia:
 
 ## 3. Dane testowe i bezpieczeństwo
 
-- Do testów odczytowych należy używać stabilnej, kontrolowanej struktury referencyjnej osobno dla DEV i TEST.
-- Testy zapisu powinny korzystać z dedykowanych szkół oznaczonych jako testowe, utworzonych wcześniej przez seed/factory. Projekt nie ma bezpiecznego endpointu usuwania szkół, dlatego każdy scenariusz nie może tworzyć nowych placówek przez UI.
-- Każdy test zmieniający relację musi zapisać ID relacji i w `finally` przywrócić stan początkowy przez obsługiwane `undo` albo dedykowany endpoint cleanupu relacji.
+- Testy zapisu korzystają z dedykowanych szkół oznaczonych jako testowe, tworzonych jednokrotnie i zapamiętywanych lokalnie osobno dla DEV i TEST. Projekt nie usuwa tych placówek po każdym scenariuszu.
+- Każdy test zmieniający relację przywraca stan początkowy w `finally` przez ikonę śmietnika i potwierdzoną odpowiedź endpointu `DeleteInstitutionsRelation`.
 - Scenariusze modyfikujące tę samą strukturę nie mogą działać równolegle. Należy umieścić je w osobnym serialowym `describe` albo zapewnić niezależny zestaw danych na worker.
 - Test soft delete nie może opierać się wyłącznie na zniknięciu wiersza z UI. Powinien dodatkowo potwierdzić stan nieaktywny przez API lub odczyt techniczny przygotowany dla testów.
 

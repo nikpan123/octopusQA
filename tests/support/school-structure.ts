@@ -7,6 +7,9 @@ export type StructureSchool = {
   name: string;
 };
 
+export type StructureRelationType = "Zespół szkół" | "Filia" | "Wielobudynkowość";
+export type StructureHierarchy = "Nadrzędna" | "Podrzędna";
+
 export async function openSchoolStructure(app: Octopus, school: StructureSchool) {
   await app.openPanel("school", school.id);
 
@@ -120,7 +123,10 @@ export async function addStructureSchoolCandidate(dialog: Locator, school: Struc
 export async function removeStructureSchoolCandidate(dialog: Locator, school: StructureSchool) {
   const relatedRow = structureRelatedSchoolRow(dialog, school.id);
   await expect(relatedRow).toHaveCount(1);
-  await relatedRow.getByRole("gridcell").first().click();
+  await relatedRow
+    .locator("mat-icon")
+    .filter({ hasText: "remove_circle_outline" })
+    .click({ force: true });
   await expect(relatedRow).toHaveCount(0);
 }
 
@@ -137,6 +143,92 @@ export async function selectStructureRelationCell(
   await expect(option, `Opcja „${value}” powinna być dostępna`).toBeVisible();
   await option.click();
   await expect(cell).toContainText(value);
+}
+
+export async function createStructureRelation(
+  app: Octopus,
+  owner: StructureSchool,
+  related: StructureSchool,
+  type: StructureRelationType,
+  hierarchy: StructureHierarchy,
+) {
+  const dialog = await openSchoolStructureDialog(app, owner);
+  await fillStructureSearch(app, dialog, { id: related.id });
+  await submitStructureSearch(dialog);
+  const row = await addStructureSchoolCandidate(dialog, related);
+  await selectStructureRelationCell(app.page, row, "type", type);
+  await selectStructureRelationCell(app.page, row, "hierarchy", hierarchy);
+
+  const saveResponse = app.page.waitForResponse((response) => {
+    const request = response.request();
+    return (
+      request.method() === "POST" &&
+      new URL(response.url()).pathname === "/api/Institution/AddOrUpdateInstitutionRelations"
+    );
+  });
+
+  await dialog.getByRole("button", { name: "Zapisz", exact: true }).click();
+  const response = await saveResponse;
+  expect(response.ok(), `Zapis relacji powinien się powieść (${response.status()})`).toBeTruthy();
+  await expect(dialog).toHaveCount(0);
+}
+
+export function structurePanelSchoolRow(panel: Locator, school: StructureSchool) {
+  return panel
+    .getByRole("gridcell", { name: school.id, exact: true })
+    .locator('xpath=ancestor::*[@role="row"][1]');
+}
+
+export async function expectStructureRelationVisible(
+  app: Octopus,
+  owner: StructureSchool,
+  related: StructureSchool,
+) {
+  const panel = await openSchoolStructure(app, owner);
+  const row = structurePanelSchoolRow(panel, related);
+  await expect(row, `Struktura powinna zawierać szkołę ${related.id}`).toHaveCount(1);
+  await expect(row).toContainText(related.name);
+  return row;
+}
+
+export async function deleteStructureRelation(
+  app: Octopus,
+  owner: StructureSchool,
+  related: StructureSchool,
+  options: { ifExists?: boolean } = {},
+) {
+  const panel = await openSchoolStructure(app, owner);
+  const row = structurePanelSchoolRow(panel, related);
+
+  if (options.ifExists && (await row.count()) === 0) return false;
+
+  await expect(row, `Struktura powinna zawierać relację ze szkołą ${related.id}`).toHaveCount(1);
+  await row.locator("mat-icon").filter({ hasText: "delete_outline" }).click();
+
+  const confirmation = app.page.locator("mat-dialog-container").filter({
+    hasText: "Usuwanie struktury",
+  });
+  await expect(confirmation).toBeVisible();
+  await expect(confirmation).toContainText(owner.name);
+  await expect(confirmation).toContainText(related.name);
+
+  const deleteResponse = app.page.waitForResponse((response) => {
+    const request = response.request();
+    return (
+      request.method() === "DELETE" &&
+      new URL(response.url()).pathname === "/api/Institution/DeleteInstitutionsRelation"
+    );
+  });
+
+  await confirmation.getByRole("button", { name: "Tak", exact: true }).click();
+  const response = await deleteResponse;
+  expect(
+    response.ok(),
+    `Usunięcie relacji powinno się powieść (${response.status()})`,
+  ).toBeTruthy();
+  await expect(confirmation).toHaveCount(0);
+  await expect(row).toHaveCount(0);
+  return true;
 }
 
 export async function dismissWarning(page: Page, text: string) {

@@ -29,7 +29,7 @@ Ten katalog opisuje aktualne obszary testowe. Źródłem prawdy dla nazw, lokali
 
 Liczba wykonań może być większa od liczby logicznych ID, ponieważ część scenariuszy jest parametryzowana.
 
-W obszarze `Struktura szkoły` 26 scenariuszy jest aktywnych, trzy dokumentują znane defekty, a 28 pozostaje jako `fixme` z konkretnym blockerem. Szczegóły zawiera dokument [Struktura szkoły](struktura-szkoly.md).
+W obszarze `Struktura szkoły` 29 scenariuszy jest aktywnych, trzy dokumentują znane defekty, a 25 pozostaje jako `fixme` z konkretnym blockerem. Szczegóły zawiera dokument [Struktura szkoły](struktura-szkoly.md).
 
 ## Zasady wspólne
 
