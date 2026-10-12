@@ -11,17 +11,12 @@ export type OrderTestSchool = {
 export type OrderTestSchoolKey = "primary" | "secondary";
 
 function orderWorkerSuffix(): string {
-  const parallelIndex =
-    process.env.TEST_PARALLEL_INDEX ??
-    process.env.TEST_WORKER_INDEX ??
-    "0";
+  const parallelIndex = process.env.TEST_PARALLEL_INDEX ?? process.env.TEST_WORKER_INDEX ?? "0";
 
   return `W${parallelIndex}`;
 }
 
-function definitionFor(
-  key: OrderTestSchoolKey,
-): { name: string } {
+function definitionFor(key: OrderTestSchoolKey): { name: string } {
   const worker = orderWorkerSuffix();
   const base = `AUTO_ORD_REFERENCE_${OCTOPUS_ENV.toUpperCase()}_${worker}`;
 
@@ -42,10 +37,12 @@ async function searchExactSchool(
   const search = await app.openSearch("school");
   await typeValue(app.field(search, "Nazwa szkoły"), name);
 
-  await search.getByRole("button", {
-    name: "Szukaj",
-    exact: true,
-  }).click();
+  await search
+    .getByRole("button", {
+      name: "Szukaj",
+      exact: true,
+    })
+    .click();
 
   await expect(search).toHaveCount(0);
 
@@ -84,10 +81,12 @@ async function searchExactSchool(
     .not.toBe("WAITING");
 
   if (await empty.isVisible().catch(() => false)) {
-    await empty.getByRole("button", {
-      name: "OK",
-      exact: true,
-    }).click();
+    await empty
+      .getByRole("button", {
+        name: "OK",
+        exact: true,
+      })
+      .click();
 
     await expect(empty).toHaveCount(0);
 
@@ -129,11 +128,7 @@ export async function ensureOrderTestSchool(
 
   const definition = definitionFor(key);
 
-  const existing = await searchExactSchool(
-    page,
-    app,
-    definition.name,
-  );
+  const existing = await searchExactSchool(page, app, definition.name);
 
   if (existing) {
     await app.markTestRecord();
@@ -141,11 +136,7 @@ export async function ensureOrderTestSchool(
     return existing;
   }
 
-  const id = await app.createSchool(
-    definition.name,
-    String(Date.now()),
-    "Szkoła podstawowa",
-  );
+  const id = await app.createSchool(definition.name, String(Date.now()), "Szkoła podstawowa");
 
   await app.markTestRecord();
 

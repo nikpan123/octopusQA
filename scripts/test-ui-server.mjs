@@ -1,50 +1,65 @@
-import http from 'node:http';
-import { spawn } from 'node:child_process';
-import { createReadStream, existsSync } from 'node:fs';
-import { mkdir, readFile, readdir, stat, writeFile } from 'node:fs/promises';
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
-import { randomUUID } from 'node:crypto';
+import http from "node:http";
+import { spawn } from "node:child_process";
+import { createReadStream, existsSync } from "node:fs";
+import { mkdir, readFile, readdir, stat, writeFile } from "node:fs/promises";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import { randomUUID } from "node:crypto";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const root = path.resolve(__dirname, '..');
-const uiDir = path.join(root, 'test-ui');
-const runsDir = path.join(root, 'runs');
-const historyFile = path.join(runsDir, 'test-ui-history.json');
-const reportsDir = path.join(runsDir, 'html-reports');
+const root = path.resolve(__dirname, "..");
+const uiDir = path.join(root, "test-ui");
+const runsDir = path.join(root, "runs");
+const historyFile = path.join(runsDir, "test-ui-history.json");
+const reportsDir = path.join(runsDir, "html-reports");
 
 const PORT = Number(process.env.OCTOPUS_TEST_UI_PORT || 4173);
 
 const SUITES = {
-  all: { label: 'Cała regresja', files: [] },
+  all: { label: "Cała regresja", files: [] },
   teachers: {
-    label: 'Nauczyciele',
+    label: "Nauczyciele",
     files: [
-      'tests/nauczyciel-dodawanie.spec.ts',
-      'tests/nauczyciel-edycja.spec.ts',
-      'tests/nauczyciel-rozszerzenie.spec.ts',
+      "tests/nauczyciel-dodawanie.spec.ts",
+      "tests/nauczyciel-edycja.spec.ts",
+      "tests/nauczyciel-edycja-adres.spec.ts",
+      "tests/nauczyciel-edycja-integralnosc.spec.ts",
+      "tests/nauczyciel-edycja-kontakt.spec.ts",
+      "tests/nauczyciel-edycja-notatki.spec.ts",
+      "tests/nauczyciel-edycja-rodo.spec.ts",
+      "tests/nauczyciel-rozszerzenie.spec.ts",
     ],
   },
   schools: {
-    label: 'Szkoły',
+    label: "Szkoły",
     files: [
-      'tests/szkola-dodawanie.spec.ts',
-      'tests/szkola-edycja.spec.ts',
-      'tests/szkola-nauczyciel.spec.ts',
-      'tests/walidacja-anulowanie.spec.ts',
+      "tests/szkola-dodawanie.spec.ts",
+      "tests/szkola-edycja.spec.ts",
+      "tests/szkola-nauczyciel.spec.ts",
+      "tests/walidacja-anulowanie.spec.ts",
     ],
   },
   orders: {
-    label: 'Zamówienia',
-    files: ['tests/zamowienia-szkoly.spec.ts'],
+    label: "Zamówienia",
+    files: [
+      "tests/zamowienia-szkoly.spec.ts",
+      "tests/zamowienia-produkty.spec.ts",
+      "tests/zamowienia-walidacja.spec.ts",
+      "tests/zamowienia-zalaczniki.spec.ts",
+    ],
   },
   clubs: {
-    label: 'Klubowiczostwo',
-    files: ['tests/klubowiczostwo-nauczyciela.spec.ts'],
+    label: "Klubowiczostwo",
+    files: [
+      "tests/klubowiczostwo-nauczyciela.spec.ts",
+      "tests/klubowiczostwo-walidacja.spec.ts",
+      "tests/klubowiczostwo-cykl-zycia.spec.ts",
+      "tests/klubowiczostwo-zaawansowane.spec.ts",
+    ],
   },
   medals: {
-    label: 'Medalowość',
-    files: ['tests/szkola-medalowosc.spec.ts'],
+    label: "Medalowość",
+    files: ["tests/szkola-medalowosc.spec.ts"],
   },
 };
 
@@ -64,19 +79,19 @@ const state = {
 };
 
 function configForEnvironment(environment) {
-  return environment === 'test' ? 'playwright.test.config.ts' : 'playwright.config.ts';
+  return environment === "test" ? "playwright.test.config.ts" : "playwright.config.ts";
 }
 
 function playwrightCliPath() {
   const candidates = [
-    path.join(root, 'node_modules', '@playwright', 'test', 'cli.js'),
-    path.join(root, 'node_modules', 'playwright', 'cli.js'),
+    path.join(root, "node_modules", "@playwright", "test", "cli.js"),
+    path.join(root, "node_modules", "playwright", "cli.js"),
   ];
 
   const cli = candidates.find((candidate) => existsSync(candidate));
   if (!cli) {
     throw new Error(
-      'Nie znaleziono lokalnego Playwrighta w node_modules. Uruchom npm install w katalogu projektu.',
+      "Nie znaleziono lokalnego Playwrighta w node_modules. Uruchom npm install w katalogu projektu.",
     );
   }
 
@@ -88,46 +103,51 @@ function spawnPlaywright(args, options = {}) {
 }
 
 function stripAnsi(value) {
-  return value.replace(/\x1B\[[0-?]*[ -\/]*[@-~]/g, '');
+  const escape = String.fromCharCode(27);
+  const ansiSequence = new RegExp(`${escape}\\[[0-?]*[ -/]*[@-~]`, "g");
+
+  return value.replace(ansiSequence, "");
 }
 
 function escapeRegex(value) {
-  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
 function mimeFor(filePath) {
   const ext = path.extname(filePath).toLowerCase();
-  return {
-    '.html': 'text/html; charset=utf-8',
-    '.js': 'text/javascript; charset=utf-8',
-    '.css': 'text/css; charset=utf-8',
-    '.json': 'application/json; charset=utf-8',
-    '.png': 'image/png',
-    '.jpg': 'image/jpeg',
-    '.jpeg': 'image/jpeg',
-    '.svg': 'image/svg+xml',
-    '.zip': 'application/zip',
-    '.webm': 'video/webm',
-    '.woff': 'font/woff',
-    '.woff2': 'font/woff2',
-  }[ext] || 'application/octet-stream';
+  return (
+    {
+      ".html": "text/html; charset=utf-8",
+      ".js": "text/javascript; charset=utf-8",
+      ".css": "text/css; charset=utf-8",
+      ".json": "application/json; charset=utf-8",
+      ".png": "image/png",
+      ".jpg": "image/jpeg",
+      ".jpeg": "image/jpeg",
+      ".svg": "image/svg+xml",
+      ".zip": "application/zip",
+      ".webm": "video/webm",
+      ".woff": "font/woff",
+      ".woff2": "font/woff2",
+    }[ext] || "application/octet-stream"
+  );
 }
 
 function sendJson(res, status, payload) {
   const body = JSON.stringify(payload);
   res.writeHead(status, {
-    'Content-Type': 'application/json; charset=utf-8',
-    'Content-Length': Buffer.byteLength(body),
-    'Cache-Control': 'no-store',
+    "Content-Type": "application/json; charset=utf-8",
+    "Content-Length": Buffer.byteLength(body),
+    "Cache-Control": "no-store",
   });
   res.end(body);
 }
 
 async function readJsonBody(req) {
-  let raw = '';
+  let raw = "";
   for await (const chunk of req) {
     raw += chunk;
-    if (raw.length > 1_000_000) throw new Error('Request body too large');
+    if (raw.length > 1_000_000) throw new Error("Request body too large");
   }
   return raw ? JSON.parse(raw) : {};
 }
@@ -137,14 +157,14 @@ function emit(event, payload) {
   for (const client of state.clients) client.write(data);
 }
 
-function pushLog(text, stream = 'stdout') {
-  const clean = stripAnsi(text).replace(/\r/g, '');
-  const lines = clean.split('\n').filter((line) => line.length > 0);
+function pushLog(text, stream = "stdout") {
+  const clean = stripAnsi(text).replace(/\r/g, "");
+  const lines = clean.split("\n").filter((line) => line.length > 0);
   for (const line of lines) {
     state.logLines.push({ at: Date.now(), stream, line });
     if (state.logLines.length > 2000) state.logLines.shift();
     parseProgressLine(line);
-    emit('log', { stream, line });
+    emit("log", { stream, line });
   }
 }
 
@@ -221,7 +241,7 @@ function parseProgressLine(line) {
       ? Math.max(0, state.progress.xCount - state.run.counts.failed)
       : 0;
 
-  emit('status', publicStatus());
+  emit("status", publicStatus());
 }
 
 function finalizeRunCounts(exitCode) {
@@ -250,10 +270,7 @@ function finalizeRunCounts(exitCode) {
     state.run.counts.failed = state.progress.xCount;
   }
 
-  state.run.counts.expectedFailed = Math.max(
-    0,
-    state.progress.xCount - state.run.counts.failed,
-  );
+  state.run.counts.expectedFailed = Math.max(0, state.progress.xCount - state.run.counts.failed);
 
   if (state.run.counts.failed === 0) {
     state.run.failedTestIds = [];
@@ -275,7 +292,11 @@ function finalizeRunCounts(exitCode) {
 }
 
 function extractTestId(text) {
-  return text.match(/\b(?:ORD|CLUB|SCH(?:-EDIT)?|MED(?:-YEAR)?|ADD|EDIT|TEA|FIND|REL)-[A-Z0-9-]+\b/)?.[0] || null;
+  return (
+    text.match(
+      /\b(?:ORD|CLUB|SCH(?:-EDIT)?|MED(?:-YEAR)?|ADD|EDIT|TEA|FIND|REL)-[A-Z0-9-]+\b/,
+    )?.[0] || null
+  );
 }
 
 function publicStatus() {
@@ -298,10 +319,12 @@ function publicStatus() {
           counts: run.counts,
           failedTestIds: run.failedTestIds,
           failures: run.failures || [],
-          durationMs: run.endedAt ? new Date(run.endedAt) - new Date(run.startedAt) : Date.now() - new Date(run.startedAt),
+          durationMs: run.endedAt
+            ? new Date(run.endedAt) - new Date(run.startedAt)
+            : Date.now() - new Date(run.startedAt),
           performanceFile: run.performanceFile || null,
           reportUrl: run.reportUrl || null,
-          reportAvailable: existsSync(path.join(reportsDir, run.id, 'index.html')),
+          reportAvailable: existsSync(path.join(reportsDir, run.id, "index.html")),
         }
       : null,
   };
@@ -321,7 +344,7 @@ function normalizeHistoryEntry(entry) {
    * Stary parser liczył linię `x` z test.fail() jako FAILED, mimo że
    * proces Playwrighta kończył się statusem PASSED.
    */
-  if (entry?.status === 'PASSED' && counts.failed > 0) {
+  if (entry?.status === "PASSED" && counts.failed > 0) {
     counts.expectedFailed = Math.max(counts.expectedFailed, counts.failed);
     counts.failed = 0;
     return { ...entry, counts, failedTestIds: [] };
@@ -332,7 +355,7 @@ function normalizeHistoryEntry(entry) {
 
 async function loadHistory() {
   try {
-    const parsed = JSON.parse(await readFile(historyFile, 'utf8'));
+    const parsed = JSON.parse(await readFile(historyFile, "utf8"));
     return Array.isArray(parsed) ? parsed.map(normalizeHistoryEntry) : [];
   } catch {
     return [];
@@ -344,7 +367,7 @@ async function saveHistory(entry) {
   const history = await loadHistory();
   const filtered = history.filter((item) => item.id !== entry.id);
   filtered.unshift(entry);
-  await writeFile(historyFile, JSON.stringify(filtered.slice(0, 30), null, 2), 'utf8');
+  await writeFile(historyFile, JSON.stringify(filtered.slice(0, 30), null, 2), "utf8");
 }
 
 async function newestPerformanceFile(afterTimestamp = 0) {
@@ -368,7 +391,7 @@ async function readPerformance(fileName) {
   const filePath = path.join(runsDir, safeName);
   if (!existsSync(filePath)) return null;
   try {
-    return JSON.parse(await readFile(filePath, 'utf8'));
+    return JSON.parse(await readFile(filePath, "utf8"));
   } catch {
     return null;
   }
@@ -379,75 +402,73 @@ async function readFailureReport(runId) {
   const filePath = path.join(runsDir, `failures-${runId}.json`);
   if (!existsSync(filePath)) return null;
   try {
-    return JSON.parse(await readFile(filePath, 'utf8'));
+    return JSON.parse(await readFile(filePath, "utf8"));
   } catch {
     return null;
   }
 }
 
-
 const TEST_RUN_FILE_RE = /^REG_\d+_[a-f0-9]{6}\.json$/i;
-const TEACHER_CLEANUP_RESULTS = new Set(['PASS', 'FAIL', 'FAILED', 'TIMEDOUT', 'INTERRUPTED']);
-const TEACHER_REMOVED_STATUSES = new Set(['DELETED', 'ALREADY_ABSENT']);
+const TEACHER_CLEANUP_RESULTS = new Set(["PASS", "FAIL", "FAILED", "TIMEDOUT", "INTERRUPTED"]);
+const TEACHER_REMOVED_STATUSES = new Set(["DELETED", "ALREADY_ABSENT"]);
 
 function detectRunEnvironment(run) {
-  const urls = [run?.teacherUrl, run?.schoolUrl, run?.lastUrl]
-    .filter(Boolean)
-    .map(String);
+  const urls = [run?.teacherUrl, run?.schoolUrl, run?.lastUrl].filter(Boolean).map(String);
 
-  if (urls.some((value) => value.includes('octopus.gwotest.pl'))) return 'test';
-  if (urls.some((value) => value.includes('octopus.gwodev.pl'))) return 'dev';
+  if (urls.some((value) => value.includes("octopus.gwotest.pl"))) return "test";
+  if (urls.some((value) => value.includes("octopus.gwodev.pl"))) return "dev";
 
   // Dotychczasowe rejestry często nie zapisywały środowiska jawnie.
   // Projekt domyślnie pracuje na DEV, a właściwy cleanup dodatkowo
   // weryfikuje rekord po ID, e-mailu i fladze Testowy przed DELETE.
-  return 'dev';
+  return "dev";
 }
 
 function originForEnvironment(environment) {
-  return environment === 'test'
-    ? 'https://octopus.gwotest.pl'
-    : 'https://octopus.gwodev.pl';
+  return environment === "test" ? "https://octopus.gwotest.pl" : "https://octopus.gwodev.pl";
 }
 
 function runIdentifier(run, fileName) {
-  return String(run?.runId || run?.id || fileName.replace(/\.json$/i, ''));
+  return String(run?.runId || run?.id || fileName.replace(/\.json$/i, ""));
 }
 
 function safeString(value) {
-  return value == null ? '' : String(value);
+  return value == null ? "" : String(value);
 }
 
 function teacherDeleteState(fileName, run, environment) {
   if (!TEST_RUN_FILE_RE.test(fileName)) {
-    return { deletable: false, reason: 'Nieobsługiwany format rejestru.' };
+    return { deletable: false, reason: "Nieobsługiwany format rejestru." };
   }
 
   if (!/^\d+$/.test(safeString(run?.teacherId))) {
-    return { deletable: false, reason: 'Brak poprawnego ID nauczyciela.' };
+    return { deletable: false, reason: "Brak poprawnego ID nauczyciela." };
   }
 
   if (TEACHER_REMOVED_STATUSES.has(safeString(run?.cleanupStatus))) {
-    return { deletable: false, reason: 'Nauczyciel został już usunięty.' };
+    return { deletable: false, reason: "Nauczyciel został już usunięty." };
   }
 
   if (!TEACHER_CLEANUP_RESULTS.has(safeString(run?.result))) {
-    return { deletable: false, reason: `Stan ${safeString(run?.result) || 'brak'} nie pozwala na cleanup.` };
+    return {
+      deletable: false,
+      reason: `Stan ${safeString(run?.result) || "brak"} nie pozwala na cleanup.`,
+    };
   }
 
-  if (environment !== 'dev') {
-    return { deletable: false, reason: 'Usuwanie z UI jest obecnie dostępne tylko dla DEV.' };
+  if (environment !== "dev") {
+    return { deletable: false, reason: "Usuwanie z UI jest obecnie dostępne tylko dla DEV." };
   }
 
   const id = runIdentifier(run, fileName);
   const expectedEmail = `${id.toLowerCase()}@example.invalid`;
   if (safeString(run?.email).toLowerCase() !== expectedEmail) {
-    return { deletable: false, reason: 'Rejestr nie ma jednoznacznego testowego e-maila.' };
+    return { deletable: false, reason: "Rejestr nie ma jednoznacznego testowego e-maila." };
   }
 
   return {
     deletable: true,
-    reason: 'Przed DELETE cleanup ponownie zweryfikuje ID, e-mail, nazwisko i flagę Testowy.',
+    reason: "Przed DELETE cleanup ponownie zweryfikuje ID, e-mail, nazwisko i flagę Testowy.",
   };
 }
 
@@ -461,15 +482,17 @@ function teacherRecord(fileName, run, fileStat) {
     key: fileName,
     fileName,
     id,
-    email: safeString(Object.hasOwn(run, 'teacherEmail') ? run.teacherEmail : run.email),
+    email: safeString(Object.hasOwn(run, "teacherEmail") ? run.teacherEmail : run.email),
     lastName: safeString(run.teacherLastName || run.lastName || run.id || run.runId),
     title: safeString(run.title),
     runId: runIdentifier(run, fileName),
     result: safeString(run.result),
-    cleanupStatus: safeString(run.cleanupStatus || 'BRAK'),
+    cleanupStatus: safeString(run.cleanupStatus || "BRAK"),
     environment,
-    createdAt: safeString(run.startedAt || run.createdAt || new Date(fileStat.mtimeMs).toISOString()),
-    finishedAt: safeString(run.finishedAt || ''),
+    createdAt: safeString(
+      run.startedAt || run.createdAt || new Date(fileStat.mtimeMs).toISOString(),
+    ),
+    finishedAt: safeString(run.finishedAt || ""),
     url: safeString(run.teacherUrl) || `${origin}/teacher/teacher-panel/${encodeURIComponent(id)}`,
     deletable: deleteState.deletable,
     deleteReason: deleteState.reason,
@@ -485,31 +508,33 @@ function schoolCandidates(fileName, run, fileStat) {
     title: safeString(run.title),
     result: safeString(run.result),
     environment,
-    createdAt: safeString(run.startedAt || run.createdAt || new Date(fileStat.mtimeMs).toISOString()),
-    cleanupStatus: safeString(run.schoolRetentionStatus || ''),
+    createdAt: safeString(
+      run.startedAt || run.createdAt || new Date(fileStat.mtimeMs).toISOString(),
+    ),
+    cleanupStatus: safeString(run.schoolRetentionStatus || ""),
   };
 
   const values = [
     {
-      source: 'schoolId',
+      source: "schoolId",
       id: run.schoolId,
       name: run.schoolName || run.relatedSchoolName,
       url: run.schoolUrl,
-      kind: 'Szkoła z rejestru testu',
+      kind: "Szkoła z rejestru testu",
     },
     {
-      source: 'orderSchoolId',
+      source: "orderSchoolId",
       id: run.orderSchoolId,
       name: run.orderSchoolName,
       url: null,
-      kind: 'Szkoła referencyjna ORD',
+      kind: "Szkoła referencyjna ORD",
     },
     {
-      source: 'orderSecondarySchoolId',
+      source: "orderSecondarySchoolId",
       id: run.orderSecondarySchoolId,
       name: run.orderSecondarySchoolName,
       url: null,
-      kind: 'Druga szkoła referencyjna ORD',
+      kind: "Druga szkoła referencyjna ORD",
     },
   ];
 
@@ -530,9 +555,7 @@ async function loadTestDataRegistry() {
     return { teachers: [], schools: [], generatedAt: new Date().toISOString() };
   }
 
-  const names = (await readdir(runsDir))
-    .filter((name) => TEST_RUN_FILE_RE.test(name))
-    .sort();
+  const names = (await readdir(runsDir)).filter((name) => TEST_RUN_FILE_RE.test(name)).sort();
 
   const teachers = [];
   const schoolMap = new Map();
@@ -544,7 +567,7 @@ async function loadTestDataRegistry() {
 
     let run;
     try {
-      run = JSON.parse(await readFile(filePath, 'utf8'));
+      run = JSON.parse(await readFile(filePath, "utf8"));
     } catch {
       continue;
     }
@@ -575,7 +598,9 @@ async function loadTestDataRegistry() {
   }
 
   teachers.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-  const schools = [...schoolMap.values()].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+  const schools = [...schoolMap.values()].sort(
+    (a, b) => new Date(b.createdAt) - new Date(a.createdAt),
+  );
 
   return {
     teachers,
@@ -589,28 +614,28 @@ function runNodeScript(scriptPath, args, envOverrides = {}) {
     const child = spawn(process.execPath, [scriptPath, ...args], {
       cwd: root,
       env: { ...process.env, ...envOverrides },
-      stdio: ['ignore', 'pipe', 'pipe'],
+      stdio: ["ignore", "pipe", "pipe"],
       windowsHide: false,
     });
 
-    let stdout = '';
-    let stderr = '';
+    let stdout = "";
+    let stderr = "";
 
-    child.stdout.on('data', (data) => (stdout += data.toString('utf8')));
-    child.stderr.on('data', (data) => (stderr += data.toString('utf8')));
-    child.on('error', reject);
-    child.on('close', (code, signal) => resolve({ code, signal, stdout, stderr }));
+    child.stdout.on("data", (data) => (stdout += data.toString("utf8")));
+    child.stderr.on("data", (data) => (stderr += data.toString("utf8")));
+    child.on("error", reject);
+    child.on("close", (code, signal) => resolve({ code, signal, stdout, stderr }));
   });
 }
 
 async function deleteTeachersFromRegistry(fileNames) {
   if (state.child) {
-    throw new Error('Nie można uruchomić cleanupu podczas aktywnego przebiegu testów.');
+    throw new Error("Nie można uruchomić cleanupu podczas aktywnego przebiegu testów.");
   }
 
   const files = [...new Set((Array.isArray(fileNames) ? fileNames : []).map(String))];
-  if (!files.length) throw new Error('Nie wybrano nauczycieli do usunięcia.');
-  if (files.length > 50) throw new Error('Jednorazowo można usunąć maksymalnie 50 rejestrów.');
+  if (!files.length) throw new Error("Nie wybrano nauczycieli do usunięcia.");
+  if (files.length > 50) throw new Error("Jednorazowo można usunąć maksymalnie 50 rejestrów.");
 
   for (const fileName of files) {
     if (!TEST_RUN_FILE_RE.test(fileName) || path.basename(fileName) !== fileName) {
@@ -620,7 +645,7 @@ async function deleteTeachersFromRegistry(fileNames) {
     const filePath = path.join(runsDir, fileName);
     if (!existsSync(filePath)) throw new Error(`Nie znaleziono rejestru ${fileName}.`);
 
-    const run = JSON.parse(await readFile(filePath, 'utf8'));
+    const run = JSON.parse(await readFile(filePath, "utf8"));
     const environment = detectRunEnvironment(run);
     const stateInfo = teacherDeleteState(fileName, run, environment);
     if (!stateInfo.deletable) {
@@ -628,55 +653,58 @@ async function deleteTeachersFromRegistry(fileNames) {
     }
   }
 
-  const cleanupScript = path.join(__dirname, 'cleanup-teachers.mjs');
+  const cleanupScript = path.join(__dirname, "cleanup-teachers.mjs");
   if (!existsSync(cleanupScript)) {
-    throw new Error('Brak scripts/cleanup-teachers.mjs. UI nie może wykonać bezpiecznego DELETE.');
+    throw new Error("Brak scripts/cleanup-teachers.mjs. UI nie może wykonać bezpiecznego DELETE.");
   }
 
-  const result = await runNodeScript(
-    cleanupScript,
-    [...files, '--include-failed', '--apply'],
-    { OCTOPUS_ENV: 'dev' },
-  );
+  const result = await runNodeScript(cleanupScript, [...files, "--include-failed", "--apply"], {
+    OCTOPUS_ENV: "dev",
+  });
 
   if (result.code !== 0) {
-    const detail = (result.stderr || result.stdout || `cleanup zakończył się kodem ${result.code}`).trim();
+    const detail = (
+      result.stderr ||
+      result.stdout ||
+      `cleanup zakończył się kodem ${result.code}`
+    ).trim();
     throw new Error(detail);
   }
 
   return {
-    output: (result.stdout || '').trim(),
+    output: (result.stdout || "").trim(),
     registry: await loadTestDataRegistry(),
   };
 }
 
 function buildRunArguments(options) {
-  const environment = options.environment === 'test' ? 'test' : 'dev';
+  const environment = options.environment === "test" ? "test" : "dev";
   const config = configForEnvironment(environment);
-  const args = ['test', `--config=${config}`];
+  const args = ["test", `--config=${config}`];
 
   if (options.annualMode) {
-    args.push('tests/szkola-medalowosc-annual.spec.ts');
-    args.push('--workers=1');
-    args.push('--grep', options.annualMode);
-    if (options.headed) args.push('--headed');
-    return { args, environment, suite: 'annual', suiteLabel: options.annualMode, workers: 1 };
+    args.push("tests/szkola-medalowosc-annual.spec.ts");
+    args.push("--workers=1");
+    args.push("--grep", options.annualMode);
+    if (options.headed) args.push("--headed");
+    return { args, environment, suite: "annual", suiteLabel: options.annualMode, workers: 1 };
   }
 
-  const suite = SUITES[options.suite] ? options.suite : 'all';
+  const suite = SUITES[options.suite] ? options.suite : "all";
   const suiteDef = SUITES[suite];
 
   if (Array.isArray(options.selectedTestIds) && options.selectedTestIds.length > 0) {
     const safeIds = options.selectedTestIds
       .map(String)
-      .filter((id) => !id.startsWith('MED-YEAR-'))
+      .filter((id) => !id.startsWith("MED-YEAR-"))
       .slice(0, 100);
     if (safeIds.length) {
-      args.push('--grep', `(?:${safeIds.map(escapeRegex).join('|')})`);
+      args.push("--grep", `(?:${safeIds.map(escapeRegex).join("|")})`);
     }
   } else {
     if (suiteDef.files.length) args.push(...suiteDef.files);
-    if (options.grep && String(options.grep).trim()) args.push('--grep', String(options.grep).trim());
+    if (options.grep && String(options.grep).trim())
+      args.push("--grep", String(options.grep).trim());
   }
 
   const requestedWorkers = [1, 2, 4].includes(Number(options.workers))
@@ -684,26 +712,26 @@ function buildRunArguments(options) {
     : 2;
 
   const selectedIds = Array.isArray(options.selectedTestIds)
-    ? options.selectedTestIds.map(String).filter((id) => !id.startsWith('MED-YEAR-'))
+    ? options.selectedTestIds.map(String).filter((id) => !id.startsWith("MED-YEAR-"))
     : [];
-  const ordersOnlySelection = selectedIds.length > 0 && selectedIds.every((id) => id.startsWith('ORD-'));
+  const ordersOnlySelection =
+    selectedIds.length > 0 && selectedIds.every((id) => id.startsWith("ORD-"));
 
   // ORD-y są skonfigurowane do pracy równoległej, ale dla tego pakietu
   // świadomie ograniczamy wykonanie do maksymalnie 2 workerów. Każdy worker
   // korzysta z osobnej szkoły referencyjnej (TEST_PARALLEL_INDEX), więc nie
   // powinien kolidować z zamówieniami tworzonymi przez drugi worker.
-  const workers = suite === 'orders' || ordersOnlySelection
-    ? Math.min(requestedWorkers, 2)
-    : requestedWorkers;
+  const workers =
+    suite === "orders" || ordersOnlySelection ? Math.min(requestedWorkers, 2) : requestedWorkers;
 
   args.push(`--workers=${workers}`);
-  if (options.headed) args.push('--headed');
+  if (options.headed) args.push("--headed");
 
   return { args, environment, suite, suiteLabel: suiteDef.label, workers };
 }
 
 async function startRun(options) {
-  if (state.child) throw new Error('Test run is already in progress');
+  if (state.child) throw new Error("Test run is already in progress");
 
   const built = buildRunArguments(options);
   const runId = randomUUID();
@@ -723,20 +751,20 @@ async function startRun(options) {
     id: runId,
     startedAt,
     endedAt: null,
-    status: 'RUNNING',
+    status: "RUNNING",
     environment: built.environment,
     suite: built.suite,
     suiteLabel: built.suiteLabel,
     workers: built.workers || 1,
     headed: Boolean(options.headed),
-    grep: options.grep ? String(options.grep) : '',
+    grep: options.grep ? String(options.grep) : "",
     selectedTestIds: Array.isArray(options.selectedTestIds) ? options.selectedTestIds : [],
     counts: { passed: 0, failed: 0, expectedFailed: 0, skipped: 0 },
     failedTestIds: [],
     failures: [],
     performanceFile: null,
     reportUrl: `/report/${runId}/`,
-    command: `npx playwright ${built.args.join(' ')}`,
+    command: `npx playwright ${built.args.join(" ")}`,
   };
 
   const env = {
@@ -745,34 +773,34 @@ async function startRun(options) {
     OCTOPUS_WORKERS: String(state.run.workers),
     OCTOPUS_UI_RUN_ID: state.run.id,
     PLAYWRIGHT_HTML_OUTPUT_DIR: reportDir,
-    ...(options.annualMode ? { OCTOPUS_INCLUDE_ANNUAL: '1' } : {}),
+    ...(options.annualMode ? { OCTOPUS_INCLUDE_ANNUAL: "1" } : {}),
   };
 
   const child = spawnPlaywright(built.args, {
     cwd: root,
     env,
-    stdio: ['ignore', 'pipe', 'pipe'],
+    stdio: ["ignore", "pipe", "pipe"],
     windowsHide: false,
   });
 
   state.child = child;
   pushLog(`UI: ${state.run.command}`);
-  emit('status', publicStatus());
+  emit("status", publicStatus());
 
-  child.stdout.on('data', (data) => pushLog(data.toString('utf8'), 'stdout'));
-  child.stderr.on('data', (data) => pushLog(data.toString('utf8'), 'stderr'));
+  child.stdout.on("data", (data) => pushLog(data.toString("utf8"), "stdout"));
+  child.stderr.on("data", (data) => pushLog(data.toString("utf8"), "stderr"));
 
-  child.on('error', async (error) => {
-    pushLog(`UI ERROR: ${error.message}`, 'stderr');
+  child.on("error", async (error) => {
+    pushLog(`UI ERROR: ${error.message}`, "stderr");
   });
 
-  child.on('close', async (code, signal) => {
+  child.on("close", async (code, signal) => {
     const endedAt = new Date().toISOString();
 
     finalizeRunCounts(code);
 
     state.run.endedAt = endedAt;
-    state.run.status = signal ? 'STOPPED' : code === 0 ? 'PASSED' : 'FAILED';
+    state.run.status = signal ? "STOPPED" : code === 0 ? "PASSED" : "FAILED";
 
     const perf = await newestPerformanceFile(new Date(startedAt).getTime());
     if (perf) state.run.performanceFile = perf.name;
@@ -784,13 +812,15 @@ async function startRun(options) {
       ...state.run,
       durationMs: new Date(endedAt) - new Date(startedAt),
       reportUrl: state.run.reportUrl,
-      reportAvailable: existsSync(path.join(reportDir, 'index.html')),
+      reportAvailable: existsSync(path.join(reportDir, "index.html")),
     };
 
-    await saveHistory(historyEntry).catch((error) => pushLog(`UI: nie udało się zapisać historii: ${error.message}`, 'stderr'));
+    await saveHistory(historyEntry).catch((error) =>
+      pushLog(`UI: nie udało się zapisać historii: ${error.message}`, "stderr"),
+    );
     state.child = null;
-    emit('status', publicStatus());
-    emit('finished', historyEntry);
+    emit("status", publicStatus());
+    emit("finished", historyEntry);
   });
 
   return publicStatus();
@@ -799,10 +829,10 @@ async function startRun(options) {
 async function stopRun() {
   if (!state.child) return false;
   const pid = state.child.pid;
-  if (process.platform === 'win32') {
-    spawn('taskkill', ['/pid', String(pid), '/T', '/F'], { windowsHide: true });
+  if (process.platform === "win32") {
+    spawn("taskkill", ["/pid", String(pid), "/T", "/F"], { windowsHide: true });
   } else {
-    state.child.kill('SIGTERM');
+    state.child.kill("SIGTERM");
   }
   return true;
 }
@@ -812,7 +842,7 @@ function parseListOutput(output) {
   const seen = new Set();
   for (const raw of stripAnsi(output).split(/\r?\n/)) {
     const line = raw.trim();
-    if (!line.includes('›')) continue;
+    if (!line.includes("›")) continue;
     const match = line.match(/^\[[^\]]+\]\s*[›>]\s+(.+?):(\d+):(\d+)\s*[›>]\s+(.+)$/);
     if (!match) continue;
     const [, file, lineNo, columnNo, title] = match;
@@ -823,7 +853,7 @@ function parseListOutput(output) {
     tests.push({
       id,
       title,
-      file: file.replace(/\\/g, '/'),
+      file: file.replace(/\\/g, "/"),
       line: Number(lineNo),
       column: Number(columnNo),
       annual: /\bMED-YEAR-/.test(title) || /@annual-medal\b/.test(title),
@@ -833,24 +863,24 @@ function parseListOutput(output) {
 }
 
 async function listTests(environment) {
-  const env = environment === 'test' ? 'test' : 'dev';
+  const env = environment === "test" ? "test" : "dev";
   const cached = state.cachedTests.get(env);
   if (cached && Date.now() - cached.at < 60_000) return cached.tests;
 
-  const args = ['test', '--list', `--config=${configForEnvironment(env)}`];
+  const args = ["test", "--list", `--config=${configForEnvironment(env)}`];
   const result = await new Promise((resolve, reject) => {
     const child = spawnPlaywright(args, {
       cwd: root,
       env: { ...process.env, OCTOPUS_ENV: env },
-      stdio: ['ignore', 'pipe', 'pipe'],
+      stdio: ["ignore", "pipe", "pipe"],
       windowsHide: true,
     });
-    let stdout = '';
-    let stderr = '';
-    child.stdout.on('data', (data) => (stdout += data.toString('utf8')));
-    child.stderr.on('data', (data) => (stderr += data.toString('utf8')));
-    child.on('error', reject);
-    child.on('close', (code) => {
+    let stdout = "";
+    let stderr = "";
+    child.stdout.on("data", (data) => (stdout += data.toString("utf8")));
+    child.stderr.on("data", (data) => (stderr += data.toString("utf8")));
+    child.on("error", reject);
+    child.on("close", (code) => {
       if (code === 0) resolve(stdout);
       else reject(new Error(stderr || stdout || `playwright --list exited with ${code}`));
     });
@@ -863,25 +893,25 @@ async function listTests(environment) {
 
 async function serveFile(res, baseDir, relativePath) {
   const base = path.resolve(baseDir);
-  const target = path.resolve(base, relativePath || 'index.html');
+  const target = path.resolve(base, relativePath || "index.html");
   if (!target.startsWith(base + path.sep) && target !== base) {
     res.writeHead(403);
-    res.end('Forbidden');
+    res.end("Forbidden");
     return;
   }
   let filePath = target;
   const fileStat = await stat(filePath).catch(() => null);
-  if (fileStat?.isDirectory()) filePath = path.join(filePath, 'index.html');
+  if (fileStat?.isDirectory()) filePath = path.join(filePath, "index.html");
   if (!existsSync(filePath)) {
     res.writeHead(404);
-    res.end('Not found');
+    res.end("Not found");
     return;
   }
   const finalStat = await stat(filePath);
   res.writeHead(200, {
-    'Content-Type': mimeFor(filePath),
-    'Content-Length': finalStat.size,
-    'Cache-Control': 'no-cache',
+    "Content-Type": mimeFor(filePath),
+    "Content-Length": finalStat.size,
+    "Cache-Control": "no-cache",
   });
   createReadStream(filePath).pipe(res);
 }
@@ -890,55 +920,55 @@ const server = http.createServer(async (req, res) => {
   try {
     const url = new URL(req.url, `http://${req.headers.host || `localhost:${PORT}`}`);
 
-    if (url.pathname === '/api/events' && req.method === 'GET') {
+    if (url.pathname === "/api/events" && req.method === "GET") {
       res.writeHead(200, {
-        'Content-Type': 'text/event-stream',
-        'Cache-Control': 'no-cache',
-        Connection: 'keep-alive',
+        "Content-Type": "text/event-stream",
+        "Cache-Control": "no-cache",
+        Connection: "keep-alive",
       });
       res.write(`event: status\ndata: ${JSON.stringify(publicStatus())}\n\n`);
       for (const entry of state.logLines.slice(-300)) {
         res.write(`event: log\ndata: ${JSON.stringify(entry)}\n\n`);
       }
       state.clients.add(res);
-      req.on('close', () => state.clients.delete(res));
+      req.on("close", () => state.clients.delete(res));
       return;
     }
 
-    if (url.pathname === '/api/status' && req.method === 'GET') {
+    if (url.pathname === "/api/status" && req.method === "GET") {
       sendJson(res, 200, publicStatus());
       return;
     }
 
-    if (url.pathname === '/api/tests' && req.method === 'GET') {
-      const environment = url.searchParams.get('environment') === 'test' ? 'test' : 'dev';
+    if (url.pathname === "/api/tests" && req.method === "GET") {
+      const environment = url.searchParams.get("environment") === "test" ? "test" : "dev";
       const tests = await listTests(environment);
       sendJson(res, 200, { tests });
       return;
     }
 
-    if (url.pathname === '/api/run' && req.method === 'POST') {
+    if (url.pathname === "/api/run" && req.method === "POST") {
       const body = await readJsonBody(req);
       sendJson(res, 200, await startRun(body));
       return;
     }
 
-    if (url.pathname === '/api/stop' && req.method === 'POST') {
+    if (url.pathname === "/api/stop" && req.method === "POST") {
       sendJson(res, 200, { stopped: await stopRun() });
       return;
     }
 
-    if (url.pathname === '/api/history' && req.method === 'GET') {
+    if (url.pathname === "/api/history" && req.method === "GET") {
       sendJson(res, 200, { history: await loadHistory() });
       return;
     }
 
-    if (url.pathname === '/api/test-data' && req.method === 'GET') {
+    if (url.pathname === "/api/test-data" && req.method === "GET") {
       sendJson(res, 200, await loadTestDataRegistry());
       return;
     }
 
-    if (url.pathname === '/api/test-data/teachers/delete' && req.method === 'POST') {
+    if (url.pathname === "/api/test-data/teachers/delete" && req.method === "POST") {
       const body = await readJsonBody(req);
       try {
         const result = await deleteTeachersFromRegistry(body.files);
@@ -949,18 +979,18 @@ const server = http.createServer(async (req, res) => {
       return;
     }
 
-    if (url.pathname === '/api/performance/latest' && req.method === 'GET') {
+    if (url.pathname === "/api/performance/latest" && req.method === "GET") {
       const fileName = state.run?.performanceFile || (await newestPerformanceFile())?.name || null;
       sendJson(res, 200, { fileName, data: await readPerformance(fileName) });
       return;
     }
 
-    if (url.pathname === '/api/rerun-failed' && req.method === 'POST') {
+    if (url.pathname === "/api/rerun-failed" && req.method === "POST") {
       const body = await readJsonBody(req);
       const history = await loadHistory();
       const source = body.runId ? history.find((item) => item.id === body.runId) : history[0];
       if (!source?.failedTestIds?.length) {
-        sendJson(res, 400, { error: 'Brak zapisanych failed testów do ponownego uruchomienia.' });
+        sendJson(res, 400, { error: "Brak zapisanych failed testów do ponownego uruchomienia." });
         return;
       }
       sendJson(
@@ -970,46 +1000,47 @@ const server = http.createServer(async (req, res) => {
           environment: source.environment,
           workers: source.workers,
           headed: Boolean(body.headed ?? source.headed),
-          suite: source.suite || 'all',
+          suite: source.suite || "all",
           selectedTestIds: source.failedTestIds,
         }),
       );
       return;
     }
 
-    if (url.pathname.startsWith('/report/')) {
-      const relative = decodeURIComponent(url.pathname.replace(/^\/report\//, ''));
-      const [runId, ...rest] = relative.split('/');
+    if (url.pathname.startsWith("/report/")) {
+      const relative = decodeURIComponent(url.pathname.replace(/^\/report\//, ""));
+      const [runId, ...rest] = relative.split("/");
 
       if (!runId || !/^[0-9a-f-]+$/i.test(runId)) {
         res.writeHead(404);
-        res.end('Brak lub niepoprawne ID przebiegu');
+        res.end("Brak lub niepoprawne ID przebiegu");
         return;
       }
 
       const runReportDir = path.join(reportsDir, runId);
-      const reportFile = rest.length && rest.join('/') ? rest.join('/') : 'index.html';
+      const reportFile = rest.length && rest.join("/") ? rest.join("/") : "index.html";
       await serveFile(res, runReportDir, reportFile);
       return;
     }
 
-    const relative = url.pathname === '/' ? 'index.html' : decodeURIComponent(url.pathname.slice(1));
+    const relative =
+      url.pathname === "/" ? "index.html" : decodeURIComponent(url.pathname.slice(1));
     await serveFile(res, uiDir, relative);
   } catch (error) {
     sendJson(res, 500, { error: error?.message || String(error) });
   }
 });
 
-server.listen(PORT, '127.0.0.1', () => {
+server.listen(PORT, "127.0.0.1", () => {
   const url = `http://127.0.0.1:${PORT}`;
   console.log(`Octopus Test Runner UI: ${url}`);
-  if (process.env.OCTOPUS_TEST_UI_NO_OPEN !== '1') {
-    if (process.platform === 'win32') {
-      spawn('cmd', ['/c', 'start', '', url], { detached: true, stdio: 'ignore' }).unref();
-    } else if (process.platform === 'darwin') {
-      spawn('open', [url], { detached: true, stdio: 'ignore' }).unref();
+  if (process.env.OCTOPUS_TEST_UI_NO_OPEN !== "1") {
+    if (process.platform === "win32") {
+      spawn("cmd", ["/c", "start", "", url], { detached: true, stdio: "ignore" }).unref();
+    } else if (process.platform === "darwin") {
+      spawn("open", [url], { detached: true, stdio: "ignore" }).unref();
     } else {
-      spawn('xdg-open', [url], { detached: true, stdio: 'ignore' }).unref();
+      spawn("xdg-open", [url], { detached: true, stdio: "ignore" }).unref();
     }
   }
 });

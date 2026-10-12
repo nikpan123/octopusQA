@@ -1,4 +1,5 @@
 import { expect, type Locator, type Page } from "@playwright/test";
+import { waitForOctopusIdle } from "./octopus";
 
 /*
  * =========================================================
@@ -7,16 +8,7 @@ import { expect, type Locator, type Page } from "@playwright/test";
  */
 
 export async function openTeacherEmailEdit(page: Page) {
-  const spinner = page.locator("#spinner");
-
-  await spinner
-    .waitFor({
-      state: "hidden",
-      timeout: 20_000,
-    })
-    .catch(() => {
-      // spinner może nie istnieć
-    });
+  await waitForOctopusIdle(page);
 
   const emailField = page.locator("mat-form-field#email");
 
@@ -51,7 +43,7 @@ export async function openTeacherEmailEdit(page: Page) {
 }
 
 export function teacherNewEmailInput(dialog: Locator) {
-  return dialog.locator('input:not([type="checkbox"])').nth(1);
+  return dialog.locator('input:not([type="checkbox"]):not([readonly]):not([disabled])');
 }
 
 /*
@@ -73,7 +65,7 @@ export function teacherContactDetails(page: Page) {
  */
 
 export function teacherNewPhoneInput(page: Page) {
-  return teacherContactDetails(page).locator('input[mask="000 - 000 - 000"]').last();
+  return teacherContactDetails(page).locator('input[mask="000 - 000 - 000"]:not([disabled])');
 }
 
 /**

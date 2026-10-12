@@ -4,27 +4,27 @@ Ten katalog opisuje aktualne obszary testowe. Źródłem prawdy dla nazw, lokali
 
 ## Aktualny stan
 
-- **365** scenariuszy we wszystkich 11 plikach;
+- **365** scenariuszy we wszystkich 22 plikach;
 - **363** scenariusze w zwykłej regresji;
 - **2** scenariusze rocznej medalowości uruchamiane osobno;
 - domyślnie 2 workery, maksymalnie 4;
 - ORD w panelu: maksymalnie 2 workery;
 - roczna medalowość: zawsze 1 worker.
 
-| Plik testowy                         | Wykonania | Dokumentacja                                                           |
-| ------------------------------------ | --------: | ---------------------------------------------------------------------- |
-| `klubowiczostwo-nauczyciela.spec.ts` |        72 | [Klubowiczostwo](klubowiczostwo-nauczyciela.md)                        |
-| `nauczyciel-dodawanie.spec.ts`       |        33 | [Nauczyciele](nauczyciele.md)                                          |
-| `nauczyciel-edycja.spec.ts`          |        44 | [Nauczyciele](nauczyciele.md)                                          |
-| `nauczyciel-rozszerzenie.spec.ts`    |         6 | [Nauczyciele](nauczyciele.md), [relacje](relacje-szkola-nauczyciel.md) |
-| `szkola-dodawanie.spec.ts`           |        57 | [Dodawanie szkoły](dodawanie-szkoly.md)                                |
-| `szkola-edycja.spec.ts`              |        33 | [Edycja szkoły](edycja-szkoly.md)                                      |
-| `szkola-medalowosc-annual.spec.ts`   |         2 | [Roczna medalowość](medalowosc-roczna.md)                              |
-| `szkola-medalowosc.spec.ts`          |        42 | [Medalowość szkoły](medalowosc-szkoly.md)                              |
-| `szkola-nauczyciel.spec.ts`          |         1 | [Relacje](relacje-szkola-nauczyciel.md)                                |
-| `walidacja-anulowanie.spec.ts`       |         9 | [Nauczyciele](nauczyciele.md), [relacje](relacje-szkola-nauczyciel.md) |
-| `zamowienia-szkoly.spec.ts`          |        66 | [Zamówienia szkoły](zamowienia-szkoly.md)                              |
-| **Razem**                            |   **365** |                                                                        |
+| Plik testowy                       | Wykonania | Dokumentacja                                                           |
+| ---------------------------------- | --------: | ---------------------------------------------------------------------- |
+| `klubowiczostwo-*.spec.ts`         |        72 | [Klubowiczostwo](klubowiczostwo-nauczyciela.md)                        |
+| `nauczyciel-dodawanie.spec.ts`     |        33 | [Nauczyciele](nauczyciele.md)                                          |
+| `nauczyciel-edycja*.spec.ts`       |        44 | [Nauczyciele](nauczyciele.md)                                          |
+| `nauczyciel-rozszerzenie.spec.ts`  |         6 | [Nauczyciele](nauczyciele.md), [relacje](relacje-szkola-nauczyciel.md) |
+| `szkola-dodawanie.spec.ts`         |        57 | [Dodawanie szkoły](dodawanie-szkoly.md)                                |
+| `szkola-edycja.spec.ts`            |        33 | [Edycja szkoły](edycja-szkoly.md)                                      |
+| `szkola-medalowosc-annual.spec.ts` |         2 | [Roczna medalowość](medalowosc-roczna.md)                              |
+| `szkola-medalowosc.spec.ts`        |        42 | [Medalowość szkoły](medalowosc-szkoly.md)                              |
+| `szkola-nauczyciel.spec.ts`        |         1 | [Relacje](relacje-szkola-nauczyciel.md)                                |
+| `walidacja-anulowanie.spec.ts`     |         9 | [Nauczyciele](nauczyciele.md), [relacje](relacje-szkola-nauczyciel.md) |
+| `zamowienia-*.spec.ts`             |        66 | [Zamówienia szkoły](zamowienia-szkoly.md)                              |
+| **Razem**                          |   **365** |                                                                        |
 
 Liczba wykonań może być większa od liczby logicznych ID, ponieważ część scenariuszy jest parametryzowana.
 

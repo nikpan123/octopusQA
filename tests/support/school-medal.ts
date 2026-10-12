@@ -1,5 +1,5 @@
 import { expect, type Locator, type Page } from "@playwright/test";
-import { Octopus, typeValue } from "./octopus";
+import { Octopus, typeValue, waitForOctopusIdle } from "./octopus";
 
 export type SchoolMedal = "Złoto" | "Srebro" | "Brąz" | "Brak";
 
@@ -80,12 +80,26 @@ export async function expectMedalTooltip(page: Page, subjects: string[] = []): P
 export async function expectNoMedalTooltip(page: Page): Promise<void> {
   await medalInput(page).hover();
 
-  // W tym przypadku testujemy brak elementu po hoverze.
-  // Czekamy chwilę, aby Angular Material miał czas na ewentualne
-  // wyświetlenie tooltipa.
-  await page.waitForTimeout(1000);
+  const tooltip = medalTooltip(page);
+  const startedAt = Date.now();
+  let appeared = false;
 
-  await expect(medalTooltip(page)).toHaveCount(0);
+  // Negatywna asercja przechodziłaby natychmiast, zanim Angular Material
+  // zdąży wyrenderować tooltip. Obserwujemy więc element przez pełne okno
+  // animacji i zapamiętujemy nawet krótkie pojawienie się tooltipa.
+  await expect
+    .poll(
+      async () => {
+        appeared ||= (await tooltip.count()) > 0;
+        return !appeared && Date.now() - startedAt >= 1_000;
+      },
+      {
+        timeout: 1_500,
+        intervals: [50, 100, 150, 200],
+        message: "Dla medalu Brak tooltip nie powinien pojawić się po najechaniu",
+      },
+    )
+    .toBe(true);
 }
 
 /**
@@ -141,7 +155,7 @@ export async function openSchoolHistory(page: Page): Promise<Locator> {
     timeout: 20_000,
   });
 
-  await page.waitForTimeout(300);
+  await waitForOctopusIdle(page);
 
   return history;
 }
@@ -477,6 +491,33 @@ export type MedalHistoryEntry = {
   date: string;
 };
 
+async function waitForHistoryViewportStable(history: Locator): Promise<void> {
+  let previousSignature: string | undefined;
+  let stableSamples = 0;
+
+  await expect
+    .poll(
+      async () => {
+        const signature = (await history.getByRole("row").allTextContents()).join("\n");
+
+        if (signature === previousSignature) {
+          stableSamples += 1;
+        } else {
+          previousSignature = signature;
+          stableSamples = 0;
+        }
+
+        return stableSamples;
+      },
+      {
+        timeout: 3_000,
+        intervals: [50, 100, 150, 250],
+        message: "Widok historii powinien ustabilizować się po przewinięciu",
+      },
+    )
+    .toBeGreaterThanOrEqual(2);
+}
+
 export async function collectMedalHistoryEntries(
   page: Page,
   history: Locator,
@@ -534,7 +575,7 @@ export async function collectMedalHistoryEntries(
   const found = new Map<string, MedalHistoryEntry>();
 
   for (let attempt = 0; attempt < 100; attempt++) {
-    await page.waitForTimeout(150);
+    await waitForHistoryViewportStable(history);
 
     const rows = history.getByRole("row");
 

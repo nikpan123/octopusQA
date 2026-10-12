@@ -145,18 +145,14 @@ export async function typeValue(input: Locator, value: string) {
 }
 
 export async function waitForOctopusIdle(page: Page, timeout = 20_000): Promise<void> {
-  const spinner = page.locator("#spinner.backdrop");
+  const spinner = page.locator("#spinner");
 
-  await spinner
-    .waitFor({
-      state: "hidden",
-      timeout,
-    })
-    .catch(async () => {
-      if (await spinner.isVisible().catch(() => false)) {
-        throw new Error("Spinner Octopusa nie zniknął przed wykonaniem akcji");
-      }
-    });
+  // toBeHidden akceptuje także brak spinnera w DOM, ale w przeciwieństwie
+  // do połkniętego timeoutu zgłasza czytelny błąd, gdy ekran faktycznie
+  // pozostaje zablokowany.
+  await expect(spinner, "Spinner Octopusa powinien zniknąć przed wykonaniem akcji").toBeHidden({
+    timeout,
+  });
 }
 
 export class Octopus {

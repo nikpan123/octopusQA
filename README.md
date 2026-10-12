@@ -7,26 +7,26 @@ Repozytorium zawiera testy end-to-end aplikacji Octopus napisane w Playwright i 
 | DEV        | `https://octopus.gwodev.pl`  | `playwright.config.ts`      |
 | TEST       | `https://octopus.gwotest.pl` | `playwright.test.config.ts` |
 
-Aktualny zestaw zawiera **365 scenariuszy** w 11 plikach. Zwykła regresja wykonuje **363 scenariusze**; dwa testy `MED-YEAR-*` należą do osobnego, ciężkiego procesu rocznej medalowości.
+Aktualny zestaw zawiera **365 scenariuszy** w 22 plikach. Zwykła regresja wykonuje **363 scenariusze**; dwa testy `MED-YEAR-*` należą do osobnego, ciężkiego procesu rocznej medalowości.
 
 Pełna lista jest generowana z kodu i znajduje się w [indeksie scenariuszy](docs/tests/scenario-index.md).
 
 ## Zakres projektu
 
-| Obszar                               | Plik                                 | Liczba wykonań |
-| ------------------------------------ | ------------------------------------ | -------------: |
-| Klubowiczostwo nauczyciela           | `klubowiczostwo-nauczyciela.spec.ts` |             72 |
-| Dodawanie nauczyciela                | `nauczyciel-dodawanie.spec.ts`       |             33 |
-| Edycja nauczyciela                   | `nauczyciel-edycja.spec.ts`          |             44 |
-| Rozszerzenia i relacje nauczyciela   | `nauczyciel-rozszerzenie.spec.ts`    |              6 |
-| Dodawanie szkoły                     | `szkola-dodawanie.spec.ts`           |             57 |
-| Edycja szkoły                        | `szkola-edycja.spec.ts`              |             33 |
-| Medalowość szkoły                    | `szkola-medalowosc.spec.ts`          |             42 |
-| Roczna medalowość                    | `szkola-medalowosc-annual.spec.ts`   |              2 |
-| Relacja szkoła–nauczyciel            | `szkola-nauczyciel.spec.ts`          |              1 |
-| Walidacja, anulowanie i wyszukiwanie | `walidacja-anulowanie.spec.ts`       |              9 |
-| Zamówienia szkoły                    | `zamowienia-szkoly.spec.ts`          |             66 |
-| **Razem**                            |                                      |        **365** |
+| Obszar                               | Plik                               | Liczba wykonań |
+| ------------------------------------ | ---------------------------------- | -------------: |
+| Klubowiczostwo nauczyciela           | `klubowiczostwo-*.spec.ts`         |             72 |
+| Dodawanie nauczyciela                | `nauczyciel-dodawanie.spec.ts`     |             33 |
+| Edycja nauczyciela                   | `nauczyciel-edycja*.spec.ts`       |             44 |
+| Rozszerzenia i relacje nauczyciela   | `nauczyciel-rozszerzenie.spec.ts`  |              6 |
+| Dodawanie szkoły                     | `szkola-dodawanie.spec.ts`         |             57 |
+| Edycja szkoły                        | `szkola-edycja.spec.ts`            |             33 |
+| Medalowość szkoły                    | `szkola-medalowosc.spec.ts`        |             42 |
+| Roczna medalowość                    | `szkola-medalowosc-annual.spec.ts` |              2 |
+| Relacja szkoła–nauczyciel            | `szkola-nauczyciel.spec.ts`        |              1 |
+| Walidacja, anulowanie i wyszukiwanie | `walidacja-anulowanie.spec.ts`     |              9 |
+| Zamówienia szkoły                    | `zamowienia-*.spec.ts`             |             66 |
+| **Razem**                            |                                    |        **365** |
 
 Szczegółowe opisy domen znajdują się w [dokumentacji testów](docs/tests/README.md).
 
@@ -98,7 +98,7 @@ npx playwright test --headed --config=playwright.test.config.ts
 ```powershell
 npx playwright test --grep "@teacher"
 npx playwright test --grep "@school-edit"
-npx playwright test tests/zamowienia-szkoly.spec.ts --grep "ORD-43" --workers=1
+npx playwright test --grep "ORD-43" --workers=1
 ```
 
 Lista testów:
@@ -236,7 +236,7 @@ runs/                       lokalne rejestry i raporty przebiegów
 test-results/               artefakty Playwrighta
 ```
 
-`tests/support/octopus.ts` jest główną warstwą obsługi Octopusa. `octopus2.ts` pozostaje starszym wariantem i nie powinien być wybierany do nowych helperów.
+`tests/support/octopus.ts` jest główną warstwą obsługi Octopusa.
 
 ## Mapa dokumentacji
 
