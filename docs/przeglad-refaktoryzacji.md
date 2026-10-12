@@ -2,6 +2,50 @@
 
 > Migawka stanu z 23.09.2026. Część rekomendacji została już wdrożona, dlatego bieżące komendy, strukturę i liczbę scenariuszy należy sprawdzać w [README](../README.md) oraz [indeksie scenariuszy](tests/scenario-index.md).
 
+## Aktualizacja audytu — 2026-10-12
+
+### Mocne strony
+
+- 365 nazwanych scenariuszy z generowanym i automatycznie weryfikowanym indeksem.
+- Wspólne helpery domenowe ograniczają duplikację selektorów i przygotowania danych.
+- Izolowane identyfikatory `REG_*`, rejestry przebiegów i wielostopniowa walidacja chronią cleanup przed usunięciem obcych danych.
+- Raport HTML, trace, screenshoty, klasyfikacja awarii i metryki wydajności tworzą dobry zestaw diagnostyczny.
+- Kontrole TypeScript, ESLint, Prettier i zgodności dokumentacji są dostępne pod jedną komendą `npm run quality`.
+- Testy odróżniają defekt produktu od niestabilności automatyzacji; trwałe błędy nie są ukrywane przez `test.fail()`.
+
+### Wynik pełnej regresji i wykonane poprawki
+
+Pełna regresja DEV uruchomiona na dwóch workerach zakończyła się początkowo wynikiem 327/363. Analiza 36 awarii wykazała przeterminowane dane referencyjne, zmianę reguł zgód, wyścig podczas oznaczania rekordów testowych, zbyt kruche wyszukiwanie oraz przejściowy konflikt zapisu historii nauczyciela.
+
+Poprawiono:
+
+- oczekiwanie na potwierdzenie zapisu flagi `Testowy`,
+- przygotowanie poprawnej zgody podczas dodawania nauczyciela,
+- stabilne wyszukiwanie szkoły po ID,
+- obsługę nieznanego kodu pocztowego,
+- dane referencyjne medali i wydawnictw,
+- wąskie ponowienie wyłącznie konfliktu optimistic concurrency,
+- scenariusz wartości ujemnej po naprawie zachowania aplikacji.
+
+Po poprawkach testy zmienionych obszarów przechodzą. Dwa scenariusze nadal konsekwentnie wykrywają jeden defekt produktu: filtrowanie szkół po `Medal = Brak`. Szczegóły i dowody znajdują się w [raporcie MED-30/MED-60](issues/MED-30-MED-60-filtr-medal-brak.md).
+
+### Usprawnienia CI
+
+- Pull requesty i zmiany na głównych gałęziach uruchamiają kontrolę jakości oraz testy jednostkowe.
+- Pełną regresję DEV można uruchomić ręcznie z ograniczeniem współbieżności do jednego przebiegu.
+- CI wykonuje najwyżej jedno ponowienie; lokalnie retry pozostaje domyślnie wyłączone.
+- Reporter przechowuje wyłącznie końcowy stan testu, więc udany retry nie tworzy fałszywej awarii.
+- CI zapisuje raport GitHub, JUnit, HTML, trace, screenshoty, klasyfikację błędów i metryki.
+- Końcowy cleanup działa także po nieudanym przebiegu, ale usuwa tylko rekordy należące do automatu i pozytywnie zweryfikowane przez istniejące zabezpieczenia.
+
+### Kolejne kroki
+
+1. Naprawić kontrakt filtrowania `Medal = Brak` w aplikacji lub API i potwierdzić `MED-30` oraz `MED-60`.
+2. Uruchomić pełną regresję po wdrożeniu poprawki produktu i zapisać nową wartość bazową.
+3. Skonfigurować cztery sekrety logowania wymagane przez ręczny workflow E2E.
+4. Dodać okresowe uruchomienie regresji dopiero po potwierdzeniu stabilności ręcznego workflow.
+5. Ograniczać zależność od zmiennych danych DEV przez kontrolowane dane referencyjne lub endpoint seedujący.
+
 ## Status realizacji — 2026-09-23
 
 Zrealizowano:

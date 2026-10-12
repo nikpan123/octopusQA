@@ -1173,11 +1173,12 @@ test.describe("Medalowość szkoły", () => {
   test("MED-60: każda szkoła z medalem Brak nie ma przedmiotów medalowych", async ({ page }) => {
     const app = new Octopus(page);
 
-    const { schools } = await searchSchoolsByMedalsWithApi(app, ["Brak"]);
+    const { filterModel, schools } = await searchSchoolsByMedalsWithApi(app, ["Brak"]);
 
     expect(
       schools.length,
-      "API powinno zwrócić co najmniej jedną szkołę z medalem Brak",
+      "API powinno zwrócić co najmniej jedną szkołę z medalem Brak. " +
+        `Przesłany filtr: ${JSON.stringify(filterModel.medal)}`,
     ).toBeGreaterThan(0);
 
     console.log(`MED-60: API zwróciło ${schools.length} szkół dla filtra Brak.`);

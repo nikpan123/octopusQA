@@ -1,0 +1,73 @@
+name: E2E DEV
+
+on:
+  workflow_dispatch:
+    inputs:
+      workers:
+        description: Liczba workerów
+        required: true
+        default: "2"
+        type: choice
+        options:
+          - "1"
+          - "2"
+          - "4"
+
+concurrency:
+  group: octopus-e2e-dev
+  cancel-in-progress: false
+
+jobs:
+  regression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    env:
+      CI: "true"
+      OCTOPUS_ENV: dev
+      OCTOPUS_WORKERS: ${{ inputs.workers }}
+      OCTOPUS_RETRIES: "1"
+      GITLAB_USERNAME: ${{ secrets.GITLAB_USERNAME }}
+      GITLAB_PASSWORD: ${{ secrets.GITLAB_PASSWORD }}
+      OCTOPUS_DEV_USERNAME: ${{ secrets.OCTOPUS_DEV_USERNAME }}
+      OCTOPUS_DEV_PASSWORD: ${{ secrets.OCTOPUS_DEV_PASSWORD }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Quality gate
+        run: npm run quality
+
+      - name: DEV regression
+        run: npm test
+
+      - name: Safe cleanup after the run
+        if: always()
+        continue-on-error: true
+        run: npm run cleanup:teachers -- --include-failed --apply
+
+      - name: Upload diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: octopus-e2e-dev-${{ github.run_id }}
+          if-no-files-found: ignore
+          retention-days: 14
+          path: |
+            playwright-report/
+            test-results/
+            runs/failures-*.json
+            runs/performance-*.json
+            runs/REG_*.json

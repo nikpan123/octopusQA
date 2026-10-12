@@ -1,4 +1,4 @@
-import { defineConfig, devices } from "@playwright/test";
+import { defineConfig, devices, type ReporterDescription } from "@playwright/test";
 
 import { randomUUID } from "node:crypto";
 
@@ -17,7 +17,28 @@ export function createPlaywrightConfig(environment: OctopusEnvironment) {
     ? Math.min(4, Math.max(1, requestedWorkers))
     : 2;
   process.env.OCTOPUS_EFFECTIVE_WORKERS = String(workers);
+  const requestedRetries = Number(process.env.OCTOPUS_RETRIES ?? (process.env.CI ? 1 : 0));
+  const retries = Number.isInteger(requestedRetries)
+    ? Math.min(2, Math.max(0, requestedRetries))
+    : process.env.CI
+      ? 1
+      : 0;
   const includeAnnualMedal = process.env.OCTOPUS_INCLUDE_ANNUAL === "1";
+  const reporters: ReporterDescription[] = [
+    ["list"],
+    [
+      "html",
+      {
+        open: "never",
+      },
+    ],
+    ["./scripts/performance-reporter.mjs"],
+    ["./scripts/failure-reporter.mjs"],
+  ];
+
+  if (process.env.CI) {
+    reporters.splice(1, 0, ["github"], ["junit", { outputFile: "test-results/junit.xml" }]);
+  }
 
   console.log(`Playwright: środowisko ${environment.toUpperCase()} → ${baseURL}`);
 
@@ -36,7 +57,10 @@ export function createPlaywrightConfig(environment: OctopusEnvironment) {
 
     workers,
 
-    retries: 0,
+    // Lokalnie błąd pozostaje natychmiast widoczny. CI może jednokrotnie
+    // potwierdzić, czy awaria była przejściowa; limit 2 chroni przed
+    // maskowaniem trwałych defektów przez wielokrotne ponawianie.
+    retries,
 
     timeout: 240_000,
 
@@ -46,17 +70,7 @@ export function createPlaywrightConfig(environment: OctopusEnvironment) {
 
     forbidOnly: Boolean(process.env.CI),
 
-    reporter: [
-      ["list"],
-      [
-        "html",
-        {
-          open: "never",
-        },
-      ],
-      ["./scripts/performance-reporter.mjs"],
-      ["./scripts/failure-reporter.mjs"],
-    ],
+    reporter: reporters,
 
     // Każde uruchomienie zapisuje ślady w osobnym katalogu. Dzięki temu
     // start testu z VS Code nie może skasować plików trwającego pełnego zestawu
