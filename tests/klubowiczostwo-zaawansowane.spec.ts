@@ -47,13 +47,11 @@ import {
 import { prepareClubTeacher } from "./support/club-scenario";
 
 const SUPPORTING_FOREIGN_PUBLISHERS = [
-  { option: "GWO „Między nami”", school: "GWO MN" },
-  { option: "GWO „Moim zdaniem”", school: "GWO MZ" },
   { option: "WIKING", school: "WIKING" },
   { option: "OPERON", school: "OPERON" },
   { option: "MAC", school: "MAC" },
   { option: "NOWA ERA", school: "NOWA ERA" },
-  { option: "WSIP", school: "WSIP" },
+  { option: "WSiP", school: "WSiP" },
   { option: "INNE", school: "INNE" },
 ] as const;
 

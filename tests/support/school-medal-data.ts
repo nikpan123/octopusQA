@@ -23,13 +23,7 @@ const data: Record<"dev" | "test", MedalEnvironmentData> = {
       name: "Szkoła Podstawowa nr 5",
       city: "Lębork",
       expectedMedal: "Złoto",
-      expectedSubjects: [
-        "Matematyka",
-        "Język polski",
-        "Historia",
-        "Fizyka",
-        "Edukacja wczesnoszkolna",
-      ],
+      expectedSubjects: ["Fizyka", "Przyroda", "Edukacja wczesnoszkolna", "Historia"],
 
       expectedHistoryValue: "2025/2026 Złoto",
       expectedHistoryDate: "2026-10-01 00:00",
@@ -40,7 +34,7 @@ const data: Record<"dev" | "test", MedalEnvironmentData> = {
       name: "Szkoła Podstawowa nr 379",
       city: "Warszawa",
       expectedMedal: "Srebro",
-      expectedSubjects: ["Matematyka", "Geografia"],
+      expectedSubjects: ["Język polski", "Geografia"],
     },
 
     bronze: {
@@ -48,7 +42,7 @@ const data: Record<"dev" | "test", MedalEnvironmentData> = {
       name: "Szkoła Podstawowa w Raszkowie",
       city: "Raszków",
       expectedMedal: "Brąz",
-      expectedSubjects: ["Matematyka"],
+      expectedSubjects: ["Geografia"],
     },
 
     noMedal: {

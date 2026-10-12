@@ -562,7 +562,7 @@ test.describe("Medalowość szkoły", () => {
 
     expect(medalData.medalCategoryName).toBe("Brąz");
 
-    expect(medalData.subjectNames).toEqual(["Matematyka"]);
+    expect(medalData.subjectNames).toEqual(BRONZE_SCHOOL.expectedSubjects);
   });
 
   test("MED-47: medal w wynikach wyszukiwania szkoły jest zgodny z wartością zwracaną przez API", async ({
@@ -652,7 +652,7 @@ test.describe("Medalowość szkoły", () => {
     expect(
       medalData.subjectNames,
       "Do medalowości powinien być zaliczony tylko kwalifikowany przedmiot",
-    ).toEqual(["Matematyka"]);
+    ).toEqual(BRONZE_SCHOOL.expectedSubjects);
   });
 
   test("MED-49: najnowszy wpis historii medalu jest zgodny z aktualną wartością zwracaną przez API", async ({

@@ -146,12 +146,10 @@ test("ORD-37: wpisanie 0 normalizuje ilość do 10 @school @order @quantity @bou
   await cancelOrderForm(form);
 });
 
-test("ORD-38: wartość ujemna nie powinna być akceptowana — znany bug @school @order @quantity @bug", async ({
+test("ORD-38: wartość ujemna nie jest akceptowana @school @order @quantity @boundary", async ({
   page,
   scenario: s,
 }) => {
-  test.fail(true, "Znany bug: pole Ilość pozwala obecnie wpisać -1.");
-
   await prepareOrderSchool(page, s);
 
   const form = await openNewOrderForm(page);

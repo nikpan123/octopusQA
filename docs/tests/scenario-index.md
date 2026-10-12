@@ -59,58 +59,58 @@
 | CLUB-27 | CLUB-27: istniejące potwierdzenie blokuje duplikat dla tego samego roku, przedmiotu i szkoły | [klubowiczostwo-walidacja.spec.ts](../../tests/klubowiczostwo-walidacja.spec.ts#L902) | `teacher`, `club`, `duplicate`, `validation` |
 | CLUB-28 | CLUB-28: formularz dla poprzedniego roku szkolnego jest trwały | [klubowiczostwo-walidacja.spec.ts](../../tests/klubowiczostwo-walidacja.spec.ts#L941) | `teacher`, `club`, `school-year` |
 | CLUB-29 | CLUB-29: potwierdzenia dla tej samej szkoły i przedmiotu mogą dotyczyć dwóch różnych lat | [klubowiczostwo-walidacja.spec.ts](../../tests/klubowiczostwo-walidacja.spec.ts#L971) | `teacher`, `club`, `school-year` |
-| CLUB-53 | CLUB-53: potwierdzenie zweryfikowane negatywnie można usunąć | [klubowiczostwo-zaawansowane.spec.ts](../../tests/klubowiczostwo-zaawansowane.spec.ts#L65) | `teacher`, `club`, `negative-verification`, `delete`, `history` |
-| CLUB-54 | CLUB-54: edycja Matematyki nie zmienia potwierdzenia Fizyki | [klubowiczostwo-zaawansowane.spec.ts](../../tests/klubowiczostwo-zaawansowane.spec.ts#L92) | `teacher`, `club`, `multi-subject`, `edit` |
-| CLUB-55 | CLUB-55: weryfikacja negatywna Matematyki nie zmienia Fizyki | [klubowiczostwo-zaawansowane.spec.ts](../../tests/klubowiczostwo-zaawansowane.spec.ts#L138) | `teacher`, `club`, `multi-subject`, `negative-verification` |
-| CLUB-56 | CLUB-56: usunięcie i przywrócenie Matematyki nie zmienia aktywnej Fizyki | [klubowiczostwo-zaawansowane.spec.ts](../../tests/klubowiczostwo-zaawansowane.spec.ts#L186) | `teacher`, `club`, `multi-subject`, `delete`, `restore` |
-| CLUB-57 | CLUB-57: dwie szkoły i dwa przedmioty tworzą cztery niezależne potwierdzenia | [klubowiczostwo-zaawansowane.spec.ts](../../tests/klubowiczostwo-zaawansowane.spec.ts#L236) | `teacher`, `club`, `multi-subject`, `multi-school` |
-| CLUB-58 | CLUB-58: Matematyka i Fizyka zachowują niezależne potwierdzenia dla dwóch lat szkolnych | [klubowiczostwo-zaawansowane.spec.ts](../../tests/klubowiczostwo-zaawansowane.spec.ts#L294) | `teacher`, `club`, `multi-subject`, `school-year` |
-| CLUB-59 | CLUB-59: mieszany cykl życia Matematyki i Fizyki zachowuje niezależne statusy i historie | [klubowiczostwo-zaawansowane.spec.ts](../../tests/klubowiczostwo-zaawansowane.spec.ts#L360) | `teacher`, `club`, `multi-subject`, `negative-verification`, `delete`, `restore`, `history` |
-| CLUB-60 | CLUB-60: nowsze potwierdzenie blokuje późniejsze dodanie starszego dla tej samej szkoły i przedmiotu | [klubowiczostwo-zaawansowane.spec.ts](../../tests/klubowiczostwo-zaawansowane.spec.ts#L421) | `teacher`, `club`, `school-year`, `validation` |
-| CLUB-61 | CLUB-61: Język polski pozwala zapisać tylko jedną NASZĄ serię klasy 4 | [klubowiczostwo-zaawansowane.spec.ts](../../tests/klubowiczostwo-zaawansowane.spec.ts#L464) | `teacher`, `club`, `polish`, `classes`, `validation` |
-| CLUB-62 | CLUB-62: formularz WSPOM tworzy potwierdzenie i funkcję nauczyciela wspomagającego | [klubowiczostwo-zaawansowane.spec.ts](../../tests/klubowiczostwo-zaawansowane.spec.ts#L509) | `teacher`, `club`, `supporting` |
-| CLUB-63 | CLUB-63: jeden formularz WSPOM zapisuje Język polski i Matematykę niezależnie | [klubowiczostwo-zaawansowane.spec.ts](../../tests/klubowiczostwo-zaawansowane.spec.ts#L535) | `teacher`, `club`, `supporting`, `multi-subject` |
-| CLUB-64 | CLUB-64: dwa szybkie kliknięcia Zapisz nie tworzą dwóch potwierdzeń | [klubowiczostwo-zaawansowane.spec.ts](../../tests/klubowiczostwo-zaawansowane.spec.ts#L582) | `teacher`, `club`, `concurrency` |
-| CLUB-65 | CLUB-65: zaznaczenie wszystkich klas OBCYCH Matematyki SP jest trwałe | [klubowiczostwo-zaawansowane.spec.ts](../../tests/klubowiczostwo-zaawansowane.spec.ts#L610) | `teacher`, `club`, `classes`, `publisher`, `select-all` |
-| CLUB-66 | CLUB-66: edycja Języka polskiego nie pozwala zapisać dwóch NASZYCH serii klasy 4 | [klubowiczostwo-zaawansowane.spec.ts](../../tests/klubowiczostwo-zaawansowane.spec.ts#L645) | `teacher`, `club`, `polish`, `edit`, `validation` |
-| CLUB-67 | CLUB-67: zaznaczenie wszystkich NASZYCH klas Języka polskiego wybiera tylko jedną serię klasy 4 | [klubowiczostwo-zaawansowane.spec.ts](../../tests/klubowiczostwo-zaawansowane.spec.ts#L689) | `teacher`, `club`, `polish`, `classes`, `select-all` |
-| CLUB-68 | CLUB-68: formularz WSPOM nie pokazuje serii Języka polskiego ani Fizyki | [klubowiczostwo-zaawansowane.spec.ts](../../tests/klubowiczostwo-zaawansowane.spec.ts#L735) | `teacher`, `club`, `supporting`, `polish`, `physics`, `classes` |
-| CLUB-69 | CLUB-69: formularz WSPOM poprawnie prezentuje wszystkie OBCE wydawnictwa | [klubowiczostwo-zaawansowane.spec.ts](../../tests/klubowiczostwo-zaawansowane.spec.ts#L775) | `teacher`, `club`, `supporting`, `publisher` |
-| CLUB-70 | CLUB-70: formularz WSPOM wymaga szkoły, przedmiotu i klasy | [klubowiczostwo-zaawansowane.spec.ts](../../tests/klubowiczostwo-zaawansowane.spec.ts#L833) | `teacher`, `club`, `supporting`, `validation` |
-| CLUB-71 | CLUB-71: zwykłe potwierdzenie i WSPOM współistnieją dla tego samego przedmiotu, szkoły i roku | [klubowiczostwo-zaawansowane.spec.ts](../../tests/klubowiczostwo-zaawansowane.spec.ts#L866) | `teacher`, `club`, `supporting`, `duplicate` |
+| CLUB-53 | CLUB-53: potwierdzenie zweryfikowane negatywnie można usunąć | [klubowiczostwo-zaawansowane.spec.ts](../../tests/klubowiczostwo-zaawansowane.spec.ts#L63) | `teacher`, `club`, `negative-verification`, `delete`, `history` |
+| CLUB-54 | CLUB-54: edycja Matematyki nie zmienia potwierdzenia Fizyki | [klubowiczostwo-zaawansowane.spec.ts](../../tests/klubowiczostwo-zaawansowane.spec.ts#L90) | `teacher`, `club`, `multi-subject`, `edit` |
+| CLUB-55 | CLUB-55: weryfikacja negatywna Matematyki nie zmienia Fizyki | [klubowiczostwo-zaawansowane.spec.ts](../../tests/klubowiczostwo-zaawansowane.spec.ts#L136) | `teacher`, `club`, `multi-subject`, `negative-verification` |
+| CLUB-56 | CLUB-56: usunięcie i przywrócenie Matematyki nie zmienia aktywnej Fizyki | [klubowiczostwo-zaawansowane.spec.ts](../../tests/klubowiczostwo-zaawansowane.spec.ts#L184) | `teacher`, `club`, `multi-subject`, `delete`, `restore` |
+| CLUB-57 | CLUB-57: dwie szkoły i dwa przedmioty tworzą cztery niezależne potwierdzenia | [klubowiczostwo-zaawansowane.spec.ts](../../tests/klubowiczostwo-zaawansowane.spec.ts#L234) | `teacher`, `club`, `multi-subject`, `multi-school` |
+| CLUB-58 | CLUB-58: Matematyka i Fizyka zachowują niezależne potwierdzenia dla dwóch lat szkolnych | [klubowiczostwo-zaawansowane.spec.ts](../../tests/klubowiczostwo-zaawansowane.spec.ts#L292) | `teacher`, `club`, `multi-subject`, `school-year` |
+| CLUB-59 | CLUB-59: mieszany cykl życia Matematyki i Fizyki zachowuje niezależne statusy i historie | [klubowiczostwo-zaawansowane.spec.ts](../../tests/klubowiczostwo-zaawansowane.spec.ts#L358) | `teacher`, `club`, `multi-subject`, `negative-verification`, `delete`, `restore`, `history` |
+| CLUB-60 | CLUB-60: nowsze potwierdzenie blokuje późniejsze dodanie starszego dla tej samej szkoły i przedmiotu | [klubowiczostwo-zaawansowane.spec.ts](../../tests/klubowiczostwo-zaawansowane.spec.ts#L419) | `teacher`, `club`, `school-year`, `validation` |
+| CLUB-61 | CLUB-61: Język polski pozwala zapisać tylko jedną NASZĄ serię klasy 4 | [klubowiczostwo-zaawansowane.spec.ts](../../tests/klubowiczostwo-zaawansowane.spec.ts#L462) | `teacher`, `club`, `polish`, `classes`, `validation` |
+| CLUB-62 | CLUB-62: formularz WSPOM tworzy potwierdzenie i funkcję nauczyciela wspomagającego | [klubowiczostwo-zaawansowane.spec.ts](../../tests/klubowiczostwo-zaawansowane.spec.ts#L507) | `teacher`, `club`, `supporting` |
+| CLUB-63 | CLUB-63: jeden formularz WSPOM zapisuje Język polski i Matematykę niezależnie | [klubowiczostwo-zaawansowane.spec.ts](../../tests/klubowiczostwo-zaawansowane.spec.ts#L533) | `teacher`, `club`, `supporting`, `multi-subject` |
+| CLUB-64 | CLUB-64: dwa szybkie kliknięcia Zapisz nie tworzą dwóch potwierdzeń | [klubowiczostwo-zaawansowane.spec.ts](../../tests/klubowiczostwo-zaawansowane.spec.ts#L580) | `teacher`, `club`, `concurrency` |
+| CLUB-65 | CLUB-65: zaznaczenie wszystkich klas OBCYCH Matematyki SP jest trwałe | [klubowiczostwo-zaawansowane.spec.ts](../../tests/klubowiczostwo-zaawansowane.spec.ts#L608) | `teacher`, `club`, `classes`, `publisher`, `select-all` |
+| CLUB-66 | CLUB-66: edycja Języka polskiego nie pozwala zapisać dwóch NASZYCH serii klasy 4 | [klubowiczostwo-zaawansowane.spec.ts](../../tests/klubowiczostwo-zaawansowane.spec.ts#L643) | `teacher`, `club`, `polish`, `edit`, `validation` |
+| CLUB-67 | CLUB-67: zaznaczenie wszystkich NASZYCH klas Języka polskiego wybiera tylko jedną serię klasy 4 | [klubowiczostwo-zaawansowane.spec.ts](../../tests/klubowiczostwo-zaawansowane.spec.ts#L687) | `teacher`, `club`, `polish`, `classes`, `select-all` |
+| CLUB-68 | CLUB-68: formularz WSPOM nie pokazuje serii Języka polskiego ani Fizyki | [klubowiczostwo-zaawansowane.spec.ts](../../tests/klubowiczostwo-zaawansowane.spec.ts#L733) | `teacher`, `club`, `supporting`, `polish`, `physics`, `classes` |
+| CLUB-69 | CLUB-69: formularz WSPOM poprawnie prezentuje wszystkie OBCE wydawnictwa | [klubowiczostwo-zaawansowane.spec.ts](../../tests/klubowiczostwo-zaawansowane.spec.ts#L773) | `teacher`, `club`, `supporting`, `publisher` |
+| CLUB-70 | CLUB-70: formularz WSPOM wymaga szkoły, przedmiotu i klasy | [klubowiczostwo-zaawansowane.spec.ts](../../tests/klubowiczostwo-zaawansowane.spec.ts#L831) | `teacher`, `club`, `supporting`, `validation` |
+| CLUB-71 | CLUB-71: zwykłe potwierdzenie i WSPOM współistnieją dla tego samego przedmiotu, szkoły i roku | [klubowiczostwo-zaawansowane.spec.ts](../../tests/klubowiczostwo-zaawansowane.spec.ts#L864) | `teacher`, `club`, `supporting`, `duplicate` |
 | ADD-01 | ADD-01: nauczyciela można utworzyć z imieniem, nazwiskiem, szkołą i e-mailem bez przedmioto-poziomu | [nauczyciel-dodawanie.spec.ts](../../tests/nauczyciel-dodawanie.spec.ts#L84) | `teacher`, `add`, `positive` |
 | ADD-02 | ADD-02: nauczyciela można utworzyć z telefonem bez e-maila | [nauczyciel-dodawanie.spec.ts](../../tests/nauczyciel-dodawanie.spec.ts#L219) | `teacher`, `add`, `positive` |
 | ADD-03 | ADD-03: dzisiejsza data urodzenia jest akceptowana | [nauczyciel-dodawanie.spec.ts](../../tests/nauczyciel-dodawanie.spec.ts#L321) | `teacher`, `add`, `birthdate` |
 | ADD-04 | ADD-04: źródło domyślne to Karta nauczyciela i lista zawiera trzy wartości | [nauczyciel-dodawanie.spec.ts](../../tests/nauczyciel-dodawanie.spec.ts#L426) | `teacher`, `add`, `source` |
 | ADD-05 | ADD-05: nauczyciela można utworzyć ze źródłem Karta LS | [nauczyciel-dodawanie.spec.ts](../../tests/nauczyciel-dodawanie.spec.ts#L475) | `teacher`, `add`, `source` |
-| ADD-06 | ADD-06: zgoda E-mail może być zaznaczona bez zgody Marketing | [nauczyciel-dodawanie.spec.ts](../../tests/nauczyciel-dodawanie.spec.ts#L509) | `teacher`, `add`, `rodo` |
-| ADD-07 | ADD-07: zgoda Telefon może być zaznaczona bez zgody Marketing | [nauczyciel-dodawanie.spec.ts](../../tests/nauczyciel-dodawanie.spec.ts#L595) | `teacher`, `add`, `rodo` |
-| ADD-08 | ADD-08: nauczyciela można utworzyć bez żadnej zgody RODO | [nauczyciel-dodawanie.spec.ts](../../tests/nauczyciel-dodawanie.spec.ts#L676) | `teacher`, `add`, `rodo` |
-| ADD-09 | ADD-09: nauczyciela można utworzyć z dwiema szkołami | [nauczyciel-dodawanie.spec.ts](../../tests/nauczyciel-dodawanie.spec.ts#L720) | `teacher`, `add`, `school` |
-| ADD-10 | ADD-10: szkołę można usunąć przed zapisaniem nauczyciela | [nauczyciel-dodawanie.spec.ts](../../tests/nauczyciel-dodawanie.spec.ts#L759) | `teacher`, `add`, `school` |
-| ADD-11 | ADD-11: nauczyciela można utworzyć z przedmioto-poziomem Matematyka SP | [nauczyciel-dodawanie.spec.ts](../../tests/nauczyciel-dodawanie.spec.ts#L812) | `teacher`, `add`, `subject` |
-| ADD-12 | ADD-12: nauczyciela można utworzyć z wieloma przedmioto-poziomami | [nauczyciel-dodawanie.spec.ts](../../tests/nauczyciel-dodawanie.spec.ts#L841) | `teacher`, `add`, `subject` |
-| ADD-13 | ADD-13: dodawanie nauczyciela zachowuje wielkość liter i akceptuje znak _ | [nauczyciel-dodawanie.spec.ts](../../tests/nauczyciel-dodawanie.spec.ts#L880) | `teacher`, `add`, `name` |
-| ADD-14 | ADD-14: Pokaż przy podobnej osobie zamyka formularz i otwiera istniejącego nauczyciela | [nauczyciel-dodawanie.spec.ts](../../tests/nauczyciel-dodawanie.spec.ts#L973) | `teacher`, `add`, `duplicate` |
-| ADD-15 | ADD-15: brak pola imię blokuje utworzenie nauczyciela | [nauczyciel-dodawanie.spec.ts](../../tests/nauczyciel-dodawanie.spec.ts#L1031) | `teacher`, `add`, `validation` |
-| ADD-16 | ADD-16: brak pola nazwisko blokuje utworzenie nauczyciela | [nauczyciel-dodawanie.spec.ts](../../tests/nauczyciel-dodawanie.spec.ts#L1031) | `teacher`, `add`, `validation` |
-| ADD-17 | ADD-17: brak pola szkoła blokuje utworzenie nauczyciela | [nauczyciel-dodawanie.spec.ts](../../tests/nauczyciel-dodawanie.spec.ts#L1031) | `teacher`, `add`, `validation` |
-| ADD-18 | ADD-18: brak e-maila i telefonu blokuje utworzenie nauczyciela po potwierdzeniu braku przedmioto-poziomu | [nauczyciel-dodawanie.spec.ts](../../tests/nauczyciel-dodawanie.spec.ts#L1085) | `teacher`, `add`, `validation` |
-| ADD-19 | ADD-19: wybranie Nie przy ostrzeżeniu o braku przedmioto-poziomu pozostawia formularz otwarty | [nauczyciel-dodawanie.spec.ts](../../tests/nauczyciel-dodawanie.spec.ts#L1132) | `teacher`, `add`, `validation` |
-| ADD-20.1 | ADD-20.1: niepoprawny e-mail "test" blokuje zapis | [nauczyciel-dodawanie.spec.ts](../../tests/nauczyciel-dodawanie.spec.ts#L1182) | `teacher`, `add`, `email`, `validation` |
-| ADD-20.2 | ADD-20.2: niepoprawny e-mail "test@" blokuje zapis | [nauczyciel-dodawanie.spec.ts](../../tests/nauczyciel-dodawanie.spec.ts#L1182) | `"`, `teacher`, `add`, `email`, `validation` |
-| ADD-20.3 | ADD-20.3: niepoprawny e-mail "@example.pl" blokuje zapis | [nauczyciel-dodawanie.spec.ts](../../tests/nauczyciel-dodawanie.spec.ts#L1182) | `example.pl"`, `teacher`, `add`, `email`, `validation` |
-| ADD-20.4 | ADD-20.4: niepoprawny e-mail "a b@example.pl" blokuje zapis | [nauczyciel-dodawanie.spec.ts](../../tests/nauczyciel-dodawanie.spec.ts#L1182) | `example.pl"`, `teacher`, `add`, `email`, `validation` |
-| ADD-20.5 | ADD-20.5: niepoprawny e-mail "a@" blokuje zapis | [nauczyciel-dodawanie.spec.ts](../../tests/nauczyciel-dodawanie.spec.ts#L1182) | `"`, `teacher`, `add`, `email`, `validation` |
-| ADD-21 | ADD-21: e-mail używany przez innego nauczyciela blokuje zapis | [nauczyciel-dodawanie.spec.ts](../../tests/nauczyciel-dodawanie.spec.ts#L1220) | `teacher`, `add`, `email`, `validation` |
-| ADD-22 | ADD-22: telefon krótszy niż 9 cyfr blokuje zapis | [nauczyciel-dodawanie.spec.ts](../../tests/nauczyciel-dodawanie.spec.ts#L1329) | `teacher`, `add`, `phone`, `validation` |
-| ADD-23 | ADD-23: pole telefonu nie pozwala wprowadzić więcej niż 9 cyfr | [nauczyciel-dodawanie.spec.ts](../../tests/nauczyciel-dodawanie.spec.ts#L1429) | `teacher`, `add`, `phone` |
-| ADD-24 | ADD-24: przyszła data urodzenia blokuje zapis nauczyciela | [nauczyciel-dodawanie.spec.ts](../../tests/nauczyciel-dodawanie.spec.ts#L1472) | `teacher`, `add`, `birthdate`, `validation` |
-| ADD-25 | ADD-25: nauczyciela można utworzyć bez daty urodzenia | [nauczyciel-dodawanie.spec.ts](../../tests/nauczyciel-dodawanie.spec.ts#L1502) | `teacher`, `add`, `birthdate`, `positive` |
-| ADD-27 | ADD-27: brak poziomu blokuje dodanie przedmioto-poziomu | [nauczyciel-dodawanie.spec.ts](../../tests/nauczyciel-dodawanie.spec.ts#L1669) | `teacher`, `add`, `subject`, `validation` |
-| ADD-28 | ADD-28: brak przedmiotu blokuje dodanie przedmioto-poziomu | [nauczyciel-dodawanie.spec.ts](../../tests/nauczyciel-dodawanie.spec.ts#L1763) | `teacher`, `add`, `subject`, `validation` |
-| ADD-29 | ADD-29: tego samego przedmioto-poziomu nie można dodać dwa razy | [nauczyciel-dodawanie.spec.ts](../../tests/nauczyciel-dodawanie.spec.ts#L1850) | `teacher`, `add`, `subject`, `validation` |
-| ADD-30 | ADD-30: anulowanie kompletnego formularza nie tworzy nauczyciela ani relacji ze szkołą | [nauczyciel-dodawanie.spec.ts](../../tests/nauczyciel-dodawanie.spec.ts#L1940) | `teacher`, `add`, `cancel` |
+| ADD-06 | ADD-06: zgoda E-mail może być zaznaczona bez zgody Marketing | [nauczyciel-dodawanie.spec.ts](../../tests/nauczyciel-dodawanie.spec.ts#L511) | `teacher`, `add`, `rodo` |
+| ADD-07 | ADD-07: zgoda Telefon może być zaznaczona bez zgody Marketing | [nauczyciel-dodawanie.spec.ts](../../tests/nauczyciel-dodawanie.spec.ts#L599) | `teacher`, `add`, `rodo` |
+| ADD-08 | ADD-08: nauczyciela ze źródłem Karta LS można utworzyć bez żadnej zgody RODO | [nauczyciel-dodawanie.spec.ts](../../tests/nauczyciel-dodawanie.spec.ts#L688) | `teacher`, `add`, `rodo` |
+| ADD-09 | ADD-09: nauczyciela można utworzyć z dwiema szkołami | [nauczyciel-dodawanie.spec.ts](../../tests/nauczyciel-dodawanie.spec.ts#L736) | `teacher`, `add`, `school` |
+| ADD-10 | ADD-10: szkołę można usunąć przed zapisaniem nauczyciela | [nauczyciel-dodawanie.spec.ts](../../tests/nauczyciel-dodawanie.spec.ts#L775) | `teacher`, `add`, `school` |
+| ADD-11 | ADD-11: nauczyciela można utworzyć z przedmioto-poziomem Matematyka SP | [nauczyciel-dodawanie.spec.ts](../../tests/nauczyciel-dodawanie.spec.ts#L828) | `teacher`, `add`, `subject` |
+| ADD-12 | ADD-12: nauczyciela można utworzyć z wieloma przedmioto-poziomami | [nauczyciel-dodawanie.spec.ts](../../tests/nauczyciel-dodawanie.spec.ts#L857) | `teacher`, `add`, `subject` |
+| ADD-13 | ADD-13: dodawanie nauczyciela zachowuje wielkość liter i akceptuje znak _ | [nauczyciel-dodawanie.spec.ts](../../tests/nauczyciel-dodawanie.spec.ts#L896) | `teacher`, `add`, `name` |
+| ADD-14 | ADD-14: Pokaż przy podobnej osobie zamyka formularz i otwiera istniejącego nauczyciela | [nauczyciel-dodawanie.spec.ts](../../tests/nauczyciel-dodawanie.spec.ts#L989) | `teacher`, `add`, `duplicate` |
+| ADD-15 | ADD-15: brak pola imię blokuje utworzenie nauczyciela | [nauczyciel-dodawanie.spec.ts](../../tests/nauczyciel-dodawanie.spec.ts#L1047) | `teacher`, `add`, `validation` |
+| ADD-16 | ADD-16: brak pola nazwisko blokuje utworzenie nauczyciela | [nauczyciel-dodawanie.spec.ts](../../tests/nauczyciel-dodawanie.spec.ts#L1047) | `teacher`, `add`, `validation` |
+| ADD-17 | ADD-17: brak pola szkoła blokuje utworzenie nauczyciela | [nauczyciel-dodawanie.spec.ts](../../tests/nauczyciel-dodawanie.spec.ts#L1047) | `teacher`, `add`, `validation` |
+| ADD-18 | ADD-18: brak e-maila i telefonu blokuje utworzenie nauczyciela po potwierdzeniu braku przedmioto-poziomu | [nauczyciel-dodawanie.spec.ts](../../tests/nauczyciel-dodawanie.spec.ts#L1101) | `teacher`, `add`, `validation` |
+| ADD-19 | ADD-19: wybranie Nie przy ostrzeżeniu o braku przedmioto-poziomu pozostawia formularz otwarty | [nauczyciel-dodawanie.spec.ts](../../tests/nauczyciel-dodawanie.spec.ts#L1148) | `teacher`, `add`, `validation` |
+| ADD-20.1 | ADD-20.1: niepoprawny e-mail "test" blokuje zapis | [nauczyciel-dodawanie.spec.ts](../../tests/nauczyciel-dodawanie.spec.ts#L1198) | `teacher`, `add`, `email`, `validation` |
+| ADD-20.2 | ADD-20.2: niepoprawny e-mail "test@" blokuje zapis | [nauczyciel-dodawanie.spec.ts](../../tests/nauczyciel-dodawanie.spec.ts#L1198) | `"`, `teacher`, `add`, `email`, `validation` |
+| ADD-20.3 | ADD-20.3: niepoprawny e-mail "@example.pl" blokuje zapis | [nauczyciel-dodawanie.spec.ts](../../tests/nauczyciel-dodawanie.spec.ts#L1198) | `example.pl"`, `teacher`, `add`, `email`, `validation` |
+| ADD-20.4 | ADD-20.4: niepoprawny e-mail "a b@example.pl" blokuje zapis | [nauczyciel-dodawanie.spec.ts](../../tests/nauczyciel-dodawanie.spec.ts#L1198) | `example.pl"`, `teacher`, `add`, `email`, `validation` |
+| ADD-20.5 | ADD-20.5: niepoprawny e-mail "a@" blokuje zapis | [nauczyciel-dodawanie.spec.ts](../../tests/nauczyciel-dodawanie.spec.ts#L1198) | `"`, `teacher`, `add`, `email`, `validation` |
+| ADD-21 | ADD-21: e-mail używany przez innego nauczyciela blokuje zapis | [nauczyciel-dodawanie.spec.ts](../../tests/nauczyciel-dodawanie.spec.ts#L1236) | `teacher`, `add`, `email`, `validation` |
+| ADD-22 | ADD-22: telefon krótszy niż 9 cyfr blokuje zapis | [nauczyciel-dodawanie.spec.ts](../../tests/nauczyciel-dodawanie.spec.ts#L1349) | `teacher`, `add`, `phone`, `validation` |
+| ADD-23 | ADD-23: pole telefonu nie pozwala wprowadzić więcej niż 9 cyfr | [nauczyciel-dodawanie.spec.ts](../../tests/nauczyciel-dodawanie.spec.ts#L1449) | `teacher`, `add`, `phone` |
+| ADD-24 | ADD-24: przyszła data urodzenia blokuje zapis nauczyciela | [nauczyciel-dodawanie.spec.ts](../../tests/nauczyciel-dodawanie.spec.ts#L1492) | `teacher`, `add`, `birthdate`, `validation` |
+| ADD-25 | ADD-25: nauczyciela można utworzyć bez daty urodzenia | [nauczyciel-dodawanie.spec.ts](../../tests/nauczyciel-dodawanie.spec.ts#L1522) | `teacher`, `add`, `birthdate`, `positive` |
+| ADD-27 | ADD-27: brak poziomu blokuje dodanie przedmioto-poziomu | [nauczyciel-dodawanie.spec.ts](../../tests/nauczyciel-dodawanie.spec.ts#L1689) | `teacher`, `add`, `subject`, `validation` |
+| ADD-28 | ADD-28: brak przedmiotu blokuje dodanie przedmioto-poziomu | [nauczyciel-dodawanie.spec.ts](../../tests/nauczyciel-dodawanie.spec.ts#L1783) | `teacher`, `add`, `subject`, `validation` |
+| ADD-29 | ADD-29: tego samego przedmioto-poziomu nie można dodać dwa razy | [nauczyciel-dodawanie.spec.ts](../../tests/nauczyciel-dodawanie.spec.ts#L1870) | `teacher`, `add`, `subject`, `validation` |
+| ADD-30 | ADD-30: anulowanie kompletnego formularza nie tworzy nauczyciela ani relacji ze szkołą | [nauczyciel-dodawanie.spec.ts](../../tests/nauczyciel-dodawanie.spec.ts#L1960) | `teacher`, `add`, `cancel` |
 | EDIT-24 | EDIT-24: poprawna data urodzenia jest trwała | [nauczyciel-edycja-adres.spec.ts](../../tests/nauczyciel-edycja-adres.spec.ts#L17) | `teacher`, `edit` |
 | EDIT-25 | EDIT-25: niepoprawna data urodzenia blokuje zapis | [nauczyciel-edycja-adres.spec.ts](../../tests/nauczyciel-edycja-adres.spec.ts#L60) | `teacher`, `edit`, `validation` |
 | EDIT-26 | EDIT-26: pełny adres prywatny można dodać i jest zapisany w historii | [nauczyciel-edycja-adres.spec.ts](../../tests/nauczyciel-edycja-adres.spec.ts#L106) | `teacher`, `edit`, `history` |
@@ -161,63 +161,63 @@
 | FIND-05 | FIND-05: wyszukiwanie nauczyciela — Email | [nauczyciel-rozszerzenie.spec.ts](../../tests/nauczyciel-rozszerzenie.spec.ts#L85) | `teacher`, `search` |
 | FIND-05 | FIND-05: wyszukiwanie nauczyciela — Nazwisko | [nauczyciel-rozszerzenie.spec.ts](../../tests/nauczyciel-rozszerzenie.spec.ts#L85) | `teacher`, `search` |
 | REL-02 | REL-02: druga szkoła zachowuje pierwszą relację i pokazuje nauczyciela w obu szkołach | [nauczyciel-rozszerzenie.spec.ts](../../tests/nauczyciel-rozszerzenie.spec.ts#L123) | `teacher`, `relation` |
-| SCH-03 | SCH-03: minimalny poprawny formularz tworzy szkołę | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L78) | `school`, `school-add`, `positive` |
-| SCH-04 | SCH-04: brak nazwy blokuje zapis szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L97) | `school`, `school-add`, `validation` |
-| SCH-05 | SCH-05: brak typu blokuje zapis szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L111) | `school`, `school-add`, `validation` |
-| SCH-06 | SCH-06: brak adresu blokuje zapis szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L125) | `school`, `school-add`, `validation`, `address` |
-| SCH-09 | SCH-09: anulowanie adresu nie przenosi danych do formularza szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L138) | `school`, `school-add`, `address`, `cancel` |
-| SCH-10 | SCH-10: dwa szybkie kliknięcia Zapisz tworzą tylko jedną szkołę | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L168) | `school`, `school-add`, `concurrency` |
-| SCH-11 | SCH-11: dane szkoły są trwałe po ponownym otwarciu | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L186) | `school`, `school-add`, `positive` |
-| SCH-12 | SCH-12: nową szkołę można znaleźć po nazwie i zidentyfikować po ID | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L204) | `school`, `school-add`, `search` |
-| SCH-13 | SCH-13: słownik zawiera wszystkie obsługiwane typy szkół | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L228) | `school`, `school-add`, `dictionary` |
-| SCH-14 | SCH-14: formularz tworzy liceum z właściwym typem | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L244) | `school`, `school-add`, `positive`, `school-type` |
-| SCH-21 | SCH-21: formularz tworzy szkołę typu Technikum | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L261) | `school`, `school-add`, `positive`, `school-type` |
-| SCH-22 | SCH-22: formularz tworzy szkołę typu Placówka doskonalenia nauczycieli | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L261) | `school`, `school-add`, `positive`, `school-type` |
-| SCH-23 | SCH-23: formularz tworzy szkołę typu Zespół szkół | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L261) | `school`, `school-add`, `positive`, `school-type` |
-| SCH-24 | SCH-24: formularz tworzy szkołę typu Szkoła NPC | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L261) | `school`, `school-add`, `positive`, `school-type` |
-| SCH-25 | SCH-25: formularz tworzy szkołę typu Przedszkole | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L261) | `school`, `school-add`, `positive`, `school-type` |
-| SCH-17 | SCH-17: nazwa złożona wyłącznie ze spacji nie pozwala utworzyć szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L286) | `school`, `school-add`, `validation` |
-| SCH-18 | SCH-18: nazwa z polskimi znakami i interpunkcją jest zachowana | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L308) | `school`, `school-add`, `positive`, `name` |
-| SCH-27 | SCH-27: spacje na brzegach nazwy są usuwane przy zapisie | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L323) | `school`, `school-add`, `positive`, `name` |
-| SCH-28 | SCH-28: identyczna nazwa i adres mogą utworzyć dwa różne rekordy | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L339) | `school`, `school-add`, `positive`, `duplicate` |
-| SCH-29 | SCH-29: identyczna nazwa pod różnymi adresami tworzy dwa różne rekordy | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L363) | `school`, `school-add`, `positive`, `duplicate` |
-| SCH-07 | SCH-07: poprawny kod pocztowy pozwala wybrać miejscowość i zapisać adres | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L397) | `school`, `school-add`, `address` |
-| SCH-08 | SCH-08: nieznany kod pocztowy blokuje zapis adresu i szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L421) | `school`, `school-add`, `validation`, `address` |
-| SCH-19 | SCH-19: numer budynku z literą jest zachowany w adresie | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L458) | `school`, `school-add`, `address` |
-| SCH-20 | SCH-20: wyczyszczenie wyszukiwania adresu usuwa wpisane kryteria | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L479) | `school`, `school-add`, `address`, `clear` |
-| SCH-26 | SCH-26: numer budynku z separatorem jest zachowany po utworzeniu szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L501) | `school`, `school-add`, `positive`, `address` |
-| SCH-41 | SCH-41: brak numeru budynku blokuje zapis adresu i szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L516) | `school`, `school-add`, `validation`, `address` |
-| SCH-43 | SCH-43: pełny adres z ulicą jest zachowany po utworzeniu szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L541) | `school`, `school-add`, `positive`, `address` |
-| SCH-44 | SCH-44: wyczyszczenie wybranego adresu usuwa utworzony adres | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L572) | `school`, `school-add`, `validation`, `address`, `clear` |
-| SCH-45 | SCH-45: ponowne dodanie adresu zastępuje adres przed utworzeniem szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L599) | `school`, `school-add`, `positive`, `address` |
-| SCH-46 | SCH-46: anulowanie zmiany adresu zachowuje poprzedni adres | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L630) | `school`, `school-add`, `positive`, `address`, `cancel` |
-| SCH-47 | SCH-47: wyczyszczenie adresu i anulowanie zachowuje poprzedni adres | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L654) | `school`, `school-add`, `positive`, `address`, `cancel`, `clear` |
-| SCH-15 | SCH-15: usunięcie dodanego adresu ponownie blokuje zapis szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L676) | `school`, `school-add`, `address`, `validation` |
-| SCH-30 | SCH-30: nazwa z SIO jest zachowana po utworzeniu szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L701) | `school`, `school-add`, `positive`, `optional-data` |
-| SCH-32 | SCH-32: liczba uczniów jest zachowana po utworzeniu szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L717) | `school`, `school-add`, `positive`, `optional-data` |
-| SCH-33 | SCH-33: numer RSPO jest przekazywany podczas tworzenia szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L735) | `school`, `school-add`, `positive`, `identifier` |
-| SCH-34 | SCH-34: numer REGON jest przekazywany podczas tworzenia szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L753) | `school`, `school-add`, `positive`, `identifier` |
-| SCH-35 | SCH-35: numer NIP jest przekazywany podczas tworzenia szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L771) | `school`, `school-add`, `positive`, `identifier` |
-| SCH-51 | SCH-51: REGON z wiodącymi zerami zachowuje pełną długość | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L789) | `school`, `school-add`, `positive`, `identifier` |
-| SCH-52 | SCH-52: NIP z wiodącymi zerami zachowuje pełną długość | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L807) | `school`, `school-add`, `positive`, `identifier` |
-| SCH-49 | SCH-49: zerowa liczba uczniów jest zachowana | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L825) | `school`, `school-add`, `positive`, `optional-data` |
-| SCH-31 | SCH-31: WWW i e-mail są zachowane po utworzeniu szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L847) | `school`, `school-add`, `positive`, `contact` |
-| SCH-53 | SCH-53: pełny adres WWW ze ścieżką i parametrami jest zachowany | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L867) | `school`, `school-add`, `positive`, `contact` |
-| SCH-54 | SCH-54: e-mail z wielkimi literami jest normalizowany do małych liter | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L884) | `school`, `school-add`, `positive`, `contact` |
-| SCH-36 | SCH-36: przełącznik komórka ustawia format numeru i resetuje się po zapisie | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L903) | `school`, `school-add`, `positive`, `contact` |
-| SCH-37 | SCH-37: telefon stacjonarny zachowuje właściwy format po utworzeniu szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L929) | `school`, `school-add`, `positive`, `contact` |
-| SCH-38 | SCH-38: niepoprawny e-mail blokuje utworzenie szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L956) | `school`, `school-add`, `validation`, `contact` |
-| SCH-39 | SCH-39: niepełny telefon blokuje utworzenie szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L973) | `school`, `school-add`, `validation`, `contact` |
-| SCH-40 | SCH-40: przełączenie komórka zmienia maskę bez utraty cyfr | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L993) | `school`, `school-add`, `contact`, `format` |
-| SCH-48 | SCH-48: e-mail z subdomeną jest zachowany | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L1012) | `school`, `school-add`, `positive`, `contact` |
-| SCH-50 | SCH-50: e-mail z aliasem plus jest odrzucany przez backend | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L1029) | `school`, `school-add`, `validation`, `contact` |
-| SCH-16 | SCH-16: błąd serwera nie otwiera nieistniejącej szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L1065) | `school`, `school-add`, `error-handling` |
-| SCH-58 | SCH-58: HTTP 422 nie otwiera nieutworzonej szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L1104) | `school`, `school-add`, `error-handling` |
-| SCH-59 | SCH-59: timeout sieci nie otwiera nieutworzonej szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L1104) | `school`, `school-add`, `error-handling` |
-| SCH-42 | SCH-42: pełny formularz zachowuje wszystkie dane opcjonalne | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L1139) | `school`, `school-add`, `positive`, `optional-data`, `contact`, `identifier` |
-| SCH-55 | SCH-55: pola opcjonalne mogą pozostać puste i szkoła nadal jest trwała | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L1195) | `school`, `school-add`, `positive`, `optional-data` |
-| SCH-56 | SCH-56: anulowanie kompletnego formularza po uzupełnieniu danych opcjonalnych nie tworzy szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L1220) | `school`, `school-add`, `cancel`, `optional-data` |
-| SCH-57 | SCH-57: ponowne otwarcie szkoły zachowuje typ, poziom i adres | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L1236) | `school`, `school-add`, `positive`, `persistence` |
+| SCH-03 | SCH-03: minimalny poprawny formularz tworzy szkołę | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L79) | `school`, `school-add`, `positive` |
+| SCH-04 | SCH-04: brak nazwy blokuje zapis szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L98) | `school`, `school-add`, `validation` |
+| SCH-05 | SCH-05: brak typu blokuje zapis szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L112) | `school`, `school-add`, `validation` |
+| SCH-06 | SCH-06: brak adresu blokuje zapis szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L126) | `school`, `school-add`, `validation`, `address` |
+| SCH-09 | SCH-09: anulowanie adresu nie przenosi danych do formularza szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L139) | `school`, `school-add`, `address`, `cancel` |
+| SCH-10 | SCH-10: dwa szybkie kliknięcia Zapisz tworzą tylko jedną szkołę | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L169) | `school`, `school-add`, `concurrency` |
+| SCH-11 | SCH-11: dane szkoły są trwałe po ponownym otwarciu | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L187) | `school`, `school-add`, `positive` |
+| SCH-12 | SCH-12: nową szkołę można znaleźć po nazwie i zidentyfikować po ID | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L205) | `school`, `school-add`, `search` |
+| SCH-13 | SCH-13: słownik zawiera wszystkie obsługiwane typy szkół | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L229) | `school`, `school-add`, `dictionary` |
+| SCH-14 | SCH-14: formularz tworzy liceum z właściwym typem | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L245) | `school`, `school-add`, `positive`, `school-type` |
+| SCH-21 | SCH-21: formularz tworzy szkołę typu Technikum | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L262) | `school`, `school-add`, `positive`, `school-type` |
+| SCH-22 | SCH-22: formularz tworzy szkołę typu Placówka doskonalenia nauczycieli | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L262) | `school`, `school-add`, `positive`, `school-type` |
+| SCH-23 | SCH-23: formularz tworzy szkołę typu Zespół szkół | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L262) | `school`, `school-add`, `positive`, `school-type` |
+| SCH-24 | SCH-24: formularz tworzy szkołę typu Szkoła NPC | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L262) | `school`, `school-add`, `positive`, `school-type` |
+| SCH-25 | SCH-25: formularz tworzy szkołę typu Przedszkole | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L262) | `school`, `school-add`, `positive`, `school-type` |
+| SCH-17 | SCH-17: nazwa złożona wyłącznie ze spacji nie pozwala utworzyć szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L287) | `school`, `school-add`, `validation` |
+| SCH-18 | SCH-18: nazwa z polskimi znakami i interpunkcją jest zachowana | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L309) | `school`, `school-add`, `positive`, `name` |
+| SCH-27 | SCH-27: spacje na brzegach nazwy są usuwane przy zapisie | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L324) | `school`, `school-add`, `positive`, `name` |
+| SCH-28 | SCH-28: identyczna nazwa i adres mogą utworzyć dwa różne rekordy | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L340) | `school`, `school-add`, `positive`, `duplicate` |
+| SCH-29 | SCH-29: identyczna nazwa pod różnymi adresami tworzy dwa różne rekordy | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L364) | `school`, `school-add`, `positive`, `duplicate` |
+| SCH-07 | SCH-07: poprawny kod pocztowy pozwala wybrać miejscowość i zapisać adres | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L398) | `school`, `school-add`, `address` |
+| SCH-08 | SCH-08: nieznany kod pocztowy blokuje zapis adresu i szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L422) | `school`, `school-add`, `validation`, `address` |
+| SCH-19 | SCH-19: numer budynku z literą jest zachowany w adresie | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L461) | `school`, `school-add`, `address` |
+| SCH-20 | SCH-20: wyczyszczenie wyszukiwania adresu usuwa wpisane kryteria | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L482) | `school`, `school-add`, `address`, `clear` |
+| SCH-26 | SCH-26: numer budynku z separatorem jest zachowany po utworzeniu szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L504) | `school`, `school-add`, `positive`, `address` |
+| SCH-41 | SCH-41: brak numeru budynku blokuje zapis adresu i szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L519) | `school`, `school-add`, `validation`, `address` |
+| SCH-43 | SCH-43: pełny adres z ulicą jest zachowany po utworzeniu szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L544) | `school`, `school-add`, `positive`, `address` |
+| SCH-44 | SCH-44: wyczyszczenie wybranego adresu usuwa utworzony adres | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L575) | `school`, `school-add`, `validation`, `address`, `clear` |
+| SCH-45 | SCH-45: ponowne dodanie adresu zastępuje adres przed utworzeniem szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L602) | `school`, `school-add`, `positive`, `address` |
+| SCH-46 | SCH-46: anulowanie zmiany adresu zachowuje poprzedni adres | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L633) | `school`, `school-add`, `positive`, `address`, `cancel` |
+| SCH-47 | SCH-47: wyczyszczenie adresu i anulowanie zachowuje poprzedni adres | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L657) | `school`, `school-add`, `positive`, `address`, `cancel`, `clear` |
+| SCH-15 | SCH-15: usunięcie dodanego adresu ponownie blokuje zapis szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L679) | `school`, `school-add`, `address`, `validation` |
+| SCH-30 | SCH-30: nazwa z SIO jest zachowana po utworzeniu szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L704) | `school`, `school-add`, `positive`, `optional-data` |
+| SCH-32 | SCH-32: liczba uczniów jest zachowana po utworzeniu szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L720) | `school`, `school-add`, `positive`, `optional-data` |
+| SCH-33 | SCH-33: numer RSPO jest przekazywany podczas tworzenia szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L738) | `school`, `school-add`, `positive`, `identifier` |
+| SCH-34 | SCH-34: numer REGON jest przekazywany podczas tworzenia szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L756) | `school`, `school-add`, `positive`, `identifier` |
+| SCH-35 | SCH-35: numer NIP jest przekazywany podczas tworzenia szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L774) | `school`, `school-add`, `positive`, `identifier` |
+| SCH-51 | SCH-51: REGON z wiodącymi zerami zachowuje pełną długość | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L792) | `school`, `school-add`, `positive`, `identifier` |
+| SCH-52 | SCH-52: NIP z wiodącymi zerami zachowuje pełną długość | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L810) | `school`, `school-add`, `positive`, `identifier` |
+| SCH-49 | SCH-49: zerowa liczba uczniów jest zachowana | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L828) | `school`, `school-add`, `positive`, `optional-data` |
+| SCH-31 | SCH-31: WWW i e-mail są zachowane po utworzeniu szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L850) | `school`, `school-add`, `positive`, `contact` |
+| SCH-53 | SCH-53: pełny adres WWW ze ścieżką i parametrami jest zachowany | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L870) | `school`, `school-add`, `positive`, `contact` |
+| SCH-54 | SCH-54: e-mail z wielkimi literami jest normalizowany do małych liter | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L887) | `school`, `school-add`, `positive`, `contact` |
+| SCH-36 | SCH-36: przełącznik komórka ustawia format numeru i resetuje się po zapisie | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L906) | `school`, `school-add`, `positive`, `contact` |
+| SCH-37 | SCH-37: telefon stacjonarny zachowuje właściwy format po utworzeniu szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L932) | `school`, `school-add`, `positive`, `contact` |
+| SCH-38 | SCH-38: niepoprawny e-mail blokuje utworzenie szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L959) | `school`, `school-add`, `validation`, `contact` |
+| SCH-39 | SCH-39: niepełny telefon blokuje utworzenie szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L976) | `school`, `school-add`, `validation`, `contact` |
+| SCH-40 | SCH-40: przełączenie komórka zmienia maskę bez utraty cyfr | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L996) | `school`, `school-add`, `contact`, `format` |
+| SCH-48 | SCH-48: e-mail z subdomeną jest zachowany | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L1015) | `school`, `school-add`, `positive`, `contact` |
+| SCH-50 | SCH-50: e-mail z aliasem plus jest odrzucany przez backend | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L1032) | `school`, `school-add`, `validation`, `contact` |
+| SCH-16 | SCH-16: błąd serwera nie otwiera nieistniejącej szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L1068) | `school`, `school-add`, `error-handling` |
+| SCH-58 | SCH-58: HTTP 422 nie otwiera nieutworzonej szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L1107) | `school`, `school-add`, `error-handling` |
+| SCH-59 | SCH-59: timeout sieci nie otwiera nieutworzonej szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L1107) | `school`, `school-add`, `error-handling` |
+| SCH-42 | SCH-42: pełny formularz zachowuje wszystkie dane opcjonalne | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L1142) | `school`, `school-add`, `positive`, `optional-data`, `contact`, `identifier` |
+| SCH-55 | SCH-55: pola opcjonalne mogą pozostać puste i szkoła nadal jest trwała | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L1198) | `school`, `school-add`, `positive`, `optional-data` |
+| SCH-56 | SCH-56: anulowanie kompletnego formularza po uzupełnieniu danych opcjonalnych nie tworzy szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L1223) | `school`, `school-add`, `cancel`, `optional-data` |
+| SCH-57 | SCH-57: ponowne otwarcie szkoły zachowuje typ, poziom i adres | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L1239) | `school`, `school-add`, `positive`, `persistence` |
 | SCH-EDIT-01 | SCH-EDIT-01: formularz edycji wczytuje nazwę szkoły | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L83) | `school`, `school-edit`, `smoke` |
 | SCH-EDIT-02 | SCH-EDIT-02: anulowanie zmiany nazwy zachowuje poprzednią wartość | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L98) | `school`, `school-edit`, `cancel` |
 | SCH-EDIT-03 | SCH-EDIT-03: zmiana nazwy jest trwała po ponownym otwarciu szkoły | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L119) | `school`, `school-edit`, `positive` |
@@ -342,16 +342,16 @@
 | ORD-35 | ORD-35: ostatnia zmiana ilości przed zapisem jest używana | [zamowienia-walidacja.spec.ts](../../tests/zamowienia-walidacja.spec.ts#L73) | `school`, `order`, `quantity` |
 | ORD-36 | ORD-36: Tab kończy edycję ilości w AG Grid | [zamowienia-walidacja.spec.ts](../../tests/zamowienia-walidacja.spec.ts#L110) | `school`, `order`, `quantity` |
 | ORD-37 | ORD-37: wpisanie 0 normalizuje ilość do 10 | [zamowienia-walidacja.spec.ts](../../tests/zamowienia-walidacja.spec.ts#L130) | `school`, `order`, `quantity`, `boundary` |
-| ORD-38 | ORD-38: wartość ujemna nie powinna być akceptowana — znany bug | [zamowienia-walidacja.spec.ts](../../tests/zamowienia-walidacja.spec.ts#L149) | `school`, `order`, `quantity`, `bug` |
-| ORD-39 | ORD-39: wyczyszczenie pola Ilość automatycznie przywraca wartość | [zamowienia-walidacja.spec.ts](../../tests/zamowienia-walidacja.spec.ts#L170) | `school`, `order`, `quantity`, `boundary` |
-| ORD-40 | ORD-40: pusty formularz nie zapisuje zamówienia i oznacza Przedmiot jako niepoprawny | [zamowienia-walidacja.spec.ts](../../tests/zamowienia-walidacja.spec.ts#L202) | `school`, `order`, `validation` |
-| ORD-41 | ORD-41: zamówienie można zapisać bez wybranego Przedmiotu, jeśli produkt został dodany | [zamowienia-walidacja.spec.ts](../../tests/zamowienia-walidacja.spec.ts#L230) | `school`, `order`, `positive` |
-| ORD-42 | ORD-42: dwa szybkie kliknięcia Zapisz z krótkim odstępem tworzą tylko jedno zamówienie | [zamowienia-walidacja.spec.ts](../../tests/zamowienia-walidacja.spec.ts#L282) | `school`, `order`, `duplicate` |
-| ORD-43 | ORD-43: dwa kolejne zamówienia dostają różne ID | [zamowienia-walidacja.spec.ts](../../tests/zamowienia-walidacja.spec.ts#L342) | `school`, `order`, `identity` |
-| ORD-44 | ORD-44: usunięcie pierwszego z dwóch zamówień nie usuwa drugiego | [zamowienia-walidacja.spec.ts](../../tests/zamowienia-walidacja.spec.ts#L382) | `school`, `order`, `isolation` |
-| ORD-45 | ORD-45: zamówienie utworzone dla szkoły A nie pojawia się w szkole B | [zamowienia-walidacja.spec.ts](../../tests/zamowienia-walidacja.spec.ts#L429) | `school`, `order`, `isolation` |
-| ORD-46 | ORD-46: reload zachowuje ID, produkt i ilość zamówienia | [zamowienia-walidacja.spec.ts](../../tests/zamowienia-walidacja.spec.ts#L452) | `school`, `order`, `persistence` |
-| ORD-47 | ORD-47: zapisane zamówienie ma numeryczne ID i widoczny wiersz na liście | [zamowienia-walidacja.spec.ts](../../tests/zamowienia-walidacja.spec.ts#L481) | `school`, `order`, `list` |
+| ORD-38 | ORD-38: wartość ujemna nie jest akceptowana | [zamowienia-walidacja.spec.ts](../../tests/zamowienia-walidacja.spec.ts#L149) | `school`, `order`, `quantity`, `boundary` |
+| ORD-39 | ORD-39: wyczyszczenie pola Ilość automatycznie przywraca wartość | [zamowienia-walidacja.spec.ts](../../tests/zamowienia-walidacja.spec.ts#L168) | `school`, `order`, `quantity`, `boundary` |
+| ORD-40 | ORD-40: pusty formularz nie zapisuje zamówienia i oznacza Przedmiot jako niepoprawny | [zamowienia-walidacja.spec.ts](../../tests/zamowienia-walidacja.spec.ts#L200) | `school`, `order`, `validation` |
+| ORD-41 | ORD-41: zamówienie można zapisać bez wybranego Przedmiotu, jeśli produkt został dodany | [zamowienia-walidacja.spec.ts](../../tests/zamowienia-walidacja.spec.ts#L228) | `school`, `order`, `positive` |
+| ORD-42 | ORD-42: dwa szybkie kliknięcia Zapisz z krótkim odstępem tworzą tylko jedno zamówienie | [zamowienia-walidacja.spec.ts](../../tests/zamowienia-walidacja.spec.ts#L280) | `school`, `order`, `duplicate` |
+| ORD-43 | ORD-43: dwa kolejne zamówienia dostają różne ID | [zamowienia-walidacja.spec.ts](../../tests/zamowienia-walidacja.spec.ts#L340) | `school`, `order`, `identity` |
+| ORD-44 | ORD-44: usunięcie pierwszego z dwóch zamówień nie usuwa drugiego | [zamowienia-walidacja.spec.ts](../../tests/zamowienia-walidacja.spec.ts#L380) | `school`, `order`, `isolation` |
+| ORD-45 | ORD-45: zamówienie utworzone dla szkoły A nie pojawia się w szkole B | [zamowienia-walidacja.spec.ts](../../tests/zamowienia-walidacja.spec.ts#L427) | `school`, `order`, `isolation` |
+| ORD-46 | ORD-46: reload zachowuje ID, produkt i ilość zamówienia | [zamowienia-walidacja.spec.ts](../../tests/zamowienia-walidacja.spec.ts#L450) | `school`, `order`, `persistence` |
+| ORD-47 | ORD-47: zapisane zamówienie ma numeryczne ID i widoczny wiersz na liście | [zamowienia-walidacja.spec.ts](../../tests/zamowienia-walidacja.spec.ts#L479) | `school`, `order`, `list` |
 | ORD-48 | ORD-48: poprawny JPG można dodać jako załącznik | [zamowienia-zalaczniki.spec.ts](../../tests/zamowienia-zalaczniki.spec.ts#L44) | `school`, `order`, `attachment` |
 | ORD-49 | ORD-49: poprawny PNG można dodać jako załącznik | [zamowienia-zalaczniki.spec.ts](../../tests/zamowienia-zalaczniki.spec.ts#L44) | `school`, `order`, `attachment` |
 | ORD-50 | ORD-50: poprawny PDF można dodać jako załącznik | [zamowienia-zalaczniki.spec.ts](../../tests/zamowienia-zalaczniki.spec.ts#L44) | `school`, `order`, `attachment` |

@@ -1,4 +1,4 @@
-import { expect, type Locator, type Page, type Request } from "@playwright/test";
+import { expect, type Locator, type Page } from "@playwright/test";
 
 export type CreateSchoolApiOptions = {
   fullName?: string;
@@ -470,64 +470,27 @@ export class Octopus {
       return;
     }
 
-    let saveRequest: Request | undefined;
+    const saveResponse = this.page.waitForResponse(
+      (response) => {
+        const request = response.request();
+        const pathname = new URL(response.url()).pathname;
 
-    const captureSaveRequest = (request: Request) => {
-      const pathname = new URL(request.url()).pathname;
+        return (
+          request.method() === "POST" &&
+          pathname.startsWith(`/api/${kind}/`) &&
+          pathname.includes("Test")
+        );
+      },
+      { timeout: 20_000 },
+    );
 
-      if (
-        request.method() === "POST" &&
-        pathname.startsWith(`/api/${kind}/`) &&
-        pathname.includes("Test")
-      ) {
-        saveRequest = request;
-      }
-    };
+    await checkbox.click();
 
-    this.page.on("request", captureSaveRequest);
+    const response = await saveResponse;
 
-    try {
-      await expect(async () => {
-        await waitForOctopusIdle(this.page);
+    expect(response.ok(), "Zapis flagi Testowy musi zakończyć się powodzeniem").toBeTruthy();
 
-        /*
-         * Stan mógł zmienić się podczas
-         * doczytywania panelu.
-         */
-        if (await checkbox.isChecked()) {
-          return;
-        }
-
-        /*
-         * Używamy click zamiast check.
-         *
-         * check() dodatkowo sam weryfikuje,
-         * czy stan zmienił się natychmiast,
-         * co przy Angularze i spinnerze
-         * bywa niestabilne.
-         */
-        await checkbox.click();
-
-        await expect(checkbox).toBeChecked({
-          timeout: 2_000,
-        });
-      }).toPass({
-        timeout: 20_000,
-        intervals: [100, 250, 500],
-      });
-    } finally {
-      this.page.off("request", captureSaveRequest);
-    }
-
-    if (saveRequest) {
-      const response = await saveRequest.response();
-
-      expect(response, "Żądanie zapisu flagi Testowy powinno otrzymać odpowiedź").not.toBeNull();
-
-      expect(response!.ok(), "Zapis flagi Testowy musi zakończyć się powodzeniem").toBeTruthy();
-
-      await response!.finished();
-    }
+    await response.finished();
 
     /*
      * Po zapisie również czekamy aż spinner
@@ -544,7 +507,7 @@ export class Octopus {
     // i tabeli, niezależne od nowego formularza wyszukiwania.
     await this.openPanel("school");
     const search = await this.openSearch("school");
-    await typeValue(this.field(search, "Nazwa szkoły"), name);
+    await typeValue(this.field(search, "ID szkoły"), id);
     await search.getByRole("button", { name: "Szukaj", exact: true }).click();
     await expect(search).toHaveCount(0);
     const row = this.page
@@ -561,7 +524,13 @@ export class Octopus {
     ).toBeVisible();
   }
 
-  async prepareTeacher(lastName: string, email: string, schoolId?: string, schoolName?: string) {
+  async prepareTeacher(
+    lastName: string,
+    email: string,
+    schoolId?: string,
+    schoolName?: string,
+    options: { autoConsent?: boolean } = {},
+  ) {
     // Fixture strony otwiera już pusty panel nauczyciela, aby sprawdzić sesję.
     // Nie pobieramy go ponownie przed każdym formularzem dodawania.
     if (new URL(this.page.url()).pathname !== "/teacher/teacher-panel") {
@@ -580,6 +549,9 @@ export class Octopus {
         .locator("input"),
       email,
     );
+    if (options.autoConsent !== false) {
+      await form.getByRole("checkbox", { name: "Marketing", exact: true }).check();
+    }
     if (schoolId && schoolName) await this.attachSchool(form, schoolId, schoolName);
     return form;
   }
