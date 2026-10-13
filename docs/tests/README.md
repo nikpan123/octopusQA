@@ -4,8 +4,8 @@ Ten katalog opisuje aktualne obszary testowe. Źródłem prawdy dla nazw, lokali
 
 ## Aktualny stan
 
-- **422** scenariusze we wszystkich 23 plikach;
-- **420** scenariuszy w zwykłej regresji;
+- **452** scenariusze we wszystkich 23 plikach;
+- **450** scenariuszy w zwykłej regresji;
 - **2** scenariusze rocznej medalowości uruchamiane osobno;
 - domyślnie 2 workery, maksymalnie 4;
 - ORD w panelu: maksymalnie 2 workery;
@@ -22,14 +22,16 @@ Ten katalog opisuje aktualne obszary testowe. Źródłem prawdy dla nazw, lokali
 | `szkola-medalowosc-annual.spec.ts` |         2 | [Roczna medalowość](medalowosc-roczna.md)                              |
 | `szkola-medalowosc.spec.ts`        |        42 | [Medalowość szkoły](medalowosc-szkoly.md)                              |
 | `szkola-nauczyciel.spec.ts`        |         1 | [Relacje](relacje-szkola-nauczyciel.md)                                |
-| `szkola-struktura.spec.ts`         |        57 | [Struktura szkoły](struktura-szkoly.md)                                |
+| `szkola-struktura.spec.ts`         |        87 | [Struktura szkoły](struktura-szkoly.md)                                |
 | `walidacja-anulowanie.spec.ts`     |         9 | [Nauczyciele](nauczyciele.md), [relacje](relacje-szkola-nauczyciel.md) |
 | `zamowienia-*.spec.ts`             |        66 | [Zamówienia szkoły](zamowienia-szkoly.md)                              |
-| **Razem**                          |   **422** |                                                                        |
+| **Razem**                          |   **452** |                                                                        |
 
 Liczba wykonań może być większa od liczby logicznych ID, ponieważ część scenariuszy jest parametryzowana.
 
-W obszarze `Struktura szkoły` 29 scenariuszy jest aktywnych, trzy dokumentują znane defekty, a 25 pozostaje jako `fixme` z konkretnym blockerem. Szczegóły zawiera dokument [Struktura szkoły](struktura-szkoly.md).
+W obszarze `Struktura szkoły` wszystkie 87 scenariuszy jest wykonywanych. Nie ma `fixme` ani `skip`; osiem scenariuszy `test.fail` dokumentuje niezgodności DEV względem oczekiwań testów. Zakres obejmuje obecnego użytkownika z pełnymi uprawnieniami, UI i publiczne API. Szczegóły i granice pokrycia zawiera dokument [Struktura szkoły](struktura-szkoly.md).
+
+Dokładne działania i sprawdzenia każdego z 87 testów opisuje [Struktura szkoły — każdy test krok po kroku](struktura-szkoly-krok-po-kroku.md), w tym symulowane odpowiedzi, sprzątanie i ograniczenia poszczególnych scenariuszy.
 
 ## Zasady wspólne
 

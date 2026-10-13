@@ -2,7 +2,7 @@
 
 > Plik generowany automatycznie przez `npm run docs:scenarios`. Nie edytuj tabeli ręcznie.
 
-Łącznie: **422 scenariuszy**.
+Łącznie: **452 scenariuszy**.
 
 | ID | Scenariusz | Plik | Tagi |
 |---|---|---|---|
@@ -296,63 +296,93 @@
 | MED-56 | MED-56: multiselect medalu jest poprawnie przekazywany do API i zwraca tylko wybrane medale | [szkola-medalowosc.spec.ts](../../tests/szkola-medalowosc.spec.ts#L1001) | — |
 | MED-60 | MED-60: każda szkoła z medalem Brak nie ma przedmiotów medalowych | [szkola-medalowosc.spec.ts](../../tests/szkola-medalowosc.spec.ts#L1173) | — |
 | — | szkoła → nauczyciel → relacja → wyszukiwanie → nauczyciel → historia | [szkola-nauczyciel.spec.ts](../../tests/szkola-nauczyciel.spec.ts#L8) | `smoke` |
-| STR-01 | STR-01: szkoła bez relacji pokazuje pusty stan struktury | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L70) | `school`, `structure`, `smoke` |
-| STR-02 | STR-02: pusty stan blokuje filtrowanie struktury i pozwala dodać powiązanie | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L79) | `school`, `structure`, `validation` |
-| STR-03 | STR-03: dialog dodawania zawiera filtry, obie tabele i akcje | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L96) | `school`, `structure`, `dialog` |
-| STR-04 | STR-04: puste wyszukiwanie pokazuje walidację i pozostawia dialog otwarty | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L132) | `school`, `structure`, `negative` |
-| STR-05 | STR-05: anulowanie pustego dialogu nie zmienia struktury | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L143) | `school`, `structure`, `cancel` |
-| STR-06 | STR-06: wyszukiwanie po dokładnym ID zwraca właściwą szkołę | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L156) | `school`, `structure`, `search` |
-| STR-07 | STR-07: wyszukiwanie po pełnej nazwie zwraca właściwą szkołę | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L167) | `school`, `structure`, `search` |
-| STR-08 | STR-08: wyszukiwanie po fragmencie nazwy zwraca pasującą szkołę | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L178) | `school`, `structure`, `search` |
-| STR-09 | STR-09: wyszukiwanie po kodzie pocztowym zwraca zgodne adresy | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L197) | `school`, `structure`, `search` |
-| STR-10 | STR-10: wyszukiwanie po miejscowości zwraca zgodne adresy | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L208) | `school`, `structure`, `search` |
-| STR-11 | STR-11: wyszukiwanie po ulicy zwraca zgodne adresy | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L219) | `school`, `structure`, `search` |
-| STR-12 | STR-12: wyszukiwanie łączy ID i nazwę szkoły | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L230) | `school`, `structure`, `search` |
-| STR-13 | STR-13: nieistniejące ID pozostawia pustą tabelę wyników | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L241) | `school`, `structure`, `search`, `negative` |
-| STR-14 | STR-14: szkołę można dodać do planowanych powiązań bez zapisu | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L255) | `school`, `structure`, `positive` |
-| STR-15 | STR-15: niezapisaną szkołę można usunąć z planowanych powiązań | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L269) | `school`, `structure`, `cancel` |
-| STR-16 | STR-16: pojedyncze poprawne powiązanie wysyła jedno żądanie zapisu | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L285) | `school`, `structure`, `api` |
-| STR-17 | STR-17: trwałość relacji po ponownym otwarciu | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L305) | `school`, `structure`, `persistence` |
-| STR-18 | STR-18: anulowanie po dodaniu szkoły nie zachowuje planowanego powiązania | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L325) | `school`, `structure`, `cancel` |
-| STR-19 | STR-19: kilka szkół jest wysyłanych dokładnie raz w jednym zapisie | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L349) | `school`, `structure`, `api` |
-| STR-20 | STR-20: filtrowanie zaznaczonej gałęzi i całej struktury | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L366) | `school`, `structure`, `blocked` |
-| STR-21 | STR-21: typ „Zespół szkół” jest dostępny i mapowany do kontraktu API | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L375) | `school`, `structure`, `api` |
-| STR-22 | STR-22: typ „Filia” jest dostępny i mapowany do kontraktu API | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L375) | `school`, `structure`, `api` |
-| STR-23 | STR-23: typ „Wielobudynkowość” jest dostępny i mapowany do kontraktu API | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L375) | `school`, `structure`, `api` |
-| STR-24 | STR-24: niedozwolony typ relacji dla pary jednostek | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L391) | `school`, `structure`, `blocked` |
-| STR-25 | STR-25: duplikat aktywnej relacji | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L395) | `school`, `structure`, `blocked` |
-| STR-26 | STR-26: ta sama para z innym typem | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L399) | `school`, `structure`, `blocked` |
-| STR-27 | STR-27: bieżącej szkoły nie można dodać jako własnego powiązania | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L403) | `school`, `structure`, `validation`, `negative` |
-| STR-28 | STR-28: cykl bezpośredni | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L427) | `school`, `structure`, `blocked` |
-| STR-29 | STR-29: cykl pośredni | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L431) | `school`, `structure`, `blocked` |
-| STR-30 | STR-30: maksymalna głębokość hierarchii | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L435) | `school`, `structure`, `blocked` |
-| STR-31 | STR-31: przekroczenie głębokości hierarchii | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L439) | `school`, `structure`, `blocked` |
-| STR-32 | STR-32: edycja typu relacji | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L443) | `school`, `structure`, `blocked` |
-| STR-33 | STR-33: zamiana stron relacji | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L447) | `school`, `structure`, `blocked` |
-| STR-34 | STR-34: ikona śmietnika usuwa relację ze struktury | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L451) | `school`, `structure`, `delete` |
-| STR-35 | STR-35: przywrócenie relacji | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L468) | `school`, `structure`, `blocked` |
-| STR-36 | STR-36: relację można ponownie dodać po usunięciu | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L472) | `school`, `structure`, `delete` |
-| STR-37 | STR-37: brak wpływu nieaktywnej relacji na biznes | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L491) | `school`, `structure`, `blocked` |
-| STR-38 | STR-38: automatyczne nadanie ID zespołu szkół | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L495) | `school`, `structure`, `blocked` |
-| STR-39 | STR-39: unikalność ID zespołu szkół | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L499) | `school`, `structure`, `blocked` |
-| STR-40 | STR-40: brak kolizji ID z numeracją szkół | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L503) | `school`, `structure`, `blocked` |
-| STR-41 | STR-41: wyszukiwanie zespołu po trzycyfrowym ID | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L507) | `school`, `structure`, `blocked` |
-| STR-42 | STR-42: dane identyfikacyjne zespołu w integracji | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L511) | `school`, `structure`, `blocked` |
-| STR-43 | STR-43: trwałość rekordu relacji | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L515) | `school`, `structure`, `blocked` |
-| STR-44 | STR-44: rozszerzalność słownika typów | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L519) | `school`, `structure`, `blocked` |
-| STR-45 | STR-45: audyt utworzenia | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L523) | `school`, `structure`, `blocked` |
-| STR-46 | STR-46: audyt edycji | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L527) | `school`, `structure`, `blocked` |
-| STR-47 | STR-47: audyt soft delete | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L531) | `school`, `structure`, `blocked` |
-| STR-48 | STR-48: audyt przywrócenia | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L535) | `school`, `structure`, `blocked` |
-| STR-49 | STR-49: odpowiedź 422 nie zamyka dialogu ani nie ponawia zapisu | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L539) | `school`, `structure`, `api`, `negative` |
-| STR-50 | STR-50: odpowiedź 500 zachowuje przygotowaną relację i pozwala ponowić zapis | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L555) | `school`, `structure`, `api`, `negative` |
-| STR-51 | STR-51: konflikt równoczesnej edycji | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L572) | `school`, `structure`, `blocked` |
-| STR-52 | STR-52: uprawnienia tylko do odczytu | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L576) | `school`, `structure`, `blocked` |
-| STR-53 | STR-53: wyszukiwanie złożone wyłącznie z białych znaków jest odrzucane | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L580) | `school`, `structure`, `validation`, `negative` |
-| STR-54 | STR-54: ponowne wyszukiwanie zastępuje poprzednie wyniki | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L598) | `school`, `structure`, `search` |
-| STR-55 | STR-55: tej samej szkoły nie można dodać dwukrotnie do planowanych powiązań | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L614) | `school`, `structure`, `validation` |
-| STR-56 | STR-56: usuniętą planowaną szkołę można ponownie dodać | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L633) | `school`, `structure`, `positive` |
-| STR-57 | STR-57: anulowanie kilku planowanych powiązań nie zachowuje żadnego z nich | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L649) | `school`, `structure`, `cancel` |
+| STR-01 | STR-01: szkoła bez relacji pokazuje pusty stan struktury | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L119) | `school`, `structure`, `smoke` |
+| STR-02 | STR-02: pusty stan blokuje filtrowanie struktury i pozwala dodać powiązanie | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L128) | `school`, `structure`, `validation` |
+| STR-03 | STR-03: dialog dodawania zawiera filtry, obie tabele i akcje | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L145) | `school`, `structure`, `dialog` |
+| STR-04 | STR-04: puste wyszukiwanie pokazuje walidację i pozostawia dialog otwarty | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L181) | `school`, `structure`, `negative` |
+| STR-05 | STR-05: anulowanie pustego dialogu nie zmienia struktury | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L192) | `school`, `structure`, `cancel` |
+| STR-06 | STR-06: wyszukiwanie po dokładnym ID zwraca właściwą szkołę | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L205) | `school`, `structure`, `search` |
+| STR-07 | STR-07: wyszukiwanie po pełnej nazwie zwraca właściwą szkołę | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L216) | `school`, `structure`, `search` |
+| STR-08 | STR-08: wyszukiwanie po fragmencie nazwy zwraca pasującą szkołę | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L227) | `school`, `structure`, `search` |
+| STR-09 | STR-09: wyszukiwanie po kodzie pocztowym zwraca zgodne adresy | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L246) | `school`, `structure`, `search` |
+| STR-10 | STR-10: wyszukiwanie po miejscowości zwraca zgodne adresy | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L257) | `school`, `structure`, `search` |
+| STR-11 | STR-11: wyszukiwanie po ulicy zwraca zgodne adresy | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L268) | `school`, `structure`, `search` |
+| STR-12 | STR-12: wyszukiwanie łączy ID i nazwę szkoły | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L279) | `school`, `structure`, `search` |
+| STR-13 | STR-13: nieistniejące ID pozostawia pustą tabelę wyników | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L290) | `school`, `structure`, `search`, `negative` |
+| STR-14 | STR-14: szkołę można dodać do planowanych powiązań bez zapisu | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L304) | `school`, `structure`, `positive` |
+| STR-15 | STR-15: niezapisaną szkołę można usunąć z planowanych powiązań | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L318) | `school`, `structure`, `cancel` |
+| STR-16 | STR-16: pojedyncze poprawne powiązanie wysyła jedno żądanie zapisu | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L334) | `school`, `structure`, `api` |
+| STR-17 | STR-17: trwałość relacji po ponownym otwarciu | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L354) | `school`, `structure`, `persistence` |
+| STR-18 | STR-18: anulowanie po dodaniu szkoły nie zachowuje planowanego powiązania | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L374) | `school`, `structure`, `cancel` |
+| STR-19 | STR-19: kilka szkół jest wysyłanych dokładnie raz w jednym zapisie | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L398) | `school`, `structure`, `api` |
+| STR-20 | STR-20: Pokaż zaznaczone otwiera wybrane szkoły w nowej karcie | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L415) | `school`, `structure`, `filter` |
+| STR-21 | STR-21: typ „Zespół szkół” jest dostępny i mapowany do kontraktu API | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L454) | `school`, `structure`, `api` |
+| STR-22 | STR-22: typ „Filia” jest dostępny i mapowany do kontraktu API | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L454) | `school`, `structure`, `api` |
+| STR-23 | STR-23: typ „Wielobudynkowość” jest dostępny i mapowany do kontraktu API | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L454) | `school`, `structure`, `api` |
+| STR-24 | STR-24: nieistniejący typ relacji jest odrzucany | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L470) | `school`, `structure`, `api`, `negative` |
+| STR-25 | STR-25: duplikat aktywnej relacji | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L480) | `school`, `structure`, `validation` |
+| STR-26 | STR-26: drugi typ nie tworzy drugiej aktywnej relacji dla pary | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L507) | `school`, `structure`, `api` |
+| STR-27 | STR-27: bieżącej szkoły nie można dodać jako własnego powiązania | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L520) | `school`, `structure`, `validation`, `negative` |
+| STR-28 | STR-28: cykl bezpośredni jest blokowany przez API | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L544) | `school`, `structure`, `api`, `negative` |
+| STR-29 | STR-29: cykl pośredni jest blokowany przez API | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L557) | `school`, `structure`, `api`, `negative` |
+| STR-30 | STR-30: cztery poziomy i wielorakie role szkoły są obsługiwane | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L569) | `school`, `structure`, `hierarchy` |
+| STR-31 | STR-31: hierarchia głębsza niż cztery poziomy nie ma sztucznego limitu | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L593) | `school`, `structure`, `hierarchy` |
+| STR-32 | STR-32: edycja typu zapisanej relacji | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L618) | `school`, `structure`, `edit` |
+| STR-33 | STR-33: zamiana stron zapisanej relacji | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L649) | `school`, `structure`, `edit` |
+| STR-34 | STR-34: ikona śmietnika usuwa relację ze struktury | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L673) | `school`, `structure`, `delete` |
+| STR-35 | STR-35: ponowne dodanie reaktywuje ten sam rekord relacji | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L697) | `school`, `structure`, `persistence` |
+| STR-36 | STR-36: relację można ponownie dodać po usunięciu | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L719) | `school`, `structure`, `delete` |
+| STR-37 | STR-37: usunięta relacja nie trafia do aktywnego drzewa ani formularza | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L738) | `school`, `structure`, `delete` |
+| STR-38 | STR-38: nadany identyfikator zespołu ma dokładnie trzy cyfry | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L752) | `school`, `structure`, `identifier` |
+| STR-39 | STR-39: dwa dedykowane zespoły mają różne identyfikatory | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L763) | `school`, `structure`, `identifier` |
+| STR-40 | STR-40: identyfikatory zespołu i szkół nie kolidują w danych referencyjnych | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L772) | `school`, `structure`, `identifier` |
+| STR-41 | STR-41: wyszukiwanie zespołu po własnym ID jest jednoznaczne | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L787) | `school`, `structure`, `search` |
+| STR-42 | STR-42: publiczne API jednoznacznie identyfikuje zespół | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L800) | `school`, `structure`, `api` |
+| STR-43 | STR-43: API zachowuje ID, obie strony i typ zapisanej relacji | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L821) | `school`, `structure`, `api`, `persistence` |
+| STR-44 | STR-44: wybór typu w UI odpowiada słownikowi API | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L833) | `school`, `structure`, `dictionary` |
+| STR-45 | STR-45: historia pokazuje utworzenie relacji | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L861) | `school`, `structure`, `history` |
+| STR-46 | STR-46: historia pokazuje zmianę typu relacji | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L873) | `school`, `structure`, `history` |
+| STR-47 | STR-47: historia pokazuje usunięcie relacji | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L896) | `school`, `structure`, `history` |
+| STR-48 | STR-48: historia pokazuje reaktywację relacji | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L910) | `school`, `structure`, `history` |
+| STR-49 | STR-49: odpowiedź 422 nie zamyka dialogu ani nie ponawia zapisu | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L924) | `school`, `structure`, `api`, `negative` |
+| STR-50 | STR-50: odpowiedź 500 zachowuje przygotowaną relację i pozwala ponowić zapis | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L940) | `school`, `structure`, `api`, `negative` |
+| STR-51 | STR-51: równoczesna edycja zgłasza konflikt zamiast cichego nadpisania | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L957) | `school`, `structure`, `api`, `concurrency` |
+| STR-52 | STR-52: obecny użytkownik ma akcje dodawania, edycji i usuwania | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L992) | `school`, `structure`, `permissions` |
+| STR-53 | STR-53: wyszukiwanie złożone wyłącznie z białych znaków jest odrzucane | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L1018) | `school`, `structure`, `validation`, `negative` |
+| STR-54 | STR-54: ponowne wyszukiwanie zastępuje poprzednie wyniki | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L1036) | `school`, `structure`, `search` |
+| STR-55 | STR-55: tej samej szkoły nie można dodać dwukrotnie do planowanych powiązań | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L1052) | `school`, `structure`, `validation` |
+| STR-56 | STR-56: usuniętą planowaną szkołę można ponownie dodać | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L1071) | `school`, `structure`, `positive` |
+| STR-57 | STR-57: anulowanie kilku planowanych powiązań nie zachowuje żadnego z nich | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L1087) | `school`, `structure`, `cancel` |
+| STR-58 | STR-58: brak szkoły nadrzędnej nie zapisuje relacji | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L1116) | `school`, `structure`, `api`, `negative` |
+| STR-59 | STR-59: brak szkoły podrzędnej nie zapisuje relacji | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L1116) | `school`, `structure`, `api`, `negative` |
+| STR-60 | STR-60: brak typu relacji nie zapisuje relacji | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L1116) | `school`, `structure`, `api`, `negative` |
+| STR-61 | STR-61: samopowiązanie w API nie zapisuje relacji | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L1116) | `school`, `structure`, `api`, `negative` |
+| STR-62 | STR-62: nieistniejąca szkoła nie zapisuje relacji | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L1116) | `school`, `structure`, `api`, `negative` |
+| STR-63 | STR-63: filii nie można przypisać do dwóch szkół głównych | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L1129) | `school`, `structure`, `api`, `negative` |
+| STR-64 | STR-64: relacje pośrednie są tylko do odczytu | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L1142) | `school`, `structure`, `permissions` |
+| STR-65 | STR-65: dodatkowa lokalizacja modyfikuje wyłącznie bezpośrednią wielobudynkowość | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L1172) | `school`, `structure`, `permissions` |
+| STR-66 | STR-66: lokalizacja jest przed filią niezależnie od kolejności utworzenia | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L1204) | `school`, `structure`, `layout` |
+| STR-67 | STR-67: ikony i wcięcia odwzorowują poziomy bez zwijania | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L1225) | `school`, `structure`, `layout` |
+| STR-68 | STR-68: podstruktura pozostaje ciągła przed kolejnym rodzeństwem | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L1270) | `school`, `structure`, `layout` |
+| STR-69 | STR-69: Nie w potwierdzeniu nie usuwa relacji ani szkoły | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L1295) | `school`, `structure`, `cancel` |
+| STR-70 | STR-70: anulowanie edycji odrzuca typ i hierarchię | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L1318) | `school`, `structure`, `cancel` |
+| STR-71 | STR-71: usunięcie relacji zachowuje obie szkoły | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L1336) | `school`, `structure`, `delete` |
+| STR-72 | STR-72: timeout zapisu zachowuje dialog i przygotowaną relację | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L1349) | `school`, `structure`, `negative` |
+| STR-73 | STR-73: blokada aktywnego procesu nie usuwa relacji w UI | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L1368) | `school`, `structure`, `negative`, `mock` |
+| STR-74 | STR-74: blokada aktywnego procesu zachowuje edytowaną relację | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L1400) | `school`, `structure`, `negative`, `mock` |
+| STR-75 | STR-75: zespół przyjmuje SP, LO i przedszkole | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L1435) | `school`, `structure`, `positive` |
+| STR-76 | STR-76: Nadrzędna oznacza wyszukaną szkołę jako rodzica dla Zespół szkół | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L1459) | `school`, `structure`, `hierarchy` |
+| STR-77 | STR-77: Nadrzędna oznacza wyszukaną szkołę jako rodzica dla Filia | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L1459) | `school`, `structure`, `hierarchy` |
+| STR-78 | STR-78: Nadrzędna oznacza wyszukaną szkołę jako rodzica dla Wielobudynkowość | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L1459) | `school`, `structure`, `hierarchy` |
+| STR-79 | STR-79: zawieszonej szkoły nie można powiązać | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L1475) | `school`, `structure`, `status`, `negative` |
+| STR-80 | STR-80: zamówienie wymaga potwierdzenia usuwania relacji i pozostaje po anulowaniu | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L1492) | `school`, `structure`, `order` |
+| STR-81 | STR-81: cykl zamykający siedem poziomów jest blokowany | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L1531) | `school`, `structure`, `api`, `negative` |
+| STR-82 | STR-82: pojedynczy zapis formularza utrwala kilka relacji | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L1553) | `school`, `structure`, `api` |
+| STR-83 | STR-83: błędna pozycja nie zostawia częściowego zapisu formularza | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L1580) | `school`, `structure`, `api`, `negative` |
+| STR-84 | STR-84: równoczesne dodanie nie tworzy dwóch aktywnych relacji | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L1594) | `school`, `structure`, `api`, `concurrency` |
+| STR-85 | STR-85: Pokaż wszystkie działa niezależnie od Pokaż zaznaczone | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L1603) | `school`, `structure`, `filter` |
+| STR-86 | STR-86: historia zespołu szkół zawiera audyt dodania szkoły | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L1629) | `school`, `structure`, `history` |
+| STR-87 | STR-87: przejście do roli dodatkowej lokalizacji ogranicza akcje istniejącej filii | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L1647) | `school`, `structure`, `permissions` |
 | TEA-02 | TEA-02: brak pola imię blokuje zapis nauczyciela | [walidacja-anulowanie.spec.ts](../../tests/walidacja-anulowanie.spec.ts#L5) | `validation` |
 | TEA-02 | TEA-02: brak pola nazwisko blokuje zapis nauczyciela | [walidacja-anulowanie.spec.ts](../../tests/walidacja-anulowanie.spec.ts#L5) | `validation` |
 | TEA-02 | TEA-02: brak pola szkoła blokuje zapis nauczyciela | [walidacja-anulowanie.spec.ts](../../tests/walidacja-anulowanie.spec.ts#L5) | `validation` |

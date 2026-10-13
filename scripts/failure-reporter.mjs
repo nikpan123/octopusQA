@@ -7,7 +7,7 @@ function testIdentifier(test) {
   const title = test.titlePath().join(" › ");
   return (
     title.match(
-      /\b(?:ORD|CLUB|SCH(?:-EDIT)?|MED(?:-YEAR)?|ADD|EDIT|TEA|FIND|REL)-[A-Z0-9-]+\b/,
+      /\b(?:ORD|CLUB|SCH(?:-EDIT)?|MED(?:-YEAR)?|ADD|EDIT|TEA|FIND|REL|STR)-[A-Z0-9-]+\b/,
     )?.[0] ?? test.id
   );
 }

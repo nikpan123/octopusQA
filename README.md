@@ -7,7 +7,7 @@ Repozytorium zawiera testy end-to-end aplikacji Octopus napisane w Playwright i 
 | DEV        | `https://octopus.gwodev.pl`  | `playwright.config.ts`      |
 | TEST       | `https://octopus.gwotest.pl` | `playwright.test.config.ts` |
 
-Aktualny zestaw zawiera **422 scenariusze** w 23 plikach. Zwykła regresja obejmuje **420 scenariuszy**; dwa testy `MED-YEAR-*` należą do osobnego, ciężkiego procesu rocznej medalowości. Liczba obejmuje również jawnie pomijane kontrakty `fixme` z opisanym blockerem.
+Aktualny zestaw zawiera **452 scenariusze** w 23 plikach. Zwykła regresja obejmuje **450 scenariuszy**; dwa testy `MED-YEAR-*` należą do osobnego, ciężkiego procesu rocznej medalowości. Zakładka Struktura ma 87 wykonywanych scenariuszy bez `fixme`; znane niezgodności są oznaczone `test.fail` i pozostają wykonywane.
 
 Pełna lista jest generowana z kodu i znajduje się w [indeksie scenariuszy](docs/tests/scenario-index.md).
 
@@ -24,10 +24,10 @@ Pełna lista jest generowana z kodu i znajduje się w [indeksie scenariuszy](doc
 | Medalowość szkoły                    | `szkola-medalowosc.spec.ts`        |             42 |
 | Roczna medalowość                    | `szkola-medalowosc-annual.spec.ts` |              2 |
 | Relacja szkoła–nauczyciel            | `szkola-nauczyciel.spec.ts`        |              1 |
-| Struktura szkoły                     | `szkola-struktura.spec.ts`         |             57 |
+| Struktura szkoły                     | `szkola-struktura.spec.ts`         |             87 |
 | Walidacja, anulowanie i wyszukiwanie | `walidacja-anulowanie.spec.ts`     |              9 |
 | Zamówienia szkoły                    | `zamowienia-*.spec.ts`             |             66 |
-| **Razem**                            |                                    |        **422** |
+| **Razem**                            |                                    |        **452** |
 
 Szczegółowe opisy domen znajdują się w [dokumentacji testów](docs/tests/README.md).
 

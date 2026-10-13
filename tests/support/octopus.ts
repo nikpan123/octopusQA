@@ -477,7 +477,8 @@ export class Octopus {
 
         return (
           request.method() === "POST" &&
-          pathname.startsWith(`/api/${kind}/`) &&
+          (pathname.startsWith(`/api/${kind}/`) ||
+            (kind === "School" && pathname.startsWith("/api/SchoolComplex/"))) &&
           pathname.includes("Test")
         );
       },

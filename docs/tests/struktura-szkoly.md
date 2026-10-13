@@ -9,18 +9,26 @@ Zaimplementowane testy znajdują się w:
 ```text
 tests/szkola-struktura.spec.ts
 tests/support/school-structure.ts
+tests/support/school-structure-api.ts
+tests/support/school-structure-data.ts
 ```
 
 Identyfikatory `STR-*` są zarezerwowane dla tego obszaru.
 
+Opis faktycznych działań, sprawdzeń i sprzątania wszystkich scenariuszy znajduje się w [dokumencie krok po kroku](struktura-szkoly-krok-po-kroku.md). Ten plan opisuje wymagania i zakres, a dokument szczegółowy wyjaśnia, co rzeczywiście wykonuje obecny kod każdego testu.
+
 Stan automatyzacji:
 
-- wszystkie scenariusze `STR-01`–`STR-57` są zdefiniowane w zestawie Playwright;
-- 29 scenariuszy jest aktywnych i potwierdzonych na DEV;
-- trzy scenariusze są oznaczone `fixme` jako znane defekty: `STR-49`, `STR-50` i `STR-53`;
-- 25 scenariuszy jest oznaczonych `fixme` z opisanym brakiem kontraktu backendowego, reguły biznesowej albo wymaganej roli;
+- wszystkie scenariusze `STR-01`–`STR-87` mają implementację i są wykonywane;
+- brak `fixme`, `skip` i pustych scenariuszy;
+- osiem testów `test.fail` dokumentuje niezgodności DEV względem oczekiwań testów: `STR-38`, `STR-49`, `STR-50`, `STR-51`, `STR-53`, `STR-72`, `STR-74`, `STR-87`;
+- pozostałe 79 scenariuszy wymaga prawidłowego wyniku bez oczekiwanej porażki;
 - scenariusze zapisu korzystają z dedykowanych szkół `AUTO_STR_<ŚRODOWISKO>_*`; szkoły są współdzielone, natomiast relacje są usuwane po teście przez obsługiwaną akcję aplikacji;
 - backlog bez reprezentacji w kodzie: 0 scenariuszy.
+
+`test.fail` nie pomija scenariusza: wykonuje go i oczekuje potwierdzonej niezgodności. Naprawa aplikacji powoduje wynik „unexpectedly passed”, wymagający usunięcia oznaczenia po weryfikacji. Zielony wynik takiego uruchomienia nie oznacza braku defektów produktu. STR-51 dotyczy dodatkowego kontraktu ochrony przed utratą równoczesnej edycji, a nie potwierdzonego przez użytkownika wymagania biznesowego.
+
+Sprostowanie STR-20: obie akcje „Pokaż…” otwierają wyniki w nowej karcie. Wcześniejsza diagnoza błędu filtrowania wynikała z badania pierwotnej karty; została wycofana. STR-20 i niezależny STR-85 przechodzą po sprawdzaniu właściwej karty.
 
 ## 2. Obserwowany interfejs
 
@@ -28,6 +36,7 @@ Zakładka `Struktura` udostępnia:
 
 - pusty stan `Brak struktury organizacyjnej.`;
 - przyciski `Pokaż zaznaczone`, `Pokaż wszystkie` i `Dodaj powiązanie`;
+- wyniki obu akcji `Pokaż…` w nowej karcie przeglądarki;
 - dialog `Dodaj powiązanie - szkoły w strukturze`;
 - kryteria wyszukiwania: ID szkoły, Nazwa szkoły, Kod pocztowy, Miejscowość i Ulica;
 - tabelę wyników: Dodaj, ID, Poziom, Nazwa Szkoły i Adres Szkoły;
@@ -38,9 +47,31 @@ Zakładka `Struktura` udostępnia:
 ## 3. Dane testowe i bezpieczeństwo
 
 - Testy zapisu korzystają z dedykowanych szkół oznaczonych jako testowe, tworzonych jednokrotnie i zapamiętywanych lokalnie osobno dla DEV i TEST. Projekt nie usuwa tych placówek po każdym scenariuszu.
-- Każdy test zmieniający relację przywraca stan początkowy w `finally` przez ikonę śmietnika i potwierdzoną odpowiedź endpointu `DeleteInstitutionsRelation`.
+- Każdy test zmieniający relację przywraca stan początkowy w `finally` przez ikonę śmietnika lub potwierdzone API `DeleteInstitutionsRelation`. Cleanup API sprawdza, czy obie strony należą do rozwiązanych szkół `AUTO_STR_*`, a następnie potwierdza pusty aktywny graf.
+- Znane krawędzie są usuwane przed ponownym odczytem grafu, aby przerwać ewentualny cykl zaakceptowany przez wadliwy backend. Niepowodzenie cleanupu nie jest traktowane jako oczekiwana porażka produktu.
+- Jedna dedykowana szkoła `AUTO_STR_<ŚRODOWISKO>_NIEAKTYWNA` jest zawieszona i pozostaje jako wielokrotnie używana fixture do `STR-79`. Pozostałe fixture muszą być aktywne i mieć przypisany typ.
+- `STR-80` tworzy rzeczywiste zamówienie na dedykowanej szkole, sprawdza potwierdzenie usuwania relacji oraz zachowanie zamówienia po anulowaniu, a następnie usuwa nowo utworzone zamówienie w `finally`.
 - Scenariusze modyfikujące tę samą strukturę nie mogą działać równolegle. Należy umieścić je w osobnym serialowym `describe` albo zapewnić niezależny zestaw danych na worker.
 - Test soft delete nie może opierać się wyłącznie na zniknięciu wiersza z UI. Powinien dodatkowo potwierdzić stan nieaktywny przez API lub odczyt techniczny przygotowany dla testów.
+
+### Potwierdzony kontrakt usuwania i reaktywacji (2026-10-13)
+
+- Usunięcie ustawia w bazie `is_Del = 1`; rekord nie jest fizycznie usuwany. Zwykły użytkownik nie ma przycisku undo. Osobna operacja przywracania jest dostępna wyłącznie Zespołowi DPD.
+- Ponowne dodanie tej samej konfiguracji ustawia `is_Del = 0`. `STR-35` sprawdza zachowanie identyfikatora rekordu, a `STR-36` możliwość ponownego dodania z poziomu UI.
+- `STR-34` sprawdza potwierdzenie usunięcia, pusty stan po ponownym wejściu i brak relacji w aktywnym odczycie API. Samą wartość `is_Del` należy potwierdzić osobnym odczytem technicznym; aktywne drzewo jej nie ujawnia.
+- Dodawanie i edycja używają `POST /api/Institution/AddOrUpdateInstitutionRelations`, usuwanie `DELETE /api/Institution/DeleteInstitutionsRelation`, a odczyt drzewa `GET /api/Institution/GetInstitutionRelations`.
+
+### Potwierdzone reguły funkcjonalne i dalsze pokrycie (2026-10-13)
+
+Hierarchia dotyczy wyszukanej szkoły względem szkoły kontekstowej. Dla wszystkich trzech typów `Nadrzędna` oznacza wyszukaną szkołę jako rodzica, a `Podrzędna` jako dziecko. W wielobudynkowości wybór `Nadrzędna` oznacza wyszukaną szkołę główną i kontekstową lokalizację dodatkową.
+
+- Relacje bezpośrednie można edytować i usuwać. Pośrednie są tylko do odczytu; modyfikacja wymaga przejścia do właściwego profilu. Formularz edycji pozwala zmienić typ i hierarchię, ale nie szkołę powiązaną.
+- Szkoła może być dzieckiem w jednej relacji i rodzicem w innej. Poprawny przykład to zespół → szkoła główna → filia → lokalizacja. Niedozwolone są cykle dowolnej długości i przypisanie jednej filii do dwóch szkół głównych. Użytkownik potwierdził brak limitu głębokości oraz jedną aktywną relację dla pary szkół. Testujemy reprezentatywne struktury o czterech i siedmiu poziomach oraz cykle bezpośrednie, trójwęzłowe i siedmiowęzłowe.
+- Formularz musi wymagać obu stron i typu relacji oraz blokować samopowiązanie, duplikat w tym samym lub przeciwnym kierunku i sprzeczne role. Placówki muszą być aktywne i mieć typ. Edycja/usunięcie powiązane z aktywnymi zamówieniami, spotkaniami SI lub raportami wymaga ostrzeżenia albo potwierdzenia.
+- W profilu dodatkowej lokalizacji można modyfikować wyłącznie bezpośrednią relację wielobudynkową ze szkołą główną. Inne relacje modyfikuje się z profilu szkoły głównej.
+- Widok pokazuje całe drzewo bez rozwijania/zwijania, z wcięciami i ikonami przed nazwami. Lokalizacje wielobudynkowe są pierwszymi dziećmi niezależnie od kolejności zapisu, a poddrzewo każdej jednostki pozostaje bezpośrednio pod nią. Pusty stan nie zawiera węzłów; dostępność dodawania zależy od uprawnień.
+
+Zakres uzgodniony z użytkownikiem obejmuje obecne konto z pełnymi uprawnieniami, UI i dostępne publiczne API. Odczyt `is_Del` w bazie, migracje schematu i inne role nie są dostępne w tej sesji. Osiem niezgodności pozostaje w aplikacji mimo kompletnej implementacji testów tego zestawu.
 
 ## 4. Etap 1 — interfejs, wyszukiwanie i podstawowy zapis
 
@@ -65,49 +96,49 @@ Zakładka `Struktura` udostępnia:
 | `STR-17` | P0        | UI/API  | Trwałość relacji po ponownym otwarciu szkoły   | Po przejściu do innej szkoły i powrocie relacja zachowuje ID, typ, kierunek i hierarchię.                                   |
 | `STR-18` | P1        | UI      | Anulowanie po dodaniu pozycji do dolnej tabeli | Żadne z przygotowanych powiązań nie zostaje zapisane.                                                                       |
 | `STR-19` | P1        | UI/API  | Dodanie kilku szkół jednym zapisem             | Wszystkie wybrane, różne szkoły zostają zapisane dokładnie raz.                                                             |
-| `STR-20` | P1        | UI      | `Pokaż zaznaczone` i `Pokaż wszystkie`         | Pierwsza akcja ogranicza widok do zaznaczonej gałęzi, druga przywraca całą strukturę bez zmiany danych.                     |
+| `STR-20` | P1        | UI      | `Pokaż zaznaczone`                             | Nowa karta zawiera tylko zaznaczoną szkołę; pierwotny profil i relacje pozostają bez zmian.                                 |
 
 ## 5. Etap 2 — typy relacji i reguły hierarchii
 
-| ID       | Priorytet | Warstwa | Scenariusz                                  | Oczekiwany rezultat                                                                                                         |
-| -------- | --------- | ------- | ------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
-| `STR-21` | P0        | UI/API  | `Zespół szkół → szkoła podrzędna`           | Można przypisać co najmniej SP, LO i Przedszkole do jednego zespołu; każda relacja ma właściwy typ i kierunek.              |
-| `STR-22` | P0        | UI/API  | `Szkoła główna → Filia`                     | Jednostka główna i filia są jednoznacznie rozróżnione w obu widokach relacji.                                               |
-| `STR-23` | P1        | UI/API  | Wielobudynkowość                            | Dodatkowa lokalizacja jest widoczna jako właściwy typ powiązania i nie jest mylona ze szkołą podrzędną.                     |
-| `STR-24` | P0        | UI/API  | Niedozwolony typ relacji dla pary jednostek | Zapis jest blokowany przed utworzeniem relacji, a komunikat wyjaśnia ograniczenie.                                          |
-| `STR-25` | P0        | UI/API  | Duplikat tej samej relacji                  | Druga relacja tego samego typu pomiędzy tą samą parą nie powstaje; użytkownik otrzymuje jednoznaczny komunikat.             |
-| `STR-26` | P1        | UI/API  | Ta sama para z innym dozwolonym typem       | Zachowanie jest zgodne z decyzją biznesową: relacja zostaje zapisana albo świadomie zablokowana.                            |
-| `STR-27` | P0        | UI/API  | Samopowiązanie                              | Bieżącej szkoły nie można dodać jako jej własnej jednostki nadrzędnej ani podrzędnej.                                       |
-| `STR-28` | P0        | API/UI  | Cykl bezpośredni A → B → A                  | Drugi zapis jest blokowany, istniejąca relacja pozostaje bez zmian.                                                         |
-| `STR-29` | P0        | API/UI  | Cykl pośredni A → B → C → A                 | Zapis domykający cykl jest blokowany niezależnie od głębokości ścieżki.                                                     |
-| `STR-30` | P1        | API/UI  | Maksymalna dozwolona głębokość              | Relacja na granicy limitu zostaje zapisana.                                                                                 |
-| `STR-31` | P1        | API/UI  | Przekroczenie głębokości hierarchii         | Relacja przekraczająca skonfigurowany limit jest blokowana bez częściowego zapisu.                                          |
-| `STR-32` | P1        | UI/API  | Edycja typu relacji                         | Po zmianie aktualizują się dane i oba kierunki widoku; nie powstaje drugi rekord aktywny.                                   |
-| `STR-33` | P1        | UI/API  | Zamiana stron relacji                       | Jednostka nadrzędna i podrzędna zostają zamienione tylko wtedy, gdy nowy układ przechodzi wszystkie walidacje.              |
-| `STR-34` | P0        | UI/API  | Usunięcie relacji                           | Relacja znika z aktywnej struktury i operacji biznesowych, ale pozostaje jako nieaktywna w źródle technicznym.              |
-| `STR-35` | P0        | UI/API  | Przywrócenie usuniętej relacji              | `Undo` aktywuje ten sam rekord relacji, bez tworzenia duplikatu.                                                            |
-| `STR-36` | P1        | UI/API  | Ponowne dodanie relacji po soft delete      | System przywraca poprzedni rekord albo blokuje operację zgodnie z kontraktem; nigdy nie pozostawia dwóch aktywnych relacji. |
-| `STR-37` | P1        | API     | Nieaktywna relacja nie wpływa na biznes     | Usunięta relacja nie jest zwracana w aktywnym drzewie, wyszukiwaniu struktury ani logice zależnej od hierarchii.            |
+| ID       | Priorytet | Warstwa | Scenariusz                              | Oczekiwany rezultat                                                                                                        |
+| -------- | --------- | ------- | --------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| `STR-21` | P0        | UI/API  | `Zespół szkół → szkoła podrzędna`       | Można przypisać co najmniej SP, LO i Przedszkole do jednego zespołu; każda relacja ma właściwy typ i kierunek.             |
+| `STR-22` | P0        | UI/API  | `Szkoła główna → Filia`                 | Jednostka główna i filia są jednoznacznie rozróżnione w obu widokach relacji.                                              |
+| `STR-23` | P1        | UI/API  | Wielobudynkowość                        | Dodatkowa lokalizacja jest widoczna jako właściwy typ powiązania i nie jest mylona ze szkołą podrzędną.                    |
+| `STR-24` | P0        | API     | Nieistniejący typ relacji               | API odrzuca nieznany wpis słownika; aktywna relacja nie powstaje.                                                          |
+| `STR-25` | P0        | UI/API  | Duplikat tej samej relacji              | Druga relacja tego samego typu pomiędzy tą samą parą nie powstaje; użytkownik otrzymuje jednoznaczny komunikat.            |
+| `STR-26` | P1        | API     | Drugi typ dla tej samej pary            | Pozostaje dokładnie jedna aktywna relacja, zgodnie z potwierdzoną regułą biznesową.                                        |
+| `STR-27` | P0        | UI/API  | Samopowiązanie                          | Bieżącej szkoły nie można dodać jako jej własnej jednostki nadrzędnej ani podrzędnej.                                      |
+| `STR-28` | P0        | API/UI  | Cykl bezpośredni A → B → A              | Drugi zapis jest blokowany, istniejąca relacja pozostaje bez zmian.                                                        |
+| `STR-29` | P0        | API/UI  | Cykl pośredni A → B → C → A             | Zapis domykający cykl jest blokowany niezależnie od głębokości ścieżki.                                                    |
+| `STR-30` | P1        | API/UI  | Cztery poziomy i wielorakie role        | Zespół → szkoła główna → filia → lokalizacja jest dostępny w całości.                                                      |
+| `STR-31` | P1        | API/UI  | Hierarchia głębsza niż cztery poziomy   | Siedem poziomów jest zapisywanych i prezentowanych bez arbitralnego ograniczenia do czterech.                              |
+| `STR-32` | P1        | UI/API  | Edycja typu relacji                     | Po zmianie aktualizują się dane i oba kierunki widoku; nie powstaje drugi rekord aktywny.                                  |
+| `STR-33` | P1        | UI/API  | Zamiana stron relacji                   | Jednostka nadrzędna i podrzędna zostają zamienione tylko wtedy, gdy nowy układ przechodzi wszystkie walidacje.             |
+| `STR-34` | P0        | UI/API  | Usunięcie relacji                       | Relacja znika z aktywnej struktury i operacji biznesowych, ale pozostaje jako nieaktywna w źródle technicznym.             |
+| `STR-35` | P0        | UI/API  | Reaktywacja tego samego rekordu         | Ponowne dodanie tej samej konfiguracji przywraca ten sam identyfikator relacji. Osobne undo użytkownika nie jest dostępne. |
+| `STR-36` | P1        | UI/API  | Ponowne dodanie relacji po soft delete  | Użytkownik może ponownie dodać relację, a struktura zawiera dokładnie jedno aktywne powiązanie.                            |
+| `STR-37` | P1        | API     | Nieaktywna relacja nie wpływa na biznes | Usunięta relacja nie jest zwracana w aktywnym drzewie, wyszukiwaniu struktury ani logice zależnej od hierarchii.           |
 
 ## 6. Etap 3 — identyfikator Zespołu szkół, API, trwałość i audyt
 
-| ID       | Priorytet | Warstwa | Scenariusz                              | Oczekiwany rezultat                                                                                                                                               |
-| -------- | --------- | ------- | --------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `STR-38` | P0        | UI/API  | Automatyczne nadanie ID Zespołu szkół   | Nowo utworzony zespół otrzymuje widoczny, dokładnie trzycyfrowy identyfikator.                                                                                    |
-| `STR-39` | P0        | API     | Unikalność ID zespołu                   | Próba utworzenia drugiego zespołu z tym samym identyfikatorem jest blokowana atomowo.                                                                             |
-| `STR-40` | P0        | API     | Brak kolizji z numeracją szkół          | Identyfikator zespołu nie może być równy ID istniejącej jednostki innego typu.                                                                                    |
-| `STR-41` | P0        | UI/API  | Wyszukiwanie zespołu po trzycyfrowym ID | Wyszukiwanie zwraca jednoznacznie właściwy zespół i nie dopasowuje zwykłej szkoły.                                                                                |
-| `STR-42` | P1        | API     | Dane identyfikacyjne w integracji       | API lub eksport zwraca typ jednostki i trzycyfrowy identyfikator pozwalający jednoznacznie rozpoznać zespół.                                                      |
-| `STR-43` | P0        | API/DB  | Trwałość rekordu relacji                | Rekord zawiera ID relacji, jednostkę nadrzędną, podrzędną, typ, stan aktywności i pola audytowe.                                                                  |
-| `STR-44` | P1        | API     | Rozszerzalność słownika typów           | Nowy typ relacji dodany przez obsługiwany słownik jest dostępny bez zmiany kontraktu endpointu. Test migracji schematu należy utrzymywać w repozytorium backendu. |
-| `STR-45` | P0        | UI/API  | Audyt utworzenia                        | Historia zawiera ID relacji, użytkownika, czas, typ operacji oraz utworzone wartości.                                                                             |
-| `STR-46` | P0        | UI/API  | Audyt edycji                            | Historia zawiera poprzedni i nowy typ lub kierunek relacji.                                                                                                       |
-| `STR-47` | P0        | UI/API  | Audyt soft delete                       | Historia zapisuje usunięcie logiczne i użytkownika, a rekordu nie usuwa fizycznie.                                                                                |
-| `STR-48` | P0        | UI/API  | Audyt przywrócenia                      | Historia zapisuje reaktywację tej samej relacji wraz z czasem i użytkownikiem.                                                                                    |
-| `STR-49` | P1        | API     | Błąd 4xx walidacji zapisu               | Dialog pozostaje otwarty, nie ma częściowego zapisu, a użytkownik widzi kontrolowany komunikat.                                                                   |
-| `STR-50` | P1        | API     | Błąd 500 i timeout zapisu               | Stan przed operacją zostaje zachowany; ponowienie przez użytkownika nie tworzy duplikatu.                                                                         |
-| `STR-51` | P1        | API     | Konflikt równoczesnej edycji            | Drugi zapis nie nadpisuje po cichu nowszej wersji; system zwraca konflikt lub wymusza odświeżenie.                                                                |
-| `STR-52` | P2        | UI/API  | Uprawnienia tylko do odczytu            | Użytkownik bez prawa edycji widzi strukturę, ale nie może dodać, edytować, usunąć ani przywrócić relacji.                                                         |
+| ID       | Priorytet | Warstwa | Scenariusz                            | Oczekiwany rezultat                                                                                                                   |
+| -------- | --------- | ------- | ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| `STR-38` | P0        | UI/API  | Automatyczne nadanie ID Zespołu szkół | Nowo utworzony zespół otrzymuje widoczny, dokładnie trzycyfrowy identyfikator.                                                        |
+| `STR-39` | P0        | API     | Różne ID dwóch zespołów               | Dwa dedykowane zespoły otrzymują różne ID i są jednoznacznie odczytywane przez publiczne API.                                         |
+| `STR-40` | P0        | API     | Brak kolizji z numeracją szkół        | Identyfikator zespołu nie może być równy ID istniejącej jednostki innego typu.                                                        |
+| `STR-41` | P0        | UI/API  | Wyszukiwanie zespołu po jego ID       | Wynik jednoznacznie identyfikuje zespół. Wymaganie trzech cyfr jest niezależnie egzekwowane przez STR-38.                             |
+| `STR-42` | P1        | API     | Dane identyfikacyjne zespołu          | Publiczne API zwraca ID, institutionUnitId, nazwę i oznaczenie poziomu ZS.                                                            |
+| `STR-43` | P0        | API     | Trwałość publicznego rekordu relacji  | ID, obie strony i typ są spójne w kolejnych odczytach z obu profili. Pola wewnętrzne DB pozostają poza zakresem.                      |
+| `STR-44` | P1        | UI/API  | Spójność słownika typów               | UI odzwierciedla cały słownik API, bez zduplikowanych identyfikatorów. Migracje schematu DB nie są testowane.                         |
+| `STR-45` | P0        | UI/API  | Audyt utworzenia                      | Nowy wpis Struktura zawiera powiązaną szkołę, operację, autora, identyfikator użytkownika, źródło i datę; jest widoczny w UI.         |
+| `STR-46` | P0        | UI/API  | Audyt edycji                          | Historia zawiera poprzedni i nowy typ lub kierunek relacji.                                                                           |
+| `STR-47` | P0        | UI/API  | Audyt soft delete                     | Historia zapisuje usunięcie logiczne i użytkownika, a rekordu nie usuwa fizycznie.                                                    |
+| `STR-48` | P0        | UI/API  | Audyt przywrócenia                    | Historia zapisuje reaktywację tej samej relacji wraz z czasem i użytkownikiem.                                                        |
+| `STR-49` | P1        | API     | Błąd 4xx walidacji zapisu             | Dialog pozostaje otwarty, nie ma częściowego zapisu, a użytkownik widzi kontrolowany komunikat.                                       |
+| `STR-50` | P1        | API     | Błąd 500 i timeout zapisu             | Stan przed operacją zostaje zachowany; ponowienie przez użytkownika nie tworzy duplikatu.                                             |
+| `STR-51` | P1        | API     | Konflikt równoczesnej edycji          | Drugi zapis nie nadpisuje po cichu nowszej wersji; system zwraca konflikt lub wymusza odświeżenie.                                    |
+| `STR-52` | P2        | UI/API  | Uprawnienia obecnego użytkownika      | Przy pełnych uprawnieniach dostępne są dodawanie, edycja i potwierdzenie usuwania. Inne role wyłączono zgodnie z decyzją użytkownika. |
 
 ## 7. Etap 4 — odporność wyszukiwania i przygotowania relacji
 
@@ -142,22 +173,54 @@ Zakładka `Struktura` udostępnia:
 |        24 | `STR-27`                                 |
 |        25 | `STR-45`–`STR-48`                        |
 
-## 9. Rekomendowana kolejność automatyzacji
+## 9. Uzupełnione przypadki STR-58–STR-87
 
-1. `STR-01`–`STR-18`: aktualnie widoczny interfejs, wyszukiwanie, anulowanie i podstawowy zapis.
-2. `STR-21`, `STR-22`, `STR-24`, `STR-25`, `STR-27`–`STR-29`: najważniejsze reguły integralności.
-3. `STR-34`, `STR-35`, `STR-37`, `STR-45`–`STR-48`: cykl życia i audyt.
-4. `STR-38`–`STR-44`: identyfikacja zespołu i kontrakty integracyjne.
-5. Pozostałe scenariusze graniczne, awarie oraz uprawnienia.
+| ID            | Pokrycie                                                                                                                     |
+| ------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| STR-58–STR-60 | Brak rodzica, dziecka lub typu w żądaniu API.                                                                                |
+| STR-61–STR-62 | Samopowiązanie i nieistniejąca jednostka w API.                                                                              |
+| STR-63        | Zakaz przypisania jednej filii do dwóch szkół głównych.                                                                      |
+| STR-64        | Nieaktywne akcje pośrednich powiązań i możliwość edycji po przejściu do właściwego profilu.                                  |
+| STR-65        | Profil dodatkowej lokalizacji edytuje tylko bezpośrednią wielobudynkowość; pozostałe akcje są zablokowane.                   |
+| STR-66        | Lokalizacje przed filiami mimo późniejszego utworzenia.                                                                      |
+| STR-67        | Ikony przed nazwami, regularne wcięcia czterech poziomów, brak rozwijania/zwijania.                                          |
+| STR-68        | Ciągłe poddrzewo przed lub po innym rodzeństwie, bez narzucania nieokreślonego sortowania rodzeństwa.                        |
+| STR-69–STR-70 | Anulowanie usuwania i edycji nie utrwala zmian.                                                                              |
+| STR-71        | Usunięcie relacji zachowuje obie szkoły.                                                                                     |
+| STR-72        | Timeout dodawania powinien zachować dialog i stan.                                                                           |
+| STR-73–STR-74 | Reakcja frontendu na kontrolowaną blokadę aktywnego procesu (409); backendowe wykrywanie procesu nie jest mockiem dowodzone. |
+| STR-75        | Jeden zespół z SP, LO i przedszkolem.                                                                                        |
+| STR-76–STR-78 | Wyszukana szkoła przy wyborze Nadrzędna jest rodzicem dla każdego typu.                                                      |
+| STR-79        | Rzeczywista zawieszona szkoła nie może być stroną nowej relacji.                                                             |
+| STR-80        | Rzeczywiste zamówienie pozostaje po anulowaniu potwierdzenia usuwania relacji; zamówienie testowe jest sprzątane.            |
+| STR-81        | Cykl zamykający siedmiopoziomową hierarchię jest odrzucany.                                                                  |
+| STR-82        | Jeden rzeczywisty zapis formularza utrwala kilka relacji.                                                                    |
+| STR-83        | Niepoprawna pozycja powoduje odrzucenie całej paczki bez częściowego zapisu.                                                 |
+| STR-84        | Równoczesne dodanie tej samej pary nie tworzy dwóch aktywnych relacji.                                                       |
+| STR-85        | Pokaż wszystkie otwiera nową kartę z kompletem szkół struktury, niezależnie od Pokaż zaznaczone.                             |
+| STR-86        | Historia profilu zespołu zawiera audyt dodania szkoły, tak jak historia zwykłej szkoły.                                      |
+| STR-87        | Szkoła z istniejącą filią po wejściu w rolę dodatkowej lokalizacji nie może edytować ani usuwać filii z własnego profilu.    |
 
-## 10. Informacje wymagające potwierdzenia przed implementacją
+## 10. Potwierdzone niezgodności DEV i kolejne poprawki produktu
 
-- dokładne nazwy wartości słownika `Typ relacji`;
-- znaczenie i dozwolone wartości kolumny `Hierarchia`;
-- maksymalna głębokość drzewa;
-- czy ta sama para może mieć kilka różnych aktywnych typów relacji;
-- gdzie w UI znajdują się edycja i `undo`;
-- czy `Wielobudynkowość` łączy szkołę z rekordem adresu, czy z inną jednostką szkoły;
-- endpointy tworzenia, edycji, soft delete, restore, pobierania aktywnego drzewa i historii;
-- role uprawnione do odczytu i modyfikacji;
-- sposób seedowania oraz bezpiecznego cleanupu relacji na DEV i TEST.
+| Test   | Niezgodność                                                                                                                                                         |
+| ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| STR-38 | Zespół testowy otrzymał ID 5014 zamiast wymaganego identyfikatora trzycyfrowego.                                                                                    |
+| STR-49 | Odpowiedź 422 zamyka formularz dodawania.                                                                                                                           |
+| STR-50 | Odpowiedź 500 zamyka formularz i traci jego stan.                                                                                                                   |
+| STR-51 | Równoczesne edycje nie sygnalizują konfliktu wymaganego w planowanym kontrakcie testu.                                                                              |
+| STR-53 | Wyszukiwanie samych spacji zwraca wyniki zamiast walidacji.                                                                                                         |
+| STR-72 | Timeout zamyka formularz dodawania.                                                                                                                                 |
+| STR-74 | Blokada edycji (409) zamyka formularz zamiast zachować zmienione wartości.                                                                                          |
+| STR-87 | Po zmianie szkoły w dodatkową lokalizację nadal można otworzyć edycję i potwierdzenie usuwania jej istniejącej filii z tego profilu. Operacje anulowano bez zapisu. |
+
+Po naprawie należy uruchomić odpowiedni scenariusz, potwierdzić cały przebieg i usunąć oznaczenie `test.fail`. Priorytet: ograniczenia akcji dodatkowej lokalizacji, zachowanie formularzy po błędzie i białe znaki, następnie identyfikatory. Kontrakt współbieżności STR-51 należy najpierw uzgodnić z właścicielem produktu. Filtrowanie nie jest obecnie zgłoszoną niezgodnością.
+
+## 11. Granice uzgodnionego zakresu
+
+- Testujemy jedno konto z pełnymi uprawnieniami. Role read-only, brak uprawnień i operacje DPD pozostają poza zakresem zgodnie z decyzją użytkownika.
+- Bez dostępu do bazy nie sprawdzamy bezpośrednio wartości `is_Del`, schematu tabel, migracji ani atomowych ograniczeń unikalności poprzez wstrzyknięcie kolidujących danych. ID, unikalne wyniki wyszukiwania, aktywne drzewo i reaktywacja tego samego rekordu są sprawdzane przez API/UI.
+- Historia ujawnia ID powiązanej szkoły, autora, źródło, czas i opis zmiany. Nie udostępnia wewnętrznego ID relacji ani pełnego technicznego logu starej/nowej wartości; nie należy utożsamiać testów historii z audytem tabel DB.
+- Testy 73/74 sprawdzają zachowanie UI przy odmowie API dla aktywnego procesu. Rzeczywiste zamówienie i potwierdzenie sprawdza STR-80. Backendowe powiązania z rzeczywistymi SI/raportami wymagają odrębnych kontrolowanych fixture; ten zestaw ich nie tworzy i nie certyfikuje wykrywania takich powiązań.
+- Nie tworzymy uszkodzonych rekordów szkół bez typu przez bazę. Wszystkie aktywne fixture muszą mieć przypisany typ; wymagane strony/typ relacji, nieistniejące jednostki i nieaktywna szkoła mają osobne testy negatywne.
+- Siedem poziomów oraz kilka długości cyklu to reprezentatywne granice praktyczne, nie matematyczny dowód dla dowolnie dużego grafu. Uzgodniona reguła biznesowa nie przewiduje limitu głębokości.
