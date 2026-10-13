@@ -2,7 +2,7 @@
 
 > Plik generowany automatycznie przez `npm run docs:scenarios`. Nie edytuj tabeli ręcznie.
 
-Łącznie: **524 scenariuszy**.
+Łącznie: **554 scenariuszy**.
 
 | ID | Scenariusz | Plik | Tagi |
 |---|---|---|---|
@@ -349,6 +349,36 @@
 | MED-56 | MED-56: multiselect medalu jest poprawnie przekazywany do API i zwraca tylko wybrane medale | [szkola-medalowosc.spec.ts](../../tests/szkola-medalowosc.spec.ts#L1001) | — |
 | MED-60 | MED-60: każda szkoła z medalem Brak nie ma przedmiotów medalowych | [szkola-medalowosc.spec.ts](../../tests/szkola-medalowosc.spec.ts#L1173) | — |
 | — | szkoła → nauczyciel → relacja → wyszukiwanie → nauczyciel → historia | [szkola-nauczyciel.spec.ts](../../tests/szkola-nauczyciel.spec.ts#L8) | `smoke` |
+| TFL-01 | TFL-01: nagłówki są widoczne i klikalne | [szkola-nauczyciele-filtry.spec.ts](../../tests/szkola-nauczyciele-filtry.spec.ts#L24) | `school`, `teacher-filter`, `smoke` |
+| TFL-02 | TFL-02: domyślnie widać wszystkich przypisanych nauczycieli | [szkola-nauczyciele-filtry.spec.ts](../../tests/szkola-nauczyciele-filtry.spec.ts#L38) | `school`, `teacher-filter`, `default` |
+| TFL-03 | TFL-03: Nasi pokazuje dokładnie właściwych nauczycieli | [szkola-nauczyciele-filtry.spec.ts](../../tests/szkola-nauczyciele-filtry.spec.ts#L49) | `school`, `teacher-filter`, `classification` |
+| TFL-04 | TFL-04: Obcy pokazuje dokładnie właściwych nauczycieli | [szkola-nauczyciele-filtry.spec.ts](../../tests/szkola-nauczyciele-filtry.spec.ts#L49) | `school`, `teacher-filter`, `classification` |
+| TFL-05 | TFL-05: Nauczyciele przywraca pełną listę po każdym filtrze | [szkola-nauczyciele-filtry.spec.ts](../../tests/szkola-nauczyciele-filtry.spec.ts#L57) | `school`, `teacher-filter`, `switch` |
+| TFL-06 | TFL-06: liczniki nie maleją po zastosowaniu filtra | [szkola-nauczyciele-filtry.spec.ts](../../tests/szkola-nauczyciele-filtry.spec.ts#L70) | `school`, `teacher-filter`, `counters` |
+| TFL-07 | TFL-07: nauczyciel bez wpisów występuje tylko w pełnej liście | [szkola-nauczyciele-filtry.spec.ts](../../tests/szkola-nauczyciele-filtry.spec.ts#L84) | `school`, `teacher-filter`, `negative` |
+| TFL-08 | TFL-08: jedna osoba może być Nasza i Obca w różnych przedmiotach | [szkola-nauczyciele-filtry.spec.ts](../../tests/szkola-nauczyciele-filtry.spec.ts#L97) | `school`, `teacher-filter`, `counters` |
+| TFL-09 | TFL-09: dwa przedmioty zwiększają licznik Nasi, ale nie duplikują nauczyciela | [szkola-nauczyciele-filtry.spec.ts](../../tests/szkola-nauczyciele-filtry.spec.ts#L116) | `school`, `teacher-filter`, `duplicates`, `counters` |
+| TFL-10 | TFL-10: dwa przedmioty zwiększają licznik Obcy, ale nie duplikują nauczyciela | [szkola-nauczyciele-filtry.spec.ts](../../tests/szkola-nauczyciele-filtry.spec.ts#L116) | `school`, `teacher-filter`, `duplicates`, `counters` |
+| TFL-11 | TFL-11: regresja dziewięć obcych przedmiotów pokazuje sześciu unikalnych nauczycieli | [szkola-nauczyciele-filtry.spec.ts](../../tests/szkola-nauczyciele-filtry.spec.ts#L133) | `school`, `teacher-filter`, `regression`, `counters` |
+| TFL-12 | TFL-12: szkoła bez nauczycieli ma trzy liczniki zero i puste listy | [szkola-nauczyciele-filtry.spec.ts](../../tests/szkola-nauczyciele-filtry.spec.ts#L159) | `school`, `teacher-filter`, `empty` |
+| TFL-13 | TFL-13: grupa Obcy może być pusta przy niepustej szkole | [szkola-nauczyciele-filtry.spec.ts](../../tests/szkola-nauczyciele-filtry.spec.ts#L174) | `school`, `teacher-filter`, `empty` |
+| TFL-14 | TFL-14: grupa Nasi może być pusta przy niepustej szkole | [szkola-nauczyciele-filtry.spec.ts](../../tests/szkola-nauczyciele-filtry.spec.ts#L174) | `school`, `teacher-filter`, `empty` |
+| TFL-15 | TFL-15: zmiana filtrów nie przeładowuje dokumentu ani nie zmienia URL | [szkola-nauczyciele-filtry.spec.ts](../../tests/szkola-nauczyciele-filtry.spec.ts#L187) | `school`, `teacher-filter`, `dynamic` |
+| TFL-16 | TFL-16: aktywny filtr Nasi jest wizualnie wyróżniony | [szkola-nauczyciele-filtry.spec.ts](../../tests/szkola-nauczyciele-filtry.spec.ts#L220) | `school`, `teacher-filter`, `visual` |
+| TFL-17 | TFL-17: aktywny filtr Obcy jest wizualnie wyróżniony | [szkola-nauczyciele-filtry.spec.ts](../../tests/szkola-nauczyciele-filtry.spec.ts#L220) | `school`, `teacher-filter`, `visual` |
+| TFL-18 | TFL-18: aktywny filtr Nauczyciele jest wizualnie wyróżniony | [szkola-nauczyciele-filtry.spec.ts](../../tests/szkola-nauczyciele-filtry.spec.ts#L220) | `school`, `teacher-filter`, `visual` |
+| TFL-19 | TFL-19: filtrowanie nie zmienia podstawowych danych szkoły | [szkola-nauczyciele-filtry.spec.ts](../../tests/szkola-nauczyciele-filtry.spec.ts#L239) | `school`, `teacher-filter`, `isolation` |
+| TFL-20 | TFL-20: pozostałe zakładki są dostępne przy aktywnym filtrze | [szkola-nauczyciele-filtry.spec.ts](../../tests/szkola-nauczyciele-filtry.spec.ts#L259) | `school`, `teacher-filter`, `tabs` |
+| TFL-21 | TFL-21: klasyfikacja uwzględnia szkołę wpisu, nie status globalny | [szkola-nauczyciele-filtry.spec.ts](../../tests/szkola-nauczyciele-filtry.spec.ts#L273) | `school`, `teacher-filter`, `school-context` |
+| TFL-22 | TFL-22: zmiana GWO na inne wydawnictwo aktualizuje listy i liczniki | [szkola-nauczyciele-filtry.spec.ts](../../tests/szkola-nauczyciele-filtry.spec.ts#L295) | `school`, `teacher-filter`, `latest-entry` |
+| TFL-23 | TFL-23: zmiana inne wydawnictwo na GWO aktualizuje listy i liczniki | [szkola-nauczyciele-filtry.spec.ts](../../tests/szkola-nauczyciele-filtry.spec.ts#L295) | `school`, `teacher-filter`, `latest-entry` |
+| TFL-24 | TFL-24: usunięte potwierdzenie GWO nie kwalifikuje do grup | [szkola-nauczyciele-filtry.spec.ts](../../tests/szkola-nauczyciele-filtry.spec.ts#L315) | `school`, `teacher-filter`, `soft-delete` |
+| TFL-25 | TFL-25: usunięte potwierdzenie obce nie kwalifikuje do grup | [szkola-nauczyciele-filtry.spec.ts](../../tests/szkola-nauczyciele-filtry.spec.ts#L315) | `school`, `teacher-filter`, `soft-delete` |
+| TFL-26 | TFL-26: aktualne GWO ma pierwszeństwo przed przyszłym Obcy po GWO | [szkola-nauczyciele-filtry.spec.ts](../../tests/szkola-nauczyciele-filtry.spec.ts#L332) | `school`, `teacher-filter`, `regression`, `school-year` |
+| TFL-27 | TFL-27: ponowne kliknięcie filtra nie zmienia wyników ani liczników | [szkola-nauczyciele-filtry.spec.ts](../../tests/szkola-nauczyciele-filtry.spec.ts#L365) | `school`, `teacher-filter`, `repeat` |
+| TFL-28 | TFL-28: filtry można uruchomić klawiaturą | [szkola-nauczyciele-filtry.spec.ts](../../tests/szkola-nauczyciele-filtry.spec.ts#L379) | `school`, `teacher-filter`, `keyboard` |
+| TFL-29 | TFL-29: filtrowanie nie zmienia danych po ponownym otwarciu szkoły | [szkola-nauczyciele-filtry.spec.ts](../../tests/szkola-nauczyciele-filtry.spec.ts#L395) | `school`, `teacher-filter`, `persistence` |
+| TFL-30 | TFL-30: nauczyciel przypisany tylko do innej szkoły nie jest pokazywany | [szkola-nauczyciele-filtry.spec.ts](../../tests/szkola-nauczyciele-filtry.spec.ts#L405) | `school`, `teacher-filter`, `school-context` |
 | STR-88 | STR-88: nowa szkoła udostępnia dialog struktury bez nadanego ID | [szkola-struktura-dodawanie.spec.ts](../../tests/szkola-struktura-dodawanie.spec.ts#L157) | `school`, `structure`, `school-add` |
 | STR-89 | STR-89: Zapisz strukturę odkłada relację do zapisu nowej szkoły | [szkola-struktura-dodawanie.spec.ts](../../tests/szkola-struktura-dodawanie.spec.ts#L172) | `school`, `structure`, `school-add`, `api` |
 | STR-90 | STR-90: nowa szkoła utrwala Filia / Podrzędna | [szkola-struktura-dodawanie.spec.ts](../../tests/szkola-struktura-dodawanie.spec.ts#L249) | `school`, `structure`, `school-add`, `persistence` |

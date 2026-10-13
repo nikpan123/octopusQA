@@ -59,6 +59,8 @@ Po zmianie serwera panelu należy ponownie uruchomić `npm run test-ui`, a w prz
 
 Pakiet **Szkoły** zawiera `szkola-kategoria.spec.ts` (CAT-01–CAT-34) oraz `szkola-kategoria-dodawanie.spec.ts` (CAT-35–CAT-53). Grep `@category` wybiera oba zestawy, a `@category.*@school-add` tylko testy tworzenia; na liście można wybrać pojedyncze ID CAT. [Dokumentacja kategorii](docs/tests/kategoria-szkoly.md) rozpisuje sprawdzenia i stan weryfikacji. Po dodaniu nowego pliku serwer panelu wymaga ponownego uruchomienia — dopiero po zakończeniu aktywnych testów. Nie należy zatrzymywać trwającej regresji ani usuwać jej blokady, aby wymusić drugi start.
 
+W pakiecie Szkoły dostępny jest również `szkola-nauczyciele-filtry.spec.ts` z TFL-01–TFL-30. Grep `@teacher-filter` wybiera całość; ID `TFL-26:` wybiera regresję aktualnego GWO przed przyszłym Obcy po GWO. Formularze są przygotowywane przez API, a filtry i liczniki sprawdzane w UI. Aktywny rok domyślny to 2026/2027; po zmianie roku systemu ustaw `OCTOPUS_TFL_CURRENT_SCHOOL_YEAR` przed startem panelu. TFL-26 jest pomijany z powodem do pojawienia się przyszłego roku 2027/2028 w słowniku (około kwietnia). Testy nie zostały uruchomione na prośbę użytkownika. [Instrukcja każdego scenariusza](docs/tests/filtry-nauczycieli-w-szkole.md) opisuje tworzone dane, oczekiwania i sprzątanie.
+
 ## Przepływ uruchomienia
 
 ```text

@@ -7,7 +7,7 @@ Repozytorium zawiera testy end-to-end aplikacji Octopus napisane w Playwright i 
 | DEV        | `https://octopus.gwodev.pl`  | `playwright.config.ts`      |
 | TEST       | `https://octopus.gwotest.pl` | `playwright.test.config.ts` |
 
-Aktualny zestaw zawiera **524 scenariusze** w 26 plikach. Zwykła regresja obejmuje **522 scenariusze**; dwa testy `MED-YEAR-*` należą do osobnego, ciężkiego procesu rocznej medalowości. Struktura ma 106 wykonywanych scenariuszy bez `fixme`: 87 na profilu istniejącej szkoły i 19 podczas tworzenia nowej szkoły. Kategoria ma 53 scenariusze: 34 dla istniejących szkół i 19 dla tworzenia przez formularz. Wszystkie 53 mają potwierdzone przejście na DEV w pełnym przebiegu i kontrolnych powtórkach z 13.10.2026, po korekcie reguły NPC; nie jest to jeden pełny przebieg po tej korekcie. Liczba implementacji nie jest wynikiem regresji. Znane niezgodności są oznaczone `test.fail` i pozostają wykonywane.
+Aktualny zestaw zawiera **554 scenariusze** w 27 plikach. Zwykła regresja obejmuje **552 scenariusze**; dwa testy `MED-YEAR-*` należą do osobnego, ciężkiego procesu rocznej medalowości. Struktura ma 106 wykonywanych scenariuszy bez `fixme`: 87 na profilu istniejącej szkoły i 19 podczas tworzenia nowej szkoły. Kategoria ma 53 scenariusze: 34 dla istniejących szkół i 19 dla tworzenia przez formularz. Wszystkie 53 mają potwierdzone przejście na DEV w pełnym przebiegu i kontrolnych powtórkach z 13.10.2026, po korekcie reguły NPC; nie jest to jeden pełny przebieg po tej korekcie. Nowe 30 scenariuszy filtrowania nauczycieli TFL-01–TFL-30 nie zostało uruchomionych, zgodnie z prośbą użytkownika. Liczba implementacji nie jest wynikiem regresji. Znane niezgodności są oznaczone `test.fail` i pozostają wykonywane.
 
 Pełna lista jest generowana z kodu i znajduje się w [indeksie scenariuszy](docs/tests/scenario-index.md).
 
@@ -30,7 +30,8 @@ Pełna lista jest generowana z kodu i znajduje się w [indeksie scenariuszy](doc
 | Kategoria przy dodawaniu szkoły      | `szkola-kategoria-dodawanie.spec.ts` |             19 |
 | Walidacja, anulowanie i wyszukiwanie | `walidacja-anulowanie.spec.ts`       |              9 |
 | Zamówienia szkoły                    | `zamowienia-*.spec.ts`               |             66 |
-| **Razem**                            |                                      |        **524** |
+| Filtrowanie nauczycieli w szkole     | `szkola-nauczyciele-filtry.spec.ts`  |             30 |
+| **Razem**                            |                                      |        **554** |
 
 Szczegółowe opisy domen znajdują się w [dokumentacji testów](docs/tests/README.md).
 
@@ -263,6 +264,7 @@ test-results/               artefakty Playwrighta
 - [Roczna medalowość](docs/tests/medalowosc-roczna.md)
 - [Plan testów struktury szkoły](docs/tests/struktura-szkoly.md)
 - [Kategoria szkoły i testy krok po kroku](docs/tests/kategoria-szkoly.md)
+- [Filtrowanie nauczycieli w szkole krok po kroku](docs/tests/filtry-nauczycieli-w-szkole.md)
 - [Przegląd jakości i refaktoryzacji](docs/przeglad-refaktoryzacji.md)
 - [Defekt MED-30/MED-60 — filtr Medal = Brak](docs/issues/MED-30-MED-60-filtr-medal-brak.md)
 

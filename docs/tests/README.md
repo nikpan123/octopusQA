@@ -4,8 +4,8 @@ Ten katalog opisuje aktualne obszary testowe. Źródłem prawdy dla nazw, lokali
 
 ## Aktualny stan
 
-- **524** scenariusze we wszystkich 26 plikach;
-- **522** scenariusze w zwykłej regresji;
+- **554** scenariusze we wszystkich 27 plikach;
+- **552** scenariusze w zwykłej regresji;
 - **2** scenariusze rocznej medalowości uruchamiane osobno;
 - domyślnie 2 workery, maksymalnie 4;
 - ORD w panelu: maksymalnie 2 workery;
@@ -28,7 +28,10 @@ Ten katalog opisuje aktualne obszary testowe. Źródłem prawdy dla nazw, lokali
 | `szkola-kategoria-dodawanie.spec.ts` |        19 | [Kategoria przy tworzeniu szkoły](kategoria-szkoly.md#kategoria-przy-tworzeniu-nowej-szkoły-cat-35cat-53) |
 | `walidacja-anulowanie.spec.ts`       |         9 | [Nauczyciele](nauczyciele.md), [relacje](relacje-szkola-nauczyciel.md)                                    |
 | `zamowienia-*.spec.ts`               |        66 | [Zamówienia szkoły](zamowienia-szkoly.md)                                                                 |
-| **Razem**                            |   **524** |                                                                                                           |
+| `szkola-nauczyciele-filtry.spec.ts`  |        30 | [Filtry nauczycieli krok po kroku](filtry-nauczycieli-w-szkole.md)                                        |
+| **Razem**                            |   **554** |                                                                                                           |
+
+Nowy zestaw TFL-01–TFL-30 jest napisany, ale nie został uruchomiony ani zweryfikowany na DEV, zgodnie z prośbą użytkownika. Obejmuje UI, licznik unikalnych nauczycieli, liczniki szkolnych pozycji przedmiotowych Nasi/Obcy, klasyfikację, kontekst szkoły i regresję przyszłego roku. Licznik grupy nie musi być równy liczbie jej wierszy. Pozostały zakres jest wskazany w jego dokumentacji.
 
 Liczba wykonań może być większa od liczby logicznych ID, ponieważ część scenariuszy jest parametryzowana.
 

@@ -259,7 +259,7 @@ Przygotowuje placówkę doskonalenia nauczycieli z liczbą 401 i oczekuje D.
 4. Wymaga jednego wiersza z tym ID i zgodną nazwą oraz wartości **A** w jego komórce Kategoria.
 5. Ponownie otwiera profil po ID i jeszcze raz sprawdza kategorię **A**.
 
-Szkoła NPC podlega progom szkoły podstawowej, więc ten przypadek wymaga A.nie z potwierdzeniem użytkownika.
+Szkoła NPC podlega progom szkoły podstawowej, więc ten przypadek wymaga A.
 
 ### CAT-21 Szkoła NPC z jednym uczniem
 
@@ -269,7 +269,7 @@ Szkoła NPC podlega progom szkoły podstawowej, więc ten przypadek wymaga A.nie
 4. Wymaga jednego wiersza z tym ID i zgodną nazwą oraz wartości **C** w jego komórce Kategoria.
 5. Ponownie otwiera profil po ID i jeszcze raz sprawdza kategorię **C**.
 
-Szkoła NPC podlega progom szkoły podstawowej, więc ten przypadek wymaga C.nie C.
+Szkoła NPC podlega progom szkoły podstawowej, więc ten przypadek wymaga C.
 
 ### CAT-22 Szkoła NPC z dużą liczbą uczniów
 
@@ -279,7 +279,7 @@ Szkoła NPC podlega progom szkoły podstawowej, więc ten przypadek wymaga C.nie
 4. Wymaga jednego wiersza z tym ID i zgodną nazwą oraz wartości **A** w jego komórce Kategoria.
 5. Ponownie otwiera profil po ID i jeszcze raz sprawdza kategorię **A**.
 
-Szkoła NPC podlega progom szkoły podstawowej, więc ten przypadek wymaga A.nie A.
+Szkoła NPC podlega progom szkoły podstawowej, więc ten przypadek wymaga A.
 
 ## Sortowanie
 
