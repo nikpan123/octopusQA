@@ -16,6 +16,21 @@ http://127.0.0.1:4173
 
 Inny port można wskazać przez `OCTOPUS_TEST_UI_PORT`.
 
+### Panel już działa — błąd EADDRINUSE
+
+Komunikat `listen EADDRINUSE ... 127.0.0.1:4173` oznacza, że port 4173 jest już zajęty. Najpierw otwórz [http://127.0.0.1:4173](http://127.0.0.1:4173). Jeżeli widzisz Octopus Test Runner, panel działa i nie trzeba drugi raz wykonywać `npm run test-ui`. Odśwież istniejącą kartę klawiszem F5.
+
+Panel może działać w innym terminalu albo w tle, również gdy terminal, w którym właśnie wpisujesz polecenie, jest pusty. Nie zatrzymuj przypadkowych procesów Node.js — mogą należeć do VS Code albo aktywnych testów.
+
+Jeżeli pod tym adresem nie ma naszego panelu, trzeba ustalić, jaki program zajmuje port. Alternatywnie można uruchomić panel na innym, wolnym porcie, np. 4174:
+
+```powershell
+$env:OCTOPUS_TEST_UI_PORT = "4174"
+npm run test-ui
+```
+
+Wtedy otwórz `http://127.0.0.1:4174`. Nie uruchamiaj równoczesnych testów na tym samym środowisku z dwóch paneli. Zmiana portu nie zwalnia blokady trwających testów.
+
 ## Funkcje
 
 - wybór środowiska DEV lub TEST;
@@ -39,6 +54,10 @@ Inny port można wskazać przez `OCTOPUS_TEST_UI_PORT`.
 Pakiet **Szkoły** obejmuje zarówno `szkola-struktura.spec.ts` (STR-01–STR-87), jak i `szkola-struktura-dodawanie.spec.ts` (STR-88–STR-106). Można uruchomić pakiet, użyć pola Grep z `@structure` albo zaznaczyć konkretne krótkie ID na liście testów. Zaznaczone testy mają pierwszeństwo przed pakietem i Grep, a ich ID są dopasowywane dokładnie (STR-10 nie wybiera STR-100).
 
 Po zmianie serwera panelu należy ponownie uruchomić `npm run test-ui`, a w przeglądarce odświeżyć stronę i listę przyciskiem **Odśwież**. Nowe testy tworzenia szkoły korzystają z dedykowanych danych; relacje są sprzątane, szkoły testowe pozostają zgodnie z opisem [testów Struktury](docs/tests/struktura-szkoly-krok-po-kroku.md).
+
+### Kategoria szkoły w panelu
+
+Pakiet **Szkoły** zawiera `szkola-kategoria.spec.ts` (CAT-01–CAT-34) oraz `szkola-kategoria-dodawanie.spec.ts` (CAT-35–CAT-53). Grep `@category` wybiera oba zestawy, a `@category.*@school-add` tylko testy tworzenia; na liście można wybrać pojedyncze ID CAT. [Dokumentacja kategorii](docs/tests/kategoria-szkoly.md) rozpisuje sprawdzenia i stan weryfikacji. Po dodaniu nowego pliku serwer panelu wymaga ponownego uruchomienia — dopiero po zakończeniu aktywnych testów. Nie należy zatrzymywać trwającej regresji ani usuwać jej blokady, aby wymusić drugi start.
 
 ## Przepływ uruchomienia
 

@@ -4,31 +4,35 @@ Ten katalog opisuje aktualne obszary testowe. Źródłem prawdy dla nazw, lokali
 
 ## Aktualny stan
 
-- **471** scenariuszy we wszystkich 24 plikach;
-- **469** scenariuszy w zwykłej regresji;
+- **524** scenariusze we wszystkich 26 plikach;
+- **522** scenariusze w zwykłej regresji;
 - **2** scenariusze rocznej medalowości uruchamiane osobno;
 - domyślnie 2 workery, maksymalnie 4;
 - ORD w panelu: maksymalnie 2 workery;
 - roczna medalowość: zawsze 1 worker.
 
-| Plik testowy                         | Wykonania | Dokumentacja                                                           |
-| ------------------------------------ | --------: | ---------------------------------------------------------------------- |
-| `klubowiczostwo-*.spec.ts`           |        72 | [Klubowiczostwo](klubowiczostwo-nauczyciela.md)                        |
-| `nauczyciel-dodawanie.spec.ts`       |        33 | [Nauczyciele](nauczyciele.md)                                          |
-| `nauczyciel-edycja*.spec.ts`         |        44 | [Nauczyciele](nauczyciele.md)                                          |
-| `nauczyciel-rozszerzenie.spec.ts`    |         6 | [Nauczyciele](nauczyciele.md), [relacje](relacje-szkola-nauczyciel.md) |
-| `szkola-dodawanie.spec.ts`           |        57 | [Dodawanie szkoły](dodawanie-szkoly.md)                                |
-| `szkola-edycja.spec.ts`              |        33 | [Edycja szkoły](edycja-szkoly.md)                                      |
-| `szkola-medalowosc-annual.spec.ts`   |         2 | [Roczna medalowość](medalowosc-roczna.md)                              |
-| `szkola-medalowosc.spec.ts`          |        42 | [Medalowość szkoły](medalowosc-szkoly.md)                              |
-| `szkola-nauczyciel.spec.ts`          |         1 | [Relacje](relacje-szkola-nauczyciel.md)                                |
-| `szkola-struktura.spec.ts`           |        87 | [Struktura szkoły](struktura-szkoly.md)                                |
-| `szkola-struktura-dodawanie.spec.ts` |        19 | [Struktura krok po kroku](struktura-szkoly-krok-po-kroku.md)           |
-| `walidacja-anulowanie.spec.ts`       |         9 | [Nauczyciele](nauczyciele.md), [relacje](relacje-szkola-nauczyciel.md) |
-| `zamowienia-*.spec.ts`               |        66 | [Zamówienia szkoły](zamowienia-szkoly.md)                              |
-| **Razem**                            |   **471** |                                                                        |
+| Plik testowy                         | Wykonania | Dokumentacja                                                                                              |
+| ------------------------------------ | --------: | --------------------------------------------------------------------------------------------------------- |
+| `klubowiczostwo-*.spec.ts`           |        72 | [Klubowiczostwo](klubowiczostwo-nauczyciela.md)                                                           |
+| `nauczyciel-dodawanie.spec.ts`       |        33 | [Nauczyciele](nauczyciele.md)                                                                             |
+| `nauczyciel-edycja*.spec.ts`         |        44 | [Nauczyciele](nauczyciele.md)                                                                             |
+| `nauczyciel-rozszerzenie.spec.ts`    |         6 | [Nauczyciele](nauczyciele.md), [relacje](relacje-szkola-nauczyciel.md)                                    |
+| `szkola-dodawanie.spec.ts`           |        57 | [Dodawanie szkoły](dodawanie-szkoly.md)                                                                   |
+| `szkola-edycja.spec.ts`              |        33 | [Edycja szkoły](edycja-szkoly.md)                                                                         |
+| `szkola-medalowosc-annual.spec.ts`   |         2 | [Roczna medalowość](medalowosc-roczna.md)                                                                 |
+| `szkola-medalowosc.spec.ts`          |        42 | [Medalowość szkoły](medalowosc-szkoly.md)                                                                 |
+| `szkola-nauczyciel.spec.ts`          |         1 | [Relacje](relacje-szkola-nauczyciel.md)                                                                   |
+| `szkola-struktura.spec.ts`           |        87 | [Struktura szkoły](struktura-szkoly.md)                                                                   |
+| `szkola-struktura-dodawanie.spec.ts` |        19 | [Struktura krok po kroku](struktura-szkoly-krok-po-kroku.md)                                              |
+| `szkola-kategoria.spec.ts`           |        34 | [Kategoria szkoły krok po kroku](kategoria-szkoly.md)                                                     |
+| `szkola-kategoria-dodawanie.spec.ts` |        19 | [Kategoria przy tworzeniu szkoły](kategoria-szkoly.md#kategoria-przy-tworzeniu-nowej-szkoły-cat-35cat-53) |
+| `walidacja-anulowanie.spec.ts`       |         9 | [Nauczyciele](nauczyciele.md), [relacje](relacje-szkola-nauczyciel.md)                                    |
+| `zamowienia-*.spec.ts`               |        66 | [Zamówienia szkoły](zamowienia-szkoly.md)                                                                 |
+| **Razem**                            |   **524** |                                                                                                           |
 
 Liczba wykonań może być większa od liczby logicznych ID, ponieważ część scenariuszy jest parametryzowana.
+
+Kategoria obejmuje CAT-01–CAT-53. Na DEV potwierdzono przejście wszystkich 53 scenariuszy w pełnym przebiegu i kontrolnych powtórkach z 13.10.2026. Po doprecyzowaniu reguły NPC jako szkoły podstawowej poprawione CAT-20–CAT-22 i CAT-51–CAT-53 przeszły (6/6). Nie jest to wynik jednego pełnego przebiegu po korekcie NPC; szczegóły i ograniczenia zawiera dokumentacja kategorii.
 
 W obszarze `Struktura szkoły` wszystkie 106 scenariuszy jest wykonywanych (87 na istniejącej szkole i 19 podczas dodawania szkoły). Nie ma `fixme` ani `skip`; osiem scenariuszy `test.fail` dokumentuje niezgodności DEV względem oczekiwań testów. Zakres obejmuje obecnego użytkownika z pełnymi uprawnieniami, UI i publiczne API. Szczegóły i granice pokrycia zawiera dokument [Struktura szkoły](struktura-szkoly.md).
 

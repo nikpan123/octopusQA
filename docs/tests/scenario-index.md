@@ -2,7 +2,7 @@
 
 > Plik generowany automatycznie przez `npm run docs:scenarios`. Nie edytuj tabeli ręcznie.
 
-Łącznie: **471 scenariuszy**.
+Łącznie: **524 scenariuszy**.
 
 | ID | Scenariusz | Plik | Tagi |
 |---|---|---|---|
@@ -251,6 +251,59 @@
 | SCH-EDIT-22 | SCH-EDIT-22: HTTP 422 nie utrwala zmiany nazwy | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L911) | `school`, `school-edit`, `error-handling` |
 | SCH-EDIT-23 | SCH-EDIT-23: HTTP 500 nie utrwala zmiany nazwy | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L911) | `school`, `school-edit`, `error-handling` |
 | SCH-EDIT-24 | SCH-EDIT-24: timeout sieci nie utrwala zmiany nazwy | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L911) | `school`, `school-edit`, `error-handling` |
+| CAT-35 | CAT-35: nowa Szkoła podstawowa, brak danych uczniów otrzymuje A | [szkola-kategoria-dodawanie.spec.ts](../../tests/szkola-kategoria-dodawanie.spec.ts#L20) | `school`, `category`, `school-add`, `boundaries`, `persistence` |
+| CAT-36 | CAT-36: nowa Szkoła podstawowa, 0 uczniów otrzymuje A | [szkola-kategoria-dodawanie.spec.ts](../../tests/szkola-kategoria-dodawanie.spec.ts#L20) | `school`, `category`, `school-add`, `boundaries`, `persistence` |
+| CAT-37 | CAT-37: nowa Szkoła podstawowa, 1 uczniów otrzymuje C | [szkola-kategoria-dodawanie.spec.ts](../../tests/szkola-kategoria-dodawanie.spec.ts#L20) | `school`, `category`, `school-add`, `boundaries`, `persistence` |
+| CAT-38 | CAT-38: nowa Szkoła podstawowa, 100 uczniów otrzymuje C | [szkola-kategoria-dodawanie.spec.ts](../../tests/szkola-kategoria-dodawanie.spec.ts#L20) | `school`, `category`, `school-add`, `boundaries`, `persistence` |
+| CAT-39 | CAT-39: nowa Szkoła podstawowa, 101 uczniów otrzymuje B | [szkola-kategoria-dodawanie.spec.ts](../../tests/szkola-kategoria-dodawanie.spec.ts#L20) | `school`, `category`, `school-add`, `boundaries`, `persistence` |
+| CAT-40 | CAT-40: nowa Szkoła podstawowa, 400 uczniów otrzymuje B | [szkola-kategoria-dodawanie.spec.ts](../../tests/szkola-kategoria-dodawanie.spec.ts#L20) | `school`, `category`, `school-add`, `boundaries`, `persistence` |
+| CAT-41 | CAT-41: nowa Szkoła podstawowa, 401 uczniów otrzymuje A | [szkola-kategoria-dodawanie.spec.ts](../../tests/szkola-kategoria-dodawanie.spec.ts#L20) | `school`, `category`, `school-add`, `boundaries`, `persistence` |
+| CAT-42 | CAT-42: nowa Szkoła podstawowa, 1200 uczniów otrzymuje A | [szkola-kategoria-dodawanie.spec.ts](../../tests/szkola-kategoria-dodawanie.spec.ts#L20) | `school`, `category`, `school-add`, `boundaries`, `persistence` |
+| CAT-43 | CAT-43: nowa Liceum, 101 uczniów otrzymuje B | [szkola-kategoria-dodawanie.spec.ts](../../tests/szkola-kategoria-dodawanie.spec.ts#L20) | `school`, `category`, `school-add`, `boundaries`, `persistence` |
+| CAT-44 | CAT-44: nowa Technikum, 1 uczniów otrzymuje C | [szkola-kategoria-dodawanie.spec.ts](../../tests/szkola-kategoria-dodawanie.spec.ts#L20) | `school`, `category`, `school-add`, `boundaries`, `persistence` |
+| CAT-45 | CAT-45: nowa Przedszkole, 0 uczniów otrzymuje D | [szkola-kategoria-dodawanie.spec.ts](../../tests/szkola-kategoria-dodawanie.spec.ts#L20) | `school`, `category`, `school-add`, `boundaries`, `persistence` |
+| CAT-46 | CAT-46: nowa Przedszkole, 1 uczniów otrzymuje D | [szkola-kategoria-dodawanie.spec.ts](../../tests/szkola-kategoria-dodawanie.spec.ts#L20) | `school`, `category`, `school-add`, `boundaries`, `persistence` |
+| CAT-47 | CAT-47: nowa Przedszkole, 401 uczniów otrzymuje D | [szkola-kategoria-dodawanie.spec.ts](../../tests/szkola-kategoria-dodawanie.spec.ts#L20) | `school`, `category`, `school-add`, `boundaries`, `persistence` |
+| CAT-48 | CAT-48: nowa Placówka doskonalenia nauczycieli, 0 uczniów otrzymuje D | [szkola-kategoria-dodawanie.spec.ts](../../tests/szkola-kategoria-dodawanie.spec.ts#L20) | `school`, `category`, `school-add`, `boundaries`, `persistence` |
+| CAT-49 | CAT-49: nowa Placówka doskonalenia nauczycieli, 1 uczniów otrzymuje D | [szkola-kategoria-dodawanie.spec.ts](../../tests/szkola-kategoria-dodawanie.spec.ts#L20) | `school`, `category`, `school-add`, `boundaries`, `persistence` |
+| CAT-50 | CAT-50: nowa Placówka doskonalenia nauczycieli, 401 uczniów otrzymuje D | [szkola-kategoria-dodawanie.spec.ts](../../tests/szkola-kategoria-dodawanie.spec.ts#L20) | `school`, `category`, `school-add`, `boundaries`, `persistence` |
+| CAT-51 | CAT-51: nowa Szkoła NPC, 0 uczniów otrzymuje A | [szkola-kategoria-dodawanie.spec.ts](../../tests/szkola-kategoria-dodawanie.spec.ts#L20) | `school`, `category`, `school-add`, `boundaries`, `persistence` |
+| CAT-52 | CAT-52: nowa Szkoła NPC, 1 uczniów otrzymuje C | [szkola-kategoria-dodawanie.spec.ts](../../tests/szkola-kategoria-dodawanie.spec.ts#L20) | `school`, `category`, `school-add`, `boundaries`, `persistence` |
+| CAT-53 | CAT-53: nowa Szkoła NPC, 401 uczniów otrzymuje A | [szkola-kategoria-dodawanie.spec.ts](../../tests/szkola-kategoria-dodawanie.spec.ts#L20) | `school`, `category`, `school-add`, `boundaries`, `persistence` |
+| CAT-01 | CAT-01: tabela wyszukiwania zawiera kolumnę Kategoria | [szkola-kategoria.spec.ts](../../tests/szkola-kategoria.spec.ts#L46) | `school`, `category`, `smoke` |
+| CAT-02 | CAT-02: Kategoria znajduje się bezpośrednio po Poziom | [szkola-kategoria.spec.ts](../../tests/szkola-kategoria.spec.ts#L56) | `school`, `category`, `layout` |
+| CAT-03 | CAT-03: kategoria na profilu jest pod poziomem szkoły i tylko do odczytu | [szkola-kategoria.spec.ts](../../tests/szkola-kategoria.spec.ts#L71) | `school`, `category`, `readonly`, `layout` |
+| CAT-04 | CAT-04: Szkoła podstawowa, brak danych uczniów daje kategorię A | [szkola-kategoria.spec.ts](../../tests/szkola-kategoria.spec.ts#L89) | `school`, `category`, `boundaries` |
+| CAT-05 | CAT-05: Szkoła podstawowa, 0 uczniów daje kategorię A | [szkola-kategoria.spec.ts](../../tests/szkola-kategoria.spec.ts#L89) | `school`, `category`, `boundaries` |
+| CAT-06 | CAT-06: Szkoła podstawowa, 1 uczniów daje kategorię C | [szkola-kategoria.spec.ts](../../tests/szkola-kategoria.spec.ts#L89) | `school`, `category`, `boundaries` |
+| CAT-07 | CAT-07: Szkoła podstawowa, 100 uczniów daje kategorię C | [szkola-kategoria.spec.ts](../../tests/szkola-kategoria.spec.ts#L89) | `school`, `category`, `boundaries` |
+| CAT-08 | CAT-08: Szkoła podstawowa, 101 uczniów daje kategorię B | [szkola-kategoria.spec.ts](../../tests/szkola-kategoria.spec.ts#L89) | `school`, `category`, `boundaries` |
+| CAT-09 | CAT-09: Szkoła podstawowa, 400 uczniów daje kategorię B | [szkola-kategoria.spec.ts](../../tests/szkola-kategoria.spec.ts#L89) | `school`, `category`, `boundaries` |
+| CAT-10 | CAT-10: Szkoła podstawowa, 401 uczniów daje kategorię A | [szkola-kategoria.spec.ts](../../tests/szkola-kategoria.spec.ts#L89) | `school`, `category`, `boundaries` |
+| CAT-11 | CAT-11: Szkoła podstawowa, 1200 uczniów daje kategorię A | [szkola-kategoria.spec.ts](../../tests/szkola-kategoria.spec.ts#L89) | `school`, `category`, `boundaries` |
+| CAT-12 | CAT-12: Liceum, 101 uczniów daje kategorię B | [szkola-kategoria.spec.ts](../../tests/szkola-kategoria.spec.ts#L89) | `school`, `category`, `boundaries` |
+| CAT-13 | CAT-13: Technikum, 1 uczniów daje kategorię C | [szkola-kategoria.spec.ts](../../tests/szkola-kategoria.spec.ts#L89) | `school`, `category`, `boundaries` |
+| CAT-14 | CAT-14: Przedszkole, 0 uczniów daje kategorię D | [szkola-kategoria.spec.ts](../../tests/szkola-kategoria.spec.ts#L89) | `school`, `category`, `boundaries` |
+| CAT-15 | CAT-15: Przedszkole, 1 uczniów daje kategorię D | [szkola-kategoria.spec.ts](../../tests/szkola-kategoria.spec.ts#L89) | `school`, `category`, `boundaries` |
+| CAT-16 | CAT-16: Przedszkole, 401 uczniów daje kategorię D | [szkola-kategoria.spec.ts](../../tests/szkola-kategoria.spec.ts#L89) | `school`, `category`, `boundaries` |
+| CAT-17 | CAT-17: Placówka doskonalenia nauczycieli, 0 uczniów daje kategorię D | [szkola-kategoria.spec.ts](../../tests/szkola-kategoria.spec.ts#L89) | `school`, `category`, `boundaries` |
+| CAT-18 | CAT-18: Placówka doskonalenia nauczycieli, 1 uczniów daje kategorię D | [szkola-kategoria.spec.ts](../../tests/szkola-kategoria.spec.ts#L89) | `school`, `category`, `boundaries` |
+| CAT-19 | CAT-19: Placówka doskonalenia nauczycieli, 401 uczniów daje kategorię D | [szkola-kategoria.spec.ts](../../tests/szkola-kategoria.spec.ts#L89) | `school`, `category`, `boundaries` |
+| CAT-20 | CAT-20: Szkoła NPC, 0 uczniów daje kategorię A | [szkola-kategoria.spec.ts](../../tests/szkola-kategoria.spec.ts#L89) | `school`, `category`, `boundaries` |
+| CAT-21 | CAT-21: Szkoła NPC, 1 uczniów daje kategorię C | [szkola-kategoria.spec.ts](../../tests/szkola-kategoria.spec.ts#L89) | `school`, `category`, `boundaries` |
+| CAT-22 | CAT-22: Szkoła NPC, 401 uczniów daje kategorię A | [szkola-kategoria.spec.ts](../../tests/szkola-kategoria.spec.ts#L89) | `school`, `category`, `boundaries` |
+| CAT-23 | CAT-23: Kategoria sortuje alfabetycznie ascending | [szkola-kategoria.spec.ts](../../tests/szkola-kategoria.spec.ts#L106) | `school`, `category`, `sort` |
+| CAT-24 | CAT-24: Kategoria sortuje alfabetycznie descending | [szkola-kategoria.spec.ts](../../tests/szkola-kategoria.spec.ts#L106) | `school`, `category`, `sort` |
+| CAT-25 | CAT-25: zmiany sortowania nie zmieniają szkół i ich kategorii | [szkola-kategoria.spec.ts](../../tests/szkola-kategoria.spec.ts#L132) | `school`, `category`, `sort` |
+| CAT-26 | CAT-26: zmiana liczby uczniów 100 → 101 aktualizuje kategorię | [szkola-kategoria.spec.ts](../../tests/szkola-kategoria.spec.ts#L172) | `school`, `category`, `edit` |
+| CAT-27 | CAT-27: zmiana liczby uczniów 400 → 401 aktualizuje kategorię | [szkola-kategoria.spec.ts](../../tests/szkola-kategoria.spec.ts#L172) | `school`, `category`, `edit` |
+| CAT-28 | CAT-28: zmiana liczby uczniów 101 → 100 aktualizuje kategorię | [szkola-kategoria.spec.ts](../../tests/szkola-kategoria.spec.ts#L172) | `school`, `category`, `edit` |
+| CAT-29 | CAT-29: zmiana liczby uczniów 401 → 0 aktualizuje kategorię | [szkola-kategoria.spec.ts](../../tests/szkola-kategoria.spec.ts#L172) | `school`, `category`, `edit` |
+| CAT-30 | CAT-30: zmiana liczby uczniów 100 → brak danych aktualizuje kategorię | [szkola-kategoria.spec.ts](../../tests/szkola-kategoria.spec.ts#L172) | `school`, `category`, `edit` |
+| CAT-31 | CAT-31: zmiana liczby uczniów 0 → 1 aktualizuje kategorię | [szkola-kategoria.spec.ts](../../tests/szkola-kategoria.spec.ts#L172) | `school`, `category`, `edit` |
+| CAT-32 | CAT-32: zmiana liczby uczniów 401 → 400 aktualizuje kategorię | [szkola-kategoria.spec.ts](../../tests/szkola-kategoria.spec.ts#L172) | `school`, `category`, `edit` |
+| CAT-33 | CAT-33: anulowanie liczby uczniów nie zmienia kategorii | [szkola-kategoria.spec.ts](../../tests/szkola-kategoria.spec.ts#L187) | `school`, `category`, `cancel` |
+| CAT-34 | CAT-34: zmiana liczby uczniów innej placówki zachowuje D | [szkola-kategoria.spec.ts](../../tests/szkola-kategoria.spec.ts#L201) | `school`, `category`, `edit` |
 | MED-YEAR-PREP | MED-YEAR-PREP: przygotuj snapshot 4 szkół referencyjnych i 50 losowych szkół | [szkola-medalowosc-annual.spec.ts](../../tests/szkola-medalowosc-annual.spec.ts#L59) | `annual-medal` |
 | MED-YEAR-01 | MED-YEAR-01: roczne przeliczenie ustawia oczekiwany medal na podstawie snapshotu | [szkola-medalowosc-annual.spec.ts](../../tests/szkola-medalowosc-annual.spec.ts#L173) | `annual-medal` |
 | MED-02 | MED-02: pole Medal dla szkoły ze złotym medalem jest nieedytowalne | [szkola-medalowosc.spec.ts](../../tests/szkola-medalowosc.spec.ts#L38) | — |

@@ -7,7 +7,7 @@ Repozytorium zawiera testy end-to-end aplikacji Octopus napisane w Playwright i 
 | DEV        | `https://octopus.gwodev.pl`  | `playwright.config.ts`      |
 | TEST       | `https://octopus.gwotest.pl` | `playwright.test.config.ts` |
 
-Aktualny zestaw zawiera **471 scenariuszy** w 24 plikach. Zwykła regresja obejmuje **469 scenariuszy**; dwa testy `MED-YEAR-*` należą do osobnego, ciężkiego procesu rocznej medalowości. Struktura ma 106 wykonywanych scenariuszy bez `fixme`: 87 na profilu istniejącej szkoły i 19 podczas tworzenia nowej szkoły. Znane niezgodności są oznaczone `test.fail` i pozostają wykonywane.
+Aktualny zestaw zawiera **524 scenariusze** w 26 plikach. Zwykła regresja obejmuje **522 scenariusze**; dwa testy `MED-YEAR-*` należą do osobnego, ciężkiego procesu rocznej medalowości. Struktura ma 106 wykonywanych scenariuszy bez `fixme`: 87 na profilu istniejącej szkoły i 19 podczas tworzenia nowej szkoły. Kategoria ma 53 scenariusze: 34 dla istniejących szkół i 19 dla tworzenia przez formularz. Wszystkie 53 mają potwierdzone przejście na DEV w pełnym przebiegu i kontrolnych powtórkach z 13.10.2026, po korekcie reguły NPC; nie jest to jeden pełny przebieg po tej korekcie. Liczba implementacji nie jest wynikiem regresji. Znane niezgodności są oznaczone `test.fail` i pozostają wykonywane.
 
 Pełna lista jest generowana z kodu i znajduje się w [indeksie scenariuszy](docs/tests/scenario-index.md).
 
@@ -26,9 +26,11 @@ Pełna lista jest generowana z kodu i znajduje się w [indeksie scenariuszy](doc
 | Relacja szkoła–nauczyciel            | `szkola-nauczyciel.spec.ts`          |              1 |
 | Struktura szkoły                     | `szkola-struktura.spec.ts`           |             87 |
 | Struktura przy dodawaniu szkoły      | `szkola-struktura-dodawanie.spec.ts` |             19 |
+| Kategoria szkoły                     | `szkola-kategoria.spec.ts`           |             34 |
+| Kategoria przy dodawaniu szkoły      | `szkola-kategoria-dodawanie.spec.ts` |             19 |
 | Walidacja, anulowanie i wyszukiwanie | `walidacja-anulowanie.spec.ts`       |              9 |
 | Zamówienia szkoły                    | `zamowienia-*.spec.ts`               |             66 |
-| **Razem**                            |                                      |        **471** |
+| **Razem**                            |                                      |        **524** |
 
 Szczegółowe opisy domen znajdują się w [dokumentacji testów](docs/tests/README.md).
 
@@ -230,6 +232,8 @@ npm run docs:scenarios
 
 Workflow `Quality` uruchamia `npm run quality` i `npm run test:unit` dla pull requestów oraz zmian na gałęziach `main` i `fixes`.
 
+Wyjaśnienie bez wymaganej wiedzy technicznej: [GitHub Actions — instrukcja dla początkujących](docs/GITHUB-ACTIONS-DLA-POCZATKUJACYCH.md). Dokument opisuje kroki, kolory wyników, czytanie błędów oraz różnicę między kontrolą projektu a rzeczywistymi testami na DEV. Zielone Quality nie oznacza, że wszystkie funkcjonalności Octopusa są poprawne.
+
 Workflow `E2E DEV` jest uruchamiany ręcznie. Wymaga sekretów `GITLAB_USERNAME`, `GITLAB_PASSWORD`, `OCTOPUS_DEV_USERNAME` i `OCTOPUS_DEV_PASSWORD`. Po przebiegu zawsze publikuje artefakty diagnostyczne i próbuje usunąć wyłącznie zweryfikowane rekordy testowe zapisane przez automat. Cleanup nie używa `--allow-unmarked`.
 
 ## Struktura projektu
@@ -254,9 +258,11 @@ test-results/               artefakty Playwrighta
 - [Dokumentacja obszarów testowych](docs/tests/README.md)
 - [Pełny indeks scenariuszy](docs/tests/scenario-index.md)
 - [Panel Test Runner](TEST-UI.md)
+- [GitHub Actions — instrukcja dla początkujących](docs/GITHUB-ACTIONS-DLA-POCZATKUJACYCH.md)
 - [Zamówienia na dwóch workerach](README-PARALLEL-ORD.md)
 - [Roczna medalowość](docs/tests/medalowosc-roczna.md)
 - [Plan testów struktury szkoły](docs/tests/struktura-szkoly.md)
+- [Kategoria szkoły i testy krok po kroku](docs/tests/kategoria-szkoly.md)
 - [Przegląd jakości i refaktoryzacji](docs/przeglad-refaktoryzacji.md)
 - [Defekt MED-30/MED-60 — filtr Medal = Brak](docs/issues/MED-30-MED-60-filtr-medal-brak.md)
 

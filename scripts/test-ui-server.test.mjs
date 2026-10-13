@@ -9,6 +9,8 @@ test("pakiet Szkoły zawiera oba pliki Struktury", () => {
   for (const file of [
     "tests/szkola-struktura.spec.ts",
     "tests/szkola-struktura-dodawanie.spec.ts",
+    "tests/szkola-kategoria.spec.ts",
+    "tests/szkola-kategoria-dodawanie.spec.ts",
   ]) {
     assert.ok(SUITES.schools.files.includes(file));
     assert.ok(result.args.includes(file));
@@ -19,6 +21,7 @@ test("parser rozpoznaje krótkie ID STR, także trzycyfrowe", () => {
   assert.equal(extractTestId("Struktura szkoły › STR-89: test @school"), "STR-89");
   assert.equal(extractTestId("Struktura › STR-106: timeout @structure"), "STR-106");
   assert.equal(extractTestId("ORD-43: zamówienie"), "ORD-43");
+  assert.equal(extractTestId("Kategoria szkoły › CAT-34: zmiana uczniów"), "CAT-34");
 });
 
 test("listowanie rozdziela ID, nazwę i lokalizację testu struktury", () => {

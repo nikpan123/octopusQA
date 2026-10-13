@@ -38,6 +38,8 @@ export const SUITES = {
       "tests/szkola-nauczyciel.spec.ts",
       "tests/szkola-struktura.spec.ts",
       "tests/szkola-struktura-dodawanie.spec.ts",
+      "tests/szkola-kategoria.spec.ts",
+      "tests/szkola-kategoria-dodawanie.spec.ts",
       "tests/walidacja-anulowanie.spec.ts",
     ],
   },
@@ -296,7 +298,7 @@ function finalizeRunCounts(exitCode) {
 export function extractTestId(text) {
   return (
     text.match(
-      /\b(?:ORD|CLUB|SCH(?:-EDIT)?|MED(?:-YEAR)?|ADD|EDIT|TEA|FIND|REL|STR)-[A-Z0-9-]+\b/,
+      /\b(?:ORD|CLUB|SCH(?:-EDIT)?|MED(?:-YEAR)?|ADD|EDIT|TEA|FIND|REL|STR|CAT)-[A-Z0-9-]+\b/,
     )?.[0] || null
   );
 }
