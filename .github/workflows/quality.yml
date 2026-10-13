@@ -33,4 +33,6 @@ jobs:
         run: npm run quality
 
       - name: Unit tests
-        run: npm run test:unit
+        # Testy jednostkowe sesji i panelu korzystają z izolowanej przeglądarki.
+        # Sieć jest przechwycona i nie kontaktują się ze środowiskiem DEV.
+        run: npx playwright install --with-deps chromium && npm run test:unit

@@ -1,6 +1,6 @@
 # Pokrycie projektu testami
 
-Dokument przedstawia funkcjonalności objęte automatyzacją oraz obszary, które nadal wymagają testów. Stan został ustalony na podstawie aktualnego kodu, [indeksu 452 scenariuszy](tests/scenario-index.md) i dokumentacji domenowej.
+Dokument przedstawia funkcjonalności objęte automatyzacją oraz obszary, które nadal wymagają testów. Stan został ustalony na podstawie aktualnego kodu, [indeksu 471 scenariuszy](tests/scenario-index.md) i dokumentacji domenowej.
 
 ## Jak interpretować ocenę
 
@@ -17,20 +17,20 @@ Stosowane poziomy:
 
 ## Podsumowanie
 
-| Obszar                    |                  Liczba wykonań | Ocena                          | Najważniejsze pokrycie                                              | Najważniejsza luka                                                                 |
-| ------------------------- | ------------------------------: | ------------------------------ | ------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
-| Nauczyciele               |        83 + scenariusze wspólne | Szerokie                       | dodawanie, edycja, kontakty, adres, notatki, RODO, historia         | uprawnienia, awarie API i równoczesna edycja                                       |
-| Szkoły — dodawanie        |        57 + scenariusze wspólne | Szerokie                       | typy, adres, kontakty, identyfikatory, walidacje, 422/500/timeout   | granice długości, część walidacji formatów i błędy wyszukiwania adresu             |
-| Szkoły — edycja           |                              33 | Szerokie                       | dane podstawowe, adres, telefon, SIO, historia, 422/500/timeout     | walidacje graniczne, retry, podwójny zapis, konflikty i uprawnienia                |
-| Relacja szkoła–nauczyciel | kilka scenariuszy przekrojowych | Częściowe                      | jedna i wiele szkół, widok z obu stron, trwałość relacji            | usuwanie istniejącej relacji, duplikaty i konflikty równoległe                     |
-| Struktura szkoły          |  87 wykonywanych, 8 `test.fail` | Szerokie dla pełnych uprawnień | CRUD, cykle, hierarchia, UI, audyt, walidacje i atomowość           | DB/migracje, inne role, realne SI/raporty, osiem niezgodności względem testów DEV  |
-| Klubowiczostwo            |                              72 | Szerokie                       | klasy, lata, szkoły, przedmioty, historia, usuwanie, restore, WSPOM | błędy API, uprawnienia, pełny kontrakt słowników i wysyłka e-mail                  |
-| Zamówienia szkoły         |                              66 | Szerokie                       | produkty, filtry, ilości, zapis, edycja, izolacja, załączniki       | błędy sieciowe, pobieranie załączników, uprawnienia i konflikty wielu użytkowników |
-| Medalowość szkoły         |                              42 | Szerokie                       | UI/API, tooltip, historia, filtry, progi i duplikaty przedmiotów    | błędy API, role oraz niezależne wymuszenie przeliczenia                            |
-| Medalowość roczna         |                               2 | Operacyjne                     | snapshot przed jobem i porównanie po jobie na DEV/TEST              | automat nie uruchamia joba ani nie kontroluje daty systemowej                      |
-| Infrastruktura testowa    |   testy jednostkowe i reportery | Częściowe                      | sesja, cleanup, diagnostyka błędów, performance                     | brak testów panelu jako osobnej aplikacji i brak progów wydajności                 |
+| Obszar                    |                  Liczba wykonań | Ocena                          | Najważniejsze pokrycie                                                               | Najważniejsza luka                                                                 |
+| ------------------------- | ------------------------------: | ------------------------------ | ------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------- |
+| Nauczyciele               |        83 + scenariusze wspólne | Szerokie                       | dodawanie, edycja, kontakty, adres, notatki, RODO, historia                          | uprawnienia, awarie API i równoczesna edycja                                       |
+| Szkoły — dodawanie        |        57 + scenariusze wspólne | Szerokie                       | typy, adres, kontakty, identyfikatory, walidacje, 422/500/timeout                    | granice długości, część walidacji formatów i błędy wyszukiwania adresu             |
+| Szkoły — edycja           |                              33 | Szerokie                       | dane podstawowe, adres, telefon, SIO, historia, 422/500/timeout                      | walidacje graniczne, retry, podwójny zapis, konflikty i uprawnienia                |
+| Relacja szkoła–nauczyciel | kilka scenariuszy przekrojowych | Częściowe                      | jedna i wiele szkół, widok z obu stron, trwałość relacji                             | usuwanie istniejącej relacji, duplikaty i konflikty równoległe                     |
+| Struktura szkoły          | 106 wykonywanych, 8 `test.fail` | Szerokie dla pełnych uprawnień | CRUD, cykle, hierarchia, audyt, walidacje, tworzenie struktury przy dodawaniu szkoły | DB/migracje, inne role, realne SI/raporty, osiem niezgodności względem testów DEV  |
+| Klubowiczostwo            |                              72 | Szerokie                       | klasy, lata, szkoły, przedmioty, historia, usuwanie, restore, WSPOM                  | błędy API, uprawnienia, pełny kontrakt słowników i wysyłka e-mail                  |
+| Zamówienia szkoły         |                              66 | Szerokie                       | produkty, filtry, ilości, zapis, edycja, izolacja, załączniki                        | błędy sieciowe, pobieranie załączników, uprawnienia i konflikty wielu użytkowników |
+| Medalowość szkoły         |                              42 | Szerokie                       | UI/API, tooltip, historia, filtry, progi i duplikaty przedmiotów                     | błędy API, role oraz niezależne wymuszenie przeliczenia                            |
+| Medalowość roczna         |                               2 | Operacyjne                     | snapshot przed jobem i porównanie po jobie na DEV/TEST                               | automat nie uruchamia joba ani nie kontroluje daty systemowej                      |
+| Infrastruktura testowa    |   testy jednostkowe i reportery | Częściowe                      | sesja, cleanup, diagnostyka błędów, performance                                      | brak testów panelu jako osobnej aplikacji i brak progów wydajności                 |
 
-Łączna liczba **452** obejmuje 450 scenariuszy zwykłej regresji i dwa testy rocznego workflow. W Strukturze nie ma pomijanych scenariuszy: `test.fail` wykonuje test niezgodności i zgłasza nieoczekiwane przejście po jej naprawie. Takiego wyniku nie należy utożsamiać z poprawnością całej aplikacji.
+Łączna liczba **471** obejmuje 469 scenariuszy zwykłej regresji i dwa testy rocznego workflow. W Strukturze nie ma pomijanych scenariuszy: `test.fail` wykonuje test niezgodności i zgłasza nieoczekiwane przejście po jej naprawie. Takiego wyniku nie należy utożsamiać z poprawnością całej aplikacji.
 
 Zaimplementowane oraz planowane scenariusze zakładki `Struktura` są opisane w [dokumencie obszaru](tests/struktura-szkoly.md).
 

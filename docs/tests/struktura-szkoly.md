@@ -8,6 +8,7 @@ Zaimplementowane testy znajdują się w:
 
 ```text
 tests/szkola-struktura.spec.ts
+tests/szkola-struktura-dodawanie.spec.ts
 tests/support/school-structure.ts
 tests/support/school-structure-api.ts
 tests/support/school-structure-data.ts
@@ -19,10 +20,10 @@ Opis faktycznych działań, sprawdzeń i sprzątania wszystkich scenariuszy znaj
 
 Stan automatyzacji:
 
-- wszystkie scenariusze `STR-01`–`STR-87` mają implementację i są wykonywane;
+- wszystkie scenariusze `STR-01`–`STR-106` mają implementację: 87 na istniejącym profilu i 19 podczas dodawania nowej szkoły;
 - brak `fixme`, `skip` i pustych scenariuszy;
 - osiem testów `test.fail` dokumentuje niezgodności DEV względem oczekiwań testów: `STR-38`, `STR-49`, `STR-50`, `STR-51`, `STR-53`, `STR-72`, `STR-74`, `STR-87`;
-- pozostałe 79 scenariuszy wymaga prawidłowego wyniku bez oczekiwanej porażki;
+- pozostałe 98 scenariuszy wymaga prawidłowego wyniku bez oczekiwanej porażki;
 - scenariusze zapisu korzystają z dedykowanych szkół `AUTO_STR_<ŚRODOWISKO>_*`; szkoły są współdzielone, natomiast relacje są usuwane po teście przez obsługiwaną akcję aplikacji;
 - backlog bez reprezentacji w kodzie: 0 scenariuszy.
 
@@ -224,3 +225,20 @@ Po naprawie należy uruchomić odpowiedni scenariusz, potwierdzić cały przebie
 - Testy 73/74 sprawdzają zachowanie UI przy odmowie API dla aktywnego procesu. Rzeczywiste zamówienie i potwierdzenie sprawdza STR-80. Backendowe powiązania z rzeczywistymi SI/raportami wymagają odrębnych kontrolowanych fixture; ten zestaw ich nie tworzy i nie certyfikuje wykrywania takich powiązań.
 - Nie tworzymy uszkodzonych rekordów szkół bez typu przez bazę. Wszystkie aktywne fixture muszą mieć przypisany typ; wymagane strony/typ relacji, nieistniejące jednostki i nieaktywna szkoła mają osobne testy negatywne.
 - Siedem poziomów oraz kilka długości cyklu to reprezentatywne granice praktyczne, nie matematyczny dowód dla dowolnie dużego grafu. Uzgodniona reguła biznesowa nie przewiduje limitu głębokości.
+
+## 12. Struktura podczas dodawania nowej szkoły
+
+Osobny plik `szkola-struktura-dodawanie.spec.ts` obejmuje 19 scenariuszy STR-88–STR-106. Pozwala otworzyć strukturę przed nadaniem ID szkoły; wewnętrzny Zapisz przekazuje plan, a dopiero zapis szkoły utrwala powiązania. [Dokładne kroki każdego testu](struktura-szkoly-krok-po-kroku.md#str-88str-106--struktura-podczas-tworzenia-nowej-szkoły).
+
+| Testy           | Sprawdzany obszar                                                                       |
+| --------------- | --------------------------------------------------------------------------------------- |
+| STR-88–STR-89   | Dostępność dialogu i odroczenie zapisu do utworzenia szkoły                             |
+| STR-90–STR-95   | Rzeczywisty zapis wszystkich trzech typów relacji w obu kierunkach                      |
+| STR-96          | Rzeczywisty zapis dwóch powiązań z jednym nowym profilem                                |
+| STR-97–STR-99   | Anulowanie wewnętrznego i nadrzędnego formularza oraz usuwanie planowanej pozycji       |
+| STR-100–STR-103 | Duplikat, puste wyszukiwanie, zmiana planu i obowiązkowa nazwa szkoły                   |
+| STR-104–STR-106 | Brak osieroconego zapisu relacji przy kontrolowanym 422, 500 i timeout tworzenia szkoły |
+
+Istniejące placówki `AUTO_STR_<ŚRODOWISKO>_DODAWANIE_*` są oddzielne od danych poprzedniego pliku, więc oba pliki nie sprzątają sobie wzajemnie powiązań. Rzeczywiste testy tworzenia szkoły muszą dodać nowe rekordy; są nazwane `AUTO_STR_<ŚRODOWISKO>_ADD_*`, oznaczane Testowy, a po scenariuszu relacje są usuwane. Same szkoły pozostają (brak potwierdzonej obsługi ich usuwania); ich ID i status sprzątania są zapisywane lokalnie w `runs/<nazwa>.json` i dołączane do raportu.
+
+Granica: testy błędów blokują tworzenie szkoły przed zapisem na serwerze. Nie dowodzą atomowości backendu przy błędzie drugiego etapu, po faktycznym utworzeniu szkoły. Kontrolują brak próby zapisu relacji po nieudanym pierwszym etapie. Nie dublują wszystkich walidacji grafu istniejącej szkoły w nowym formularzu.

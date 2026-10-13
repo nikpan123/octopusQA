@@ -190,7 +190,7 @@ function renderTests() {
         <label class="test-row">
           <input type="checkbox" data-test-id="${escapeHtml(test.id)}" ${state.selected.has(test.id) ? "checked" : ""} />
           <span class="test-id">${escapeHtml(test.id)}</span>
-          <span class="test-title">${escapeHtml(test.title.replace(new RegExp(`^${escapeRegexForJs(test.id)}:?\\s*`), ""))}</span>
+          <span class="test-title" title="${escapeHtml(test.title)}">${escapeHtml(test.title.replace(new RegExp(`^${escapeRegexForJs(test.id)}:?\\s*`), ""))}</span>
           <span class="test-file">${escapeHtml(test.file.split("/").pop())}</span>
         </label>`,
     )

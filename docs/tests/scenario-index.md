@@ -2,7 +2,7 @@
 
 > Plik generowany automatycznie przez `npm run docs:scenarios`. Nie edytuj tabeli ręcznie.
 
-Łącznie: **452 scenariuszy**.
+Łącznie: **471 scenariuszy**.
 
 | ID | Scenariusz | Plik | Tagi |
 |---|---|---|---|
@@ -296,6 +296,25 @@
 | MED-56 | MED-56: multiselect medalu jest poprawnie przekazywany do API i zwraca tylko wybrane medale | [szkola-medalowosc.spec.ts](../../tests/szkola-medalowosc.spec.ts#L1001) | — |
 | MED-60 | MED-60: każda szkoła z medalem Brak nie ma przedmiotów medalowych | [szkola-medalowosc.spec.ts](../../tests/szkola-medalowosc.spec.ts#L1173) | — |
 | — | szkoła → nauczyciel → relacja → wyszukiwanie → nauczyciel → historia | [szkola-nauczyciel.spec.ts](../../tests/szkola-nauczyciel.spec.ts#L8) | `smoke` |
+| STR-88 | STR-88: nowa szkoła udostępnia dialog struktury bez nadanego ID | [szkola-struktura-dodawanie.spec.ts](../../tests/szkola-struktura-dodawanie.spec.ts#L157) | `school`, `structure`, `school-add` |
+| STR-89 | STR-89: Zapisz strukturę odkłada relację do zapisu nowej szkoły | [szkola-struktura-dodawanie.spec.ts](../../tests/szkola-struktura-dodawanie.spec.ts#L172) | `school`, `structure`, `school-add`, `api` |
+| STR-90 | STR-90: nowa szkoła utrwala Filia / Podrzędna | [szkola-struktura-dodawanie.spec.ts](../../tests/szkola-struktura-dodawanie.spec.ts#L249) | `school`, `structure`, `school-add`, `persistence` |
+| STR-91 | STR-91: nowa szkoła utrwala Filia / Nadrzędna | [szkola-struktura-dodawanie.spec.ts](../../tests/szkola-struktura-dodawanie.spec.ts#L249) | `school`, `structure`, `school-add`, `persistence` |
+| STR-92 | STR-92: nowa szkoła utrwala Zespół szkół / Nadrzędna | [szkola-struktura-dodawanie.spec.ts](../../tests/szkola-struktura-dodawanie.spec.ts#L249) | `school`, `structure`, `school-add`, `persistence` |
+| STR-93 | STR-93: nowa szkoła utrwala Zespół szkół / Podrzędna | [szkola-struktura-dodawanie.spec.ts](../../tests/szkola-struktura-dodawanie.spec.ts#L249) | `school`, `structure`, `school-add`, `persistence` |
+| STR-94 | STR-94: nowa szkoła utrwala Wielobudynkowość / Podrzędna | [szkola-struktura-dodawanie.spec.ts](../../tests/szkola-struktura-dodawanie.spec.ts#L249) | `school`, `structure`, `school-add`, `persistence` |
+| STR-95 | STR-95: nowa szkoła utrwala Wielobudynkowość / Nadrzędna | [szkola-struktura-dodawanie.spec.ts](../../tests/szkola-struktura-dodawanie.spec.ts#L249) | `school`, `structure`, `school-add`, `persistence` |
+| STR-96 | STR-96: nowa szkoła utrwala kilka powiązań z jednego formularza | [szkola-struktura-dodawanie.spec.ts](../../tests/szkola-struktura-dodawanie.spec.ts#L281) | `school`, `structure`, `school-add`, `persistence` |
+| STR-97 | STR-97: anulowanie dialogu struktury zachowuje szkołę i odrzuca roboczą relację | [szkola-struktura-dodawanie.spec.ts](../../tests/szkola-struktura-dodawanie.spec.ts#L319) | `school`, `structure`, `school-add`, `cancel` |
+| STR-98 | STR-98: anulowanie nowej szkoły odrzuca zaakceptowaną strukturę | [szkola-struktura-dodawanie.spec.ts](../../tests/szkola-struktura-dodawanie.spec.ts#L343) | `school`, `structure`, `school-add`, `cancel` |
+| STR-99 | STR-99: zaakceptowaną pozycję można usunąć przed utworzeniem szkoły | [szkola-struktura-dodawanie.spec.ts](../../tests/szkola-struktura-dodawanie.spec.ts#L366) | `school`, `structure`, `school-add`, `cancel` |
+| STR-100 | STR-100: nowa szkoła nie planuje dwukrotnie tej samej szkoły | [szkola-struktura-dodawanie.spec.ts](../../tests/szkola-struktura-dodawanie.spec.ts#L391) | `school`, `structure`, `school-add`, `validation` |
+| STR-101 | STR-101: puste wyszukiwanie nie zamyka żadnego formularza | [szkola-struktura-dodawanie.spec.ts](../../tests/szkola-struktura-dodawanie.spec.ts#L422) | `school`, `structure`, `school-add`, `validation` |
+| STR-102 | STR-102: zmiany roboczego typu i kierunku przechodzą do ponownie otwartego dialogu | [szkola-struktura-dodawanie.spec.ts](../../tests/szkola-struktura-dodawanie.spec.ts#L436) | `school`, `structure`, `school-add`, `edit` |
+| STR-103 | STR-103: gotowa struktura nie omija obowiązkowej nazwy nowej szkoły | [szkola-struktura-dodawanie.spec.ts](../../tests/szkola-struktura-dodawanie.spec.ts#L468) | `school`, `structure`, `school-add`, `validation` |
+| STR-104 | STR-104: HTTP 422 zapisu szkoły nie zapisuje osieroconej struktury | [szkola-struktura-dodawanie.spec.ts](../../tests/szkola-struktura-dodawanie.spec.ts#L498) | `school`, `structure`, `school-add`, `negative`, `mock` |
+| STR-105 | STR-105: HTTP 500 zapisu szkoły nie zapisuje osieroconej struktury | [szkola-struktura-dodawanie.spec.ts](../../tests/szkola-struktura-dodawanie.spec.ts#L498) | `school`, `structure`, `school-add`, `negative`, `mock` |
+| STR-106 | STR-106: timeout zapisu szkoły nie zapisuje osieroconej struktury | [szkola-struktura-dodawanie.spec.ts](../../tests/szkola-struktura-dodawanie.spec.ts#L498) | `school`, `structure`, `school-add`, `negative`, `mock` |
 | STR-01 | STR-01: szkoła bez relacji pokazuje pusty stan struktury | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L119) | `school`, `structure`, `smoke` |
 | STR-02 | STR-02: pusty stan blokuje filtrowanie struktury i pozwala dodać powiązanie | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L128) | `school`, `structure`, `validation` |
 | STR-03 | STR-03: dialog dodawania zawiera filtry, obie tabele i akcje | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L145) | `school`, `structure`, `dialog` |
@@ -379,10 +398,10 @@
 | STR-81 | STR-81: cykl zamykający siedem poziomów jest blokowany | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L1531) | `school`, `structure`, `api`, `negative` |
 | STR-82 | STR-82: pojedynczy zapis formularza utrwala kilka relacji | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L1553) | `school`, `structure`, `api` |
 | STR-83 | STR-83: błędna pozycja nie zostawia częściowego zapisu formularza | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L1580) | `school`, `structure`, `api`, `negative` |
-| STR-84 | STR-84: równoczesne dodanie nie tworzy dwóch aktywnych relacji | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L1594) | `school`, `structure`, `api`, `concurrency` |
-| STR-85 | STR-85: Pokaż wszystkie działa niezależnie od Pokaż zaznaczone | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L1603) | `school`, `structure`, `filter` |
-| STR-86 | STR-86: historia zespołu szkół zawiera audyt dodania szkoły | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L1629) | `school`, `structure`, `history` |
-| STR-87 | STR-87: przejście do roli dodatkowej lokalizacji ogranicza akcje istniejącej filii | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L1647) | `school`, `structure`, `permissions` |
+| STR-84 | STR-84: równoczesne dodanie nie tworzy dwóch aktywnych relacji | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L1595) | `school`, `structure`, `api`, `concurrency` |
+| STR-85 | STR-85: Pokaż wszystkie działa niezależnie od Pokaż zaznaczone | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L1605) | `school`, `structure`, `filter` |
+| STR-86 | STR-86: historia zespołu szkół zawiera audyt dodania szkoły | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L1631) | `school`, `structure`, `history` |
+| STR-87 | STR-87: przejście do roli dodatkowej lokalizacji ogranicza akcje istniejącej filii | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L1649) | `school`, `structure`, `permissions` |
 | TEA-02 | TEA-02: brak pola imię blokuje zapis nauczyciela | [walidacja-anulowanie.spec.ts](../../tests/walidacja-anulowanie.spec.ts#L5) | `validation` |
 | TEA-02 | TEA-02: brak pola nazwisko blokuje zapis nauczyciela | [walidacja-anulowanie.spec.ts](../../tests/walidacja-anulowanie.spec.ts#L5) | `validation` |
 | TEA-02 | TEA-02: brak pola szkoła blokuje zapis nauczyciela | [walidacja-anulowanie.spec.ts](../../tests/walidacja-anulowanie.spec.ts#L5) | `validation` |

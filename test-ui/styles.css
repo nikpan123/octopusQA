@@ -434,14 +434,16 @@ button,
   width: auto;
 }
 .test-id {
+  white-space: nowrap;
   font-weight: 800;
   color: #244c59;
 }
 .test-title {
   min-width: 0;
   overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  line-height: 1.4;
 }
 .test-file {
   color: var(--muted);

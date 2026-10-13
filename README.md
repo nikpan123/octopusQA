@@ -7,27 +7,28 @@ Repozytorium zawiera testy end-to-end aplikacji Octopus napisane w Playwright i 
 | DEV        | `https://octopus.gwodev.pl`  | `playwright.config.ts`      |
 | TEST       | `https://octopus.gwotest.pl` | `playwright.test.config.ts` |
 
-Aktualny zestaw zawiera **452 scenariusze** w 23 plikach. Zwykła regresja obejmuje **450 scenariuszy**; dwa testy `MED-YEAR-*` należą do osobnego, ciężkiego procesu rocznej medalowości. Zakładka Struktura ma 87 wykonywanych scenariuszy bez `fixme`; znane niezgodności są oznaczone `test.fail` i pozostają wykonywane.
+Aktualny zestaw zawiera **471 scenariuszy** w 24 plikach. Zwykła regresja obejmuje **469 scenariuszy**; dwa testy `MED-YEAR-*` należą do osobnego, ciężkiego procesu rocznej medalowości. Struktura ma 106 wykonywanych scenariuszy bez `fixme`: 87 na profilu istniejącej szkoły i 19 podczas tworzenia nowej szkoły. Znane niezgodności są oznaczone `test.fail` i pozostają wykonywane.
 
 Pełna lista jest generowana z kodu i znajduje się w [indeksie scenariuszy](docs/tests/scenario-index.md).
 
 ## Zakres projektu
 
-| Obszar                               | Plik                               | Liczba wykonań |
-| ------------------------------------ | ---------------------------------- | -------------: |
-| Klubowiczostwo nauczyciela           | `klubowiczostwo-*.spec.ts`         |             72 |
-| Dodawanie nauczyciela                | `nauczyciel-dodawanie.spec.ts`     |             33 |
-| Edycja nauczyciela                   | `nauczyciel-edycja*.spec.ts`       |             44 |
-| Rozszerzenia i relacje nauczyciela   | `nauczyciel-rozszerzenie.spec.ts`  |              6 |
-| Dodawanie szkoły                     | `szkola-dodawanie.spec.ts`         |             57 |
-| Edycja szkoły                        | `szkola-edycja.spec.ts`            |             33 |
-| Medalowość szkoły                    | `szkola-medalowosc.spec.ts`        |             42 |
-| Roczna medalowość                    | `szkola-medalowosc-annual.spec.ts` |              2 |
-| Relacja szkoła–nauczyciel            | `szkola-nauczyciel.spec.ts`        |              1 |
-| Struktura szkoły                     | `szkola-struktura.spec.ts`         |             87 |
-| Walidacja, anulowanie i wyszukiwanie | `walidacja-anulowanie.spec.ts`     |              9 |
-| Zamówienia szkoły                    | `zamowienia-*.spec.ts`             |             66 |
-| **Razem**                            |                                    |        **452** |
+| Obszar                               | Plik                                 | Liczba wykonań |
+| ------------------------------------ | ------------------------------------ | -------------: |
+| Klubowiczostwo nauczyciela           | `klubowiczostwo-*.spec.ts`           |             72 |
+| Dodawanie nauczyciela                | `nauczyciel-dodawanie.spec.ts`       |             33 |
+| Edycja nauczyciela                   | `nauczyciel-edycja*.spec.ts`         |             44 |
+| Rozszerzenia i relacje nauczyciela   | `nauczyciel-rozszerzenie.spec.ts`    |              6 |
+| Dodawanie szkoły                     | `szkola-dodawanie.spec.ts`           |             57 |
+| Edycja szkoły                        | `szkola-edycja.spec.ts`              |             33 |
+| Medalowość szkoły                    | `szkola-medalowosc.spec.ts`          |             42 |
+| Roczna medalowość                    | `szkola-medalowosc-annual.spec.ts`   |              2 |
+| Relacja szkoła–nauczyciel            | `szkola-nauczyciel.spec.ts`          |              1 |
+| Struktura szkoły                     | `szkola-struktura.spec.ts`           |             87 |
+| Struktura przy dodawaniu szkoły      | `szkola-struktura-dodawanie.spec.ts` |             19 |
+| Walidacja, anulowanie i wyszukiwanie | `walidacja-anulowanie.spec.ts`       |              9 |
+| Zamówienia szkoły                    | `zamowienia-*.spec.ts`               |             66 |
+| **Razem**                            |                                      |        **471** |
 
 Szczegółowe opisy domen znajdują się w [dokumentacji testów](docs/tests/README.md).
 

@@ -8,6 +8,9 @@ import type { StructureSchool } from "./school-structure";
 import type { StructureApi } from "./school-structure-api";
 
 export type StructureSchoolKey =
+  | "addBranch"
+  | "addMain"
+  | "addGroup"
   | "group"
   | "group2"
   | "inactive"
@@ -29,6 +32,9 @@ type StructureSchoolDefinition = {
 const environment = OCTOPUS_ENV.toUpperCase();
 
 const definitions: Record<StructureSchoolKey, StructureSchoolDefinition> = {
+  addBranch: { name: `AUTO_STR_${environment}_DODAWANIE_FILIA`, type: "Szkoła podstawowa" },
+  addMain: { name: `AUTO_STR_${environment}_DODAWANIE_GLOWNA`, type: "Szkoła podstawowa" },
+  addGroup: { name: `AUTO_STR_${environment}_DODAWANIE_ZESPOL`, type: "Zespół szkół" },
   group: { name: `AUTO_STR_${environment}_ZESPOL`, type: "Zespół szkół" },
   group2: { name: `AUTO_STR_${environment}_ZESPOL_2`, type: "Zespół szkół" },
   inactive: { name: `AUTO_STR_${environment}_NIEAKTYWNA`, type: "Szkoła podstawowa" },

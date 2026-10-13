@@ -1,6 +1,6 @@
 # Struktura szkoły — każdy test krok po kroku
 
-Dokument opisuje faktyczne działanie wszystkich 87 scenariuszy `STR-01`–`STR-87` z [pliku testowego](../../tests/szkola-struktura.spec.ts). Jest opisem obecnego kodu, a nie rozszerzoną listą życzeń. Stan: 2026-10-13. Nie obejmuje pozostałych obszarów projektu.
+Dokument opisuje faktyczne działanie wszystkich 106 scenariuszy `STR-01`–`STR-106`: 87 z [pliku testów profilu](../../tests/szkola-struktura.spec.ts) oraz 19 z [testów dodawania nowej szkoły](../../tests/szkola-struktura-dodawanie.spec.ts). Jest opisem obecnego kodu, a nie rozszerzoną listą życzeń. Stan: 2026-10-13. Nie obejmuje pozostałych obszarów projektu.
 
 Plan wymagań, niezgodności i granice całego obszaru znajdują się w [dokumencie Struktury](struktura-szkoly.md). Przy zmianie testów trzeba aktualizować także niniejszy opis.
 
@@ -35,7 +35,7 @@ Dedykowane szkoły mają nazwy `AUTO_STR_<ŚRODOWISKO>_*`. Skróty używane poni
 
 Nazwy `main` i `branch` nie narzucają kierunku relacji. W niektórych testach `branch` jest rodzicem `main`.
 
-`ensureStructureTestSchools` najpierw korzysta z zapisanych identyfikatorów i sprawdza nazwę szkoły. Jeśli nie ma zapisu, wyszukuje dokładną nazwę; dopiero gdy szkoły nie ma, tworzy ją przez UI. Oznacza szkołę jako `Testowy` i zapamiętuje identyfikator. Szkoły pozostają do kolejnych uruchomień; nie są tworzone i usuwane przy każdym teście.
+`ensureStructureTestSchools` najpierw korzysta z zapisanych identyfikatorów i sprawdza nazwę szkoły. Jeśli nie ma zapisu, wyszukuje dokładną nazwę; dopiero gdy szkoły nie ma, tworzy ją przez `app.createSchool` (w obecnej wersji przez API). Oznacza szkołę jako `Testowy` i zapamiętuje identyfikator. Szkoły pozostają do kolejnych uruchomień; nie są tworzone i usuwane przy każdym teście. Dodawanie nowej szkoły jako przedmiot testu w STR-90–STR-96 nadal odbywa się przez rzeczywisty formularz UI.
 
 ### Procedura G — `withStructureGraph`
 
@@ -1157,6 +1157,243 @@ Obecny DEV pozwala otworzyć oba dialogi; końcowe sprawdzenie nie przechodzi. W
 
 Zakres: dostępność dialogów w niedozwolonym kontekście po zmianie roli. Nie zapisuje edycji ani nie potwierdza usunięcia, więc nie dowodzi, że backend zaakceptowałby takie operacje. W przeciwieństwie do STR-65 chodzi o wcześniej istniejącą własną filię dodatkowej lokalizacji.
 
+## STR-88–STR-106 — struktura podczas tworzenia nowej szkoły
+
+### Wspólna procedura N — nowy formularz i sprzątanie
+
+`withNewSchool` używa oddzielnych szkół `addBranch`, `addMain`, `addGroup`, z nazwami `AUTO_STR_<ŚRODOWISKO>_DODAWANIE_FILIA`, `..._GLOWNA`, `..._ZESPOL`. Nie współdzieli relacji z testami istniejącego profilu.
+
+1. Przygotowuje wskazane istniejące szkoły testowe, rozwiązuje ich ID przez API i czyści ich aktywne relacje.
+2. Otwiera prawdziwy formularz nowej szkoły; wypełnia unikalną nazwę `AUTO_STR_<ŚRODOWISKO>_ADD_<czas>_<losowy fragment>`, typ i adres z unikalnym numerem.
+3. Wykonuje scenariusz. „Zapisz” w wewnętrznym dialogu struktury tylko przekazuje plan do formularza szkoły; nie jest tym samym co zapis istniejącej relacji.
+4. Jeśli scenariusz wywoła rzeczywisty zapis szkoły, sprawdza udany HTTP, zamknięcie formularza, profil z nowym ID i jedno żądanie tworzenia szkoły. Oznacza rekord jako Testowy i jednoznacznie odczytuje go przez API.
+5. Zapisuje ID, nazwę, środowisko i status sprzątania w `runs/<nazwa>.json`; pliki są lokalne, ignorowane przez Git. Po teście dołącza też dane nowej szkoły do raportu.
+6. W `finally` usuwa relacje między własnymi danymi i wymaga pustego aktywnego grafu. Jeśli zapis przerwał się po nawigacji na nowy profil, próbuje odzyskać ID z URL po sprawdzeniu nazwy.
+7. Nie usuwa nowej szkoły: projekt nie ma potwierdzonej obsługi jej usuwania. Siedem pozytywnych scenariuszy STR-90–STR-96 tworzy siedem szkół przy pełnym wykonaniu nowego pliku; są oznaczone i pozostają bez relacji. Testy roboczych formularzy i symulowanych błędów nie tworzą nowych szkół.
+
+### STR-88 — Dostępność struktury przed nadaniem ID
+
+Tryb: UI, bez zapisu szkoły.
+
+1. Otwiera Dodaj nową szkołę i wpisuje unikalną nazwę; nie zapisuje profilu.
+2. Klika Dodaj powiązanie w formularzu szkoły.
+3. Sprawdza widoczny dialog struktury i pięć pól wyszukiwania: ID, nazwa, kod, miejscowość, ulica.
+4. Wymaga zero komórek danych w dolnej tabeli.
+5. Anuluje wewnętrzny dialog i wymaga nadal widocznego formularza szkoły; następnie anuluje także szkołę.
+
+Zakres: zagnieżdżony dialog dostępny już dla niezapisanej szkoły. Nie sprawdza wszystkich nagłówków ani wszystkich pól szkoły.
+
+### STR-89 — Wewnętrzny zapis odkłada plan
+
+Tryb: UI i symulowany HTTP 422 końcowego zapisu; bez nowej szkoły.
+
+1. Przygotowuje istniejącą `addBranch` oraz kompletny, nowy formularz szkoły.
+2. Przechwytuje żądania tworzenia szkoły i zapisu relacji; ewentualnym zapisom zwraca 422.
+3. W wewnętrznym dialogu wybiera `addBranch` jako Filię / Podrzędna i klika Zapisz.
+4. Wymaga zamknięcia tylko wewnętrznego dialogu i nadal widocznego formularza szkoły.
+5. Sprawdza zero przechwyconych żądań — struktura nie została jeszcze wysłana do serwera.
+6. Ponownie otwiera strukturę i sprawdza jeden wiersz `addBranch`; anuluje.
+7. Klika Zapisz w formularzu szkoły, czeka na odpowiedź tworzenia i sprawdza jedno przechwycone żądanie. Jego treść dołącza do raportu.
+
+Zakres: przechowanie planu i odroczenie zapisu, nie rzeczywista trwałość. Nie wymaga umieszczenia relacji w JSON `AddNewInstitution`; aplikacja może wysłać je osobno po udanym utworzeniu szkoły.
+
+### STR-90 — Nowa szkoła jako rodzic Filii
+
+Tryb: procedura N (`addBranch`), rzeczywisty zapis UI i odczyt API.
+
+1. Przygotowuje nową szkołę podstawową.
+2. W strukturze wybiera istniejącą `addBranch`, typ Filia i Podrzędna; akceptuje plan.
+3. Zapisuje nową szkołę i sprawdza jedno żądanie jej tworzenia.
+4. Wymaga jednej krawędzi: nowa jednostka → `addBranch`, typ `2`.
+5. Sprawdza identyczne krawędzie w odczycie z obu profili.
+6. Na Strukturze nowej szkoły wymaga jednego wiersza `addBranch`.
+7. Procedura N usuwa relację i zachowuje oznaczoną szkołę.
+
+### STR-91 — Nowa szkoła jako dziecko Filii
+
+Tryb: procedura N (`addMain`), rzeczywisty zapis UI i odczyt API.
+
+1. Przygotowuje nową szkołę podstawową.
+2. Wybiera istniejącą `addMain`, typ Filia i Nadrzędna; akceptuje plan.
+3. Zapisuje szkołę; wymaga jednej krawędzi `addMain` → nowa szkoła, typ `2`.
+4. Porównuje krawędzie z obu profili i sprawdza wiersz `addMain` w Strukturze nowej szkoły.
+5. Procedura N sprząta relację.
+
+Zakres: Nadrzędna odnosi się do wyszukanej szkoły, nie do tworzonego profilu.
+
+### STR-92 — Nowa szkoła jako członek istniejącego zespołu
+
+Tryb: procedura N (`addGroup`), rzeczywisty zapis UI i odczyt API.
+
+1. Przygotowuje nową szkołę podstawową.
+2. Wybiera istniejący `addGroup`, typ Zespół szkół i Nadrzędna; akceptuje plan.
+3. Zapisuje szkołę; wymaga jednej krawędzi `addGroup` → nowa szkoła, typ `1`.
+4. Porównuje krawędzie z obu profili i sprawdza wiersz zespołu w Strukturze nowej szkoły.
+5. Procedura N sprząta relację.
+
+### STR-93 — Nowy zespół od razu ze szkołą podrzędną
+
+Tryb: procedura N (`addBranch`), rzeczywisty zapis UI i odczyt API.
+
+1. W formularzu nowej placówki wybiera typ szkoły Zespół szkół.
+2. W strukturze wybiera `addBranch`, typ relacji Zespół szkół i Podrzędna; akceptuje plan.
+3. Zapisuje zespół; wymaga jednej krawędzi nowy zespół → `addBranch`, typ `1`.
+4. Porównuje krawędzie z obu profili i sprawdza wiersz szkoły w Strukturze zespołu.
+5. Procedura N sprząta relację i pozostawia testowy zespół.
+
+Zakres: zapis powiązania przy tworzeniu zespołu. Format trzycyfrowego ID nadal jest osobnym wymaganiem STR-38.
+
+### STR-94 — Nowa szkoła z dodatkową lokalizacją
+
+Tryb: procedura N (`addBranch`), rzeczywisty zapis UI i odczyt API.
+
+1. Przygotowuje nową szkołę podstawową.
+2. Wybiera `addBranch`, Wielobudynkowość i Podrzędna; akceptuje plan.
+3. Zapisuje szkołę; wymaga jednej krawędzi nowa szkoła → `addBranch`, typ `3`.
+4. Porównuje krawędzie z obu profili i sprawdza wiersz lokalizacji na nowym profilu.
+5. Procedura N sprząta relację.
+
+### STR-95 — Nowa szkoła jako dodatkowa lokalizacja
+
+Tryb: procedura N (`addMain`), rzeczywisty zapis UI i odczyt API.
+
+1. Przygotowuje nową szkołę podstawową.
+2. Wybiera `addMain`, Wielobudynkowość i Nadrzędna; akceptuje plan.
+3. Zapisuje szkołę; wymaga jednej krawędzi `addMain` → nowa szkoła, typ `3`.
+4. Porównuje krawędzie z obu profili i sprawdza wiersz `addMain` na nowym profilu.
+5. Procedura N sprząta relację.
+
+Zakres: wyszukana szkoła staje się główną, nowa jest dodatkową lokalizacją. Ograniczenia edycji innych relacji sprawdzają STR-65/87.
+
+### STR-96 — Dwie relacje razem z nową szkołą
+
+Tryb: procedura N (`addBranch`, `addMain`), rzeczywisty zapis UI i odczyt API.
+
+1. Przygotowuje nową szkołę podstawową.
+2. W jednym wewnętrznym dialogu dodaje obie istniejące szkoły jako Filia / Podrzędna i akceptuje plan.
+3. Zapisuje nową szkołę jednym żądaniem jej tworzenia.
+4. Wymaga dokładnie dwóch krawędzi API, zawierających obie oczekiwane Filie z nową jednostką jako rodzicem.
+5. W Strukturze nowego profilu sprawdza po jednym wierszu obu szkół.
+6. Procedura N usuwa obie relacje.
+
+Zakres: kompletność dwóch poprawnych powiązań. Nie sprawdza atomowości częściowo niepoprawnej paczki podczas tworzenia szkoły.
+
+### STR-97 — Anulowanie wewnętrznego dialogu
+
+Tryb: procedura N (`addBranch`), UI; bez zapisu nowej szkoły.
+
+1. Dodaje roboczo `addBranch` jako Filię / Podrzędna.
+2. Klika Anuluj w strukturze, nie Zapisz.
+3. Wymaga widocznego formularza szkoły i zachowanej nazwy.
+4. Ponownie otwiera strukturę i wymaga pustej dolnej tabeli.
+5. Anuluje oba formularze; procedura N potwierdza brak relacji.
+
+### STR-98 — Anulowanie szkoły po zaakceptowaniu struktury
+
+Tryb: procedura N (`addBranch`), UI z przechwyceniem ewentualnych zapisów.
+
+1. Przygotowuje Filię / Podrzędna i akceptuje wewnętrzny plan przez Zapisz.
+2. Klika Anuluj w formularzu szkoły.
+3. Sprawdza zero żądań tworzenia szkoły/zapisu relacji.
+4. Sprawdza pusty graf istniejącej szkoły.
+5. Wyszukuje unikalną nazwę nowej szkoły i wymaga komunikatu braku wyników oraz pustej tabeli.
+6. Procedura N potwierdza czysty stan.
+
+Zakres: zaakceptowany lokalnie plan nie pozostawia szkoły ani relacji po anulowaniu nadrzędnego formularza.
+
+### STR-99 — Usunięcie zaakceptowanej pozycji przed zapisem szkoły
+
+Tryb: procedura N (`addBranch`), UI; bez zapisu nowej szkoły.
+
+1. Dodaje Filię / Podrzędna i akceptuje plan.
+2. Ponownie otwiera strukturę i usuwa wiersz `addBranch` ikoną roboczego usuwania.
+3. Akceptuje zmieniony, pusty plan.
+4. Otwiera strukturę ponownie i wymaga braku wiersza tej szkoły.
+5. Anuluje formularze; procedura N potwierdza brak aktywnych relacji.
+
+### STR-100 — Duplikat w planie nowej szkoły
+
+Tryb: procedura N (`addBranch`), UI; bez zapisu nowej szkoły.
+
+1. Dodaje `addBranch` jako Filię / Podrzędna.
+2. Ponownie wyszukuje tę samą szkołę; jeśli jest dostępna w górnej tabeli, ponownie klika Dodaj.
+3. Wymaga dokładnie jednego dolnego wiersza tej szkoły.
+4. Akceptuje plan, otwiera go ponownie i znów wymaga jednego wiersza.
+5. Anuluje formularze; procedura N potwierdza czysty graf.
+
+Zakres: zabezpieczenie roboczej listy, nie dwa konkurujące rzeczywiste zapisy nowej szkoły.
+
+### STR-101 — Puste wyszukiwanie w zagnieżdżonym dialogu
+
+Tryb: UI; bez zapisu szkoły i relacji.
+
+1. Otwiera pusty formularz nowej szkoły i dialog struktury.
+2. Klika Szukaj bez kryteriów.
+3. Wymaga „Wyszukiwanie nie może być puste” i zamyka ostrzeżenie przez OK.
+4. Wymaga nadal widocznego dialogu struktury; anuluje go.
+5. Wymaga nadal widocznego formularza szkoły; anuluje także szkołę.
+
+### STR-102 — Zmiana zaakceptowanego typu i hierarchii
+
+Tryb: procedura N (`addBranch`), UI; bez zapisu nowej szkoły.
+
+1. Dodaje i akceptuje Filię / Podrzędna.
+2. Ponownie otwiera plan i zmienia typ na Wielobudynkowość, hierarchię na Nadrzędna.
+3. Akceptuje zmiany lokalne.
+4. Otwiera plan trzeci raz i sprawdza te dwa teksty w komórkach wiersza.
+5. Anuluje oba formularze; procedura N sprząta.
+
+Zakres: zachowanie zmienionego lokalnego planu. Rzeczywisty zapis kierunków i typów jest w STR-90–STR-95.
+
+### STR-103 — Struktura nie zastępuje obowiązkowej nazwy szkoły
+
+Tryb: procedura N (`addBranch`), UI z przechwyceniem ewentualnych zapisów.
+
+1. Przygotowuje kompletną szkołę i akceptuje plan Filii / Podrzędna.
+2. Czyści nazwę szkoły.
+3. Jeśli Zapisz jest aktywne, próbuje kliknąć; nieaktywny przycisk także jest poprawną blokadą.
+4. Wymaga nadal widocznego formularza i zero przechwyconych żądań tworzenia/zapisu.
+5. Anuluje szkołę; procedura N potwierdza czysty graf.
+
+Zakres: wymagane pole nazwy. Brak typu i adresu w połączeniu ze strukturą nie jest osobnym wariantem tego testu.
+
+### STR-104 — Odmowa 422 tworzenia szkoły bez osieroconej relacji
+
+Tryb: procedura N (`addBranch`), prawdziwy odczyt API, symulowana odmowa tworzenia szkoły.
+
+1. Przechwytuje tworzenie szkoły i zwraca HTTP 422; osobno liczy i blokuje ewentualny zapis relacji.
+2. Przygotowuje i akceptuje plan Filii / Podrzędna.
+3. Klika Zapisz szkołę i czeka na odpowiedź jej tworzenia.
+4. Wymaga braku nowego profilu, zamknięcia formularza zgodnie z obecnym kontraktem testów dodawania szkoły oraz zero prób zapisu relacji.
+5. Sprawdza pusty graf istniejącej szkoły i brak nowej szkoły przy wyszukaniu unikalnej nazwy.
+6. Procedura N sprząta.
+
+Zakres: brak osieroconego zapisu po odmowie tworzenia szkoły. Nie sprawdza zachowania roboczego formularza po błędzie. To inny formularz i inny endpoint niż STR-49, który wymaga zachowania dialogu edycji struktury istniejącej szkoły.
+
+### STR-105 — Błąd 500 tworzenia szkoły bez osieroconej relacji
+
+Tryb: procedura N (`addBranch`), UI i rzeczywisty odczyt, symulowany HTTP 500.
+
+1. Przechwytuje tworzenie szkoły i zwraca 500; ewentualny zapis relacji liczy i blokuje.
+2. Dodaje i akceptuje plan Filii / Podrzędna.
+3. Próbuje zapisać szkołę i czeka na odpowiedź.
+4. Wymaga zamkniętego formularza, pozostania na panelu bez ID i zero prób zapisu relacji.
+5. Sprawdza pusty graf i brak szkoły po nazwie; procedura N sprząta.
+
+Zakres: brak nowego profilu i relacji, nie ponowienie zapisu po awarii ani odporność rzeczywistego serwera na częściowy zapis.
+
+### STR-106 — Timeout tworzenia szkoły bez osieroconej relacji
+
+Tryb: procedura N (`addBranch`), UI i rzeczywisty odczyt, symulowany timeout.
+
+1. Przechwytuje żądanie tworzenia szkoły i przerywa je z `timedout`; ewentualny zapis relacji liczy i blokuje.
+2. Dodaje i akceptuje plan Filii / Podrzędna.
+3. Próbuje zapisać szkołę i czeka na zdarzenie nieudanego żądania tworzenia.
+4. Wymaga zamkniętego formularza, panelu bez nowego ID i zero prób zapisu relacji.
+5. Sprawdza pusty graf i brak szkoły po nazwie; procedura N sprząta.
+
+Zakres: przerwanie żądania przed kontaktem z serwerem. Nie symuluje timeoutu po faktycznym zapisaniu szkoły przez serwer ani nie certyfikuje atomowości obu backendowych operacji.
+
 ## Zasady interpretacji wyników i dalsze działania
 
 1. Działający test potwierdza wyłącznie opisane sprawdzenia, nie całą funkcjonalność wymienioną w jego nazwie.
@@ -1169,6 +1406,7 @@ Zakres: dostępność dialogów w niedozwolonym kontekście po zmianie roli. Nie
 ## Pliki źródłowe
 
 - [Testy STR-01–STR-87](../../tests/szkola-struktura.spec.ts).
+- [Testy STR-88–STR-106 podczas dodawania szkoły](../../tests/szkola-struktura-dodawanie.spec.ts).
 - [Obsługa formularzy, odczytu relacji i historii](../../tests/support/school-structure.ts).
 - [Rzeczywiste API i sprzątanie grafu](../../tests/support/school-structure-api.ts).
 - [Przygotowanie dedykowanych szkół](../../tests/support/school-structure-data.ts).

@@ -15,7 +15,7 @@ const reportsDir = path.join(runsDir, "html-reports");
 
 const PORT = Number(process.env.OCTOPUS_TEST_UI_PORT || 4173);
 
-const SUITES = {
+export const SUITES = {
   all: { label: "Cała regresja", files: [] },
   teachers: {
     label: "Nauczyciele",
@@ -36,6 +36,8 @@ const SUITES = {
       "tests/szkola-dodawanie.spec.ts",
       "tests/szkola-edycja.spec.ts",
       "tests/szkola-nauczyciel.spec.ts",
+      "tests/szkola-struktura.spec.ts",
+      "tests/szkola-struktura-dodawanie.spec.ts",
       "tests/walidacja-anulowanie.spec.ts",
     ],
   },
@@ -291,10 +293,10 @@ function finalizeRunCounts(exitCode) {
   }
 }
 
-function extractTestId(text) {
+export function extractTestId(text) {
   return (
     text.match(
-      /\b(?:ORD|CLUB|SCH(?:-EDIT)?|MED(?:-YEAR)?|ADD|EDIT|TEA|FIND|REL)-[A-Z0-9-]+\b/,
+      /\b(?:ORD|CLUB|SCH(?:-EDIT)?|MED(?:-YEAR)?|ADD|EDIT|TEA|FIND|REL|STR)-[A-Z0-9-]+\b/,
     )?.[0] || null
   );
 }
@@ -677,7 +679,7 @@ async function deleteTeachersFromRegistry(fileNames) {
   };
 }
 
-function buildRunArguments(options) {
+export function buildRunArguments(options) {
   const environment = options.environment === "test" ? "test" : "dev";
   const config = configForEnvironment(environment);
   const args = ["test", `--config=${config}`];
@@ -699,7 +701,7 @@ function buildRunArguments(options) {
       .filter((id) => !id.startsWith("MED-YEAR-"))
       .slice(0, 100);
     if (safeIds.length) {
-      args.push("--grep", `(?:${safeIds.map(escapeRegex).join("|")})`);
+      args.push("--grep", `(?:${safeIds.map(escapeRegex).join("|")})(?![A-Z0-9-])`);
     }
   } else {
     if (suiteDef.files.length) args.push(...suiteDef.files);
@@ -837,7 +839,7 @@ async function stopRun() {
   return true;
 }
 
-function parseListOutput(output) {
+export function parseListOutput(output) {
   const tests = [];
   const seen = new Set();
   for (const raw of stripAnsi(output).split(/\r?\n/)) {
@@ -1031,16 +1033,17 @@ const server = http.createServer(async (req, res) => {
   }
 });
 
-server.listen(PORT, "127.0.0.1", () => {
-  const url = `http://127.0.0.1:${PORT}`;
-  console.log(`Octopus Test Runner UI: ${url}`);
-  if (process.env.OCTOPUS_TEST_UI_NO_OPEN !== "1") {
-    if (process.platform === "win32") {
-      spawn("cmd", ["/c", "start", "", url], { detached: true, stdio: "ignore" }).unref();
-    } else if (process.platform === "darwin") {
-      spawn("open", [url], { detached: true, stdio: "ignore" }).unref();
-    } else {
-      spawn("xdg-open", [url], { detached: true, stdio: "ignore" }).unref();
+if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url))
+  server.listen(PORT, "127.0.0.1", () => {
+    const url = `http://127.0.0.1:${PORT}`;
+    console.log(`Octopus Test Runner UI: ${url}`);
+    if (process.env.OCTOPUS_TEST_UI_NO_OPEN !== "1") {
+      if (process.platform === "win32") {
+        spawn("cmd", ["/c", "start", "", url], { detached: true, stdio: "ignore" }).unref();
+      } else if (process.platform === "darwin") {
+        spawn("open", [url], { detached: true, stdio: "ignore" }).unref();
+      } else {
+        spawn("xdg-open", [url], { detached: true, stdio: "ignore" }).unref();
+      }
     }
-  }
-});
+  });
