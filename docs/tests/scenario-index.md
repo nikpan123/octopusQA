@@ -2,222 +2,222 @@
 
 > Plik generowany automatycznie przez `npm run docs:scenarios`. Nie edytuj tabeli ręcznie.
 
-Łącznie: **365 scenariuszy**.
+Łącznie: **471 scenariuszy**.
 
 | ID | Scenariusz | Plik | Tagi |
 |---|---|---|---|
-| CLUB-01 | CLUB-01: przedmiotopoziom i formularz klubowy nauczyciela są trwałe | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L80) | `teacher`, `club`, `history` |
-| CLUB-02 | CLUB-02: edycja klasy 4 na 5 dla Matematyka/SP jest trwała | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L178) | `teacher`, `club`, `history` |
-| CLUB-03 | CLUB-03: Matematyka/SP udostępnia wyłącznie klasy 4-8 | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L248) | `teacher`, `club` |
-| CLUB-04 | CLUB-04: formularz klubowy zachowuje kilka klas 4,5,6 | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L279) | `teacher`, `club` |
-| CLUB-05 | CLUB-05: zaznaczenie wszystkich klas Matematyka/SP wybiera 4-8 | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L316) | `teacher`, `club` |
-| CLUB-06 | CLUB-06: edycja usuwa tylko wskazaną klasę 5 z zestawu 4,5,6 | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L356) | `teacher`, `club` |
-| CLUB-07 | CLUB-07: formularz klubowy dotyczy tylko wybranej szkoły nauczyciela | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L394) | `teacher`, `club` |
-| CLUB-08 | CLUB-08: formularz klubowy obsługuje dwie szkoły nauczyciela | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L441) | `teacher`, `club` |
-| CLUB-09 | CLUB-09: anulowanie dodawania formularza nie tworzy potwierdzenia | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L884) | `teacher`, `club`, `cancel` |
-| CLUB-10 | CLUB-10: anulowanie edycji zachowuje klasę 4 | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L915) | `teacher`, `club`, `cancel` |
-| CLUB-11 | CLUB-11: formularz klubowy można usunąć | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L957) | `teacher`, `club`, `delete` |
-| CLUB-12A | CLUB-12A: brak szkoły blokuje utworzenie formularza klubowego | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L1154) | `teacher`, `club`, `validation` |
-| CLUB-12B | CLUB-12B: brak klasy blokuje utworzenie formularza klubowego | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L1261) | `teacher`, `club`, `validation` |
-| CLUB-13 | CLUB-13: formularz klubowy poprawnie prezentuje wszystkie OBCE wydawnictwa | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L1373) | `teacher`, `club`, `publisher` |
-| CLUB-14 | CLUB-14: nowy formularz ma domyślnie wybrany bieżący rok szkolny | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L1427) | `teacher`, `club`, `defaults` |
-| CLUB-15 | CLUB-15: formularz pokazuje wszystkie szkoły i przedmioto-poziomy nauczyciela | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L1443) | `teacher`, `club`, `defaults` |
-| CLUB-16 | CLUB-16: klasy można wybierać wyłącznie dla zaznaczonej szkoły | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L1470) | `teacher`, `club`, `school` |
-| CLUB-17 | CLUB-17: odznaczenie szkoły usuwa wybrane dla niej klasy | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L1490) | `teacher`, `club`, `school` |
-| CLUB-18 | CLUB-18: standardowa klasa nie może być jednocześnie NASZA i OBCA | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L1511) | `teacher`, `club`, `classes`, `validation` |
-| CLUB-19 | CLUB-19: zaznaczenie klasy OBCEJ blokuje tę samą klasę NASZĄ | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L1529) | `teacher`, `club`, `classes` |
-| CLUB-20 | CLUB-20: różne klasy mogą być jednocześnie NASZE i OBCE | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L1547) | `teacher`, `club`, `classes` |
-| CLUB-21 | CLUB-21: Fizyka pozwala zaznaczyć dwie NASZE serie tej samej klasy | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L1567) | `teacher`, `club`, `physics` |
-| CLUB-22 | CLUB-22: zaznaczenie wszystkich NASZYCH klas Fizyki obejmuje obie serie | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L1588) | `teacher`, `club`, `physics` |
-| CLUB-23 | CLUB-23: Matematyka SŚ pozwala zaznaczyć równocześnie wszystkie klasy NASZE i OBCE | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L1612) | `teacher`, `club`, `math-secondary` |
-| CLUB-24 | CLUB-24: wszystkie klasy Matematyki SŚ są trwałe po ponownym otwarciu | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L1639) | `teacher`, `club`, `math-secondary` |
-| CLUB-25 | CLUB-25: Fizyka zapisuje wszystkie NASZE klasy obu serii | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L1677) | `teacher`, `club`, `physics` |
-| CLUB-26 | CLUB-26: usunięcie wszystkich klas podczas edycji blokuje zapis | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L1706) | `teacher`, `club`, `edit`, `validation` |
-| CLUB-27 | CLUB-27: istniejące potwierdzenie blokuje duplikat dla tego samego roku, przedmiotu i szkoły | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L1739) | `teacher`, `club`, `duplicate`, `validation` |
-| CLUB-28 | CLUB-28: formularz dla poprzedniego roku szkolnego jest trwały | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L1778) | `teacher`, `club`, `school-year` |
-| CLUB-29 | CLUB-29: potwierdzenia dla tej samej szkoły i przedmiotu mogą dotyczyć dwóch różnych lat | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L1808) | `teacher`, `club`, `school-year` |
-| CLUB-30 | CLUB-30: odznaczenie opcji wszystkich klas NASZYCH czyści cały wybór | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L1857) | `teacher`, `club`, `classes` |
-| CLUB-31 | CLUB-31: odznaczenie opcji wszystkich klas OBCYCH czyści cały wybór | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L1878) | `teacher`, `club`, `classes` |
-| CLUB-32 | CLUB-32: edycja zmienia klasę NASZĄ na OBCĄ i zachowuje wydawnictwo | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L1901) | `teacher`, `club`, `edit` |
-| CLUB-33 | CLUB-33: klasa OBCA bez wydawnictwa blokuje utworzenie formularza | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L1930) | `teacher`, `club`, `publisher`, `validation` |
-| CLUB-34 | CLUB-34: zmianę wydawnictwa klasy OBCEJ można zapisać podczas edycji | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L1955) | `teacher`, `club`, `publisher`, `edit` |
-| CLUB-35 | CLUB-35: usunięcie ostatniej klasy OBCEJ zachowuje klasę NASZĄ | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L1983) | `teacher`, `club`, `publisher`, `edit` |
-| CLUB-36 | CLUB-36: edycja może dodać kolejną klasę NASZĄ bez utraty poprzedniej | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L2010) | `teacher`, `club`, `classes`, `edit` |
-| CLUB-37 | CLUB-37: zmiana przedmiotu nie przenosi klas wybranych dla Matematyki do Fizyki | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L2035) | `teacher`, `club`, `subject`, `classes` |
-| CLUB-38 | CLUB-38: ta sama szkoła i rok mogą mieć osobne potwierdzenia Matematyki i Fizyki | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L2060) | `teacher`, `club`, `subject` |
-| CLUB-39 | CLUB-39: usuniętego formularza klubowego nie można edytować | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L2095) | `teacher`, `club`, `delete`, `validation` |
-| CLUB-40 | CLUB-40: po usunięciu można utworzyć nowe potwierdzenie dla tej samej szkoły, roku i przedmiotu | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L2124) | `teacher`, `club`, `delete` |
-| CLUB-41 | CLUB-41: usunięte potwierdzenie można przywrócić, gdy nie istnieje inne aktywne potwierdzenie | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L2170) | `teacher`, `club`, `restore`, `history` |
-| CLUB-42 | CLUB-42: aktywne potwierdzenie dla tego samego roku, przedmiotu i szkoły blokuje przywrócenie | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L2202) | `teacher`, `club`, `restore`, `validation` |
-| CLUB-43 | CLUB-43: przywrócenie zachowuje wszystkie wcześniej wybrane klasy NASZE | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L2245) | `teacher`, `club`, `restore`, `classes` |
-| CLUB-44 | CLUB-44: przywrócenie zachowuje klasę OBCĄ i wydawnictwo | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L2278) | `teacher`, `club`, `restore`, `publisher` |
-| CLUB-45 | CLUB-45: aktywne potwierdzenie innego przedmiotu nie blokuje przywrócenia | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L2306) | `teacher`, `club`, `restore`, `subject` |
-| CLUB-46 | CLUB-46: nowsze potwierdzenie blokuje przywrócenie starszego dla tego samego przedmiotu, poziomu i szkoły | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L2343) | `teacher`, `club`, `restore`, `school-year`, `validation` |
-| CLUB-47 | CLUB-47: aktywne potwierdzenie innej szkoły nie blokuje przywrócenia | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L2391) | `teacher`, `club`, `restore`, `school` |
-| CLUB-48 | CLUB-48: przywrócone potwierdzenie można edytować | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L2436) | `teacher`, `club`, `restore`, `edit` |
-| CLUB-49 | CLUB-49: edycja, weryfikacja negatywna, usunięcie i historia wymagają wybranego potwierdzenia | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L2468) | `teacher`, `club`, `actions` |
-| CLUB-50 | CLUB-50: weryfikacja negatywna zmienia klasę NASZĄ na OBCĄ z wydawnictwem INNE | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L2498) | `teacher`, `club`, `negative-verification`, `history` |
-| CLUB-51 | CLUB-51: weryfikacja negatywna zmienia wszystkie klasy NASZE na OBCE | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L2540) | `teacher`, `club`, `negative-verification`, `classes` |
-| CLUB-52 | CLUB-52: potwierdzenie zweryfikowane negatywnie można zmienić z powrotem na NASZE | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L2567) | `teacher`, `club`, `negative-verification`, `edit` |
-| CLUB-53 | CLUB-53: potwierdzenie zweryfikowane negatywnie można usunąć | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L2600) | `teacher`, `club`, `negative-verification`, `delete`, `history` |
-| CLUB-54 | CLUB-54: edycja Matematyki nie zmienia potwierdzenia Fizyki | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L2627) | `teacher`, `club`, `multi-subject`, `edit` |
-| CLUB-55 | CLUB-55: weryfikacja negatywna Matematyki nie zmienia Fizyki | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L2673) | `teacher`, `club`, `multi-subject`, `negative-verification` |
-| CLUB-56 | CLUB-56: usunięcie i przywrócenie Matematyki nie zmienia aktywnej Fizyki | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L2721) | `teacher`, `club`, `multi-subject`, `delete`, `restore` |
-| CLUB-57 | CLUB-57: dwie szkoły i dwa przedmioty tworzą cztery niezależne potwierdzenia | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L2771) | `teacher`, `club`, `multi-subject`, `multi-school` |
-| CLUB-58 | CLUB-58: Matematyka i Fizyka zachowują niezależne potwierdzenia dla dwóch lat szkolnych | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L2829) | `teacher`, `club`, `multi-subject`, `school-year` |
-| CLUB-59 | CLUB-59: mieszany cykl życia Matematyki i Fizyki zachowuje niezależne statusy i historie | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L2895) | `teacher`, `club`, `multi-subject`, `negative-verification`, `delete`, `restore`, `history` |
-| CLUB-60 | CLUB-60: nowsze potwierdzenie blokuje późniejsze dodanie starszego dla tej samej szkoły i przedmiotu | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L2956) | `teacher`, `club`, `school-year`, `validation` |
-| CLUB-61 | CLUB-61: Język polski pozwala zapisać tylko jedną NASZĄ serię klasy 4 | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L2999) | `teacher`, `club`, `polish`, `classes`, `validation` |
-| CLUB-62 | CLUB-62: formularz WSPOM tworzy potwierdzenie i funkcję nauczyciela wspomagającego | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L3044) | `teacher`, `club`, `supporting` |
-| CLUB-63 | CLUB-63: jeden formularz WSPOM zapisuje Język polski i Matematykę niezależnie | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L3070) | `teacher`, `club`, `supporting`, `multi-subject` |
-| CLUB-64 | CLUB-64: dwa szybkie kliknięcia Zapisz nie tworzą dwóch potwierdzeń | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L3117) | `teacher`, `club`, `concurrency` |
-| CLUB-65 | CLUB-65: zaznaczenie wszystkich klas OBCYCH Matematyki SP jest trwałe | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L3145) | `teacher`, `club`, `classes`, `publisher`, `select-all` |
-| CLUB-66 | CLUB-66: edycja Języka polskiego nie pozwala zapisać dwóch NASZYCH serii klasy 4 | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L3180) | `teacher`, `club`, `polish`, `edit`, `validation` |
-| CLUB-67 | CLUB-67: zaznaczenie wszystkich NASZYCH klas Języka polskiego wybiera tylko jedną serię klasy 4 | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L3224) | `teacher`, `club`, `polish`, `classes`, `select-all` |
-| CLUB-68 | CLUB-68: formularz WSPOM nie pokazuje serii Języka polskiego ani Fizyki | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L3270) | `teacher`, `club`, `supporting`, `polish`, `physics`, `classes` |
-| CLUB-69 | CLUB-69: formularz WSPOM poprawnie prezentuje wszystkie OBCE wydawnictwa | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L3310) | `teacher`, `club`, `supporting`, `publisher` |
-| CLUB-70 | CLUB-70: formularz WSPOM wymaga szkoły, przedmiotu i klasy | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L3368) | `teacher`, `club`, `supporting`, `validation` |
-| CLUB-71 | CLUB-71: zwykłe potwierdzenie i WSPOM współistnieją dla tego samego przedmiotu, szkoły i roku | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L3401) | `teacher`, `club`, `supporting`, `duplicate` |
+| CLUB-30 | CLUB-30: odznaczenie opcji wszystkich klas NASZYCH czyści cały wybór | [klubowiczostwo-cykl-zycia.spec.ts](../../tests/klubowiczostwo-cykl-zycia.spec.ts#L42) | `teacher`, `club`, `classes` |
+| CLUB-31 | CLUB-31: odznaczenie opcji wszystkich klas OBCYCH czyści cały wybór | [klubowiczostwo-cykl-zycia.spec.ts](../../tests/klubowiczostwo-cykl-zycia.spec.ts#L63) | `teacher`, `club`, `classes` |
+| CLUB-32 | CLUB-32: edycja zmienia klasę NASZĄ na OBCĄ i zachowuje wydawnictwo | [klubowiczostwo-cykl-zycia.spec.ts](../../tests/klubowiczostwo-cykl-zycia.spec.ts#L86) | `teacher`, `club`, `edit` |
+| CLUB-33 | CLUB-33: klasa OBCA bez wydawnictwa blokuje utworzenie formularza | [klubowiczostwo-cykl-zycia.spec.ts](../../tests/klubowiczostwo-cykl-zycia.spec.ts#L115) | `teacher`, `club`, `publisher`, `validation` |
+| CLUB-34 | CLUB-34: zmianę wydawnictwa klasy OBCEJ można zapisać podczas edycji | [klubowiczostwo-cykl-zycia.spec.ts](../../tests/klubowiczostwo-cykl-zycia.spec.ts#L140) | `teacher`, `club`, `publisher`, `edit` |
+| CLUB-35 | CLUB-35: usunięcie ostatniej klasy OBCEJ zachowuje klasę NASZĄ | [klubowiczostwo-cykl-zycia.spec.ts](../../tests/klubowiczostwo-cykl-zycia.spec.ts#L168) | `teacher`, `club`, `publisher`, `edit` |
+| CLUB-36 | CLUB-36: edycja może dodać kolejną klasę NASZĄ bez utraty poprzedniej | [klubowiczostwo-cykl-zycia.spec.ts](../../tests/klubowiczostwo-cykl-zycia.spec.ts#L195) | `teacher`, `club`, `classes`, `edit` |
+| CLUB-37 | CLUB-37: zmiana przedmiotu nie przenosi klas wybranych dla Matematyki do Fizyki | [klubowiczostwo-cykl-zycia.spec.ts](../../tests/klubowiczostwo-cykl-zycia.spec.ts#L220) | `teacher`, `club`, `subject`, `classes` |
+| CLUB-38 | CLUB-38: ta sama szkoła i rok mogą mieć osobne potwierdzenia Matematyki i Fizyki | [klubowiczostwo-cykl-zycia.spec.ts](../../tests/klubowiczostwo-cykl-zycia.spec.ts#L245) | `teacher`, `club`, `subject` |
+| CLUB-39 | CLUB-39: usuniętego formularza klubowego nie można edytować | [klubowiczostwo-cykl-zycia.spec.ts](../../tests/klubowiczostwo-cykl-zycia.spec.ts#L280) | `teacher`, `club`, `delete`, `validation` |
+| CLUB-40 | CLUB-40: po usunięciu można utworzyć nowe potwierdzenie dla tej samej szkoły, roku i przedmiotu | [klubowiczostwo-cykl-zycia.spec.ts](../../tests/klubowiczostwo-cykl-zycia.spec.ts#L309) | `teacher`, `club`, `delete` |
+| CLUB-41 | CLUB-41: usunięte potwierdzenie można przywrócić, gdy nie istnieje inne aktywne potwierdzenie | [klubowiczostwo-cykl-zycia.spec.ts](../../tests/klubowiczostwo-cykl-zycia.spec.ts#L355) | `teacher`, `club`, `restore`, `history` |
+| CLUB-42 | CLUB-42: aktywne potwierdzenie dla tego samego roku, przedmiotu i szkoły blokuje przywrócenie | [klubowiczostwo-cykl-zycia.spec.ts](../../tests/klubowiczostwo-cykl-zycia.spec.ts#L387) | `teacher`, `club`, `restore`, `validation` |
+| CLUB-43 | CLUB-43: przywrócenie zachowuje wszystkie wcześniej wybrane klasy NASZE | [klubowiczostwo-cykl-zycia.spec.ts](../../tests/klubowiczostwo-cykl-zycia.spec.ts#L430) | `teacher`, `club`, `restore`, `classes` |
+| CLUB-44 | CLUB-44: przywrócenie zachowuje klasę OBCĄ i wydawnictwo | [klubowiczostwo-cykl-zycia.spec.ts](../../tests/klubowiczostwo-cykl-zycia.spec.ts#L463) | `teacher`, `club`, `restore`, `publisher` |
+| CLUB-45 | CLUB-45: aktywne potwierdzenie innego przedmiotu nie blokuje przywrócenia | [klubowiczostwo-cykl-zycia.spec.ts](../../tests/klubowiczostwo-cykl-zycia.spec.ts#L491) | `teacher`, `club`, `restore`, `subject` |
+| CLUB-46 | CLUB-46: nowsze potwierdzenie blokuje przywrócenie starszego dla tego samego przedmiotu, poziomu i szkoły | [klubowiczostwo-cykl-zycia.spec.ts](../../tests/klubowiczostwo-cykl-zycia.spec.ts#L528) | `teacher`, `club`, `restore`, `school-year`, `validation` |
+| CLUB-47 | CLUB-47: aktywne potwierdzenie innej szkoły nie blokuje przywrócenia | [klubowiczostwo-cykl-zycia.spec.ts](../../tests/klubowiczostwo-cykl-zycia.spec.ts#L576) | `teacher`, `club`, `restore`, `school` |
+| CLUB-48 | CLUB-48: przywrócone potwierdzenie można edytować | [klubowiczostwo-cykl-zycia.spec.ts](../../tests/klubowiczostwo-cykl-zycia.spec.ts#L621) | `teacher`, `club`, `restore`, `edit` |
+| CLUB-49 | CLUB-49: edycja, weryfikacja negatywna, usunięcie i historia wymagają wybranego potwierdzenia | [klubowiczostwo-cykl-zycia.spec.ts](../../tests/klubowiczostwo-cykl-zycia.spec.ts#L653) | `teacher`, `club`, `actions` |
+| CLUB-50 | CLUB-50: weryfikacja negatywna zmienia klasę NASZĄ na OBCĄ z wydawnictwem INNE | [klubowiczostwo-cykl-zycia.spec.ts](../../tests/klubowiczostwo-cykl-zycia.spec.ts#L683) | `teacher`, `club`, `negative-verification`, `history` |
+| CLUB-51 | CLUB-51: weryfikacja negatywna zmienia wszystkie klasy NASZE na OBCE | [klubowiczostwo-cykl-zycia.spec.ts](../../tests/klubowiczostwo-cykl-zycia.spec.ts#L725) | `teacher`, `club`, `negative-verification`, `classes` |
+| CLUB-52 | CLUB-52: potwierdzenie zweryfikowane negatywnie można zmienić z powrotem na NASZE | [klubowiczostwo-cykl-zycia.spec.ts](../../tests/klubowiczostwo-cykl-zycia.spec.ts#L752) | `teacher`, `club`, `negative-verification`, `edit` |
+| CLUB-01 | CLUB-01: przedmiotopoziom i formularz klubowy nauczyciela są trwałe | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L26) | `teacher`, `club`, `history` |
+| CLUB-02 | CLUB-02: edycja klasy 4 na 5 dla Matematyka/SP jest trwała | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L124) | `teacher`, `club`, `history` |
+| CLUB-03 | CLUB-03: Matematyka/SP udostępnia wyłącznie klasy 4-8 | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L194) | `teacher`, `club` |
+| CLUB-04 | CLUB-04: formularz klubowy zachowuje kilka klas 4,5,6 | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L225) | `teacher`, `club` |
+| CLUB-05 | CLUB-05: zaznaczenie wszystkich klas Matematyka/SP wybiera 4-8 | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L262) | `teacher`, `club` |
+| CLUB-06 | CLUB-06: edycja usuwa tylko wskazaną klasę 5 z zestawu 4,5,6 | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L302) | `teacher`, `club` |
+| CLUB-07 | CLUB-07: formularz klubowy dotyczy tylko wybranej szkoły nauczyciela | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L340) | `teacher`, `club` |
+| CLUB-08 | CLUB-08: formularz klubowy obsługuje dwie szkoły nauczyciela | [klubowiczostwo-nauczyciela.spec.ts](../../tests/klubowiczostwo-nauczyciela.spec.ts#L387) | `teacher`, `club` |
+| CLUB-09 | CLUB-09: anulowanie dodawania formularza nie tworzy potwierdzenia | [klubowiczostwo-walidacja.spec.ts](../../tests/klubowiczostwo-walidacja.spec.ts#L47) | `teacher`, `club`, `cancel` |
+| CLUB-10 | CLUB-10: anulowanie edycji zachowuje klasę 4 | [klubowiczostwo-walidacja.spec.ts](../../tests/klubowiczostwo-walidacja.spec.ts#L78) | `teacher`, `club`, `cancel` |
+| CLUB-11 | CLUB-11: formularz klubowy można usunąć | [klubowiczostwo-walidacja.spec.ts](../../tests/klubowiczostwo-walidacja.spec.ts#L120) | `teacher`, `club`, `delete` |
+| CLUB-12A | CLUB-12A: brak szkoły blokuje utworzenie formularza klubowego | [klubowiczostwo-walidacja.spec.ts](../../tests/klubowiczostwo-walidacja.spec.ts#L317) | `teacher`, `club`, `validation` |
+| CLUB-12B | CLUB-12B: brak klasy blokuje utworzenie formularza klubowego | [klubowiczostwo-walidacja.spec.ts](../../tests/klubowiczostwo-walidacja.spec.ts#L424) | `teacher`, `club`, `validation` |
+| CLUB-13 | CLUB-13: formularz klubowy poprawnie prezentuje wszystkie OBCE wydawnictwa | [klubowiczostwo-walidacja.spec.ts](../../tests/klubowiczostwo-walidacja.spec.ts#L536) | `teacher`, `club`, `publisher` |
+| CLUB-14 | CLUB-14: nowy formularz ma domyślnie wybrany bieżący rok szkolny | [klubowiczostwo-walidacja.spec.ts](../../tests/klubowiczostwo-walidacja.spec.ts#L590) | `teacher`, `club`, `defaults` |
+| CLUB-15 | CLUB-15: formularz pokazuje wszystkie szkoły i przedmioto-poziomy nauczyciela | [klubowiczostwo-walidacja.spec.ts](../../tests/klubowiczostwo-walidacja.spec.ts#L606) | `teacher`, `club`, `defaults` |
+| CLUB-16 | CLUB-16: klasy można wybierać wyłącznie dla zaznaczonej szkoły | [klubowiczostwo-walidacja.spec.ts](../../tests/klubowiczostwo-walidacja.spec.ts#L633) | `teacher`, `club`, `school` |
+| CLUB-17 | CLUB-17: odznaczenie szkoły usuwa wybrane dla niej klasy | [klubowiczostwo-walidacja.spec.ts](../../tests/klubowiczostwo-walidacja.spec.ts#L653) | `teacher`, `club`, `school` |
+| CLUB-18 | CLUB-18: standardowa klasa nie może być jednocześnie NASZA i OBCA | [klubowiczostwo-walidacja.spec.ts](../../tests/klubowiczostwo-walidacja.spec.ts#L674) | `teacher`, `club`, `classes`, `validation` |
+| CLUB-19 | CLUB-19: zaznaczenie klasy OBCEJ blokuje tę samą klasę NASZĄ | [klubowiczostwo-walidacja.spec.ts](../../tests/klubowiczostwo-walidacja.spec.ts#L692) | `teacher`, `club`, `classes` |
+| CLUB-20 | CLUB-20: różne klasy mogą być jednocześnie NASZE i OBCE | [klubowiczostwo-walidacja.spec.ts](../../tests/klubowiczostwo-walidacja.spec.ts#L710) | `teacher`, `club`, `classes` |
+| CLUB-21 | CLUB-21: Fizyka pozwala zaznaczyć dwie NASZE serie tej samej klasy | [klubowiczostwo-walidacja.spec.ts](../../tests/klubowiczostwo-walidacja.spec.ts#L730) | `teacher`, `club`, `physics` |
+| CLUB-22 | CLUB-22: zaznaczenie wszystkich NASZYCH klas Fizyki obejmuje obie serie | [klubowiczostwo-walidacja.spec.ts](../../tests/klubowiczostwo-walidacja.spec.ts#L751) | `teacher`, `club`, `physics` |
+| CLUB-23 | CLUB-23: Matematyka SŚ pozwala zaznaczyć równocześnie wszystkie klasy NASZE i OBCE | [klubowiczostwo-walidacja.spec.ts](../../tests/klubowiczostwo-walidacja.spec.ts#L775) | `teacher`, `club`, `math-secondary` |
+| CLUB-24 | CLUB-24: wszystkie klasy Matematyki SŚ są trwałe po ponownym otwarciu | [klubowiczostwo-walidacja.spec.ts](../../tests/klubowiczostwo-walidacja.spec.ts#L802) | `teacher`, `club`, `math-secondary` |
+| CLUB-25 | CLUB-25: Fizyka zapisuje wszystkie NASZE klasy obu serii | [klubowiczostwo-walidacja.spec.ts](../../tests/klubowiczostwo-walidacja.spec.ts#L840) | `teacher`, `club`, `physics` |
+| CLUB-26 | CLUB-26: usunięcie wszystkich klas podczas edycji blokuje zapis | [klubowiczostwo-walidacja.spec.ts](../../tests/klubowiczostwo-walidacja.spec.ts#L869) | `teacher`, `club`, `edit`, `validation` |
+| CLUB-27 | CLUB-27: istniejące potwierdzenie blokuje duplikat dla tego samego roku, przedmiotu i szkoły | [klubowiczostwo-walidacja.spec.ts](../../tests/klubowiczostwo-walidacja.spec.ts#L902) | `teacher`, `club`, `duplicate`, `validation` |
+| CLUB-28 | CLUB-28: formularz dla poprzedniego roku szkolnego jest trwały | [klubowiczostwo-walidacja.spec.ts](../../tests/klubowiczostwo-walidacja.spec.ts#L941) | `teacher`, `club`, `school-year` |
+| CLUB-29 | CLUB-29: potwierdzenia dla tej samej szkoły i przedmiotu mogą dotyczyć dwóch różnych lat | [klubowiczostwo-walidacja.spec.ts](../../tests/klubowiczostwo-walidacja.spec.ts#L971) | `teacher`, `club`, `school-year` |
+| CLUB-53 | CLUB-53: potwierdzenie zweryfikowane negatywnie można usunąć | [klubowiczostwo-zaawansowane.spec.ts](../../tests/klubowiczostwo-zaawansowane.spec.ts#L63) | `teacher`, `club`, `negative-verification`, `delete`, `history` |
+| CLUB-54 | CLUB-54: edycja Matematyki nie zmienia potwierdzenia Fizyki | [klubowiczostwo-zaawansowane.spec.ts](../../tests/klubowiczostwo-zaawansowane.spec.ts#L90) | `teacher`, `club`, `multi-subject`, `edit` |
+| CLUB-55 | CLUB-55: weryfikacja negatywna Matematyki nie zmienia Fizyki | [klubowiczostwo-zaawansowane.spec.ts](../../tests/klubowiczostwo-zaawansowane.spec.ts#L136) | `teacher`, `club`, `multi-subject`, `negative-verification` |
+| CLUB-56 | CLUB-56: usunięcie i przywrócenie Matematyki nie zmienia aktywnej Fizyki | [klubowiczostwo-zaawansowane.spec.ts](../../tests/klubowiczostwo-zaawansowane.spec.ts#L184) | `teacher`, `club`, `multi-subject`, `delete`, `restore` |
+| CLUB-57 | CLUB-57: dwie szkoły i dwa przedmioty tworzą cztery niezależne potwierdzenia | [klubowiczostwo-zaawansowane.spec.ts](../../tests/klubowiczostwo-zaawansowane.spec.ts#L234) | `teacher`, `club`, `multi-subject`, `multi-school` |
+| CLUB-58 | CLUB-58: Matematyka i Fizyka zachowują niezależne potwierdzenia dla dwóch lat szkolnych | [klubowiczostwo-zaawansowane.spec.ts](../../tests/klubowiczostwo-zaawansowane.spec.ts#L292) | `teacher`, `club`, `multi-subject`, `school-year` |
+| CLUB-59 | CLUB-59: mieszany cykl życia Matematyki i Fizyki zachowuje niezależne statusy i historie | [klubowiczostwo-zaawansowane.spec.ts](../../tests/klubowiczostwo-zaawansowane.spec.ts#L358) | `teacher`, `club`, `multi-subject`, `negative-verification`, `delete`, `restore`, `history` |
+| CLUB-60 | CLUB-60: nowsze potwierdzenie blokuje późniejsze dodanie starszego dla tej samej szkoły i przedmiotu | [klubowiczostwo-zaawansowane.spec.ts](../../tests/klubowiczostwo-zaawansowane.spec.ts#L419) | `teacher`, `club`, `school-year`, `validation` |
+| CLUB-61 | CLUB-61: Język polski pozwala zapisać tylko jedną NASZĄ serię klasy 4 | [klubowiczostwo-zaawansowane.spec.ts](../../tests/klubowiczostwo-zaawansowane.spec.ts#L462) | `teacher`, `club`, `polish`, `classes`, `validation` |
+| CLUB-62 | CLUB-62: formularz WSPOM tworzy potwierdzenie i funkcję nauczyciela wspomagającego | [klubowiczostwo-zaawansowane.spec.ts](../../tests/klubowiczostwo-zaawansowane.spec.ts#L507) | `teacher`, `club`, `supporting` |
+| CLUB-63 | CLUB-63: jeden formularz WSPOM zapisuje Język polski i Matematykę niezależnie | [klubowiczostwo-zaawansowane.spec.ts](../../tests/klubowiczostwo-zaawansowane.spec.ts#L533) | `teacher`, `club`, `supporting`, `multi-subject` |
+| CLUB-64 | CLUB-64: dwa szybkie kliknięcia Zapisz nie tworzą dwóch potwierdzeń | [klubowiczostwo-zaawansowane.spec.ts](../../tests/klubowiczostwo-zaawansowane.spec.ts#L580) | `teacher`, `club`, `concurrency` |
+| CLUB-65 | CLUB-65: zaznaczenie wszystkich klas OBCYCH Matematyki SP jest trwałe | [klubowiczostwo-zaawansowane.spec.ts](../../tests/klubowiczostwo-zaawansowane.spec.ts#L608) | `teacher`, `club`, `classes`, `publisher`, `select-all` |
+| CLUB-66 | CLUB-66: edycja Języka polskiego nie pozwala zapisać dwóch NASZYCH serii klasy 4 | [klubowiczostwo-zaawansowane.spec.ts](../../tests/klubowiczostwo-zaawansowane.spec.ts#L643) | `teacher`, `club`, `polish`, `edit`, `validation` |
+| CLUB-67 | CLUB-67: zaznaczenie wszystkich NASZYCH klas Języka polskiego wybiera tylko jedną serię klasy 4 | [klubowiczostwo-zaawansowane.spec.ts](../../tests/klubowiczostwo-zaawansowane.spec.ts#L687) | `teacher`, `club`, `polish`, `classes`, `select-all` |
+| CLUB-68 | CLUB-68: formularz WSPOM nie pokazuje serii Języka polskiego ani Fizyki | [klubowiczostwo-zaawansowane.spec.ts](../../tests/klubowiczostwo-zaawansowane.spec.ts#L733) | `teacher`, `club`, `supporting`, `polish`, `physics`, `classes` |
+| CLUB-69 | CLUB-69: formularz WSPOM poprawnie prezentuje wszystkie OBCE wydawnictwa | [klubowiczostwo-zaawansowane.spec.ts](../../tests/klubowiczostwo-zaawansowane.spec.ts#L773) | `teacher`, `club`, `supporting`, `publisher` |
+| CLUB-70 | CLUB-70: formularz WSPOM wymaga szkoły, przedmiotu i klasy | [klubowiczostwo-zaawansowane.spec.ts](../../tests/klubowiczostwo-zaawansowane.spec.ts#L831) | `teacher`, `club`, `supporting`, `validation` |
+| CLUB-71 | CLUB-71: zwykłe potwierdzenie i WSPOM współistnieją dla tego samego przedmiotu, szkoły i roku | [klubowiczostwo-zaawansowane.spec.ts](../../tests/klubowiczostwo-zaawansowane.spec.ts#L864) | `teacher`, `club`, `supporting`, `duplicate` |
 | ADD-01 | ADD-01: nauczyciela można utworzyć z imieniem, nazwiskiem, szkołą i e-mailem bez przedmioto-poziomu | [nauczyciel-dodawanie.spec.ts](../../tests/nauczyciel-dodawanie.spec.ts#L84) | `teacher`, `add`, `positive` |
 | ADD-02 | ADD-02: nauczyciela można utworzyć z telefonem bez e-maila | [nauczyciel-dodawanie.spec.ts](../../tests/nauczyciel-dodawanie.spec.ts#L219) | `teacher`, `add`, `positive` |
 | ADD-03 | ADD-03: dzisiejsza data urodzenia jest akceptowana | [nauczyciel-dodawanie.spec.ts](../../tests/nauczyciel-dodawanie.spec.ts#L321) | `teacher`, `add`, `birthdate` |
 | ADD-04 | ADD-04: źródło domyślne to Karta nauczyciela i lista zawiera trzy wartości | [nauczyciel-dodawanie.spec.ts](../../tests/nauczyciel-dodawanie.spec.ts#L426) | `teacher`, `add`, `source` |
 | ADD-05 | ADD-05: nauczyciela można utworzyć ze źródłem Karta LS | [nauczyciel-dodawanie.spec.ts](../../tests/nauczyciel-dodawanie.spec.ts#L475) | `teacher`, `add`, `source` |
-| ADD-06 | ADD-06: zgoda E-mail może być zaznaczona bez zgody Marketing | [nauczyciel-dodawanie.spec.ts](../../tests/nauczyciel-dodawanie.spec.ts#L509) | `teacher`, `add`, `rodo` |
-| ADD-07 | ADD-07: zgoda Telefon może być zaznaczona bez zgody Marketing | [nauczyciel-dodawanie.spec.ts](../../tests/nauczyciel-dodawanie.spec.ts#L595) | `teacher`, `add`, `rodo` |
-| ADD-08 | ADD-08: nauczyciela można utworzyć bez żadnej zgody RODO | [nauczyciel-dodawanie.spec.ts](../../tests/nauczyciel-dodawanie.spec.ts#L676) | `teacher`, `add`, `rodo` |
-| ADD-09 | ADD-09: nauczyciela można utworzyć z dwiema szkołami | [nauczyciel-dodawanie.spec.ts](../../tests/nauczyciel-dodawanie.spec.ts#L720) | `teacher`, `add`, `school` |
-| ADD-10 | ADD-10: szkołę można usunąć przed zapisaniem nauczyciela | [nauczyciel-dodawanie.spec.ts](../../tests/nauczyciel-dodawanie.spec.ts#L759) | `teacher`, `add`, `school` |
-| ADD-11 | ADD-11: nauczyciela można utworzyć z przedmioto-poziomem Matematyka SP | [nauczyciel-dodawanie.spec.ts](../../tests/nauczyciel-dodawanie.spec.ts#L812) | `teacher`, `add`, `subject` |
-| ADD-12 | ADD-12: nauczyciela można utworzyć z wieloma przedmioto-poziomami | [nauczyciel-dodawanie.spec.ts](../../tests/nauczyciel-dodawanie.spec.ts#L841) | `teacher`, `add`, `subject` |
-| ADD-13 | ADD-13: dodawanie nauczyciela zachowuje wielkość liter i akceptuje znak _ | [nauczyciel-dodawanie.spec.ts](../../tests/nauczyciel-dodawanie.spec.ts#L880) | `teacher`, `add`, `name` |
-| ADD-14 | ADD-14: Pokaż przy podobnej osobie zamyka formularz i otwiera istniejącego nauczyciela | [nauczyciel-dodawanie.spec.ts](../../tests/nauczyciel-dodawanie.spec.ts#L973) | `teacher`, `add`, `duplicate` |
-| ADD-15 | ADD-15: brak pola imię blokuje utworzenie nauczyciela | [nauczyciel-dodawanie.spec.ts](../../tests/nauczyciel-dodawanie.spec.ts#L1031) | `teacher`, `add`, `validation` |
-| ADD-16 | ADD-16: brak pola nazwisko blokuje utworzenie nauczyciela | [nauczyciel-dodawanie.spec.ts](../../tests/nauczyciel-dodawanie.spec.ts#L1031) | `teacher`, `add`, `validation` |
-| ADD-17 | ADD-17: brak pola szkoła blokuje utworzenie nauczyciela | [nauczyciel-dodawanie.spec.ts](../../tests/nauczyciel-dodawanie.spec.ts#L1031) | `teacher`, `add`, `validation` |
-| ADD-18 | ADD-18: brak e-maila i telefonu blokuje utworzenie nauczyciela po potwierdzeniu braku przedmioto-poziomu | [nauczyciel-dodawanie.spec.ts](../../tests/nauczyciel-dodawanie.spec.ts#L1085) | `teacher`, `add`, `validation` |
-| ADD-19 | ADD-19: wybranie Nie przy ostrzeżeniu o braku przedmioto-poziomu pozostawia formularz otwarty | [nauczyciel-dodawanie.spec.ts](../../tests/nauczyciel-dodawanie.spec.ts#L1132) | `teacher`, `add`, `validation` |
-| ADD-20.1 | ADD-20.1: niepoprawny e-mail "test" blokuje zapis | [nauczyciel-dodawanie.spec.ts](../../tests/nauczyciel-dodawanie.spec.ts#L1182) | `teacher`, `add`, `email`, `validation` |
-| ADD-20.2 | ADD-20.2: niepoprawny e-mail "test@" blokuje zapis | [nauczyciel-dodawanie.spec.ts](../../tests/nauczyciel-dodawanie.spec.ts#L1182) | `"`, `teacher`, `add`, `email`, `validation` |
-| ADD-20.3 | ADD-20.3: niepoprawny e-mail "@example.pl" blokuje zapis | [nauczyciel-dodawanie.spec.ts](../../tests/nauczyciel-dodawanie.spec.ts#L1182) | `example.pl"`, `teacher`, `add`, `email`, `validation` |
-| ADD-20.4 | ADD-20.4: niepoprawny e-mail "a b@example.pl" blokuje zapis | [nauczyciel-dodawanie.spec.ts](../../tests/nauczyciel-dodawanie.spec.ts#L1182) | `example.pl"`, `teacher`, `add`, `email`, `validation` |
-| ADD-20.5 | ADD-20.5: niepoprawny e-mail "a@" blokuje zapis | [nauczyciel-dodawanie.spec.ts](../../tests/nauczyciel-dodawanie.spec.ts#L1182) | `"`, `teacher`, `add`, `email`, `validation` |
-| ADD-21 | ADD-21: e-mail używany przez innego nauczyciela blokuje zapis | [nauczyciel-dodawanie.spec.ts](../../tests/nauczyciel-dodawanie.spec.ts#L1220) | `teacher`, `add`, `email`, `validation` |
-| ADD-22 | ADD-22: telefon krótszy niż 9 cyfr blokuje zapis | [nauczyciel-dodawanie.spec.ts](../../tests/nauczyciel-dodawanie.spec.ts#L1329) | `teacher`, `add`, `phone`, `validation` |
-| ADD-23 | ADD-23: pole telefonu nie pozwala wprowadzić więcej niż 9 cyfr | [nauczyciel-dodawanie.spec.ts](../../tests/nauczyciel-dodawanie.spec.ts#L1429) | `teacher`, `add`, `phone` |
-| ADD-24 | ADD-24: przyszła data urodzenia blokuje zapis nauczyciela | [nauczyciel-dodawanie.spec.ts](../../tests/nauczyciel-dodawanie.spec.ts#L1472) | `teacher`, `add`, `birthdate`, `validation` |
-| ADD-25 | ADD-25: nauczyciela można utworzyć bez daty urodzenia | [nauczyciel-dodawanie.spec.ts](../../tests/nauczyciel-dodawanie.spec.ts#L1502) | `teacher`, `add`, `birthdate`, `positive` |
-| ADD-27 | ADD-27: brak poziomu blokuje dodanie przedmioto-poziomu | [nauczyciel-dodawanie.spec.ts](../../tests/nauczyciel-dodawanie.spec.ts#L1669) | `teacher`, `add`, `subject`, `validation` |
-| ADD-28 | ADD-28: brak przedmiotu blokuje dodanie przedmioto-poziomu | [nauczyciel-dodawanie.spec.ts](../../tests/nauczyciel-dodawanie.spec.ts#L1763) | `teacher`, `add`, `subject`, `validation` |
-| ADD-29 | ADD-29: tego samego przedmioto-poziomu nie można dodać dwa razy | [nauczyciel-dodawanie.spec.ts](../../tests/nauczyciel-dodawanie.spec.ts#L1850) | `teacher`, `add`, `subject`, `validation` |
-| ADD-30 | ADD-30: anulowanie kompletnego formularza nie tworzy nauczyciela ani relacji ze szkołą | [nauczyciel-dodawanie.spec.ts](../../tests/nauczyciel-dodawanie.spec.ts#L1940) | `teacher`, `add`, `cancel` |
-| EDIT-04 | EDIT-04: zmiana imienia jest trwała i widoczna w historii | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L70) | `teacher`, `edit` |
-| EDIT-05 | EDIT-05: zmiana nazwiska jest trwała i widoczna w historii | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L138) | `teacher`, `edit` |
-| EDIT-06 | EDIT-06: jednoczesna zmiana imienia i nazwiska zapisuje oba pola | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L175) | `teacher`, `edit` |
-| EDIT-07 | EDIT-07: wielkość liter imienia jest normalizowana | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L223) | `teacher`, `edit`, `normalization` |
-| EDIT-08 | EDIT-08: wielkość liter nazwiska jest normalizowana | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L258) | `teacher`, `edit`, `normalization` |
-| EDIT-09 | EDIT-09: nazwisko z łącznikiem można zapisać | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L287) | `teacher`, `edit` |
-| EDIT-10 | EDIT-10: puste imię blokuje zapis | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L322) | `teacher`, `edit`, `validation` |
-| EDIT-11 | EDIT-11: puste nazwisko blokuje zapis | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L366) | `teacher`, `edit`, `validation` |
-| EDIT-12 | EDIT-12: poprawny e-mail można zmienić i zmiana jest widoczna w historii | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L408) | `teacher`, `edit` |
-| EDIT-13 | EDIT-13: niepoprawny e-mail blokuje zapis | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L581) | `teacher`, `edit`, `validation` |
-| EDIT-14 | EDIT-14: poprawny telefon można dodać | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L737) | `teacher`, `edit` |
-| EDIT-15 | EDIT-15: można dodać drugi numer telefonu | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L851) | `teacher`, `edit` |
-| EDIT-16 | EDIT-16: przy dwóch telefonach nie można dodać trzeciego | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L918) | `teacher`, `edit` |
-| EDIT-17 | EDIT-17: można usunąć zapisany numer telefonu | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L1010) | `teacher`, `edit` |
-| EDIT-18 | EDIT-18: anulowanie usunięcia telefonu nie zmienia danych | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L1159) | `teacher`, `edit` |
-| EDIT-19 | EDIT-19: niepoprawny telefon blokuje dodanie | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L1281) | `teacher`, `edit`, `validation` |
-| EDIT-20 | EDIT-20: nauczyciel może pozostać bez e-maila jeśli posiada telefon | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L1385) | `teacher`, `edit` |
-| EDIT-21 | EDIT-21: nauczyciel może istnieć bez telefonu jeśli posiada e-mail | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L1470) | `teacher`, `edit` |
-| EDIT-22 | EDIT-22: brak e-maila i telefonu wymaga dodatkowego potwierdzenia | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L1509) | `teacher`, `edit`, `validation` |
-| EDIT-23 | EDIT-23: można usunąć e-mail bez telefonu po potwierdzeniu ostrzeżenia o rekordzie minimalnym | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L1566) | `teacher`, `edit`, `validation` |
-| EDIT-24 | EDIT-24: poprawna data urodzenia jest trwała | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L1695) | `teacher`, `edit` |
-| EDIT-25 | EDIT-25: niepoprawna data urodzenia blokuje zapis | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L1738) | `teacher`, `edit`, `validation` |
-| EDIT-26 | EDIT-26: pełny adres prywatny można dodać i jest zapisany w historii | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L1784) | `teacher`, `edit`, `history` |
-| EDIT-27 | EDIT-27: wszystkie dane istniejącego adresu prywatnego można zmienić | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L1905) | `teacher`, `edit`, `history` |
-| EDIT-28 | EDIT-28: uwagi nauczyciela są trwałe | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L2154) | `teacher`, `edit` |
-| EDIT-29 | EDIT-29: nauczyciel może posiadać wiele notatek | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L2275) | `teacher`, `edit`, `notes` |
-| EDIT-30 | EDIT-30: notatkę nauczyciela można zarchiwizować | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L2338) | `teacher`, `edit`, `notes` |
-| EDIT-31 | EDIT-31: anulowanie nie zapisuje nowej notatki nauczyciela | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L2400) | `teacher`, `edit`, `notes`, `cancel` |
-| EDIT-32 | EDIT-32: zapisana notatka posiada autora i datę | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L2468) | `teacher`, `edit`, `notes` |
-| EDIT-33 | EDIT-33: notatka nauczyciela ma limit 220 znaków | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L2531) | `teacher`, `edit`, `notes`, `validation` |
-| EDIT-34 | EDIT-34: pusta notatka nauczyciela nie jest zapisywana | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L2599) | `teacher`, `edit`, `notes`, `validation` |
-| EDIT-35 | EDIT-35: zgoda Marketing jest trwała | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L2723) | `teacher`, `edit`, `rodo` |
-| EDIT-36 | EDIT-36: zaznaczenie zgody E-mail automatycznie zaznacza Marketing | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L2765) | `teacher`, `edit`, `rodo` |
-| EDIT-37 | EDIT-37: zaznaczenie zgody Telefon automatycznie zaznacza Marketing | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L2823) | `teacher`, `edit`, `rodo` |
-| EDIT-38 | EDIT-38: wszystkie zgody RODO można zapisać jednocześnie | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L2879) | `teacher`, `edit`, `rodo` |
-| EDIT-39 | EDIT-39: odznaczenie zgody Marketing pokazuje ostrzeżenie | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L2919) | `teacher`, `edit`, `rodo`, `validation` |
-| EDIT-40 | EDIT-40: odznaczenie Marketing automatycznie odznacza E-mail i Telefon | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L3007) | `teacher`, `edit`, `rodo`, `validation` |
-| EDIT-41 | EDIT-41: zapis bez żadnej zgody RODO pokazuje ostrzeżenie | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L3132) | `teacher`, `edit`, `rodo`, `validation` |
-| EDIT-42 | EDIT-42: dropdown Źródło RODO zawiera oczekiwane wartości | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L3180) | `teacher`, `edit`, `rodo` |
-| EDIT-43 | EDIT-43: ponowny zapis już znormalizowanych danych bez zmian nie modyfikuje danych ani historii | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L3248) | `teacher`, `edit` |
-| EDIT-44 | EDIT-44: anulowanie wielu zmian zachowuje poprzednie dane i historię | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L3372) | `teacher`, `edit`, `cancel` |
-| EDIT-45 | EDIT-45: zmienione dane są trwałe po przejściu do szkoły i powrocie | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L3417) | `teacher`, `edit`, `navigation` |
-| EDIT-46 | EDIT-46: edycja danych nauczyciela nie usuwa relacji ze szkołą | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L3465) | `teacher`, `edit`, `relation` |
-| EDIT-47 | EDIT-47: jednoczesna zmiana wielu pól tworzy komplet wpisów historii | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L3510) | `teacher`, `edit`, `history` |
+| ADD-06 | ADD-06: zgoda E-mail może być zaznaczona bez zgody Marketing | [nauczyciel-dodawanie.spec.ts](../../tests/nauczyciel-dodawanie.spec.ts#L511) | `teacher`, `add`, `rodo` |
+| ADD-07 | ADD-07: zgoda Telefon może być zaznaczona bez zgody Marketing | [nauczyciel-dodawanie.spec.ts](../../tests/nauczyciel-dodawanie.spec.ts#L599) | `teacher`, `add`, `rodo` |
+| ADD-08 | ADD-08: nauczyciela ze źródłem Karta LS można utworzyć bez żadnej zgody RODO | [nauczyciel-dodawanie.spec.ts](../../tests/nauczyciel-dodawanie.spec.ts#L688) | `teacher`, `add`, `rodo` |
+| ADD-09 | ADD-09: nauczyciela można utworzyć z dwiema szkołami | [nauczyciel-dodawanie.spec.ts](../../tests/nauczyciel-dodawanie.spec.ts#L736) | `teacher`, `add`, `school` |
+| ADD-10 | ADD-10: szkołę można usunąć przed zapisaniem nauczyciela | [nauczyciel-dodawanie.spec.ts](../../tests/nauczyciel-dodawanie.spec.ts#L775) | `teacher`, `add`, `school` |
+| ADD-11 | ADD-11: nauczyciela można utworzyć z przedmioto-poziomem Matematyka SP | [nauczyciel-dodawanie.spec.ts](../../tests/nauczyciel-dodawanie.spec.ts#L828) | `teacher`, `add`, `subject` |
+| ADD-12 | ADD-12: nauczyciela można utworzyć z wieloma przedmioto-poziomami | [nauczyciel-dodawanie.spec.ts](../../tests/nauczyciel-dodawanie.spec.ts#L857) | `teacher`, `add`, `subject` |
+| ADD-13 | ADD-13: dodawanie nauczyciela zachowuje wielkość liter i akceptuje znak _ | [nauczyciel-dodawanie.spec.ts](../../tests/nauczyciel-dodawanie.spec.ts#L896) | `teacher`, `add`, `name` |
+| ADD-14 | ADD-14: Pokaż przy podobnej osobie zamyka formularz i otwiera istniejącego nauczyciela | [nauczyciel-dodawanie.spec.ts](../../tests/nauczyciel-dodawanie.spec.ts#L989) | `teacher`, `add`, `duplicate` |
+| ADD-15 | ADD-15: brak pola imię blokuje utworzenie nauczyciela | [nauczyciel-dodawanie.spec.ts](../../tests/nauczyciel-dodawanie.spec.ts#L1047) | `teacher`, `add`, `validation` |
+| ADD-16 | ADD-16: brak pola nazwisko blokuje utworzenie nauczyciela | [nauczyciel-dodawanie.spec.ts](../../tests/nauczyciel-dodawanie.spec.ts#L1047) | `teacher`, `add`, `validation` |
+| ADD-17 | ADD-17: brak pola szkoła blokuje utworzenie nauczyciela | [nauczyciel-dodawanie.spec.ts](../../tests/nauczyciel-dodawanie.spec.ts#L1047) | `teacher`, `add`, `validation` |
+| ADD-18 | ADD-18: brak e-maila i telefonu blokuje utworzenie nauczyciela po potwierdzeniu braku przedmioto-poziomu | [nauczyciel-dodawanie.spec.ts](../../tests/nauczyciel-dodawanie.spec.ts#L1101) | `teacher`, `add`, `validation` |
+| ADD-19 | ADD-19: wybranie Nie przy ostrzeżeniu o braku przedmioto-poziomu pozostawia formularz otwarty | [nauczyciel-dodawanie.spec.ts](../../tests/nauczyciel-dodawanie.spec.ts#L1148) | `teacher`, `add`, `validation` |
+| ADD-20.1 | ADD-20.1: niepoprawny e-mail "test" blokuje zapis | [nauczyciel-dodawanie.spec.ts](../../tests/nauczyciel-dodawanie.spec.ts#L1198) | `teacher`, `add`, `email`, `validation` |
+| ADD-20.2 | ADD-20.2: niepoprawny e-mail "test@" blokuje zapis | [nauczyciel-dodawanie.spec.ts](../../tests/nauczyciel-dodawanie.spec.ts#L1198) | `"`, `teacher`, `add`, `email`, `validation` |
+| ADD-20.3 | ADD-20.3: niepoprawny e-mail "@example.pl" blokuje zapis | [nauczyciel-dodawanie.spec.ts](../../tests/nauczyciel-dodawanie.spec.ts#L1198) | `example.pl"`, `teacher`, `add`, `email`, `validation` |
+| ADD-20.4 | ADD-20.4: niepoprawny e-mail "a b@example.pl" blokuje zapis | [nauczyciel-dodawanie.spec.ts](../../tests/nauczyciel-dodawanie.spec.ts#L1198) | `example.pl"`, `teacher`, `add`, `email`, `validation` |
+| ADD-20.5 | ADD-20.5: niepoprawny e-mail "a@" blokuje zapis | [nauczyciel-dodawanie.spec.ts](../../tests/nauczyciel-dodawanie.spec.ts#L1198) | `"`, `teacher`, `add`, `email`, `validation` |
+| ADD-21 | ADD-21: e-mail używany przez innego nauczyciela blokuje zapis | [nauczyciel-dodawanie.spec.ts](../../tests/nauczyciel-dodawanie.spec.ts#L1236) | `teacher`, `add`, `email`, `validation` |
+| ADD-22 | ADD-22: telefon krótszy niż 9 cyfr blokuje zapis | [nauczyciel-dodawanie.spec.ts](../../tests/nauczyciel-dodawanie.spec.ts#L1349) | `teacher`, `add`, `phone`, `validation` |
+| ADD-23 | ADD-23: pole telefonu nie pozwala wprowadzić więcej niż 9 cyfr | [nauczyciel-dodawanie.spec.ts](../../tests/nauczyciel-dodawanie.spec.ts#L1449) | `teacher`, `add`, `phone` |
+| ADD-24 | ADD-24: przyszła data urodzenia blokuje zapis nauczyciela | [nauczyciel-dodawanie.spec.ts](../../tests/nauczyciel-dodawanie.spec.ts#L1492) | `teacher`, `add`, `birthdate`, `validation` |
+| ADD-25 | ADD-25: nauczyciela można utworzyć bez daty urodzenia | [nauczyciel-dodawanie.spec.ts](../../tests/nauczyciel-dodawanie.spec.ts#L1522) | `teacher`, `add`, `birthdate`, `positive` |
+| ADD-27 | ADD-27: brak poziomu blokuje dodanie przedmioto-poziomu | [nauczyciel-dodawanie.spec.ts](../../tests/nauczyciel-dodawanie.spec.ts#L1689) | `teacher`, `add`, `subject`, `validation` |
+| ADD-28 | ADD-28: brak przedmiotu blokuje dodanie przedmioto-poziomu | [nauczyciel-dodawanie.spec.ts](../../tests/nauczyciel-dodawanie.spec.ts#L1783) | `teacher`, `add`, `subject`, `validation` |
+| ADD-29 | ADD-29: tego samego przedmioto-poziomu nie można dodać dwa razy | [nauczyciel-dodawanie.spec.ts](../../tests/nauczyciel-dodawanie.spec.ts#L1870) | `teacher`, `add`, `subject`, `validation` |
+| ADD-30 | ADD-30: anulowanie kompletnego formularza nie tworzy nauczyciela ani relacji ze szkołą | [nauczyciel-dodawanie.spec.ts](../../tests/nauczyciel-dodawanie.spec.ts#L1960) | `teacher`, `add`, `cancel` |
+| EDIT-24 | EDIT-24: poprawna data urodzenia jest trwała | [nauczyciel-edycja-adres.spec.ts](../../tests/nauczyciel-edycja-adres.spec.ts#L17) | `teacher`, `edit` |
+| EDIT-25 | EDIT-25: niepoprawna data urodzenia blokuje zapis | [nauczyciel-edycja-adres.spec.ts](../../tests/nauczyciel-edycja-adres.spec.ts#L60) | `teacher`, `edit`, `validation` |
+| EDIT-26 | EDIT-26: pełny adres prywatny można dodać i jest zapisany w historii | [nauczyciel-edycja-adres.spec.ts](../../tests/nauczyciel-edycja-adres.spec.ts#L106) | `teacher`, `edit`, `history` |
+| EDIT-27 | EDIT-27: wszystkie dane istniejącego adresu prywatnego można zmienić | [nauczyciel-edycja-adres.spec.ts](../../tests/nauczyciel-edycja-adres.spec.ts#L227) | `teacher`, `edit`, `history` |
+| EDIT-43 | EDIT-43: ponowny zapis już znormalizowanych danych bez zmian nie modyfikuje danych ani historii | [nauczyciel-edycja-integralnosc.spec.ts](../../tests/nauczyciel-edycja-integralnosc.spec.ts#L15) | `teacher`, `edit` |
+| EDIT-44 | EDIT-44: anulowanie wielu zmian zachowuje poprzednie dane i historię | [nauczyciel-edycja-integralnosc.spec.ts](../../tests/nauczyciel-edycja-integralnosc.spec.ts#L139) | `teacher`, `edit`, `cancel` |
+| EDIT-45 | EDIT-45: zmienione dane są trwałe po przejściu do szkoły i powrocie | [nauczyciel-edycja-integralnosc.spec.ts](../../tests/nauczyciel-edycja-integralnosc.spec.ts#L184) | `teacher`, `edit`, `navigation` |
+| EDIT-46 | EDIT-46: edycja danych nauczyciela nie usuwa relacji ze szkołą | [nauczyciel-edycja-integralnosc.spec.ts](../../tests/nauczyciel-edycja-integralnosc.spec.ts#L232) | `teacher`, `edit`, `relation` |
+| EDIT-47 | EDIT-47: jednoczesna zmiana wielu pól tworzy komplet wpisów historii | [nauczyciel-edycja-integralnosc.spec.ts](../../tests/nauczyciel-edycja-integralnosc.spec.ts#L277) | `teacher`, `edit`, `history` |
+| EDIT-12 | EDIT-12: poprawny e-mail można zmienić i zmiana jest widoczna w historii | [nauczyciel-edycja-kontakt.spec.ts](../../tests/nauczyciel-edycja-kontakt.spec.ts#L28) | `teacher`, `edit` |
+| EDIT-13 | EDIT-13: niepoprawny e-mail blokuje zapis | [nauczyciel-edycja-kontakt.spec.ts](../../tests/nauczyciel-edycja-kontakt.spec.ts#L201) | `teacher`, `edit`, `validation` |
+| EDIT-14 | EDIT-14: poprawny telefon można dodać | [nauczyciel-edycja-kontakt.spec.ts](../../tests/nauczyciel-edycja-kontakt.spec.ts#L357) | `teacher`, `edit` |
+| EDIT-15 | EDIT-15: można dodać drugi numer telefonu | [nauczyciel-edycja-kontakt.spec.ts](../../tests/nauczyciel-edycja-kontakt.spec.ts#L471) | `teacher`, `edit` |
+| EDIT-16 | EDIT-16: przy dwóch telefonach nie można dodać trzeciego | [nauczyciel-edycja-kontakt.spec.ts](../../tests/nauczyciel-edycja-kontakt.spec.ts#L538) | `teacher`, `edit` |
+| EDIT-17 | EDIT-17: można usunąć zapisany numer telefonu | [nauczyciel-edycja-kontakt.spec.ts](../../tests/nauczyciel-edycja-kontakt.spec.ts#L630) | `teacher`, `edit` |
+| EDIT-18 | EDIT-18: anulowanie usunięcia telefonu nie zmienia danych | [nauczyciel-edycja-kontakt.spec.ts](../../tests/nauczyciel-edycja-kontakt.spec.ts#L779) | `teacher`, `edit` |
+| EDIT-19 | EDIT-19: niepoprawny telefon blokuje dodanie | [nauczyciel-edycja-kontakt.spec.ts](../../tests/nauczyciel-edycja-kontakt.spec.ts#L901) | `teacher`, `edit`, `validation` |
+| EDIT-20 | EDIT-20: nauczyciel może pozostać bez e-maila jeśli posiada telefon | [nauczyciel-edycja-kontakt.spec.ts](../../tests/nauczyciel-edycja-kontakt.spec.ts#L1005) | `teacher`, `edit` |
+| EDIT-21 | EDIT-21: nauczyciel może istnieć bez telefonu jeśli posiada e-mail | [nauczyciel-edycja-kontakt.spec.ts](../../tests/nauczyciel-edycja-kontakt.spec.ts#L1090) | `teacher`, `edit` |
+| EDIT-22 | EDIT-22: brak e-maila i telefonu wymaga dodatkowego potwierdzenia | [nauczyciel-edycja-kontakt.spec.ts](../../tests/nauczyciel-edycja-kontakt.spec.ts#L1129) | `teacher`, `edit`, `validation` |
+| EDIT-23 | EDIT-23: można usunąć e-mail bez telefonu po potwierdzeniu ostrzeżenia o rekordzie minimalnym | [nauczyciel-edycja-kontakt.spec.ts](../../tests/nauczyciel-edycja-kontakt.spec.ts#L1186) | `teacher`, `edit`, `validation` |
+| EDIT-28 | EDIT-28: uwagi nauczyciela są trwałe | [nauczyciel-edycja-notatki.spec.ts](../../tests/nauczyciel-edycja-notatki.spec.ts#L17) | `teacher`, `edit` |
+| EDIT-29 | EDIT-29: nauczyciel może posiadać wiele notatek | [nauczyciel-edycja-notatki.spec.ts](../../tests/nauczyciel-edycja-notatki.spec.ts#L138) | `teacher`, `edit`, `notes` |
+| EDIT-30 | EDIT-30: notatkę nauczyciela można zarchiwizować | [nauczyciel-edycja-notatki.spec.ts](../../tests/nauczyciel-edycja-notatki.spec.ts#L201) | `teacher`, `edit`, `notes` |
+| EDIT-31 | EDIT-31: anulowanie nie zapisuje nowej notatki nauczyciela | [nauczyciel-edycja-notatki.spec.ts](../../tests/nauczyciel-edycja-notatki.spec.ts#L263) | `teacher`, `edit`, `notes`, `cancel` |
+| EDIT-32 | EDIT-32: zapisana notatka posiada autora i datę | [nauczyciel-edycja-notatki.spec.ts](../../tests/nauczyciel-edycja-notatki.spec.ts#L331) | `teacher`, `edit`, `notes` |
+| EDIT-33 | EDIT-33: notatka nauczyciela ma limit 220 znaków | [nauczyciel-edycja-notatki.spec.ts](../../tests/nauczyciel-edycja-notatki.spec.ts#L394) | `teacher`, `edit`, `notes`, `validation` |
+| EDIT-34 | EDIT-34: pusta notatka nauczyciela nie jest zapisywana | [nauczyciel-edycja-notatki.spec.ts](../../tests/nauczyciel-edycja-notatki.spec.ts#L462) | `teacher`, `edit`, `notes`, `validation` |
+| EDIT-35 | EDIT-35: zgoda Marketing jest trwała | [nauczyciel-edycja-rodo.spec.ts](../../tests/nauczyciel-edycja-rodo.spec.ts#L19) | `teacher`, `edit`, `rodo` |
+| EDIT-36 | EDIT-36: zaznaczenie zgody E-mail automatycznie zaznacza Marketing | [nauczyciel-edycja-rodo.spec.ts](../../tests/nauczyciel-edycja-rodo.spec.ts#L61) | `teacher`, `edit`, `rodo` |
+| EDIT-37 | EDIT-37: zaznaczenie zgody Telefon automatycznie zaznacza Marketing | [nauczyciel-edycja-rodo.spec.ts](../../tests/nauczyciel-edycja-rodo.spec.ts#L119) | `teacher`, `edit`, `rodo` |
+| EDIT-38 | EDIT-38: wszystkie zgody RODO można zapisać jednocześnie | [nauczyciel-edycja-rodo.spec.ts](../../tests/nauczyciel-edycja-rodo.spec.ts#L175) | `teacher`, `edit`, `rodo` |
+| EDIT-39 | EDIT-39: odznaczenie zgody Marketing pokazuje ostrzeżenie | [nauczyciel-edycja-rodo.spec.ts](../../tests/nauczyciel-edycja-rodo.spec.ts#L215) | `teacher`, `edit`, `rodo`, `validation` |
+| EDIT-40 | EDIT-40: odznaczenie Marketing automatycznie odznacza E-mail i Telefon | [nauczyciel-edycja-rodo.spec.ts](../../tests/nauczyciel-edycja-rodo.spec.ts#L303) | `teacher`, `edit`, `rodo`, `validation` |
+| EDIT-41 | EDIT-41: zapis bez żadnej zgody RODO pokazuje ostrzeżenie | [nauczyciel-edycja-rodo.spec.ts](../../tests/nauczyciel-edycja-rodo.spec.ts#L428) | `teacher`, `edit`, `rodo`, `validation` |
+| EDIT-42 | EDIT-42: dropdown Źródło RODO zawiera oczekiwane wartości | [nauczyciel-edycja-rodo.spec.ts](../../tests/nauczyciel-edycja-rodo.spec.ts#L476) | `teacher`, `edit`, `rodo` |
+| EDIT-04 | EDIT-04: zmiana imienia jest trwała i widoczna w historii | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L13) | `teacher`, `edit` |
+| EDIT-05 | EDIT-05: zmiana nazwiska jest trwała i widoczna w historii | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L81) | `teacher`, `edit` |
+| EDIT-06 | EDIT-06: jednoczesna zmiana imienia i nazwiska zapisuje oba pola | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L118) | `teacher`, `edit` |
+| EDIT-07 | EDIT-07: wielkość liter imienia jest normalizowana | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L166) | `teacher`, `edit`, `normalization` |
+| EDIT-08 | EDIT-08: wielkość liter nazwiska jest normalizowana | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L201) | `teacher`, `edit`, `normalization` |
+| EDIT-09 | EDIT-09: nazwisko z łącznikiem można zapisać | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L230) | `teacher`, `edit` |
+| EDIT-10 | EDIT-10: puste imię blokuje zapis | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L265) | `teacher`, `edit`, `validation` |
+| EDIT-11 | EDIT-11: puste nazwisko blokuje zapis | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L309) | `teacher`, `edit`, `validation` |
 | EDIT-03 | EDIT-03: zapis nazwiska jest trwały i widoczny w historii | [nauczyciel-rozszerzenie.spec.ts](../../tests/nauczyciel-rozszerzenie.spec.ts#L4) | `teacher`, `edit` |
 | TEA-04 | TEA-04: niepoprawny e-mail blokuje zapis nauczyciela | [nauczyciel-rozszerzenie.spec.ts](../../tests/nauczyciel-rozszerzenie.spec.ts#L42) | `teacher`, `validation` |
 | TEA-04 | TEA-04: niepoprawny telefon blokuje zapis nauczyciela | [nauczyciel-rozszerzenie.spec.ts](../../tests/nauczyciel-rozszerzenie.spec.ts#L42) | `teacher`, `validation` |
 | FIND-05 | FIND-05: wyszukiwanie nauczyciela — Email | [nauczyciel-rozszerzenie.spec.ts](../../tests/nauczyciel-rozszerzenie.spec.ts#L85) | `teacher`, `search` |
 | FIND-05 | FIND-05: wyszukiwanie nauczyciela — Nazwisko | [nauczyciel-rozszerzenie.spec.ts](../../tests/nauczyciel-rozszerzenie.spec.ts#L85) | `teacher`, `search` |
 | REL-02 | REL-02: druga szkoła zachowuje pierwszą relację i pokazuje nauczyciela w obu szkołach | [nauczyciel-rozszerzenie.spec.ts](../../tests/nauczyciel-rozszerzenie.spec.ts#L123) | `teacher`, `relation` |
-| SCH-03 | SCH-03: minimalny poprawny formularz tworzy szkołę | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L78) | `school`, `school-add`, `positive` |
-| SCH-04 | SCH-04: brak nazwy blokuje zapis szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L97) | `school`, `school-add`, `validation` |
-| SCH-05 | SCH-05: brak typu blokuje zapis szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L111) | `school`, `school-add`, `validation` |
-| SCH-06 | SCH-06: brak adresu blokuje zapis szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L125) | `school`, `school-add`, `validation`, `address` |
-| SCH-09 | SCH-09: anulowanie adresu nie przenosi danych do formularza szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L138) | `school`, `school-add`, `address`, `cancel` |
-| SCH-10 | SCH-10: dwa szybkie kliknięcia Zapisz tworzą tylko jedną szkołę | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L168) | `school`, `school-add`, `concurrency` |
-| SCH-11 | SCH-11: dane szkoły są trwałe po ponownym otwarciu | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L186) | `school`, `school-add`, `positive` |
-| SCH-12 | SCH-12: nową szkołę można znaleźć po nazwie i zidentyfikować po ID | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L204) | `school`, `school-add`, `search` |
-| SCH-13 | SCH-13: słownik zawiera wszystkie obsługiwane typy szkół | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L228) | `school`, `school-add`, `dictionary` |
-| SCH-14 | SCH-14: formularz tworzy liceum z właściwym typem | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L244) | `school`, `school-add`, `positive`, `school-type` |
-| SCH-21 | SCH-21: formularz tworzy szkołę typu Technikum | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L261) | `school`, `school-add`, `positive`, `school-type` |
-| SCH-22 | SCH-22: formularz tworzy szkołę typu Placówka doskonalenia nauczycieli | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L261) | `school`, `school-add`, `positive`, `school-type` |
-| SCH-23 | SCH-23: formularz tworzy szkołę typu Zespół szkół | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L261) | `school`, `school-add`, `positive`, `school-type` |
-| SCH-24 | SCH-24: formularz tworzy szkołę typu Szkoła NPC | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L261) | `school`, `school-add`, `positive`, `school-type` |
-| SCH-25 | SCH-25: formularz tworzy szkołę typu Przedszkole | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L261) | `school`, `school-add`, `positive`, `school-type` |
-| SCH-17 | SCH-17: nazwa złożona wyłącznie ze spacji nie pozwala utworzyć szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L286) | `school`, `school-add`, `validation` |
-| SCH-18 | SCH-18: nazwa z polskimi znakami i interpunkcją jest zachowana | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L308) | `school`, `school-add`, `positive`, `name` |
-| SCH-27 | SCH-27: spacje na brzegach nazwy są usuwane przy zapisie | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L323) | `school`, `school-add`, `positive`, `name` |
-| SCH-28 | SCH-28: identyczna nazwa i adres mogą utworzyć dwa różne rekordy | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L339) | `school`, `school-add`, `positive`, `duplicate` |
-| SCH-29 | SCH-29: identyczna nazwa pod różnymi adresami tworzy dwa różne rekordy | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L363) | `school`, `school-add`, `positive`, `duplicate` |
-| SCH-07 | SCH-07: poprawny kod pocztowy pozwala wybrać miejscowość i zapisać adres | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L397) | `school`, `school-add`, `address` |
-| SCH-08 | SCH-08: nieznany kod pocztowy blokuje zapis adresu i szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L421) | `school`, `school-add`, `validation`, `address` |
-| SCH-19 | SCH-19: numer budynku z literą jest zachowany w adresie | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L458) | `school`, `school-add`, `address` |
-| SCH-20 | SCH-20: wyczyszczenie wyszukiwania adresu usuwa wpisane kryteria | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L479) | `school`, `school-add`, `address`, `clear` |
-| SCH-26 | SCH-26: numer budynku z separatorem jest zachowany po utworzeniu szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L501) | `school`, `school-add`, `positive`, `address` |
-| SCH-41 | SCH-41: brak numeru budynku blokuje zapis adresu i szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L516) | `school`, `school-add`, `validation`, `address` |
-| SCH-43 | SCH-43: pełny adres z ulicą jest zachowany po utworzeniu szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L541) | `school`, `school-add`, `positive`, `address` |
-| SCH-44 | SCH-44: wyczyszczenie wybranego adresu usuwa utworzony adres | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L572) | `school`, `school-add`, `validation`, `address`, `clear` |
-| SCH-45 | SCH-45: ponowne dodanie adresu zastępuje adres przed utworzeniem szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L599) | `school`, `school-add`, `positive`, `address` |
-| SCH-46 | SCH-46: anulowanie zmiany adresu zachowuje poprzedni adres | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L630) | `school`, `school-add`, `positive`, `address`, `cancel` |
-| SCH-47 | SCH-47: wyczyszczenie adresu i anulowanie zachowuje poprzedni adres | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L654) | `school`, `school-add`, `positive`, `address`, `cancel`, `clear` |
-| SCH-15 | SCH-15: usunięcie dodanego adresu ponownie blokuje zapis szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L676) | `school`, `school-add`, `address`, `validation` |
-| SCH-30 | SCH-30: nazwa z SIO jest zachowana po utworzeniu szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L701) | `school`, `school-add`, `positive`, `optional-data` |
-| SCH-32 | SCH-32: liczba uczniów jest zachowana po utworzeniu szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L717) | `school`, `school-add`, `positive`, `optional-data` |
-| SCH-33 | SCH-33: numer RSPO jest przekazywany podczas tworzenia szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L735) | `school`, `school-add`, `positive`, `identifier` |
-| SCH-34 | SCH-34: numer REGON jest przekazywany podczas tworzenia szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L753) | `school`, `school-add`, `positive`, `identifier` |
-| SCH-35 | SCH-35: numer NIP jest przekazywany podczas tworzenia szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L771) | `school`, `school-add`, `positive`, `identifier` |
-| SCH-51 | SCH-51: REGON z wiodącymi zerami zachowuje pełną długość | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L789) | `school`, `school-add`, `positive`, `identifier` |
-| SCH-52 | SCH-52: NIP z wiodącymi zerami zachowuje pełną długość | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L807) | `school`, `school-add`, `positive`, `identifier` |
-| SCH-49 | SCH-49: zerowa liczba uczniów jest zachowana | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L825) | `school`, `school-add`, `positive`, `optional-data` |
-| SCH-31 | SCH-31: WWW i e-mail są zachowane po utworzeniu szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L847) | `school`, `school-add`, `positive`, `contact` |
-| SCH-53 | SCH-53: pełny adres WWW ze ścieżką i parametrami jest zachowany | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L867) | `school`, `school-add`, `positive`, `contact` |
-| SCH-54 | SCH-54: e-mail z wielkimi literami jest normalizowany do małych liter | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L884) | `school`, `school-add`, `positive`, `contact` |
-| SCH-36 | SCH-36: przełącznik komórka ustawia format numeru i resetuje się po zapisie | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L903) | `school`, `school-add`, `positive`, `contact` |
-| SCH-37 | SCH-37: telefon stacjonarny zachowuje właściwy format po utworzeniu szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L929) | `school`, `school-add`, `positive`, `contact` |
-| SCH-38 | SCH-38: niepoprawny e-mail blokuje utworzenie szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L956) | `school`, `school-add`, `validation`, `contact` |
-| SCH-39 | SCH-39: niepełny telefon blokuje utworzenie szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L973) | `school`, `school-add`, `validation`, `contact` |
-| SCH-40 | SCH-40: przełączenie komórka zmienia maskę bez utraty cyfr | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L993) | `school`, `school-add`, `contact`, `format` |
-| SCH-48 | SCH-48: e-mail z subdomeną jest zachowany | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L1012) | `school`, `school-add`, `positive`, `contact` |
-| SCH-50 | SCH-50: e-mail z aliasem plus jest odrzucany przez backend | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L1029) | `school`, `school-add`, `validation`, `contact` |
-| SCH-16 | SCH-16: błąd serwera nie otwiera nieistniejącej szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L1065) | `school`, `school-add`, `error-handling` |
-| SCH-58 | SCH-58: HTTP 422 nie otwiera nieutworzonej szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L1104) | `school`, `school-add`, `error-handling` |
-| SCH-59 | SCH-59: timeout sieci nie otwiera nieutworzonej szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L1104) | `school`, `school-add`, `error-handling` |
-| SCH-42 | SCH-42: pełny formularz zachowuje wszystkie dane opcjonalne | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L1139) | `school`, `school-add`, `positive`, `optional-data`, `contact`, `identifier` |
-| SCH-55 | SCH-55: pola opcjonalne mogą pozostać puste i szkoła nadal jest trwała | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L1195) | `school`, `school-add`, `positive`, `optional-data` |
-| SCH-56 | SCH-56: anulowanie kompletnego formularza po uzupełnieniu danych opcjonalnych nie tworzy szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L1220) | `school`, `school-add`, `cancel`, `optional-data` |
-| SCH-57 | SCH-57: ponowne otwarcie szkoły zachowuje typ, poziom i adres | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L1236) | `school`, `school-add`, `positive`, `persistence` |
+| SCH-03 | SCH-03: minimalny poprawny formularz tworzy szkołę | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L79) | `school`, `school-add`, `positive` |
+| SCH-04 | SCH-04: brak nazwy blokuje zapis szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L98) | `school`, `school-add`, `validation` |
+| SCH-05 | SCH-05: brak typu blokuje zapis szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L112) | `school`, `school-add`, `validation` |
+| SCH-06 | SCH-06: brak adresu blokuje zapis szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L126) | `school`, `school-add`, `validation`, `address` |
+| SCH-09 | SCH-09: anulowanie adresu nie przenosi danych do formularza szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L139) | `school`, `school-add`, `address`, `cancel` |
+| SCH-10 | SCH-10: dwa szybkie kliknięcia Zapisz tworzą tylko jedną szkołę | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L169) | `school`, `school-add`, `concurrency` |
+| SCH-11 | SCH-11: dane szkoły są trwałe po ponownym otwarciu | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L187) | `school`, `school-add`, `positive` |
+| SCH-12 | SCH-12: nową szkołę można znaleźć po nazwie i zidentyfikować po ID | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L205) | `school`, `school-add`, `search` |
+| SCH-13 | SCH-13: słownik zawiera wszystkie obsługiwane typy szkół | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L229) | `school`, `school-add`, `dictionary` |
+| SCH-14 | SCH-14: formularz tworzy liceum z właściwym typem | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L245) | `school`, `school-add`, `positive`, `school-type` |
+| SCH-21 | SCH-21: formularz tworzy szkołę typu Technikum | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L262) | `school`, `school-add`, `positive`, `school-type` |
+| SCH-22 | SCH-22: formularz tworzy szkołę typu Placówka doskonalenia nauczycieli | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L262) | `school`, `school-add`, `positive`, `school-type` |
+| SCH-23 | SCH-23: formularz tworzy szkołę typu Zespół szkół | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L262) | `school`, `school-add`, `positive`, `school-type` |
+| SCH-24 | SCH-24: formularz tworzy szkołę typu Szkoła NPC | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L262) | `school`, `school-add`, `positive`, `school-type` |
+| SCH-25 | SCH-25: formularz tworzy szkołę typu Przedszkole | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L262) | `school`, `school-add`, `positive`, `school-type` |
+| SCH-17 | SCH-17: nazwa złożona wyłącznie ze spacji nie pozwala utworzyć szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L287) | `school`, `school-add`, `validation` |
+| SCH-18 | SCH-18: nazwa z polskimi znakami i interpunkcją jest zachowana | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L309) | `school`, `school-add`, `positive`, `name` |
+| SCH-27 | SCH-27: spacje na brzegach nazwy są usuwane przy zapisie | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L324) | `school`, `school-add`, `positive`, `name` |
+| SCH-28 | SCH-28: identyczna nazwa i adres mogą utworzyć dwa różne rekordy | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L340) | `school`, `school-add`, `positive`, `duplicate` |
+| SCH-29 | SCH-29: identyczna nazwa pod różnymi adresami tworzy dwa różne rekordy | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L364) | `school`, `school-add`, `positive`, `duplicate` |
+| SCH-07 | SCH-07: poprawny kod pocztowy pozwala wybrać miejscowość i zapisać adres | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L398) | `school`, `school-add`, `address` |
+| SCH-08 | SCH-08: nieznany kod pocztowy blokuje zapis adresu i szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L422) | `school`, `school-add`, `validation`, `address` |
+| SCH-19 | SCH-19: numer budynku z literą jest zachowany w adresie | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L461) | `school`, `school-add`, `address` |
+| SCH-20 | SCH-20: wyczyszczenie wyszukiwania adresu usuwa wpisane kryteria | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L482) | `school`, `school-add`, `address`, `clear` |
+| SCH-26 | SCH-26: numer budynku z separatorem jest zachowany po utworzeniu szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L504) | `school`, `school-add`, `positive`, `address` |
+| SCH-41 | SCH-41: brak numeru budynku blokuje zapis adresu i szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L519) | `school`, `school-add`, `validation`, `address` |
+| SCH-43 | SCH-43: pełny adres z ulicą jest zachowany po utworzeniu szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L544) | `school`, `school-add`, `positive`, `address` |
+| SCH-44 | SCH-44: wyczyszczenie wybranego adresu usuwa utworzony adres | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L575) | `school`, `school-add`, `validation`, `address`, `clear` |
+| SCH-45 | SCH-45: ponowne dodanie adresu zastępuje adres przed utworzeniem szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L602) | `school`, `school-add`, `positive`, `address` |
+| SCH-46 | SCH-46: anulowanie zmiany adresu zachowuje poprzedni adres | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L633) | `school`, `school-add`, `positive`, `address`, `cancel` |
+| SCH-47 | SCH-47: wyczyszczenie adresu i anulowanie zachowuje poprzedni adres | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L657) | `school`, `school-add`, `positive`, `address`, `cancel`, `clear` |
+| SCH-15 | SCH-15: usunięcie dodanego adresu ponownie blokuje zapis szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L679) | `school`, `school-add`, `address`, `validation` |
+| SCH-30 | SCH-30: nazwa z SIO jest zachowana po utworzeniu szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L704) | `school`, `school-add`, `positive`, `optional-data` |
+| SCH-32 | SCH-32: liczba uczniów jest zachowana po utworzeniu szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L720) | `school`, `school-add`, `positive`, `optional-data` |
+| SCH-33 | SCH-33: numer RSPO jest przekazywany podczas tworzenia szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L738) | `school`, `school-add`, `positive`, `identifier` |
+| SCH-34 | SCH-34: numer REGON jest przekazywany podczas tworzenia szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L756) | `school`, `school-add`, `positive`, `identifier` |
+| SCH-35 | SCH-35: numer NIP jest przekazywany podczas tworzenia szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L774) | `school`, `school-add`, `positive`, `identifier` |
+| SCH-51 | SCH-51: REGON z wiodącymi zerami zachowuje pełną długość | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L792) | `school`, `school-add`, `positive`, `identifier` |
+| SCH-52 | SCH-52: NIP z wiodącymi zerami zachowuje pełną długość | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L810) | `school`, `school-add`, `positive`, `identifier` |
+| SCH-49 | SCH-49: zerowa liczba uczniów jest zachowana | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L828) | `school`, `school-add`, `positive`, `optional-data` |
+| SCH-31 | SCH-31: WWW i e-mail są zachowane po utworzeniu szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L850) | `school`, `school-add`, `positive`, `contact` |
+| SCH-53 | SCH-53: pełny adres WWW ze ścieżką i parametrami jest zachowany | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L870) | `school`, `school-add`, `positive`, `contact` |
+| SCH-54 | SCH-54: e-mail z wielkimi literami jest normalizowany do małych liter | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L887) | `school`, `school-add`, `positive`, `contact` |
+| SCH-36 | SCH-36: przełącznik komórka ustawia format numeru i resetuje się po zapisie | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L906) | `school`, `school-add`, `positive`, `contact` |
+| SCH-37 | SCH-37: telefon stacjonarny zachowuje właściwy format po utworzeniu szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L932) | `school`, `school-add`, `positive`, `contact` |
+| SCH-38 | SCH-38: niepoprawny e-mail blokuje utworzenie szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L959) | `school`, `school-add`, `validation`, `contact` |
+| SCH-39 | SCH-39: niepełny telefon blokuje utworzenie szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L976) | `school`, `school-add`, `validation`, `contact` |
+| SCH-40 | SCH-40: przełączenie komórka zmienia maskę bez utraty cyfr | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L996) | `school`, `school-add`, `contact`, `format` |
+| SCH-48 | SCH-48: e-mail z subdomeną jest zachowany | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L1015) | `school`, `school-add`, `positive`, `contact` |
+| SCH-50 | SCH-50: e-mail z aliasem plus jest odrzucany przez backend | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L1032) | `school`, `school-add`, `validation`, `contact` |
+| SCH-16 | SCH-16: błąd serwera nie otwiera nieistniejącej szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L1068) | `school`, `school-add`, `error-handling` |
+| SCH-58 | SCH-58: HTTP 422 nie otwiera nieutworzonej szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L1107) | `school`, `school-add`, `error-handling` |
+| SCH-59 | SCH-59: timeout sieci nie otwiera nieutworzonej szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L1107) | `school`, `school-add`, `error-handling` |
+| SCH-42 | SCH-42: pełny formularz zachowuje wszystkie dane opcjonalne | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L1142) | `school`, `school-add`, `positive`, `optional-data`, `contact`, `identifier` |
+| SCH-55 | SCH-55: pola opcjonalne mogą pozostać puste i szkoła nadal jest trwała | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L1198) | `school`, `school-add`, `positive`, `optional-data` |
+| SCH-56 | SCH-56: anulowanie kompletnego formularza po uzupełnieniu danych opcjonalnych nie tworzy szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L1223) | `school`, `school-add`, `cancel`, `optional-data` |
+| SCH-57 | SCH-57: ponowne otwarcie szkoły zachowuje typ, poziom i adres | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L1239) | `school`, `school-add`, `positive`, `persistence` |
 | SCH-EDIT-01 | SCH-EDIT-01: formularz edycji wczytuje nazwę szkoły | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L83) | `school`, `school-edit`, `smoke` |
 | SCH-EDIT-02 | SCH-EDIT-02: anulowanie zmiany nazwy zachowuje poprzednią wartość | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L98) | `school`, `school-edit`, `cancel` |
 | SCH-EDIT-03 | SCH-EDIT-03: zmiana nazwy jest trwała po ponownym otwarciu szkoły | [szkola-edycja.spec.ts](../../tests/szkola-edycja.spec.ts#L119) | `school`, `school-edit`, `positive` |
@@ -296,6 +296,112 @@
 | MED-56 | MED-56: multiselect medalu jest poprawnie przekazywany do API i zwraca tylko wybrane medale | [szkola-medalowosc.spec.ts](../../tests/szkola-medalowosc.spec.ts#L1001) | — |
 | MED-60 | MED-60: każda szkoła z medalem Brak nie ma przedmiotów medalowych | [szkola-medalowosc.spec.ts](../../tests/szkola-medalowosc.spec.ts#L1173) | — |
 | — | szkoła → nauczyciel → relacja → wyszukiwanie → nauczyciel → historia | [szkola-nauczyciel.spec.ts](../../tests/szkola-nauczyciel.spec.ts#L8) | `smoke` |
+| STR-88 | STR-88: nowa szkoła udostępnia dialog struktury bez nadanego ID | [szkola-struktura-dodawanie.spec.ts](../../tests/szkola-struktura-dodawanie.spec.ts#L157) | `school`, `structure`, `school-add` |
+| STR-89 | STR-89: Zapisz strukturę odkłada relację do zapisu nowej szkoły | [szkola-struktura-dodawanie.spec.ts](../../tests/szkola-struktura-dodawanie.spec.ts#L172) | `school`, `structure`, `school-add`, `api` |
+| STR-90 | STR-90: nowa szkoła utrwala Filia / Podrzędna | [szkola-struktura-dodawanie.spec.ts](../../tests/szkola-struktura-dodawanie.spec.ts#L249) | `school`, `structure`, `school-add`, `persistence` |
+| STR-91 | STR-91: nowa szkoła utrwala Filia / Nadrzędna | [szkola-struktura-dodawanie.spec.ts](../../tests/szkola-struktura-dodawanie.spec.ts#L249) | `school`, `structure`, `school-add`, `persistence` |
+| STR-92 | STR-92: nowa szkoła utrwala Zespół szkół / Nadrzędna | [szkola-struktura-dodawanie.spec.ts](../../tests/szkola-struktura-dodawanie.spec.ts#L249) | `school`, `structure`, `school-add`, `persistence` |
+| STR-93 | STR-93: nowa szkoła utrwala Zespół szkół / Podrzędna | [szkola-struktura-dodawanie.spec.ts](../../tests/szkola-struktura-dodawanie.spec.ts#L249) | `school`, `structure`, `school-add`, `persistence` |
+| STR-94 | STR-94: nowa szkoła utrwala Wielobudynkowość / Podrzędna | [szkola-struktura-dodawanie.spec.ts](../../tests/szkola-struktura-dodawanie.spec.ts#L249) | `school`, `structure`, `school-add`, `persistence` |
+| STR-95 | STR-95: nowa szkoła utrwala Wielobudynkowość / Nadrzędna | [szkola-struktura-dodawanie.spec.ts](../../tests/szkola-struktura-dodawanie.spec.ts#L249) | `school`, `structure`, `school-add`, `persistence` |
+| STR-96 | STR-96: nowa szkoła utrwala kilka powiązań z jednego formularza | [szkola-struktura-dodawanie.spec.ts](../../tests/szkola-struktura-dodawanie.spec.ts#L281) | `school`, `structure`, `school-add`, `persistence` |
+| STR-97 | STR-97: anulowanie dialogu struktury zachowuje szkołę i odrzuca roboczą relację | [szkola-struktura-dodawanie.spec.ts](../../tests/szkola-struktura-dodawanie.spec.ts#L319) | `school`, `structure`, `school-add`, `cancel` |
+| STR-98 | STR-98: anulowanie nowej szkoły odrzuca zaakceptowaną strukturę | [szkola-struktura-dodawanie.spec.ts](../../tests/szkola-struktura-dodawanie.spec.ts#L343) | `school`, `structure`, `school-add`, `cancel` |
+| STR-99 | STR-99: zaakceptowaną pozycję można usunąć przed utworzeniem szkoły | [szkola-struktura-dodawanie.spec.ts](../../tests/szkola-struktura-dodawanie.spec.ts#L366) | `school`, `structure`, `school-add`, `cancel` |
+| STR-100 | STR-100: nowa szkoła nie planuje dwukrotnie tej samej szkoły | [szkola-struktura-dodawanie.spec.ts](../../tests/szkola-struktura-dodawanie.spec.ts#L391) | `school`, `structure`, `school-add`, `validation` |
+| STR-101 | STR-101: puste wyszukiwanie nie zamyka żadnego formularza | [szkola-struktura-dodawanie.spec.ts](../../tests/szkola-struktura-dodawanie.spec.ts#L422) | `school`, `structure`, `school-add`, `validation` |
+| STR-102 | STR-102: zmiany roboczego typu i kierunku przechodzą do ponownie otwartego dialogu | [szkola-struktura-dodawanie.spec.ts](../../tests/szkola-struktura-dodawanie.spec.ts#L436) | `school`, `structure`, `school-add`, `edit` |
+| STR-103 | STR-103: gotowa struktura nie omija obowiązkowej nazwy nowej szkoły | [szkola-struktura-dodawanie.spec.ts](../../tests/szkola-struktura-dodawanie.spec.ts#L468) | `school`, `structure`, `school-add`, `validation` |
+| STR-104 | STR-104: HTTP 422 zapisu szkoły nie zapisuje osieroconej struktury | [szkola-struktura-dodawanie.spec.ts](../../tests/szkola-struktura-dodawanie.spec.ts#L498) | `school`, `structure`, `school-add`, `negative`, `mock` |
+| STR-105 | STR-105: HTTP 500 zapisu szkoły nie zapisuje osieroconej struktury | [szkola-struktura-dodawanie.spec.ts](../../tests/szkola-struktura-dodawanie.spec.ts#L498) | `school`, `structure`, `school-add`, `negative`, `mock` |
+| STR-106 | STR-106: timeout zapisu szkoły nie zapisuje osieroconej struktury | [szkola-struktura-dodawanie.spec.ts](../../tests/szkola-struktura-dodawanie.spec.ts#L498) | `school`, `structure`, `school-add`, `negative`, `mock` |
+| STR-01 | STR-01: szkoła bez relacji pokazuje pusty stan struktury | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L119) | `school`, `structure`, `smoke` |
+| STR-02 | STR-02: pusty stan blokuje filtrowanie struktury i pozwala dodać powiązanie | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L128) | `school`, `structure`, `validation` |
+| STR-03 | STR-03: dialog dodawania zawiera filtry, obie tabele i akcje | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L145) | `school`, `structure`, `dialog` |
+| STR-04 | STR-04: puste wyszukiwanie pokazuje walidację i pozostawia dialog otwarty | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L181) | `school`, `structure`, `negative` |
+| STR-05 | STR-05: anulowanie pustego dialogu nie zmienia struktury | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L192) | `school`, `structure`, `cancel` |
+| STR-06 | STR-06: wyszukiwanie po dokładnym ID zwraca właściwą szkołę | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L205) | `school`, `structure`, `search` |
+| STR-07 | STR-07: wyszukiwanie po pełnej nazwie zwraca właściwą szkołę | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L216) | `school`, `structure`, `search` |
+| STR-08 | STR-08: wyszukiwanie po fragmencie nazwy zwraca pasującą szkołę | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L227) | `school`, `structure`, `search` |
+| STR-09 | STR-09: wyszukiwanie po kodzie pocztowym zwraca zgodne adresy | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L246) | `school`, `structure`, `search` |
+| STR-10 | STR-10: wyszukiwanie po miejscowości zwraca zgodne adresy | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L257) | `school`, `structure`, `search` |
+| STR-11 | STR-11: wyszukiwanie po ulicy zwraca zgodne adresy | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L268) | `school`, `structure`, `search` |
+| STR-12 | STR-12: wyszukiwanie łączy ID i nazwę szkoły | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L279) | `school`, `structure`, `search` |
+| STR-13 | STR-13: nieistniejące ID pozostawia pustą tabelę wyników | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L290) | `school`, `structure`, `search`, `negative` |
+| STR-14 | STR-14: szkołę można dodać do planowanych powiązań bez zapisu | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L304) | `school`, `structure`, `positive` |
+| STR-15 | STR-15: niezapisaną szkołę można usunąć z planowanych powiązań | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L318) | `school`, `structure`, `cancel` |
+| STR-16 | STR-16: pojedyncze poprawne powiązanie wysyła jedno żądanie zapisu | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L334) | `school`, `structure`, `api` |
+| STR-17 | STR-17: trwałość relacji po ponownym otwarciu | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L354) | `school`, `structure`, `persistence` |
+| STR-18 | STR-18: anulowanie po dodaniu szkoły nie zachowuje planowanego powiązania | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L374) | `school`, `structure`, `cancel` |
+| STR-19 | STR-19: kilka szkół jest wysyłanych dokładnie raz w jednym zapisie | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L398) | `school`, `structure`, `api` |
+| STR-20 | STR-20: Pokaż zaznaczone otwiera wybrane szkoły w nowej karcie | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L415) | `school`, `structure`, `filter` |
+| STR-21 | STR-21: typ „Zespół szkół” jest dostępny i mapowany do kontraktu API | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L454) | `school`, `structure`, `api` |
+| STR-22 | STR-22: typ „Filia” jest dostępny i mapowany do kontraktu API | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L454) | `school`, `structure`, `api` |
+| STR-23 | STR-23: typ „Wielobudynkowość” jest dostępny i mapowany do kontraktu API | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L454) | `school`, `structure`, `api` |
+| STR-24 | STR-24: nieistniejący typ relacji jest odrzucany | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L470) | `school`, `structure`, `api`, `negative` |
+| STR-25 | STR-25: duplikat aktywnej relacji | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L480) | `school`, `structure`, `validation` |
+| STR-26 | STR-26: drugi typ nie tworzy drugiej aktywnej relacji dla pary | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L507) | `school`, `structure`, `api` |
+| STR-27 | STR-27: bieżącej szkoły nie można dodać jako własnego powiązania | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L520) | `school`, `structure`, `validation`, `negative` |
+| STR-28 | STR-28: cykl bezpośredni jest blokowany przez API | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L544) | `school`, `structure`, `api`, `negative` |
+| STR-29 | STR-29: cykl pośredni jest blokowany przez API | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L557) | `school`, `structure`, `api`, `negative` |
+| STR-30 | STR-30: cztery poziomy i wielorakie role szkoły są obsługiwane | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L569) | `school`, `structure`, `hierarchy` |
+| STR-31 | STR-31: hierarchia głębsza niż cztery poziomy nie ma sztucznego limitu | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L593) | `school`, `structure`, `hierarchy` |
+| STR-32 | STR-32: edycja typu zapisanej relacji | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L618) | `school`, `structure`, `edit` |
+| STR-33 | STR-33: zamiana stron zapisanej relacji | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L649) | `school`, `structure`, `edit` |
+| STR-34 | STR-34: ikona śmietnika usuwa relację ze struktury | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L673) | `school`, `structure`, `delete` |
+| STR-35 | STR-35: ponowne dodanie reaktywuje ten sam rekord relacji | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L697) | `school`, `structure`, `persistence` |
+| STR-36 | STR-36: relację można ponownie dodać po usunięciu | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L719) | `school`, `structure`, `delete` |
+| STR-37 | STR-37: usunięta relacja nie trafia do aktywnego drzewa ani formularza | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L738) | `school`, `structure`, `delete` |
+| STR-38 | STR-38: nadany identyfikator zespołu ma dokładnie trzy cyfry | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L752) | `school`, `structure`, `identifier` |
+| STR-39 | STR-39: dwa dedykowane zespoły mają różne identyfikatory | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L763) | `school`, `structure`, `identifier` |
+| STR-40 | STR-40: identyfikatory zespołu i szkół nie kolidują w danych referencyjnych | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L772) | `school`, `structure`, `identifier` |
+| STR-41 | STR-41: wyszukiwanie zespołu po własnym ID jest jednoznaczne | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L787) | `school`, `structure`, `search` |
+| STR-42 | STR-42: publiczne API jednoznacznie identyfikuje zespół | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L800) | `school`, `structure`, `api` |
+| STR-43 | STR-43: API zachowuje ID, obie strony i typ zapisanej relacji | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L821) | `school`, `structure`, `api`, `persistence` |
+| STR-44 | STR-44: wybór typu w UI odpowiada słownikowi API | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L833) | `school`, `structure`, `dictionary` |
+| STR-45 | STR-45: historia pokazuje utworzenie relacji | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L861) | `school`, `structure`, `history` |
+| STR-46 | STR-46: historia pokazuje zmianę typu relacji | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L873) | `school`, `structure`, `history` |
+| STR-47 | STR-47: historia pokazuje usunięcie relacji | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L896) | `school`, `structure`, `history` |
+| STR-48 | STR-48: historia pokazuje reaktywację relacji | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L910) | `school`, `structure`, `history` |
+| STR-49 | STR-49: odpowiedź 422 nie zamyka dialogu ani nie ponawia zapisu | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L924) | `school`, `structure`, `api`, `negative` |
+| STR-50 | STR-50: odpowiedź 500 zachowuje przygotowaną relację i pozwala ponowić zapis | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L940) | `school`, `structure`, `api`, `negative` |
+| STR-51 | STR-51: równoczesna edycja zgłasza konflikt zamiast cichego nadpisania | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L957) | `school`, `structure`, `api`, `concurrency` |
+| STR-52 | STR-52: obecny użytkownik ma akcje dodawania, edycji i usuwania | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L992) | `school`, `structure`, `permissions` |
+| STR-53 | STR-53: wyszukiwanie złożone wyłącznie z białych znaków jest odrzucane | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L1018) | `school`, `structure`, `validation`, `negative` |
+| STR-54 | STR-54: ponowne wyszukiwanie zastępuje poprzednie wyniki | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L1036) | `school`, `structure`, `search` |
+| STR-55 | STR-55: tej samej szkoły nie można dodać dwukrotnie do planowanych powiązań | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L1052) | `school`, `structure`, `validation` |
+| STR-56 | STR-56: usuniętą planowaną szkołę można ponownie dodać | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L1071) | `school`, `structure`, `positive` |
+| STR-57 | STR-57: anulowanie kilku planowanych powiązań nie zachowuje żadnego z nich | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L1087) | `school`, `structure`, `cancel` |
+| STR-58 | STR-58: brak szkoły nadrzędnej nie zapisuje relacji | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L1116) | `school`, `structure`, `api`, `negative` |
+| STR-59 | STR-59: brak szkoły podrzędnej nie zapisuje relacji | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L1116) | `school`, `structure`, `api`, `negative` |
+| STR-60 | STR-60: brak typu relacji nie zapisuje relacji | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L1116) | `school`, `structure`, `api`, `negative` |
+| STR-61 | STR-61: samopowiązanie w API nie zapisuje relacji | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L1116) | `school`, `structure`, `api`, `negative` |
+| STR-62 | STR-62: nieistniejąca szkoła nie zapisuje relacji | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L1116) | `school`, `structure`, `api`, `negative` |
+| STR-63 | STR-63: filii nie można przypisać do dwóch szkół głównych | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L1129) | `school`, `structure`, `api`, `negative` |
+| STR-64 | STR-64: relacje pośrednie są tylko do odczytu | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L1142) | `school`, `structure`, `permissions` |
+| STR-65 | STR-65: dodatkowa lokalizacja modyfikuje wyłącznie bezpośrednią wielobudynkowość | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L1172) | `school`, `structure`, `permissions` |
+| STR-66 | STR-66: lokalizacja jest przed filią niezależnie od kolejności utworzenia | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L1204) | `school`, `structure`, `layout` |
+| STR-67 | STR-67: ikony i wcięcia odwzorowują poziomy bez zwijania | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L1225) | `school`, `structure`, `layout` |
+| STR-68 | STR-68: podstruktura pozostaje ciągła przed kolejnym rodzeństwem | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L1270) | `school`, `structure`, `layout` |
+| STR-69 | STR-69: Nie w potwierdzeniu nie usuwa relacji ani szkoły | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L1295) | `school`, `structure`, `cancel` |
+| STR-70 | STR-70: anulowanie edycji odrzuca typ i hierarchię | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L1318) | `school`, `structure`, `cancel` |
+| STR-71 | STR-71: usunięcie relacji zachowuje obie szkoły | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L1336) | `school`, `structure`, `delete` |
+| STR-72 | STR-72: timeout zapisu zachowuje dialog i przygotowaną relację | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L1349) | `school`, `structure`, `negative` |
+| STR-73 | STR-73: blokada aktywnego procesu nie usuwa relacji w UI | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L1368) | `school`, `structure`, `negative`, `mock` |
+| STR-74 | STR-74: blokada aktywnego procesu zachowuje edytowaną relację | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L1400) | `school`, `structure`, `negative`, `mock` |
+| STR-75 | STR-75: zespół przyjmuje SP, LO i przedszkole | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L1435) | `school`, `structure`, `positive` |
+| STR-76 | STR-76: Nadrzędna oznacza wyszukaną szkołę jako rodzica dla Zespół szkół | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L1459) | `school`, `structure`, `hierarchy` |
+| STR-77 | STR-77: Nadrzędna oznacza wyszukaną szkołę jako rodzica dla Filia | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L1459) | `school`, `structure`, `hierarchy` |
+| STR-78 | STR-78: Nadrzędna oznacza wyszukaną szkołę jako rodzica dla Wielobudynkowość | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L1459) | `school`, `structure`, `hierarchy` |
+| STR-79 | STR-79: zawieszonej szkoły nie można powiązać | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L1475) | `school`, `structure`, `status`, `negative` |
+| STR-80 | STR-80: zamówienie wymaga potwierdzenia usuwania relacji i pozostaje po anulowaniu | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L1492) | `school`, `structure`, `order` |
+| STR-81 | STR-81: cykl zamykający siedem poziomów jest blokowany | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L1531) | `school`, `structure`, `api`, `negative` |
+| STR-82 | STR-82: pojedynczy zapis formularza utrwala kilka relacji | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L1553) | `school`, `structure`, `api` |
+| STR-83 | STR-83: błędna pozycja nie zostawia częściowego zapisu formularza | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L1580) | `school`, `structure`, `api`, `negative` |
+| STR-84 | STR-84: równoczesne dodanie nie tworzy dwóch aktywnych relacji | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L1595) | `school`, `structure`, `api`, `concurrency` |
+| STR-85 | STR-85: Pokaż wszystkie działa niezależnie od Pokaż zaznaczone | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L1605) | `school`, `structure`, `filter` |
+| STR-86 | STR-86: historia zespołu szkół zawiera audyt dodania szkoły | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L1631) | `school`, `structure`, `history` |
+| STR-87 | STR-87: przejście do roli dodatkowej lokalizacji ogranicza akcje istniejącej filii | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L1649) | `school`, `structure`, `permissions` |
 | TEA-02 | TEA-02: brak pola imię blokuje zapis nauczyciela | [walidacja-anulowanie.spec.ts](../../tests/walidacja-anulowanie.spec.ts#L5) | `validation` |
 | TEA-02 | TEA-02: brak pola nazwisko blokuje zapis nauczyciela | [walidacja-anulowanie.spec.ts](../../tests/walidacja-anulowanie.spec.ts#L5) | `validation` |
 | TEA-02 | TEA-02: brak pola szkoła blokuje zapis nauczyciela | [walidacja-anulowanie.spec.ts](../../tests/walidacja-anulowanie.spec.ts#L5) | `validation` |
@@ -305,69 +411,69 @@
 | EDIT-02 | EDIT-02: anulowanie edycji zachowuje dane i historię | [walidacja-anulowanie.spec.ts](../../tests/walidacja-anulowanie.spec.ts#L70) | `cancel` |
 | FIND-04 | FIND-04: brak wyników usuwa poprzednią listę — teacher | [walidacja-anulowanie.spec.ts](../../tests/walidacja-anulowanie.spec.ts#L107) | `search` |
 | FIND-04 | FIND-04: brak wyników usuwa poprzednią listę — school | [walidacja-anulowanie.spec.ts](../../tests/walidacja-anulowanie.spec.ts#L107) | `search` |
-| ORD-01 | ORD-01: zamówienie szkoły zachowuje produkt i ilość po ponownym otwarciu | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L211) | `school`, `order`, `smoke` |
-| ORD-02 | ORD-02: zamówienie z dwoma produktami zachowuje produkty i ilości | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L240) | `school`, `order`, `positive` |
-| ORD-03 | ORD-03: edycja ilości dwóch produktów i usunięcie zamówienia | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L285) | `school`, `order`, `edit` |
-| ORD-04 | ORD-04: formularz Dodaj zamówienie zawiera komplet podstawowych kontrolek | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L344) | `school`, `order`, `form` |
-| ORD-05 | ORD-05: anulowanie pustego formularza nie tworzy zamówienia | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L453) | `school`, `order`, `cancel` |
-| ORD-06 | ORD-06: anulowanie po wyszukaniu nie tworzy zamówienia | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L470) | `school`, `order`, `cancel` |
-| ORD-07 | ORD-07: anulowanie po dodaniu produktu i ilości nie tworzy zamówienia | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L491) | `school`, `order`, `cancel` |
-| ORD-08 | ORD-08: ponowne otwarcie po anulowaniu zaczyna od czystego formularza | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L514) | `school`, `order`, `cancel` |
-| ORD-09 | ORD-09: lista Przedmiot zawiera oczekiwane pozycje | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L607) | `school`, `order`, `dictionary` |
-| ORD-10 | ORD-10: lista Poziom zawiera oczekiwane pozycje | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L622) | `school`, `order`, `dictionary` |
-| ORD-11 | ORD-11: lista Klasy zawiera 0-8 i pozwala zaznaczyć kilka klas | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L637) | `school`, `order`, `dictionary` |
-| ORD-12 | ORD-12: wyszukiwanie po dokładnym kodzie zwraca właściwy produkt | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L663) | `school`, `order`, `search` |
-| ORD-13 | ORD-13: wyszukiwanie po fragmencie kodu zwraca oba produkty fizyki 7 | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L683) | `school`, `order`, `search` |
-| ORD-14 | ORD-14: filtr Przedmiot ogranicza wyniki do fizyki | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L700) | `school`, `order`, `filter` |
-| ORD-15 | ORD-15: filtr Poziom ogranicza wyniki do szkoły podstawowej | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L723) | `school`, `order`, `filter` |
-| ORD-16 | ORD-16: filtr Klasa zwraca produkty klasy 7 | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L746) | `school`, `order`, `filter` |
-| ORD-17 | ORD-17: filtr Klasy pozwala wyszukiwać dla kilku klas jednocześnie | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L769) | `school`, `order`, `filter` |
-| ORD-18 | ORD-18: Przedmiot i Poziom działają razem | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L794) | `school`, `order`, `filter` |
-| ORD-19 | ORD-19: Przedmiot, Poziom i Klasa działają razem | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L815) | `school`, `order`, `filter` |
-| ORD-20 | ORD-20: wszystkie filtry razem zwracają oczekiwane produkty | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L838) | `school`, `order`, `filter` |
-| ORD-21 | ORD-21: nieistniejący kod daje pustą listę wyników | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L877) | `school`, `order`, `search`, `negative` |
-| ORD-22 | ORD-22: drugie wyszukanie zastępuje wyniki pierwszego | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L892) | `school`, `order`, `search` |
-| ORD-23 | ORD-23: Wyczyść filtry resetuje wszystkie kryteria | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L913) | `school`, `order`, `filter` |
-| ORD-24 | ORD-24: wyszukiwanie działa poprawnie po wyczyszczeniu filtrów | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L940) | `school`, `order`, `filter` |
-| ORD-25 | ORD-25: strzałka w prawo przenosi wybrany produkt do Zamówienia | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L969) | `school`, `order`, `product` |
-| ORD-26 | ORD-26: kilka produktów można przenieść do Zamówienia jednym ruchem | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L988) | `school`, `order`, `product` |
-| ORD-27 | ORD-27: strzałka w lewo cofa zaznaczony produkt | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L1009) | `school`, `order`, `product` |
-| ORD-28 | ORD-28: kosz usuwa wszystkie produkty z tworzonego zamówienia | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L1034) | `school`, `order`, `product` |
-| ORD-29 | ORD-29: produkt już dodany do Zamówienia nie pojawia się ponownie w Gratisach | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L1055) | `school`, `order`, `duplicate` |
-| ORD-30 | ORD-30: wyszukanie kolejnego produktu nie usuwa wcześniej wybranego | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L1076) | `school`, `order`, `product` |
-| ORD-31 | ORD-31: zmiana filtrów nie usuwa produktów z Zamówienia | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L1095) | `school`, `order`, `product`, `filter` |
-| ORD-32 | ORD-32: dane produktu są spójne po przeniesieniu do Zamówienia | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L1116) | `school`, `order`, `product` |
-| ORD-33 | ORD-33: ilość 1 jest zachowywana w edytorze | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L1198) | `school`, `order`, `quantity` |
-| ORD-34 | ORD-34: różne produkty zachowują niezależne ilości | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L1217) | `school`, `order`, `quantity` |
-| ORD-35 | ORD-35: ostatnia zmiana ilości przed zapisem jest używana | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L1242) | `school`, `order`, `quantity` |
-| ORD-36 | ORD-36: Tab kończy edycję ilości w AG Grid | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L1279) | `school`, `order`, `quantity` |
-| ORD-37 | ORD-37: wpisanie 0 normalizuje ilość do 10 | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L1299) | `school`, `order`, `quantity`, `boundary` |
-| ORD-38 | ORD-38: wartość ujemna nie powinna być akceptowana — znany bug | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L1318) | `school`, `order`, `quantity`, `bug` |
-| ORD-39 | ORD-39: wyczyszczenie pola Ilość automatycznie przywraca wartość | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L1339) | `school`, `order`, `quantity`, `boundary` |
-| ORD-40 | ORD-40: pusty formularz nie zapisuje zamówienia i oznacza Przedmiot jako niepoprawny | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L1371) | `school`, `order`, `validation` |
-| ORD-41 | ORD-41: zamówienie można zapisać bez wybranego Przedmiotu, jeśli produkt został dodany | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L1399) | `school`, `order`, `positive` |
-| ORD-42 | ORD-42: dwa szybkie kliknięcia Zapisz z krótkim odstępem tworzą tylko jedno zamówienie | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L1451) | `school`, `order`, `duplicate` |
-| ORD-43 | ORD-43: dwa kolejne zamówienia dostają różne ID | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L1511) | `school`, `order`, `identity` |
-| ORD-44 | ORD-44: usunięcie pierwszego z dwóch zamówień nie usuwa drugiego | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L1551) | `school`, `order`, `isolation` |
-| ORD-45 | ORD-45: zamówienie utworzone dla szkoły A nie pojawia się w szkole B | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L1598) | `school`, `order`, `isolation` |
-| ORD-46 | ORD-46: reload zachowuje ID, produkt i ilość zamówienia | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L1621) | `school`, `order`, `persistence` |
-| ORD-47 | ORD-47: zapisane zamówienie ma numeryczne ID i widoczny wiersz na liście | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L1650) | `school`, `order`, `list` |
-| ORD-48 | ORD-48: poprawny JPG można dodać jako załącznik | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L1688) | `school`, `order`, `attachment` |
-| ORD-49 | ORD-49: poprawny PNG można dodać jako załącznik | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L1688) | `school`, `order`, `attachment` |
-| ORD-50 | ORD-50: poprawny PDF można dodać jako załącznik | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L1688) | `school`, `order`, `attachment` |
-| ORD-51 | ORD-51: można dodać kilka załączników do jednego zamówienia | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L1704) | `school`, `order`, `attachment` |
-| ORD-52 | ORD-52: można usunąć jeden z kilku załączników | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L1727) | `school`, `order`, `attachment` |
-| ORD-53 | ORD-53: po usunięciu wszystkich załączników lista jest pusta | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L1771) | `school`, `order`, `attachment` |
-| ORD-54 | ORD-54: zmiana filtrów nie usuwa załącznika | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L1806) | `school`, `order`, `attachment`, `filter` |
-| ORD-55 | ORD-55: dodanie produktu nie usuwa załącznika | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L1829) | `school`, `order`, `attachment`, `product` |
-| ORD-56 | ORD-56: załącznik jest trwały po zapisaniu i ponownym otwarciu edycji zamówienia | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L1848) | `school`, `order`, `attachment`, `persistence` |
-| ORD-57 | ORD-57: kilka załączników jest trwałych po zapisaniu zamówienia | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L1903) | `school`, `order`, `attachment`, `persistence` |
-| ORD-58 | ORD-58: anulowanie formularza z załącznikiem nie przenosi pliku do kolejnego formularza | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L1957) | `school`, `order`, `attachment`, `cancel` |
-| ORD-59 | ORD-59: niedozwolony typ pliku WEBP jest odrzucany | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L1984) | `school`, `order`, `attachment`, `validation` |
-| ORD-60 | ORD-60: niedozwolony typ pliku TXT jest odrzucany | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L1984) | `school`, `order`, `attachment`, `validation` |
-| ORD-61 | ORD-61: plik większy niż 10 MB jest odrzucany | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L1998) | `school`, `order`, `attachment`, `validation` |
-| ORD-62 | ORD-62: plik o rozmiarze dokładnie 10 MB jest akceptowany | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L2013) | `school`, `order`, `attachment`, `boundary` |
-| ORD-63 | ORD-63: zamówienie z załącznikiem pokazuje ikonę dokumentu na liście | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L2028) | `school`, `order`, `attachment`, `list` |
-| ORD-64 | ORD-64: zamówienie bez załącznika nie pokazuje ikony dokumentu | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L2074) | `school`, `order`, `attachment`, `list`, `negative` |
-| ORD-65 | ORD-65: po usunięciu ostatniego załącznika ikona dokumentu znika | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L2098) | `school`, `order`, `attachment`, `edit`, `list` |
-| ORD-66 | ORD-66: kilka załączników daje pojedynczą ikonę dokumentu na liście | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L2175) | `school`, `order`, `attachment`, `list` |
+| ORD-12 | ORD-12: wyszukiwanie po dokładnym kodzie zwraca właściwy produkt | [zamowienia-produkty.spec.ts](../../tests/zamowienia-produkty.spec.ts#L30) | `school`, `order`, `search` |
+| ORD-13 | ORD-13: wyszukiwanie po fragmencie kodu zwraca oba produkty fizyki 7 | [zamowienia-produkty.spec.ts](../../tests/zamowienia-produkty.spec.ts#L50) | `school`, `order`, `search` |
+| ORD-14 | ORD-14: filtr Przedmiot ogranicza wyniki do fizyki | [zamowienia-produkty.spec.ts](../../tests/zamowienia-produkty.spec.ts#L67) | `school`, `order`, `filter` |
+| ORD-15 | ORD-15: filtr Poziom ogranicza wyniki do szkoły podstawowej | [zamowienia-produkty.spec.ts](../../tests/zamowienia-produkty.spec.ts#L90) | `school`, `order`, `filter` |
+| ORD-16 | ORD-16: filtr Klasa zwraca produkty klasy 7 | [zamowienia-produkty.spec.ts](../../tests/zamowienia-produkty.spec.ts#L113) | `school`, `order`, `filter` |
+| ORD-17 | ORD-17: filtr Klasy pozwala wyszukiwać dla kilku klas jednocześnie | [zamowienia-produkty.spec.ts](../../tests/zamowienia-produkty.spec.ts#L136) | `school`, `order`, `filter` |
+| ORD-18 | ORD-18: Przedmiot i Poziom działają razem | [zamowienia-produkty.spec.ts](../../tests/zamowienia-produkty.spec.ts#L161) | `school`, `order`, `filter` |
+| ORD-19 | ORD-19: Przedmiot, Poziom i Klasa działają razem | [zamowienia-produkty.spec.ts](../../tests/zamowienia-produkty.spec.ts#L182) | `school`, `order`, `filter` |
+| ORD-20 | ORD-20: wszystkie filtry razem zwracają oczekiwane produkty | [zamowienia-produkty.spec.ts](../../tests/zamowienia-produkty.spec.ts#L205) | `school`, `order`, `filter` |
+| ORD-21 | ORD-21: nieistniejący kod daje pustą listę wyników | [zamowienia-produkty.spec.ts](../../tests/zamowienia-produkty.spec.ts#L244) | `school`, `order`, `search`, `negative` |
+| ORD-22 | ORD-22: drugie wyszukanie zastępuje wyniki pierwszego | [zamowienia-produkty.spec.ts](../../tests/zamowienia-produkty.spec.ts#L259) | `school`, `order`, `search` |
+| ORD-23 | ORD-23: Wyczyść filtry resetuje wszystkie kryteria | [zamowienia-produkty.spec.ts](../../tests/zamowienia-produkty.spec.ts#L280) | `school`, `order`, `filter` |
+| ORD-24 | ORD-24: wyszukiwanie działa poprawnie po wyczyszczeniu filtrów | [zamowienia-produkty.spec.ts](../../tests/zamowienia-produkty.spec.ts#L307) | `school`, `order`, `filter` |
+| ORD-25 | ORD-25: strzałka w prawo przenosi wybrany produkt do Zamówienia | [zamowienia-produkty.spec.ts](../../tests/zamowienia-produkty.spec.ts#L336) | `school`, `order`, `product` |
+| ORD-26 | ORD-26: kilka produktów można przenieść do Zamówienia jednym ruchem | [zamowienia-produkty.spec.ts](../../tests/zamowienia-produkty.spec.ts#L355) | `school`, `order`, `product` |
+| ORD-27 | ORD-27: strzałka w lewo cofa zaznaczony produkt | [zamowienia-produkty.spec.ts](../../tests/zamowienia-produkty.spec.ts#L376) | `school`, `order`, `product` |
+| ORD-28 | ORD-28: kosz usuwa wszystkie produkty z tworzonego zamówienia | [zamowienia-produkty.spec.ts](../../tests/zamowienia-produkty.spec.ts#L401) | `school`, `order`, `product` |
+| ORD-29 | ORD-29: produkt już dodany do Zamówienia nie pojawia się ponownie w Gratisach | [zamowienia-produkty.spec.ts](../../tests/zamowienia-produkty.spec.ts#L422) | `school`, `order`, `duplicate` |
+| ORD-30 | ORD-30: wyszukanie kolejnego produktu nie usuwa wcześniej wybranego | [zamowienia-produkty.spec.ts](../../tests/zamowienia-produkty.spec.ts#L443) | `school`, `order`, `product` |
+| ORD-31 | ORD-31: zmiana filtrów nie usuwa produktów z Zamówienia | [zamowienia-produkty.spec.ts](../../tests/zamowienia-produkty.spec.ts#L462) | `school`, `order`, `product`, `filter` |
+| ORD-32 | ORD-32: dane produktu są spójne po przeniesieniu do Zamówienia | [zamowienia-produkty.spec.ts](../../tests/zamowienia-produkty.spec.ts#L483) | `school`, `order`, `product` |
+| ORD-01 | ORD-01: zamówienie szkoły zachowuje produkt i ilość po ponownym otwarciu | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L43) | `school`, `order`, `smoke` |
+| ORD-02 | ORD-02: zamówienie z dwoma produktami zachowuje produkty i ilości | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L72) | `school`, `order`, `positive` |
+| ORD-03 | ORD-03: edycja ilości dwóch produktów i usunięcie zamówienia | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L117) | `school`, `order`, `edit` |
+| ORD-04 | ORD-04: formularz Dodaj zamówienie zawiera komplet podstawowych kontrolek | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L176) | `school`, `order`, `form` |
+| ORD-05 | ORD-05: anulowanie pustego formularza nie tworzy zamówienia | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L285) | `school`, `order`, `cancel` |
+| ORD-06 | ORD-06: anulowanie po wyszukaniu nie tworzy zamówienia | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L302) | `school`, `order`, `cancel` |
+| ORD-07 | ORD-07: anulowanie po dodaniu produktu i ilości nie tworzy zamówienia | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L323) | `school`, `order`, `cancel` |
+| ORD-08 | ORD-08: ponowne otwarcie po anulowaniu zaczyna od czystego formularza | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L346) | `school`, `order`, `cancel` |
+| ORD-09 | ORD-09: lista Przedmiot zawiera oczekiwane pozycje | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L439) | `school`, `order`, `dictionary` |
+| ORD-10 | ORD-10: lista Poziom zawiera oczekiwane pozycje | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L454) | `school`, `order`, `dictionary` |
+| ORD-11 | ORD-11: lista Klasy zawiera 0-8 i pozwala zaznaczyć kilka klas | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L469) | `school`, `order`, `dictionary` |
+| ORD-33 | ORD-33: ilość 1 jest zachowywana w edytorze | [zamowienia-walidacja.spec.ts](../../tests/zamowienia-walidacja.spec.ts#L29) | `school`, `order`, `quantity` |
+| ORD-34 | ORD-34: różne produkty zachowują niezależne ilości | [zamowienia-walidacja.spec.ts](../../tests/zamowienia-walidacja.spec.ts#L48) | `school`, `order`, `quantity` |
+| ORD-35 | ORD-35: ostatnia zmiana ilości przed zapisem jest używana | [zamowienia-walidacja.spec.ts](../../tests/zamowienia-walidacja.spec.ts#L73) | `school`, `order`, `quantity` |
+| ORD-36 | ORD-36: Tab kończy edycję ilości w AG Grid | [zamowienia-walidacja.spec.ts](../../tests/zamowienia-walidacja.spec.ts#L110) | `school`, `order`, `quantity` |
+| ORD-37 | ORD-37: wpisanie 0 normalizuje ilość do 10 | [zamowienia-walidacja.spec.ts](../../tests/zamowienia-walidacja.spec.ts#L130) | `school`, `order`, `quantity`, `boundary` |
+| ORD-38 | ORD-38: wartość ujemna nie jest akceptowana | [zamowienia-walidacja.spec.ts](../../tests/zamowienia-walidacja.spec.ts#L149) | `school`, `order`, `quantity`, `boundary` |
+| ORD-39 | ORD-39: wyczyszczenie pola Ilość automatycznie przywraca wartość | [zamowienia-walidacja.spec.ts](../../tests/zamowienia-walidacja.spec.ts#L168) | `school`, `order`, `quantity`, `boundary` |
+| ORD-40 | ORD-40: pusty formularz nie zapisuje zamówienia i oznacza Przedmiot jako niepoprawny | [zamowienia-walidacja.spec.ts](../../tests/zamowienia-walidacja.spec.ts#L200) | `school`, `order`, `validation` |
+| ORD-41 | ORD-41: zamówienie można zapisać bez wybranego Przedmiotu, jeśli produkt został dodany | [zamowienia-walidacja.spec.ts](../../tests/zamowienia-walidacja.spec.ts#L228) | `school`, `order`, `positive` |
+| ORD-42 | ORD-42: dwa szybkie kliknięcia Zapisz z krótkim odstępem tworzą tylko jedno zamówienie | [zamowienia-walidacja.spec.ts](../../tests/zamowienia-walidacja.spec.ts#L280) | `school`, `order`, `duplicate` |
+| ORD-43 | ORD-43: dwa kolejne zamówienia dostają różne ID | [zamowienia-walidacja.spec.ts](../../tests/zamowienia-walidacja.spec.ts#L340) | `school`, `order`, `identity` |
+| ORD-44 | ORD-44: usunięcie pierwszego z dwóch zamówień nie usuwa drugiego | [zamowienia-walidacja.spec.ts](../../tests/zamowienia-walidacja.spec.ts#L380) | `school`, `order`, `isolation` |
+| ORD-45 | ORD-45: zamówienie utworzone dla szkoły A nie pojawia się w szkole B | [zamowienia-walidacja.spec.ts](../../tests/zamowienia-walidacja.spec.ts#L427) | `school`, `order`, `isolation` |
+| ORD-46 | ORD-46: reload zachowuje ID, produkt i ilość zamówienia | [zamowienia-walidacja.spec.ts](../../tests/zamowienia-walidacja.spec.ts#L450) | `school`, `order`, `persistence` |
+| ORD-47 | ORD-47: zapisane zamówienie ma numeryczne ID i widoczny wiersz na liście | [zamowienia-walidacja.spec.ts](../../tests/zamowienia-walidacja.spec.ts#L479) | `school`, `order`, `list` |
+| ORD-48 | ORD-48: poprawny JPG można dodać jako załącznik | [zamowienia-zalaczniki.spec.ts](../../tests/zamowienia-zalaczniki.spec.ts#L44) | `school`, `order`, `attachment` |
+| ORD-49 | ORD-49: poprawny PNG można dodać jako załącznik | [zamowienia-zalaczniki.spec.ts](../../tests/zamowienia-zalaczniki.spec.ts#L44) | `school`, `order`, `attachment` |
+| ORD-50 | ORD-50: poprawny PDF można dodać jako załącznik | [zamowienia-zalaczniki.spec.ts](../../tests/zamowienia-zalaczniki.spec.ts#L44) | `school`, `order`, `attachment` |
+| ORD-51 | ORD-51: można dodać kilka załączników do jednego zamówienia | [zamowienia-zalaczniki.spec.ts](../../tests/zamowienia-zalaczniki.spec.ts#L60) | `school`, `order`, `attachment` |
+| ORD-52 | ORD-52: można usunąć jeden z kilku załączników | [zamowienia-zalaczniki.spec.ts](../../tests/zamowienia-zalaczniki.spec.ts#L83) | `school`, `order`, `attachment` |
+| ORD-53 | ORD-53: po usunięciu wszystkich załączników lista jest pusta | [zamowienia-zalaczniki.spec.ts](../../tests/zamowienia-zalaczniki.spec.ts#L127) | `school`, `order`, `attachment` |
+| ORD-54 | ORD-54: zmiana filtrów nie usuwa załącznika | [zamowienia-zalaczniki.spec.ts](../../tests/zamowienia-zalaczniki.spec.ts#L162) | `school`, `order`, `attachment`, `filter` |
+| ORD-55 | ORD-55: dodanie produktu nie usuwa załącznika | [zamowienia-zalaczniki.spec.ts](../../tests/zamowienia-zalaczniki.spec.ts#L185) | `school`, `order`, `attachment`, `product` |
+| ORD-56 | ORD-56: załącznik jest trwały po zapisaniu i ponownym otwarciu edycji zamówienia | [zamowienia-zalaczniki.spec.ts](../../tests/zamowienia-zalaczniki.spec.ts#L204) | `school`, `order`, `attachment`, `persistence` |
+| ORD-57 | ORD-57: kilka załączników jest trwałych po zapisaniu zamówienia | [zamowienia-zalaczniki.spec.ts](../../tests/zamowienia-zalaczniki.spec.ts#L259) | `school`, `order`, `attachment`, `persistence` |
+| ORD-58 | ORD-58: anulowanie formularza z załącznikiem nie przenosi pliku do kolejnego formularza | [zamowienia-zalaczniki.spec.ts](../../tests/zamowienia-zalaczniki.spec.ts#L313) | `school`, `order`, `attachment`, `cancel` |
+| ORD-59 | ORD-59: niedozwolony typ pliku WEBP jest odrzucany | [zamowienia-zalaczniki.spec.ts](../../tests/zamowienia-zalaczniki.spec.ts#L340) | `school`, `order`, `attachment`, `validation` |
+| ORD-60 | ORD-60: niedozwolony typ pliku TXT jest odrzucany | [zamowienia-zalaczniki.spec.ts](../../tests/zamowienia-zalaczniki.spec.ts#L340) | `school`, `order`, `attachment`, `validation` |
+| ORD-61 | ORD-61: plik większy niż 10 MB jest odrzucany | [zamowienia-zalaczniki.spec.ts](../../tests/zamowienia-zalaczniki.spec.ts#L354) | `school`, `order`, `attachment`, `validation` |
+| ORD-62 | ORD-62: plik o rozmiarze dokładnie 10 MB jest akceptowany | [zamowienia-zalaczniki.spec.ts](../../tests/zamowienia-zalaczniki.spec.ts#L369) | `school`, `order`, `attachment`, `boundary` |
+| ORD-63 | ORD-63: zamówienie z załącznikiem pokazuje ikonę dokumentu na liście | [zamowienia-zalaczniki.spec.ts](../../tests/zamowienia-zalaczniki.spec.ts#L384) | `school`, `order`, `attachment`, `list` |
+| ORD-64 | ORD-64: zamówienie bez załącznika nie pokazuje ikony dokumentu | [zamowienia-zalaczniki.spec.ts](../../tests/zamowienia-zalaczniki.spec.ts#L430) | `school`, `order`, `attachment`, `list`, `negative` |
+| ORD-65 | ORD-65: po usunięciu ostatniego załącznika ikona dokumentu znika | [zamowienia-zalaczniki.spec.ts](../../tests/zamowienia-zalaczniki.spec.ts#L454) | `school`, `order`, `attachment`, `edit`, `list` |
+| ORD-66 | ORD-66: kilka załączników daje pojedynczą ikonę dokumentu na liście | [zamowienia-zalaczniki.spec.ts](../../tests/zamowienia-zalaczniki.spec.ts#L531) | `school`, `order`, `attachment`, `list` |

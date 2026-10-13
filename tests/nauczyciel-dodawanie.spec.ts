@@ -143,7 +143,7 @@ test("ADD-01: nauczyciela można utworzyć z imieniem, nazwiskiem, szkołą i e-
    */
 
   await expectTeacherRodoOnCard(page, {
-    marketing: false,
+    marketing: true,
     email: false,
     phone: false,
   });
@@ -476,7 +476,9 @@ test("ADD-05: nauczyciela można utworzyć ze źródłem Karta LS @teacher @add 
   page,
   scenario: s,
 }) => {
-  const form = await s.app.prepareTeacher("Zrodlo", s.email, TEST_SCHOOL.id, TEST_SCHOOL.name);
+  const form = await s.app.prepareTeacher("Zrodlo", s.email, TEST_SCHOOL.id, TEST_SCHOOL.name, {
+    autoConsent: false,
+  });
 
   await selectNewTeacherSource(page, form, "Karta LS");
 
@@ -510,7 +512,9 @@ test("ADD-06: zgoda E-mail może być zaznaczona bez zgody Marketing @teacher @a
   page,
   scenario: s,
 }) => {
-  const form = await s.app.prepareTeacher("Rodoemail", s.email, TEST_SCHOOL.id, TEST_SCHOOL.name);
+  const form = await s.app.prepareTeacher("Rodoemail", s.email, TEST_SCHOOL.id, TEST_SCHOOL.name, {
+    autoConsent: false,
+  });
 
   const marketing = newTeacherConsentCheckbox(form, "Marketing");
 
@@ -596,7 +600,15 @@ test("ADD-07: zgoda Telefon może być zaznaczona bez zgody Marketing @teacher @
   page,
   scenario: s,
 }) => {
-  const form = await s.app.prepareTeacher("Rodotelefon", s.email, TEST_SCHOOL.id, TEST_SCHOOL.name);
+  const form = await s.app.prepareTeacher(
+    "Rodotelefon",
+    s.email,
+    TEST_SCHOOL.id,
+    TEST_SCHOOL.name,
+    {
+      autoConsent: false,
+    },
+  );
 
   const marketing = newTeacherConsentCheckbox(form, "Marketing");
 
@@ -673,11 +685,15 @@ test("ADD-07: zgoda Telefon może być zaznaczona bez zgody Marketing @teacher @
  * =========================================================
  */
 
-test("ADD-08: nauczyciela można utworzyć bez żadnej zgody RODO @teacher @add @rodo", async ({
+test("ADD-08: nauczyciela ze źródłem Karta LS można utworzyć bez żadnej zgody RODO @teacher @add @rodo", async ({
   page,
   scenario: s,
 }) => {
-  const form = await s.app.prepareTeacher("Bezrodo", s.email, TEST_SCHOOL.id, TEST_SCHOOL.name);
+  const form = await s.app.prepareTeacher("Bezrodo", s.email, TEST_SCHOOL.id, TEST_SCHOOL.name, {
+    autoConsent: false,
+  });
+
+  await selectNewTeacherSource(page, form, "Karta LS");
 
   await expect(newTeacherConsentCheckbox(form, "Marketing")).not.toBeChecked();
 
@@ -703,11 +719,11 @@ test("ADD-08: nauczyciela można utworzyć bez żadnej zgody RODO @teacher @add 
    */
   const history = await openTeacherHistory(page);
 
-  await expectTeacherRodoHistoryChange(page, history, "Zgoda Marketing", "Nie");
+  await expectTeacherRodoHistoryChange(page, history, "Zgoda Marketing", "Nie", "Karta LS");
 
-  await expectTeacherRodoHistoryChange(page, history, "Zgoda Email", "Nie");
+  await expectTeacherRodoHistoryChange(page, history, "Zgoda Email", "Nie", "Karta LS");
 
-  await expectTeacherRodoHistoryChange(page, history, "Zgoda Telefon", "Nie");
+  await expectTeacherRodoHistoryChange(page, history, "Zgoda Telefon", "Nie", "Karta LS");
 });
 
 /*
@@ -1250,6 +1266,10 @@ test("ADD-21: e-mail używany przez innego nauczyciela blokuje zapis @teacher @a
   await typeValue(newTeacherFirstNameInput(form), "Adam");
 
   await typeValue(newTeacherEmailInput(form), s.email);
+
+  await newTeacherConsentCheckbox(form, "Marketing").check();
+
+  await expect(newTeacherConsentCheckbox(form, "Marketing")).toBeChecked();
 
   await s.app.attachSchool(form, TEST_SCHOOL.id, TEST_SCHOOL.name);
 

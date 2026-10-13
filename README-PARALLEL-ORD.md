@@ -4,7 +4,7 @@ Pakiet `ORD-01`–`ORD-66` jest przystosowany do pracy na jednym lub dwóch work
 
 ## Jak działa izolacja
 
-`tests/zamowienia-szkoly.spec.ts` działa w trybie równoległym. `tests/support/order-school.ts` buduje nazwy szkół na podstawie `TEST_PARALLEL_INDEX` lub `TEST_WORKER_INDEX`:
+Pliki `tests/zamowienia-*.spec.ts` działają w trybie równoległym. `tests/support/order-school.ts` buduje nazwy szkół na podstawie `TEST_PARALLEL_INDEX` lub `TEST_WORKER_INDEX`:
 
 ```text
 worker 0 → AUTO_ORD_REFERENCE_DEV_W0
@@ -19,7 +19,7 @@ Na TEST prefiks `DEV` jest zastępowany przez `TEST`. Każdy worker korzysta z w
 ## Uruchomienie
 
 ```powershell
-npm run test:workers:2 -- tests/zamowienia-szkoly.spec.ts
+npm run test:workers:2 -- --grep "@order"
 ```
 
 W panelu wybierz pakiet **Zamówienia** i `2` workery. Wartość `4` jest dla tego pakietu blokowana.
@@ -27,7 +27,7 @@ W panelu wybierz pakiet **Zamówienia** i `2` workery. Wartość `4` jest dla te
 Pojedynczy scenariusz diagnostyczny najlepiej uruchamiać na jednym workerze:
 
 ```powershell
-npx playwright test tests/zamowienia-szkoly.spec.ts --grep "ORD-43" --workers=1
+npx playwright test --grep "ORD-43" --workers=1
 ```
 
 ## Ważne ograniczenia

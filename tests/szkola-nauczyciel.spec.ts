@@ -68,9 +68,9 @@ test("szkoła → nauczyciel → relacja → wyszukiwanie → nauczyciel → his
        * Odczytujemy faktyczny adres
        * zapisany przez aplikację.
        */
-      const schoolAddress = await app.detail("address").inputValue();
+      const schoolAddress = app.detail("address");
 
-      expect(schoolAddress, "Szkoła powinna mieć zapisany adres").not.toBe("");
+      await expect(schoolAddress, "Szkoła powinna mieć zapisany adres").not.toHaveValue("");
 
       /*
        * Numer został przekazany przez test
@@ -78,9 +78,9 @@ test("szkoła → nauczyciel → relacja → wyszukiwanie → nauczyciel → his
        * więc powinien znajdować się
        * w zapisanym adresie.
        */
-      expect(schoolAddress).toContain(number);
+      await expect(schoolAddress).toHaveValue(new RegExp(number));
 
-      run.schoolAddress = schoolAddress;
+      run.schoolAddress = await schoolAddress.inputValue();
 
       await saveRun();
     });

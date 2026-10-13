@@ -43,6 +43,19 @@ export default tseslint.config(
     },
   },
   {
+    files: ["test-ui/**/*.js"],
+    languageOptions: {
+      globals: {
+        alert: "readonly",
+        clearInterval: "readonly",
+        confirm: "readonly",
+        document: "readonly",
+        EventSource: "readonly",
+        setInterval: "readonly",
+      },
+    },
+  },
+  {
     files: ["playwright*.ts", "tests/**/*.ts"],
     languageOptions: {
       parserOptions: {

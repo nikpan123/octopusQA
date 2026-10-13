@@ -237,6 +237,8 @@ Sprawdzane filtry:
 
 Wyniki nie mogą zawierać medalu spoza wybranych wartości.
 
+Na DEV scenariusze `MED-30` i `MED-60` wykrywają obecnie potwierdzony defekt kontraktu filtra `Medal = Brak`. Wartość jest wysyłana jako `medal: [null]`, a API odpowiada pustą listą mimo istniejących szkół bez medalu. Raport odtworzenia: [MED-30 / MED-60 — filtr Medal = Brak](../issues/MED-30-MED-60-filtr-medal-brak.md).
+
 ---
 
 ## 9. Ważna zasada wyszukiwarki — ID ma priorytet

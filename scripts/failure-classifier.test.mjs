@@ -82,4 +82,12 @@ test("reporter zapisuje tylko nieoczekiwane niepowodzenie", () => {
     },
   );
   assert.equal(reporter.failures.length, 1);
+
+  reporter.onTestEnd(playwrightTest, {
+    status: "passed",
+    retry: 1,
+    duration: 20,
+    errors: [],
+  });
+  assert.equal(reporter.failures.length, 0, "udany retry usuwa wcześniejszą awarię z raportu");
 });

@@ -7,7 +7,7 @@ Repozytorium zawiera testy end-to-end aplikacji Octopus napisane w Playwright i 
 | DEV        | `https://octopus.gwodev.pl`  | `playwright.config.ts`      |
 | TEST       | `https://octopus.gwotest.pl` | `playwright.test.config.ts` |
 
-Aktualny zestaw zawiera **365 scenariuszy** w 11 plikach. Zwykła regresja wykonuje **363 scenariusze**; dwa testy `MED-YEAR-*` należą do osobnego, ciężkiego procesu rocznej medalowości.
+Aktualny zestaw zawiera **471 scenariuszy** w 24 plikach. Zwykła regresja obejmuje **469 scenariuszy**; dwa testy `MED-YEAR-*` należą do osobnego, ciężkiego procesu rocznej medalowości. Struktura ma 106 wykonywanych scenariuszy bez `fixme`: 87 na profilu istniejącej szkoły i 19 podczas tworzenia nowej szkoły. Znane niezgodności są oznaczone `test.fail` i pozostają wykonywane.
 
 Pełna lista jest generowana z kodu i znajduje się w [indeksie scenariuszy](docs/tests/scenario-index.md).
 
@@ -15,18 +15,20 @@ Pełna lista jest generowana z kodu i znajduje się w [indeksie scenariuszy](doc
 
 | Obszar                               | Plik                                 | Liczba wykonań |
 | ------------------------------------ | ------------------------------------ | -------------: |
-| Klubowiczostwo nauczyciela           | `klubowiczostwo-nauczyciela.spec.ts` |             72 |
+| Klubowiczostwo nauczyciela           | `klubowiczostwo-*.spec.ts`           |             72 |
 | Dodawanie nauczyciela                | `nauczyciel-dodawanie.spec.ts`       |             33 |
-| Edycja nauczyciela                   | `nauczyciel-edycja.spec.ts`          |             44 |
+| Edycja nauczyciela                   | `nauczyciel-edycja*.spec.ts`         |             44 |
 | Rozszerzenia i relacje nauczyciela   | `nauczyciel-rozszerzenie.spec.ts`    |              6 |
 | Dodawanie szkoły                     | `szkola-dodawanie.spec.ts`           |             57 |
 | Edycja szkoły                        | `szkola-edycja.spec.ts`              |             33 |
 | Medalowość szkoły                    | `szkola-medalowosc.spec.ts`          |             42 |
 | Roczna medalowość                    | `szkola-medalowosc-annual.spec.ts`   |              2 |
 | Relacja szkoła–nauczyciel            | `szkola-nauczyciel.spec.ts`          |              1 |
+| Struktura szkoły                     | `szkola-struktura.spec.ts`           |             87 |
+| Struktura przy dodawaniu szkoły      | `szkola-struktura-dodawanie.spec.ts` |             19 |
 | Walidacja, anulowanie i wyszukiwanie | `walidacja-anulowanie.spec.ts`       |              9 |
-| Zamówienia szkoły                    | `zamowienia-szkoly.spec.ts`          |             66 |
-| **Razem**                            |                                      |        **365** |
+| Zamówienia szkoły                    | `zamowienia-*.spec.ts`               |             66 |
+| **Razem**                            |                                      |        **471** |
 
 Szczegółowe opisy domen znajdują się w [dokumentacji testów](docs/tests/README.md).
 
@@ -98,7 +100,7 @@ npx playwright test --headed --config=playwright.test.config.ts
 ```powershell
 npx playwright test --grep "@teacher"
 npx playwright test --grep "@school-edit"
-npx playwright test tests/zamowienia-szkoly.spec.ts --grep "ORD-43" --workers=1
+npx playwright test --grep "ORD-43" --workers=1
 ```
 
 Lista testów:
@@ -145,6 +147,8 @@ npm run test:failures
 ```
 
 Testy oznaczone `test.fail()` są oczekiwanymi awariami. Nie trafiają do listy rzeczywistych problemów ani do funkcji **Ponów failed**.
+
+W CI test może zostać ponowiony jeden raz. Lokalnie retry jest domyślnie wyłączone. Liczbę prób można jawnie ustawić w zakresie 0–2 przez `OCTOPUS_RETRIES`; reporter błędów zapisuje wyłącznie końcowy rezultat, więc udana kolejna próba nie pozostawia fałszywej awarii.
 
 ## Raporty i artefakty
 
@@ -222,6 +226,12 @@ Po dodaniu, usunięciu lub zmianie nazwy testu wygeneruj indeks ponownie:
 npm run docs:scenarios
 ```
 
+## CI
+
+Workflow `Quality` uruchamia `npm run quality` i `npm run test:unit` dla pull requestów oraz zmian na gałęziach `main` i `fixes`.
+
+Workflow `E2E DEV` jest uruchamiany ręcznie. Wymaga sekretów `GITLAB_USERNAME`, `GITLAB_PASSWORD`, `OCTOPUS_DEV_USERNAME` i `OCTOPUS_DEV_PASSWORD`. Po przebiegu zawsze publikuje artefakty diagnostyczne i próbuje usunąć wyłącznie zweryfikowane rekordy testowe zapisane przez automat. Cleanup nie używa `--allow-unmarked`.
+
 ## Struktura projektu
 
 ```text
@@ -236,7 +246,7 @@ runs/                       lokalne rejestry i raporty przebiegów
 test-results/               artefakty Playwrighta
 ```
 
-`tests/support/octopus.ts` jest główną warstwą obsługi Octopusa. `octopus2.ts` pozostaje starszym wariantem i nie powinien być wybierany do nowych helperów.
+`tests/support/octopus.ts` jest główną warstwą obsługi Octopusa.
 
 ## Mapa dokumentacji
 
@@ -246,6 +256,8 @@ test-results/               artefakty Playwrighta
 - [Panel Test Runner](TEST-UI.md)
 - [Zamówienia na dwóch workerach](README-PARALLEL-ORD.md)
 - [Roczna medalowość](docs/tests/medalowosc-roczna.md)
+- [Plan testów struktury szkoły](docs/tests/struktura-szkoly.md)
 - [Przegląd jakości i refaktoryzacji](docs/przeglad-refaktoryzacji.md)
+- [Defekt MED-30/MED-60 — filtr Medal = Brak](docs/issues/MED-30-MED-60-filtr-medal-brak.md)
 
 Pliki `WERYFIKACJA.md`, `regresja-octopus.md`, `raport-regresji-REG_20260917_01.md` i `OCT-OBS-002.md` są zapisami historycznymi lub dokumentami konkretnej obserwacji. Nie zastępują bieżącej instrukcji z tego README.

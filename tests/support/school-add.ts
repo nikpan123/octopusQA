@@ -87,7 +87,7 @@ export async function openSchoolAddressForm(page: Page, form: Locator) {
   return address;
 }
 
-export async function searchSchoolCity(address: Locator, postalCode: string, city = DEFAULT_CITY) {
+export async function typeSchoolPostalCode(address: Locator, postalCode: string) {
   const postalCodeInput = address.locator('input[id="zip_code_input"]');
   const cityInput = address.getByRole("combobox").nth(1);
 
@@ -104,6 +104,12 @@ export async function searchSchoolCity(address: Locator, postalCode: string, cit
   await postalCodeInput.click();
   await postalCodeInput.pressSequentially(postalCode.replace(/\D/g, ""), { delay: 150 });
   await expect(postalCodeInput).toHaveValue(postalCode);
+
+  return postalCodeInput;
+}
+
+export async function searchSchoolCity(address: Locator, postalCode: string, city = DEFAULT_CITY) {
+  await typeSchoolPostalCode(address, postalCode);
 
   const postalCodeOption = address.page().getByRole("option", {
     name: postalCode,

@@ -36,6 +36,14 @@ function responseError(method: string, pathname: string, status: number, body: s
   );
 }
 
+function isOptimisticConcurrencyError(error: unknown): boolean {
+  return (
+    error instanceof Error &&
+    error.message.includes("POST /api/TeacherEntryHistory/Add zwrócił HTTP 500") &&
+    error.message.includes("optimistic concurrency")
+  );
+}
+
 function localStorageValue(authSession: AuthSession, name: string): string {
   const value = authSession.storageState.origins
     .find((entry) => entry.origin === authSession.session.origin)
@@ -169,14 +177,26 @@ export class OctopusApiFactory {
       expect(teacherId, "API powinno zwrócić ID utworzonego nauczyciela").toMatch(/^\d+$/);
       expect(teacher.email).toBe(options.email);
 
-      await this.post<void>("/api/TeacherEntryHistory/Add", {
+      const historyEntry = {
         teacherId: teacher.id,
         createdBy: userId,
         email: "",
         id: -1,
         firstName: "",
         lastName: "",
-      });
+      };
+
+      for (let attempt = 1; attempt <= 3; attempt += 1) {
+        try {
+          await this.post<void>("/api/TeacherEntryHistory/Add", historyEntry);
+          break;
+        } catch (error) {
+          if (attempt === 3 || !isOptimisticConcurrencyError(error)) throw error;
+
+          this.metrics.increment("setup.api.teacher-history.retry");
+          await new Promise((resolve) => setTimeout(resolve, attempt * 100));
+        }
+      }
       await this.post<void>(`/api/Teacher/InsertIntoTestTeachers?teacherId=${teacherId}`, {
         teacherId,
       });

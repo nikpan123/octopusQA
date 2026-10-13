@@ -15,31 +15,15 @@
         "name": "Szkoła Podstawowa nr 5",
         "city": "Lębork",
         "expectedMedal": "Złoto",
-        "expectedSubjects": [
-          "Matematyka",
-          "Język polski",
-          "Historia"
-        ],
+        "expectedSubjects": ["Matematyka", "Język polski", "Historia"],
         "expectedHistoryValue": "2024/2025 Złoto",
         "expectedHistoryDate": "2025-10-01 00:00"
       },
       "currentMedal": "Złoto",
-      "currentSubjectNames": [
-        "Matematyka",
-        "Język polski",
-        "Historia"
-      ],
-      "qualifyingSubjectLevels": [
-        "EW SP",
-        "FIZ SP",
-        "HIS SP",
-        "JPL SP",
-        "MAT SP"
-      ],
+      "currentSubjectNames": ["Matematyka", "Język polski", "Historia"],
+      "qualifyingSubjectLevels": ["EW SP", "FIZ SP", "HIS SP", "JPL SP", "MAT SP"],
       "expectedMedal": "Złoto",
-      "supportingTeachersExcluded": [
-        "535464"
-      ],
+      "supportingTeachersExcluded": ["535464"],
       "clubMembershipExcluded": [
         {
           "teacherId": "380160",
@@ -68,22 +52,11 @@
         "name": "Szkoła Podstawowa z Oddziałami Dwujęzycznymi nr 20 Fundacji Szkolnej",
         "city": "Warszawa",
         "expectedMedal": "Srebro",
-        "expectedSubjects": [
-          "Matematyka",
-          "Język polski"
-        ]
+        "expectedSubjects": ["Matematyka", "Język polski"]
       },
       "currentMedal": "Srebro",
-      "currentSubjectNames": [
-        "Matematyka",
-        "Język polski"
-      ],
-      "qualifyingSubjectLevels": [
-        "BIO SP",
-        "JPL SP",
-        "MAT SP",
-        "PRZ SP"
-      ],
+      "currentSubjectNames": ["Matematyka", "Język polski"],
+      "qualifyingSubjectLevels": ["BIO SP", "JPL SP", "MAT SP", "PRZ SP"],
       "expectedMedal": "Złoto",
       "supportingTeachersExcluded": [],
       "clubMembershipExcluded": [
@@ -126,17 +99,11 @@
         "name": "Szkoła Podstawowa w Raszkowie",
         "city": "Raszków",
         "expectedMedal": "Brąz",
-        "expectedSubjects": [
-          "Matematyka"
-        ]
+        "expectedSubjects": ["Matematyka"]
       },
       "currentMedal": "Brąz",
-      "currentSubjectNames": [
-        "Matematyka"
-      ],
-      "qualifyingSubjectLevels": [
-        "MAT SP"
-      ],
+      "currentSubjectNames": ["Matematyka"],
+      "qualifyingSubjectLevels": ["MAT SP"],
       "expectedMedal": "Brąz",
       "supportingTeachersExcluded": [],
       "clubMembershipExcluded": [
@@ -249,13 +216,8 @@
         "city": "Warszawa"
       },
       "currentMedal": "Brąz",
-      "currentSubjectNames": [
-        "Biologia"
-      ],
-      "qualifyingSubjectLevels": [
-        "BIO SP",
-        "PRZ SP"
-      ],
+      "currentSubjectNames": ["Biologia"],
+      "qualifyingSubjectLevels": ["BIO SP", "PRZ SP"],
       "expectedMedal": "Srebro",
       "supportingTeachersExcluded": [],
       "clubMembershipExcluded": [],
@@ -268,13 +230,8 @@
         "city": "Warszawa"
       },
       "currentMedal": "Srebro",
-      "currentSubjectNames": [
-        "Matematyka",
-        "Język polski"
-      ],
-      "qualifyingSubjectLevels": [
-        "MAT SŚ"
-      ],
+      "currentSubjectNames": ["Matematyka", "Język polski"],
+      "qualifyingSubjectLevels": ["MAT SŚ"],
       "expectedMedal": "Brąz",
       "supportingTeachersExcluded": [],
       "clubMembershipExcluded": [
@@ -363,9 +320,7 @@
       },
       "currentMedal": "Brak",
       "currentSubjectNames": [],
-      "qualifyingSubjectLevels": [
-        "MAT SP"
-      ],
+      "qualifyingSubjectLevels": ["MAT SP"],
       "expectedMedal": "Brąz",
       "supportingTeachersExcluded": [],
       "clubMembershipExcluded": [],
@@ -378,12 +333,8 @@
         "city": "Warszawa"
       },
       "currentMedal": "Brąz",
-      "currentSubjectNames": [
-        "Matematyka"
-      ],
-      "qualifyingSubjectLevels": [
-        "MAT SP"
-      ],
+      "currentSubjectNames": ["Matematyka"],
+      "qualifyingSubjectLevels": ["MAT SP"],
       "expectedMedal": "Brąz",
       "supportingTeachersExcluded": [],
       "clubMembershipExcluded": [],
@@ -396,14 +347,8 @@
         "city": "Warszawa"
       },
       "currentMedal": "Srebro",
-      "currentSubjectNames": [
-        "Język polski",
-        "Matematyka"
-      ],
-      "qualifyingSubjectLevels": [
-        "JPL SŚ",
-        "MAT SŚ"
-      ],
+      "currentSubjectNames": ["Język polski", "Matematyka"],
+      "qualifyingSubjectLevels": ["JPL SŚ", "MAT SŚ"],
       "expectedMedal": "Srebro",
       "supportingTeachersExcluded": [],
       "clubMembershipExcluded": [
@@ -448,9 +393,7 @@
       },
       "currentMedal": "Brak",
       "currentSubjectNames": [],
-      "qualifyingSubjectLevels": [
-        "MAT SP"
-      ],
+      "qualifyingSubjectLevels": ["MAT SP"],
       "expectedMedal": "Brąz",
       "supportingTeachersExcluded": [],
       "clubMembershipExcluded": [],
@@ -463,13 +406,8 @@
         "city": "Warszawa"
       },
       "currentMedal": "Srebro",
-      "currentSubjectNames": [
-        "Historia",
-        "Język polski"
-      ],
-      "qualifyingSubjectLevels": [
-        "HIS SŚ"
-      ],
+      "currentSubjectNames": ["Historia", "Język polski"],
+      "qualifyingSubjectLevels": ["HIS SŚ"],
       "expectedMedal": "Brąz",
       "supportingTeachersExcluded": [],
       "clubMembershipExcluded": [
@@ -495,16 +433,8 @@
         "city": "Warszawa"
       },
       "currentMedal": "Złoto",
-      "currentSubjectNames": [
-        "Matematyka",
-        "Historia",
-        "Fizyka"
-      ],
-      "qualifyingSubjectLevels": [
-        "FIZ SP",
-        "HIS SP",
-        "MAT SP"
-      ],
+      "currentSubjectNames": ["Matematyka", "Historia", "Fizyka"],
+      "qualifyingSubjectLevels": ["FIZ SP", "HIS SP", "MAT SP"],
       "expectedMedal": "Złoto",
       "supportingTeachersExcluded": [],
       "clubMembershipExcluded": [
@@ -524,12 +454,8 @@
         "city": "Warszawa"
       },
       "currentMedal": "Brąz",
-      "currentSubjectNames": [
-        "Matematyka"
-      ],
-      "qualifyingSubjectLevels": [
-        "PRZ SP"
-      ],
+      "currentSubjectNames": ["Matematyka"],
+      "qualifyingSubjectLevels": ["PRZ SP"],
       "expectedMedal": "Brąz",
       "supportingTeachersExcluded": [],
       "clubMembershipExcluded": [
@@ -611,14 +537,8 @@
         "city": "Warszawa"
       },
       "currentMedal": "Złoto",
-      "currentSubjectNames": [
-        "Język polski",
-        "Historia",
-        "Matematyka"
-      ],
-      "qualifyingSubjectLevels": [
-        "JPL SŚ"
-      ],
+      "currentSubjectNames": ["Język polski", "Historia", "Matematyka"],
+      "qualifyingSubjectLevels": ["JPL SŚ"],
       "expectedMedal": "Brąz",
       "supportingTeachersExcluded": [],
       "clubMembershipExcluded": [
@@ -706,12 +626,8 @@
         "city": "Warszawa"
       },
       "currentMedal": "Brąz",
-      "currentSubjectNames": [
-        "Matematyka"
-      ],
-      "qualifyingSubjectLevels": [
-        "MAT SP"
-      ],
+      "currentSubjectNames": ["Matematyka"],
+      "qualifyingSubjectLevels": ["MAT SP"],
       "expectedMedal": "Brąz",
       "supportingTeachersExcluded": [],
       "clubMembershipExcluded": [
@@ -745,13 +661,8 @@
         "city": "Warszawa"
       },
       "currentMedal": "Brąz",
-      "currentSubjectNames": [
-        "Matematyka"
-      ],
-      "qualifyingSubjectLevels": [
-        "MAT SP",
-        "PRZ SP"
-      ],
+      "currentSubjectNames": ["Matematyka"],
+      "qualifyingSubjectLevels": ["MAT SP", "PRZ SP"],
       "expectedMedal": "Srebro",
       "supportingTeachersExcluded": [],
       "clubMembershipExcluded": [],
@@ -792,12 +703,8 @@
         "city": "Warszawa"
       },
       "currentMedal": "Brąz",
-      "currentSubjectNames": [
-        "Matematyka"
-      ],
-      "qualifyingSubjectLevels": [
-        "MAT SP"
-      ],
+      "currentSubjectNames": ["Matematyka"],
+      "qualifyingSubjectLevels": ["MAT SP"],
       "expectedMedal": "Brąz",
       "supportingTeachersExcluded": [],
       "clubMembershipExcluded": [],
@@ -810,9 +717,7 @@
         "city": "Warszawa"
       },
       "currentMedal": "Brąz",
-      "currentSubjectNames": [
-        "Matematyka"
-      ],
+      "currentSubjectNames": ["Matematyka"],
       "qualifyingSubjectLevels": [],
       "expectedMedal": "Brak",
       "supportingTeachersExcluded": [],
@@ -839,12 +744,8 @@
         "city": "Warszawa"
       },
       "currentMedal": "Brąz",
-      "currentSubjectNames": [
-        "Matematyka"
-      ],
-      "qualifyingSubjectLevels": [
-        "MAT SP"
-      ],
+      "currentSubjectNames": ["Matematyka"],
+      "qualifyingSubjectLevels": ["MAT SP"],
       "expectedMedal": "Brąz",
       "supportingTeachersExcluded": [],
       "clubMembershipExcluded": [],
@@ -872,10 +773,7 @@
       },
       "currentMedal": "Brak",
       "currentSubjectNames": [],
-      "qualifyingSubjectLevels": [
-        "EW SP",
-        "JPL SP"
-      ],
+      "qualifyingSubjectLevels": ["EW SP", "JPL SP"],
       "expectedMedal": "Srebro",
       "supportingTeachersExcluded": [],
       "clubMembershipExcluded": [],
@@ -958,12 +856,8 @@
         "city": "Warszawa"
       },
       "currentMedal": "Brąz",
-      "currentSubjectNames": [
-        "Matematyka"
-      ],
-      "qualifyingSubjectLevels": [
-        "MAT SP"
-      ],
+      "currentSubjectNames": ["Matematyka"],
+      "qualifyingSubjectLevels": ["MAT SP"],
       "expectedMedal": "Brąz",
       "supportingTeachersExcluded": [],
       "clubMembershipExcluded": [],
@@ -977,9 +871,7 @@
       },
       "currentMedal": "Brak",
       "currentSubjectNames": [],
-      "qualifyingSubjectLevels": [
-        "EW SP"
-      ],
+      "qualifyingSubjectLevels": ["EW SP"],
       "expectedMedal": "Brąz",
       "supportingTeachersExcluded": [],
       "clubMembershipExcluded": [],
@@ -1020,12 +912,8 @@
         "city": "Warszawa"
       },
       "currentMedal": "Brąz",
-      "currentSubjectNames": [
-        "Matematyka"
-      ],
-      "qualifyingSubjectLevels": [
-        "MAT SŚ"
-      ],
+      "currentSubjectNames": ["Matematyka"],
+      "qualifyingSubjectLevels": ["MAT SŚ"],
       "expectedMedal": "Brąz",
       "supportingTeachersExcluded": [],
       "clubMembershipExcluded": [],
@@ -1066,12 +954,8 @@
         "city": "Warszawa"
       },
       "currentMedal": "Brąz",
-      "currentSubjectNames": [
-        "Język polski"
-      ],
-      "qualifyingSubjectLevels": [
-        "JPL SŚ"
-      ],
+      "currentSubjectNames": ["Język polski"],
+      "qualifyingSubjectLevels": ["JPL SŚ"],
       "expectedMedal": "Brąz",
       "supportingTeachersExcluded": [],
       "clubMembershipExcluded": [

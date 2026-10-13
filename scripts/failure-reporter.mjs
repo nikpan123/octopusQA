@@ -7,7 +7,7 @@ function testIdentifier(test) {
   const title = test.titlePath().join(" › ");
   return (
     title.match(
-      /\b(?:ORD|CLUB|SCH(?:-EDIT)?|MED(?:-YEAR)?|ADD|EDIT|TEA|FIND|REL)-[A-Z0-9-]+\b/,
+      /\b(?:ORD|CLUB|SCH(?:-EDIT)?|MED(?:-YEAR)?|ADD|EDIT|TEA|FIND|REL|STR)-[A-Z0-9-]+\b/,
     )?.[0] ?? test.id
   );
 }
@@ -23,7 +23,17 @@ export default class FailureReporter {
   }
 
   onTestEnd(test, result) {
-    if (result.status === test.expectedStatus || result.status === "skipped") return;
+    if (result.status === "skipped" || result.status === test.expectedStatus) {
+      if (test.expectedStatus === "passed" && result.status === "passed") {
+        this.failures = this.failures.filter((failure) => failure.testId !== test.id);
+      }
+      return;
+    }
+
+    // Playwright wywołuje reporter osobno dla każdej próby. Zachowujemy
+    // wyłącznie ostatni stan testu, aby udany retry nie pozostawiał fałszywego
+    // błędu, a kilka nieudanych prób nie tworzyło duplikatów.
+    this.failures = this.failures.filter((failure) => failure.testId !== test.id);
 
     const errors = result.errors?.length ? result.errors : result.error ? [result.error] : [];
     const combinedMessage =

@@ -34,6 +34,12 @@ Inny port można wskazać przez `OCTOPUS_TEST_UI_PORT`.
 - bezpieczne usuwanie nauczycieli testowych z DEV;
 - osobny workflow `MED-YEAR-*`.
 
+### Struktura szkoły w panelu
+
+Pakiet **Szkoły** obejmuje zarówno `szkola-struktura.spec.ts` (STR-01–STR-87), jak i `szkola-struktura-dodawanie.spec.ts` (STR-88–STR-106). Można uruchomić pakiet, użyć pola Grep z `@structure` albo zaznaczyć konkretne krótkie ID na liście testów. Zaznaczone testy mają pierwszeństwo przed pakietem i Grep, a ich ID są dopasowywane dokładnie (STR-10 nie wybiera STR-100).
+
+Po zmianie serwera panelu należy ponownie uruchomić `npm run test-ui`, a w przeglądarce odświeżyć stronę i listę przyciskiem **Odśwież**. Nowe testy tworzenia szkoły korzystają z dedykowanych danych; relacje są sprzątane, szkoły testowe pozostają zgodnie z opisem [testów Struktury](docs/tests/struktura-szkoly-krok-po-kroku.md).
+
 ## Przepływ uruchomienia
 
 ```text

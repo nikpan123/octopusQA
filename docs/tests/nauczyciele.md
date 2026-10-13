@@ -20,6 +20,11 @@ Testy nauczycieli weryfikują utworzenie rekordu, jego edycję, walidację danyc
 ```text
 tests/nauczyciel-dodawanie.spec.ts
 tests/nauczyciel-edycja.spec.ts
+tests/nauczyciel-edycja-adres.spec.ts
+tests/nauczyciel-edycja-integralnosc.spec.ts
+tests/nauczyciel-edycja-kontakt.spec.ts
+tests/nauczyciel-edycja-notatki.spec.ts
+tests/nauczyciel-edycja-rodo.spec.ts
 tests/nauczyciel-rozszerzenie.spec.ts
 tests/walidacja-anulowanie.spec.ts
 tests/support/teacher-add.ts
@@ -168,6 +173,6 @@ Do porównania historii przed i po anulowaniu służą snapshoty zwracane przez 
 
 ```text
 npx playwright test tests/nauczyciel-dodawanie.spec.ts
-npx playwright test tests/nauczyciel-edycja.spec.ts
+npx playwright test --grep "@teacher.*@edit"
 npx playwright test --grep @teacher
 ```

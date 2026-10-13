@@ -8,6 +8,9 @@ Sekcja `CLUB-*` weryfikuje przedmioto-poziomy nauczyciela i formularze klubowe: 
 
 ```text
 tests/klubowiczostwo-nauczyciela.spec.ts
+tests/klubowiczostwo-walidacja.spec.ts
+tests/klubowiczostwo-cykl-zycia.spec.ts
+tests/klubowiczostwo-zaawansowane.spec.ts
 tests/support/club.ts
 tests/support/club-fixtures.ts
 tests/support/club-scenario.ts
@@ -234,5 +237,5 @@ W `CLUB-08` test nie zakłada, że pierwszy zwrócony rekord należy do pierwsze
 ## 8. Uruchamianie
 
 ```text
-npx playwright test tests/klubowiczostwo-nauczyciela.spec.ts --grep @club
+npx playwright test --grep @club
 ```

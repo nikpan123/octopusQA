@@ -17,6 +17,7 @@ import {
   saveSchoolAddress,
   saveSchoolStreetAddress,
   searchSchoolCity,
+  typeSchoolPostalCode,
   selectSchoolType,
   schoolAddTextField,
   schoolPanelTextField,
@@ -427,9 +428,11 @@ test("SCH-08: nieznany kod pocztowy blokuje zapis adresu i szkoły @school @scho
   await selectSchoolType(page, form);
   const address = await openSchoolAddressForm(page, form);
   const unknownPostalCode = "00-000";
-  const city = await searchSchoolCity(address, unknownPostalCode);
+  await typeSchoolPostalCode(address, unknownPostalCode);
+  const city = address.getByRole("row").filter({ hasText: unknownPostalCode });
 
   await expect(city).toHaveCount(0);
+  await expect(page.getByRole("option", { name: unknownPostalCode, exact: true })).toHaveCount(0);
   await address.getByRole("button", { name: "Zapisz", exact: true }).click();
   const missingAddress = page.locator("mat-dialog-container").filter({
     has: page.getByRole("heading", { name: "Zapisywanie adresu", exact: true }),

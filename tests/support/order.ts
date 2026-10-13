@@ -1,4 +1,5 @@
 import { expect, type Locator, type Page } from "@playwright/test";
+import { waitForOctopusIdle } from "./octopus";
 
 export type ExpectedOrderItem = {
   code: string;
@@ -545,13 +546,7 @@ export async function saveNewOrder(
   /*
    * Czekamy aż zakończy się zapis / odświeżenie listy.
    */
-  await page
-    .locator("#spinner.backdrop")
-    .waitFor({
-      state: "hidden",
-      timeout: 20_000,
-    })
-    .catch(() => undefined);
+  await waitForOctopusIdle(page);
 
   const findNewIds = async () => {
     const current = await getOrderIds(page);
@@ -675,14 +670,32 @@ export async function saveNewOrderWithRepeatedClick(
     })
     .toBeGreaterThan(0);
 
-  /*
-   * Dajemy jeszcze chwilę, aby wychwycić
-   * ewentualny drugi zapis utworzony
-   * przez drugie kliknięcie.
-   */
-  await page.waitForTimeout(1_000);
+  await waitForOctopusIdle(page);
 
-  await collectNewIds();
+  let previousIds = "";
+  let unchangedSince = Date.now();
+
+  // Lista jest gotowa dopiero wtedy, gdy kolejne odczyty zwracają ten sam
+  // zestaw ID. Pozwala to wykryć opóźniony drugi zapis bez arbitralnego sleepa.
+  await expect
+    .poll(
+      async () => {
+        const ids = (await collectNewIds()).sort().join(",");
+
+        if (ids !== previousIds) {
+          previousIds = ids;
+          unchangedSince = Date.now();
+        }
+
+        return Date.now() - unchangedSince;
+      },
+      {
+        timeout: 5_000,
+        intervals: [100, 250, 500],
+        message: "Lista zamówień powinna ustabilizować się po powtórzonym kliknięciu Zapisz",
+      },
+    )
+    .toBeGreaterThanOrEqual(1_000);
 
   return [...observedIds];
 }
@@ -806,13 +819,7 @@ export async function deleteOrder(
    * Po otwarciu szkoły Octopus może jeszcze
    * przez chwilę ładować dane zamówień.
    */
-  await page
-    .locator("#spinner.backdrop")
-    .waitFor({
-      state: "hidden",
-      timeout: 20_000,
-    })
-    .catch(() => undefined);
+  await waitForOctopusIdle(page);
 
   const row = orderRow(orders, orderId);
 
