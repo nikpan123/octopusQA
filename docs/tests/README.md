@@ -4,8 +4,10 @@ Ten katalog opisuje aktualne obszary testowe. Źródłem prawdy dla nazw, lokali
 
 ## Aktualny stan
 
-- **586** scenariuszy we wszystkich 28 plikach;
-- **584** scenariusze w zwykłej regresji (w tym warunkowe pominięcia i oczekiwane błędy);
+Kolumna Klasa w zamówieniach ma 22 nowe scenariusze ORD-CLASS-01–ORD-CLASS-22, jeszcze nieuruchomione. Przypadek LS jest warunkowo pomijany ze względu na potwierdzony brak produktu. [Opis każdego sprawdzenia](klasa-w-zamowieniach.md).
+
+- **608** scenariuszy we wszystkich 29 plikach;
+- **606** scenariuszy w zwykłej regresji (w tym warunkowe pominięcia i oczekiwane błędy);
 - **2** scenariusze rocznej medalowości uruchamiane osobno;
 - domyślnie 2 workery, maksymalnie 4;
 - ORD w panelu: maksymalnie 2 workery;
@@ -27,10 +29,10 @@ Ten katalog opisuje aktualne obszary testowe. Źródłem prawdy dla nazw, lokali
 | `szkola-kategoria.spec.ts`           |        34 | [Kategoria szkoły krok po kroku](kategoria-szkoly.md)                                                     |
 | `szkola-kategoria-dodawanie.spec.ts` |        19 | [Kategoria przy tworzeniu szkoły](kategoria-szkoly.md#kategoria-przy-tworzeniu-nowej-szkoły-cat-35cat-53) |
 | `walidacja-anulowanie.spec.ts`       |         9 | [Nauczyciele](nauczyciele.md), [relacje](relacje-szkola-nauczyciel.md)                                    |
-| `zamowienia-*.spec.ts`               |        66 | [Zamówienia szkoły](zamowienia-szkoly.md)                                                                 |
+| `zamowienia-*.spec.ts`               |        88 | [Zamówienia szkoły](zamowienia-szkoly.md), [kolumna Klasa](klasa-w-zamowieniach.md)                       |
 | `szkola-nauczyciele-filtry.spec.ts`  |        30 | [Filtry nauczycieli krok po kroku](filtry-nauczycieli-w-szkole.md)                                        |
 | `szkola-wyszukiwanie-filtry.spec.ts` |        32 | [Wyszukiwarka szkół krok po kroku](wyszukiwarka-szkol-filtry.md)                                          |
-| **Razem**                            |   **586** |                                                                                                           |
+| **Razem**                            |   **608** |                                                                                                           |
 
 Nowy zestaw TFL-01–TFL-30 jest napisany, ale nie został uruchomiony ani zweryfikowany na DEV, zgodnie z prośbą użytkownika. Obejmuje UI, licznik unikalnych nauczycieli, liczniki szkolnych pozycji przedmiotowych Nasi/Obcy, klasyfikację, kontekst szkoły i regresję przyszłego roku. Licznik grupy nie musi być równy liczbie jej wierszy. Pozostały zakres jest wskazany w jego dokumentacji.
 

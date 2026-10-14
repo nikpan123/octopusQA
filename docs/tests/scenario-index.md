@@ -2,7 +2,7 @@
 
 > Plik generowany automatycznie przez `npm run docs:scenarios`. Nie edytuj tabeli ręcznie.
 
-Łącznie: **586 scenariuszy**.
+Łącznie: **608 scenariuszy**.
 
 | ID | Scenariusz | Plik | Tagi |
 |---|---|---|---|
@@ -526,6 +526,28 @@
 | EDIT-02 | EDIT-02: anulowanie edycji zachowuje dane i historię | [walidacja-anulowanie.spec.ts](../../tests/walidacja-anulowanie.spec.ts#L70) | `cancel` |
 | FIND-04 | FIND-04: brak wyników usuwa poprzednią listę — teacher | [walidacja-anulowanie.spec.ts](../../tests/walidacja-anulowanie.spec.ts#L107) | `search` |
 | FIND-04 | FIND-04: brak wyników usuwa poprzednią listę — school | [walidacja-anulowanie.spec.ts](../../tests/walidacja-anulowanie.spec.ts#L107) | `search` |
+| ORD-CLASS-01 | ORD-CLASS-01: kolumna Klasa jest widoczna i zgodna z makietą - lista | [zamowienia-klasa.spec.ts](../../tests/zamowienia-klasa.spec.ts#L19) | `school`, `order`, `order-class`, `layout` |
+| ORD-CLASS-02 | ORD-CLASS-02: kolumna Klasa jest widoczna i zgodna z makietą - szczegóły | [zamowienia-klasa.spec.ts](../../tests/zamowienia-klasa.spec.ts#L19) | `school`, `order`, `order-class`, `layout` |
+| ORD-CLASS-03 | ORD-CLASS-03: kolumna Klasa jest widoczna i zgodna z makietą - pozycje | [zamowienia-klasa.spec.ts](../../tests/zamowienia-klasa.spec.ts#L19) | `school`, `order`, `order-class`, `layout` |
+| ORD-CLASS-04 | ORD-CLASS-04: podręcznik klasy 5 ma właściwą klasę w trzech widokach | [zamowienia-klasa.spec.ts](../../tests/zamowienia-klasa.spec.ts#L47) | `school`, `order`, `order-class`, `positive` |
+| ORD-CLASS-05 | ORD-CLASS-05: podręcznik klasy 7 ma właściwą klasę w trzech widokach | [zamowienia-klasa.spec.ts](../../tests/zamowienia-klasa.spec.ts#L47) | `school`, `order`, `order-class`, `positive` |
+| ORD-CLASS-06 | ORD-CLASS-06: multimedia klasy 7 ma właściwą klasę w trzech widokach | [zamowienia-klasa.spec.ts](../../tests/zamowienia-klasa.spec.ts#L47) | `school`, `order`, `order-class`, `positive` |
+| ORD-CLASS-07 | ORD-CLASS-07: produkt dla kilku klas ma właściwą klasę w trzech widokach | [zamowienia-klasa.spec.ts](../../tests/zamowienia-klasa.spec.ts#L47) | `school`, `order`, `order-class`, `positive` |
+| ORD-CLASS-08 | ORD-CLASS-08: brak przypisanej klasy pozostawia pustą komórkę w trzech widokach | [zamowienia-klasa.spec.ts](../../tests/zamowienia-klasa.spec.ts#L57) | `school`, `order`, `order-class`, `empty` |
+| ORD-CLASS-09 | ORD-CLASS-09: produkt LS ma klasę w trzech widokach | [zamowienia-klasa.spec.ts](../../tests/zamowienia-klasa.spec.ts#L66) | `school`, `order`, `order-class`, `ls` |
+| ORD-CLASS-10 | ORD-CLASS-10: zamówienie klas 5 i 7 agreguje klasy, ale nie miesza pozycji | [zamowienia-klasa.spec.ts](../../tests/zamowienia-klasa.spec.ts#L84) | `school`, `order`, `order-class`, `aggregate` |
+| ORD-CLASS-11 | ORD-CLASS-11: dwa różne produkty klasy 7 nie duplikują klasy zamówienia | [zamowienia-klasa.spec.ts](../../tests/zamowienia-klasa.spec.ts#L101) | `school`, `order`, `order-class`, `duplicates` |
+| ORD-CLASS-12 | ORD-CLASS-12: ilość produktu nie jest numerem klasy | [zamowienia-klasa.spec.ts](../../tests/zamowienia-klasa.spec.ts#L117) | `school`, `order`, `order-class`, `quantity` |
+| ORD-CLASS-13 | ORD-CLASS-13: produkt bez klasy nie dziedziczy klasy innej pozycji | [zamowienia-klasa.spec.ts](../../tests/zamowienia-klasa.spec.ts#L126) | `school`, `order`, `order-class`, `empty` |
+| ORD-CLASS-14 | ORD-CLASS-14: ten sam produkt w dwóch zamówieniach ma jedną pozycję i poprawne powiązania | [zamowienia-klasa.spec.ts](../../tests/zamowienia-klasa.spec.ts#L142) | `school`, `order`, `order-class`, `positions` |
+| ORD-CLASS-15 | ORD-CLASS-15: klasy dwóch różnych zamówień nie przenikają się | [zamowienia-klasa.spec.ts](../../tests/zamowienia-klasa.spec.ts#L164) | `school`, `order`, `order-class`, `isolation` |
+| ORD-CLASS-16 | ORD-CLASS-16: klasy pozostają po przeładowaniu strony | [zamowienia-klasa.spec.ts](../../tests/zamowienia-klasa.spec.ts#L176) | `school`, `order`, `order-class`, `persistence` |
+| ORD-CLASS-17 | ORD-CLASS-17: zmiana zakładek nie zmienia klasy | [zamowienia-klasa.spec.ts](../../tests/zamowienia-klasa.spec.ts#L187) | `school`, `order`, `order-class`, `tabs` |
+| ORD-CLASS-18 | ORD-CLASS-18: zamiana produktu przez API aktualizuje klasę i usuwa starą pozycję | [zamowienia-klasa.spec.ts](../../tests/zamowienia-klasa.spec.ts#L202) | `school`, `order`, `order-class`, `edit` |
+| ORD-CLASS-19 | ORD-CLASS-19: usunięcie pozycji klasy 5 aktualizuje agregację zamówienia | [zamowienia-klasa.spec.ts](../../tests/zamowienia-klasa.spec.ts#L217) | `school`, `order`, `order-class`, `edit` |
+| ORD-CLASS-20 | ORD-CLASS-20: usunięcie jednego zamówienia nie usuwa klasy produktu z drugiego | [zamowienia-klasa.spec.ts](../../tests/zamowienia-klasa.spec.ts#L235) | `school`, `order`, `order-class`, `delete` |
+| ORD-CLASS-21 | ORD-CLASS-21: zamówienie i jego klasa nie pojawiają się w innej szkole | [zamowienia-klasa.spec.ts](../../tests/zamowienia-klasa.spec.ts#L246) | `school`, `order`, `order-class`, `isolation` |
+| ORD-CLASS-22 | ORD-CLASS-22: zwijanie i rozwijanie zachowuje klasę pozycji | [zamowienia-klasa.spec.ts](../../tests/zamowienia-klasa.spec.ts#L259) | `school`, `order`, `order-class`, `expand` |
 | ORD-12 | ORD-12: wyszukiwanie po dokładnym kodzie zwraca właściwy produkt | [zamowienia-produkty.spec.ts](../../tests/zamowienia-produkty.spec.ts#L30) | `school`, `order`, `search` |
 | ORD-13 | ORD-13: wyszukiwanie po fragmencie kodu zwraca oba produkty fizyki 7 | [zamowienia-produkty.spec.ts](../../tests/zamowienia-produkty.spec.ts#L50) | `school`, `order`, `search` |
 | ORD-14 | ORD-14: filtr Przedmiot ogranicza wyniki do fizyki | [zamowienia-produkty.spec.ts](../../tests/zamowienia-produkty.spec.ts#L67) | `school`, `order`, `filter` |

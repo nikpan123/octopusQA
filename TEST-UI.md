@@ -65,6 +65,8 @@ W pakiecie Szkoły są też SFLT-01–SFLT-32 (`szkola-wyszukiwanie-filtry.spec.
 
 ## Przepływ uruchomienia
 
+Pakiet Zamówienia obejmuje `zamowienia-klasa.spec.ts` (ORD-CLASS-01–ORD-CLASS-22). Grep `@order-class` wybiera testy kolumny Klasa. Przygotowanie, edycje i sprzątanie zamówień korzystają z API; UI służy do kontroli trzech widoków. LS jest warunkowo pomijany z powodu braku produktu. [Dokumentacja](docs/tests/klasa-w-zamowieniach.md).
+
 ```text
 przeglądarka :4173
     │ POST /api/run

@@ -7,7 +7,7 @@ Repozytorium zawiera testy end-to-end aplikacji Octopus napisane w Playwright i 
 | DEV        | `https://octopus.gwodev.pl`  | `playwright.config.ts`      |
 | TEST       | `https://octopus.gwotest.pl` | `playwright.test.config.ts` |
 
-Aktualny zestaw zawiera **586 scenariuszy** w 28 plikach. Zwykła regresja obejmuje **584 scenariusze** (także przypadki warunkowo pomijane); dwa testy `MED-YEAR-*` należą do osobnego, ciężkiego procesu rocznej medalowości. Struktura ma 106 wykonywanych scenariuszy bez `fixme`: 87 na profilu istniejącej szkoły i 19 podczas tworzenia nowej szkoły. Kategoria ma 53 scenariusze: 34 dla istniejących szkół i 19 dla tworzenia przez formularz. Wszystkie 53 mają potwierdzone przejście na DEV w pełnym przebiegu i kontrolnych powtórkach z 13.10.2026, po korekcie reguły NPC; nie jest to jeden pełny przebieg po tej korekcie. Nowe 30 scenariuszy filtrowania nauczycieli TFL-01–TFL-30 oraz 32 scenariusze wyszukiwarki SFLT-01–SFLT-32 nie zostały uruchomione, zgodnie z prośbą użytkownika. Trzy SFLT wymagają danych SI, a jeden dokumentuje brak pola Notatki. Liczba implementacji nie jest wynikiem regresji. Znane niezgodności są oznaczone `test.fail` i pozostają wykonywane.
+Aktualny zestaw zawiera **608 scenariuszy** w 29 plikach. Zwykła regresja obejmuje **606 scenariuszy** (także przypadki warunkowo pomijane); dwa testy `MED-YEAR-*` należą do osobnego, ciężkiego procesu rocznej medalowości. Struktura ma 106 wykonywanych scenariuszy bez `fixme`: 87 na profilu istniejącej szkoły i 19 podczas tworzenia nowej szkoły. Kategoria ma 53 scenariusze: 34 dla istniejących szkół i 19 dla tworzenia przez formularz. Wszystkie 53 mają potwierdzone przejście na DEV w pełnym przebiegu i kontrolnych powtórkach z 13.10.2026, po korekcie reguły NPC; nie jest to jeden pełny przebieg po tej korekcie. Nowe 30 scenariuszy filtrowania nauczycieli TFL-01–TFL-30 oraz 32 scenariusze wyszukiwarki SFLT-01–SFLT-32 nie zostały uruchomione, zgodnie z prośbą użytkownika. Trzy SFLT wymagają danych SI, a jeden dokumentuje brak pola Notatki. Liczba implementacji nie jest wynikiem regresji. Znane niezgodności są oznaczone `test.fail` i pozostają wykonywane.
 
 Pełna lista jest generowana z kodu i znajduje się w [indeksie scenariuszy](docs/tests/scenario-index.md).
 
@@ -29,7 +29,7 @@ Pełna lista jest generowana z kodu i znajduje się w [indeksie scenariuszy](doc
 | Kategoria szkoły                     | `szkola-kategoria.spec.ts`           |             34 |
 | Kategoria przy dodawaniu szkoły      | `szkola-kategoria-dodawanie.spec.ts` |             19 |
 | Walidacja, anulowanie i wyszukiwanie | `walidacja-anulowanie.spec.ts`       |              9 |
-| Zamówienia szkoły                    | `zamowienia-*.spec.ts`               |             66 |
+| Zamówienia szkoły                    | `zamowienia-*.spec.ts`               |             88 |
 | Filtrowanie nauczycieli w szkole     | `szkola-nauczyciele-filtry.spec.ts`  |             30 |
 | **Razem**                            |                                      |        **554** |
 
