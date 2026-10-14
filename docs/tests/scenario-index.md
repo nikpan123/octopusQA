@@ -2,7 +2,7 @@
 
 > Plik generowany automatycznie przez `npm run docs:scenarios`. Nie edytuj tabeli ręcznie.
 
-Łącznie: **554 scenariuszy**.
+Łącznie: **586 scenariuszy**.
 
 | ID | Scenariusz | Plik | Tagi |
 |---|---|---|---|
@@ -485,6 +485,38 @@
 | STR-85 | STR-85: Pokaż wszystkie działa niezależnie od Pokaż zaznaczone | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L1605) | `school`, `structure`, `filter` |
 | STR-86 | STR-86: historia zespołu szkół zawiera audyt dodania szkoły | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L1631) | `school`, `structure`, `history` |
 | STR-87 | STR-87: przejście do roli dodatkowej lokalizacji ogranicza akcje istniejącej filii | [szkola-struktura.spec.ts](../../tests/szkola-struktura.spec.ts#L1649) | `school`, `structure`, `permissions` |
+| SFLT-01 | SFLT-01: formularz zawiera nowe pola i komplet opcji | [szkola-wyszukiwanie-filtry.spec.ts](../../tests/szkola-wyszukiwanie-filtry.spec.ts#L20) | `school`, `school-search`, `smoke` |
+| SFLT-02 | SFLT-02: kategorie A filtrują jako OR | [szkola-wyszukiwanie-filtry.spec.ts](../../tests/szkola-wyszukiwanie-filtry.spec.ts#L48) | `school`, `school-search`, `category` |
+| SFLT-03 | SFLT-03: kategorie B filtrują jako OR | [szkola-wyszukiwanie-filtry.spec.ts](../../tests/szkola-wyszukiwanie-filtry.spec.ts#L48) | `school`, `school-search`, `category` |
+| SFLT-04 | SFLT-04: kategorie C filtrują jako OR | [szkola-wyszukiwanie-filtry.spec.ts](../../tests/szkola-wyszukiwanie-filtry.spec.ts#L48) | `school`, `school-search`, `category` |
+| SFLT-05 | SFLT-05: kategorie D filtrują jako OR | [szkola-wyszukiwanie-filtry.spec.ts](../../tests/szkola-wyszukiwanie-filtry.spec.ts#L48) | `school`, `school-search`, `category` |
+| SFLT-06 | SFLT-06: kategorie A lub B filtrują jako OR | [szkola-wyszukiwanie-filtry.spec.ts](../../tests/szkola-wyszukiwanie-filtry.spec.ts#L48) | `school`, `school-search`, `category` |
+| SFLT-07 | SFLT-07: kategorie A lub C filtrują jako OR | [szkola-wyszukiwanie-filtry.spec.ts](../../tests/szkola-wyszukiwanie-filtry.spec.ts#L48) | `school`, `school-search`, `category` |
+| SFLT-08 | SFLT-08: kategorie A lub B lub C lub D filtrują jako OR | [szkola-wyszukiwanie-filtry.spec.ts](../../tests/szkola-wyszukiwanie-filtry.spec.ts#L48) | `school`, `school-search`, `category` |
+| SFLT-09 | SFLT-09: Medal Brak lub Złoto działa jako OR | [szkola-wyszukiwanie-filtry.spec.ts](../../tests/szkola-wyszukiwanie-filtry.spec.ts#L64) | `school`, `school-search`, `medal` |
+| SFLT-10 | SFLT-10: Medal Brak obejmuje kategorię A | [szkola-wyszukiwanie-filtry.spec.ts](../../tests/szkola-wyszukiwanie-filtry.spec.ts#L96) | `school`, `school-search`, `medal`, `category` |
+| SFLT-11 | SFLT-11: Medal Brak obejmuje kategorię B | [szkola-wyszukiwanie-filtry.spec.ts](../../tests/szkola-wyszukiwanie-filtry.spec.ts#L96) | `school`, `school-search`, `medal`, `category` |
+| SFLT-12 | SFLT-12: Medal Brak obejmuje kategorię C | [szkola-wyszukiwanie-filtry.spec.ts](../../tests/szkola-wyszukiwanie-filtry.spec.ts#L96) | `school`, `school-search`, `medal`, `category` |
+| SFLT-13 | SFLT-13: Medal Brak obejmuje kategorię D | [szkola-wyszukiwanie-filtry.spec.ts](../../tests/szkola-wyszukiwanie-filtry.spec.ts#L96) | `school`, `school-search`, `medal`, `category` |
+| SFLT-14 | SFLT-14: Medal i Kategoria i nazwa działają jako AND | [szkola-wyszukiwanie-filtry.spec.ts](../../tests/szkola-wyszukiwanie-filtry.spec.ts#L117) | `school`, `school-search`, `and` |
+| SFLT-15 | SFLT-15: nazwa zawęża wyniki kategorii | [szkola-wyszukiwanie-filtry.spec.ts](../../tests/szkola-wyszukiwanie-filtry.spec.ts#L135) | `school`, `school-search`, `and` |
+| SFLT-16 | SFLT-16: poziom ogranicza wyniki Medalu i Kategorii | [szkola-wyszukiwanie-filtry.spec.ts](../../tests/szkola-wyszukiwanie-filtry.spec.ts#L143) | `school`, `school-search`, `and` |
+| SFLT-17 | SFLT-17: RSPO wymaga dokładnego numeru | [szkola-wyszukiwanie-filtry.spec.ts](../../tests/szkola-wyszukiwanie-filtry.spec.ts#L168) | `school`, `school-search`, `rspo` |
+| SFLT-18 | SFLT-18: fragment RSPO nie zwraca dopasowania częściowego | [szkola-wyszukiwanie-filtry.spec.ts](../../tests/szkola-wyszukiwanie-filtry.spec.ts#L177) | `school`, `school-search`, `rspo`, `negative` |
+| SFLT-19 | SFLT-19: dokładny RSPO ma pierwszeństwo nad niezgodną kategorią | [szkola-wyszukiwanie-filtry.spec.ts](../../tests/szkola-wyszukiwanie-filtry.spec.ts#L189) | `school`, `school-search`, `rspo`, `priority` |
+| SFLT-20 | SFLT-20: brak wyników zastępuje poprzednią listę komunikatem | [szkola-wyszukiwanie-filtry.spec.ts](../../tests/szkola-wyszukiwanie-filtry.spec.ts#L210) | `school`, `school-search`, `empty` |
+| SFLT-21 | SFLT-21: wyczyszczenie pola Kategoria krzyżykiem usuwa ograniczenie wyników | [szkola-wyszukiwanie-filtry.spec.ts](../../tests/szkola-wyszukiwanie-filtry.spec.ts#L226) | `school`, `school-search`, `clear` |
+| SFLT-22 | SFLT-22: wyczyszczenie pola Medal krzyżykiem usuwa ograniczenie wyników | [szkola-wyszukiwanie-filtry.spec.ts](../../tests/szkola-wyszukiwanie-filtry.spec.ts#L226) | `school`, `school-search`, `clear` |
+| SFLT-23 | SFLT-23: wyczyszczenie SI przywraca brak ograniczenia | [szkola-wyszukiwanie-filtry.spec.ts](../../tests/szkola-wyszukiwanie-filtry.spec.ts#L260) | `school`, `school-search`, `clear` |
+| SFLT-24 | SFLT-24: kolejne wyszukanie zastępuje poprzednią kategorię | [szkola-wyszukiwanie-filtry.spec.ts](../../tests/szkola-wyszukiwanie-filtry.spec.ts#L273) | `school`, `school-search`, `repeat` |
+| SFLT-25 | SFLT-25: poprawienie błędnego RSPO pozwala wyszukać szkołę | [szkola-wyszukiwanie-filtry.spec.ts](../../tests/szkola-wyszukiwanie-filtry.spec.ts#L284) | `school`, `school-search`, `validation` |
+| SFLT-26 | SFLT-26: SI Tak łączy się z nazwą kategorią i medalem | [szkola-wyszukiwanie-filtry.spec.ts](../../tests/szkola-wyszukiwanie-filtry.spec.ts#L299) | `school`, `school-search`, `si`, `and` |
+| SFLT-27 | SFLT-27: SI Nie łączy się z nazwą kategorią i medalem | [szkola-wyszukiwanie-filtry.spec.ts](../../tests/szkola-wyszukiwanie-filtry.spec.ts#L299) | `school`, `school-search`, `si`, `and` |
+| SFLT-28 | SFLT-28: sezon SI według fixture OCTOPUS_SEARCH_SI_CURRENT | [szkola-wyszukiwanie-filtry.spec.ts](../../tests/szkola-wyszukiwanie-filtry.spec.ts#L323) | `school`, `school-search`, `si`, `season` |
+| SFLT-29 | SFLT-29: sezon SI według fixture OCTOPUS_SEARCH_SI_PAST_ONLY | [szkola-wyszukiwanie-filtry.spec.ts](../../tests/szkola-wyszukiwanie-filtry.spec.ts#L323) | `school`, `school-search`, `si`, `season` |
+| SFLT-30 | SFLT-30: sezon SI według fixture OCTOPUS_SEARCH_SI_FUTURE_ONLY | [szkola-wyszukiwanie-filtry.spec.ts](../../tests/szkola-wyszukiwanie-filtry.spec.ts#L323) | `school`, `school-search`, `si`, `season` |
+| SFLT-31 | SFLT-31: wymagane pole Notatki jest dostępne niezależnie od Tagów | [szkola-wyszukiwanie-filtry.spec.ts](../../tests/szkola-wyszukiwanie-filtry.spec.ts#L343) | `school`, `school-search`, `notes` |
+| SFLT-32 | SFLT-32: RSPO działa samodzielnie bez nazwy i pozostałych filtrów | [szkola-wyszukiwanie-filtry.spec.ts](../../tests/szkola-wyszukiwanie-filtry.spec.ts#L351) | `school`, `school-search`, `rspo` |
 | TEA-02 | TEA-02: brak pola imię blokuje zapis nauczyciela | [walidacja-anulowanie.spec.ts](../../tests/walidacja-anulowanie.spec.ts#L5) | `validation` |
 | TEA-02 | TEA-02: brak pola nazwisko blokuje zapis nauczyciela | [walidacja-anulowanie.spec.ts](../../tests/walidacja-anulowanie.spec.ts#L5) | `validation` |
 | TEA-02 | TEA-02: brak pola szkoła blokuje zapis nauczyciela | [walidacja-anulowanie.spec.ts](../../tests/walidacja-anulowanie.spec.ts#L5) | `validation` |

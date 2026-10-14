@@ -12,6 +12,7 @@ test("pakiet Szkoły zawiera oba pliki Struktury", () => {
     "tests/szkola-kategoria.spec.ts",
     "tests/szkola-kategoria-dodawanie.spec.ts",
     "tests/szkola-nauczyciele-filtry.spec.ts",
+    "tests/szkola-wyszukiwanie-filtry.spec.ts",
   ]) {
     assert.ok(SUITES.schools.files.includes(file));
     assert.ok(result.args.includes(file));
@@ -24,6 +25,7 @@ test("parser rozpoznaje krótkie ID STR, także trzycyfrowe", () => {
   assert.equal(extractTestId("ORD-43: zamówienie"), "ORD-43");
   assert.equal(extractTestId("Kategoria szkoły › CAT-34: zmiana uczniów"), "CAT-34");
   assert.equal(extractTestId("Filtrowanie nauczycieli › TFL-26: przyszły rok"), "TFL-26");
+  assert.equal(extractTestId("Wyszukiwarka szkół › SFLT-32: RSPO"), "SFLT-32");
 });
 
 test("listowanie rozdziela ID, nazwę i lokalizację testu struktury", () => {

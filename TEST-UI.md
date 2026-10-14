@@ -61,6 +61,8 @@ Pakiet **Szkoły** zawiera `szkola-kategoria.spec.ts` (CAT-01–CAT-34) oraz `sz
 
 W pakiecie Szkoły dostępny jest również `szkola-nauczyciele-filtry.spec.ts` z TFL-01–TFL-30. Grep `@teacher-filter` wybiera całość; ID `TFL-26:` wybiera regresję aktualnego GWO przed przyszłym Obcy po GWO. Formularze są przygotowywane przez API, a filtry i liczniki sprawdzane w UI. Aktywny rok domyślny to 2026/2027; po zmianie roku systemu ustaw `OCTOPUS_TFL_CURRENT_SCHOOL_YEAR` przed startem panelu. TFL-26 jest pomijany z powodem do pojawienia się przyszłego roku 2027/2028 w słowniku (około kwietnia). Testy nie zostały uruchomione na prośbę użytkownika. [Instrukcja każdego scenariusza](docs/tests/filtry-nauczycieli-w-szkole.md) opisuje tworzone dane, oczekiwania i sprzątanie.
 
+W pakiecie Szkoły są też SFLT-01–SFLT-32 (`szkola-wyszukiwanie-filtry.spec.ts`), wybierane przez `@school-search`. SFLT-28–SFLT-30 wymagają skonfigurowania kontrolowanych szkół z SI, a SFLT-31 jest oczekiwanym błędem brakującego pola Notatki. [Dokumentacja wyszukiwarki](docs/tests/wyszukiwarka-szkol-filtry.md) zawiera kroki i konfigurację. Testy nie zostały uruchomione.
+
 ## Przepływ uruchomienia
 
 ```text

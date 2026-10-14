@@ -37,6 +37,7 @@ export const SUITES = {
       "tests/szkola-edycja.spec.ts",
       "tests/szkola-nauczyciel.spec.ts",
       "tests/szkola-nauczyciele-filtry.spec.ts",
+      "tests/szkola-wyszukiwanie-filtry.spec.ts",
       "tests/szkola-struktura.spec.ts",
       "tests/szkola-struktura-dodawanie.spec.ts",
       "tests/szkola-kategoria.spec.ts",
@@ -299,7 +300,7 @@ function finalizeRunCounts(exitCode) {
 export function extractTestId(text) {
   return (
     text.match(
-      /\b(?:ORD|CLUB|SCH(?:-EDIT)?|MED(?:-YEAR)?|ADD|EDIT|TEA|FIND|REL|STR|CAT|TFL)-[A-Z0-9-]+\b/,
+      /\b(?:ORD|CLUB|SCH(?:-EDIT)?|MED(?:-YEAR)?|ADD|EDIT|TEA|FIND|REL|STR|CAT|TFL|SFLT)-[A-Z0-9-]+\b/,
     )?.[0] || null
   );
 }
