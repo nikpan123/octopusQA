@@ -4,35 +4,37 @@ Ten katalog opisuje aktualne obszary testowe. Źródłem prawdy dla nazw, lokali
 
 ## Aktualny stan
 
+Dokumenty i edycja zamówień mają 30 nowych scenariuszy ORD-DOC-01–ORD-DOC-30, jeszcze nieuruchomionych. Nie dublują podstawowego zakresu ORD-48–ORD-66. ORD-DOC-28 wymaga istniejącego testowego zamówienia z integracji. [Macierz wymagań i kroki](dokumenty-zamowien.md).
+
 Kolumna Klasa w zamówieniach ma 22 nowe scenariusze ORD-CLASS-01–ORD-CLASS-22, jeszcze nieuruchomione. Przypadek LS jest warunkowo pomijany ze względu na potwierdzony brak produktu. [Opis każdego sprawdzenia](klasa-w-zamowieniach.md).
 
-- **608** scenariuszy we wszystkich 29 plikach;
-- **606** scenariuszy w zwykłej regresji (w tym warunkowe pominięcia i oczekiwane błędy);
+- **638** scenariuszy we wszystkich 30 plikach;
+- **636** scenariuszy w zwykłej regresji (w tym warunkowe pominięcia i oczekiwane błędy);
 - **2** scenariusze rocznej medalowości uruchamiane osobno;
 - domyślnie 2 workery, maksymalnie 4;
 - ORD w panelu: maksymalnie 2 workery;
 - roczna medalowość: zawsze 1 worker.
 
-| Plik testowy                         | Wykonania | Dokumentacja                                                                                              |
-| ------------------------------------ | --------: | --------------------------------------------------------------------------------------------------------- |
-| `klubowiczostwo-*.spec.ts`           |        72 | [Klubowiczostwo](klubowiczostwo-nauczyciela.md)                                                           |
-| `nauczyciel-dodawanie.spec.ts`       |        33 | [Nauczyciele](nauczyciele.md)                                                                             |
-| `nauczyciel-edycja*.spec.ts`         |        44 | [Nauczyciele](nauczyciele.md)                                                                             |
-| `nauczyciel-rozszerzenie.spec.ts`    |         6 | [Nauczyciele](nauczyciele.md), [relacje](relacje-szkola-nauczyciel.md)                                    |
-| `szkola-dodawanie.spec.ts`           |        57 | [Dodawanie szkoły](dodawanie-szkoly.md)                                                                   |
-| `szkola-edycja.spec.ts`              |        33 | [Edycja szkoły](edycja-szkoly.md)                                                                         |
-| `szkola-medalowosc-annual.spec.ts`   |         2 | [Roczna medalowość](medalowosc-roczna.md)                                                                 |
-| `szkola-medalowosc.spec.ts`          |        42 | [Medalowość szkoły](medalowosc-szkoly.md)                                                                 |
-| `szkola-nauczyciel.spec.ts`          |         1 | [Relacje](relacje-szkola-nauczyciel.md)                                                                   |
-| `szkola-struktura.spec.ts`           |        87 | [Struktura szkoły](struktura-szkoly.md)                                                                   |
-| `szkola-struktura-dodawanie.spec.ts` |        19 | [Struktura krok po kroku](struktura-szkoly-krok-po-kroku.md)                                              |
-| `szkola-kategoria.spec.ts`           |        34 | [Kategoria szkoły krok po kroku](kategoria-szkoly.md)                                                     |
-| `szkola-kategoria-dodawanie.spec.ts` |        19 | [Kategoria przy tworzeniu szkoły](kategoria-szkoly.md#kategoria-przy-tworzeniu-nowej-szkoły-cat-35cat-53) |
-| `walidacja-anulowanie.spec.ts`       |         9 | [Nauczyciele](nauczyciele.md), [relacje](relacje-szkola-nauczyciel.md)                                    |
-| `zamowienia-*.spec.ts`               |        88 | [Zamówienia szkoły](zamowienia-szkoly.md), [kolumna Klasa](klasa-w-zamowieniach.md)                       |
-| `szkola-nauczyciele-filtry.spec.ts`  |        30 | [Filtry nauczycieli krok po kroku](filtry-nauczycieli-w-szkole.md)                                        |
-| `szkola-wyszukiwanie-filtry.spec.ts` |        32 | [Wyszukiwarka szkół krok po kroku](wyszukiwarka-szkol-filtry.md)                                          |
-| **Razem**                            |   **608** |                                                                                                           |
+| Plik testowy                         | Wykonania | Dokumentacja                                                                                                                           |
+| ------------------------------------ | --------: | -------------------------------------------------------------------------------------------------------------------------------------- |
+| `klubowiczostwo-*.spec.ts`           |        72 | [Klubowiczostwo](klubowiczostwo-nauczyciela.md)                                                                                        |
+| `nauczyciel-dodawanie.spec.ts`       |        33 | [Nauczyciele](nauczyciele.md)                                                                                                          |
+| `nauczyciel-edycja*.spec.ts`         |        44 | [Nauczyciele](nauczyciele.md)                                                                                                          |
+| `nauczyciel-rozszerzenie.spec.ts`    |         6 | [Nauczyciele](nauczyciele.md), [relacje](relacje-szkola-nauczyciel.md)                                                                 |
+| `szkola-dodawanie.spec.ts`           |        57 | [Dodawanie szkoły](dodawanie-szkoly.md)                                                                                                |
+| `szkola-edycja.spec.ts`              |        33 | [Edycja szkoły](edycja-szkoly.md)                                                                                                      |
+| `szkola-medalowosc-annual.spec.ts`   |         2 | [Roczna medalowość](medalowosc-roczna.md)                                                                                              |
+| `szkola-medalowosc.spec.ts`          |        42 | [Medalowość szkoły](medalowosc-szkoly.md)                                                                                              |
+| `szkola-nauczyciel.spec.ts`          |         1 | [Relacje](relacje-szkola-nauczyciel.md)                                                                                                |
+| `szkola-struktura.spec.ts`           |        87 | [Struktura szkoły](struktura-szkoly.md)                                                                                                |
+| `szkola-struktura-dodawanie.spec.ts` |        19 | [Struktura krok po kroku](struktura-szkoly-krok-po-kroku.md)                                                                           |
+| `szkola-kategoria.spec.ts`           |        34 | [Kategoria szkoły krok po kroku](kategoria-szkoly.md)                                                                                  |
+| `szkola-kategoria-dodawanie.spec.ts` |        19 | [Kategoria przy tworzeniu szkoły](kategoria-szkoly.md#kategoria-przy-tworzeniu-nowej-szkoły-cat-35cat-53)                              |
+| `walidacja-anulowanie.spec.ts`       |         9 | [Nauczyciele](nauczyciele.md), [relacje](relacje-szkola-nauczyciel.md)                                                                 |
+| `zamowienia-*.spec.ts`               |       118 | [Zamówienia szkoły](zamowienia-szkoly.md), [kolumna Klasa](klasa-w-zamowieniach.md), [dokumenty i Oświadczenia](dokumenty-zamowien.md) |
+| `szkola-nauczyciele-filtry.spec.ts`  |        30 | [Filtry nauczycieli krok po kroku](filtry-nauczycieli-w-szkole.md)                                                                     |
+| `szkola-wyszukiwanie-filtry.spec.ts` |        32 | [Wyszukiwarka szkół krok po kroku](wyszukiwarka-szkol-filtry.md)                                                                       |
+| **Razem**                            |   **638** |                                                                                                                                        |
 
 Nowy zestaw TFL-01–TFL-30 jest napisany, ale nie został uruchomiony ani zweryfikowany na DEV, zgodnie z prośbą użytkownika. Obejmuje UI, licznik unikalnych nauczycieli, liczniki szkolnych pozycji przedmiotowych Nasi/Obcy, klasyfikację, kontekst szkoły i regresję przyszłego roku. Licznik grupy nie musi być równy liczbie jej wierszy. Pozostały zakres jest wskazany w jego dokumentacji.
 

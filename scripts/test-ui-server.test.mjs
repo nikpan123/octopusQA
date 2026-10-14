@@ -24,6 +24,7 @@ test("parser rozpoznaje krótkie ID STR, także trzycyfrowe", () => {
   assert.equal(extractTestId("Struktura › STR-106: timeout @structure"), "STR-106");
   assert.equal(extractTestId("ORD-43: zamówienie"), "ORD-43");
   assert.equal(extractTestId("Klasa w zamówieniach › ORD-CLASS-22: rozwijanie"), "ORD-CLASS-22");
+  assert.equal(extractTestId("Dokumenty › ORD-DOC-30: edycja"), "ORD-DOC-30");
   assert.equal(extractTestId("Kategoria szkoły › CAT-34: zmiana uczniów"), "CAT-34");
   assert.equal(extractTestId("Filtrowanie nauczycieli › TFL-26: przyszły rok"), "TFL-26");
   assert.equal(extractTestId("Wyszukiwarka szkół › SFLT-32: RSPO"), "SFLT-32");
@@ -33,6 +34,7 @@ test("pakiet Zamówienia zawiera testy kolumny Klasa", () => {
   const result = buildRunArguments({ suite: "orders", environment: "dev", workers: 2 });
   assert.ok(SUITES.orders.files.includes("tests/zamowienia-klasa.spec.ts"));
   assert.ok(result.args.includes("tests/zamowienia-klasa.spec.ts"));
+  assert.ok(result.args.includes("tests/zamowienia-dokumenty.spec.ts"));
 });
 
 test("listowanie rozdziela ID, nazwę i lokalizację testu struktury", () => {

@@ -53,6 +53,7 @@ export const SUITES = {
       "tests/zamowienia-walidacja.spec.ts",
       "tests/zamowienia-zalaczniki.spec.ts",
       "tests/zamowienia-klasa.spec.ts",
+      "tests/zamowienia-dokumenty.spec.ts",
     ],
   },
   clubs: {

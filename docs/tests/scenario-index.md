@@ -2,7 +2,7 @@
 
 > Plik generowany automatycznie przez `npm run docs:scenarios`. Nie edytuj tabeli ręcznie.
 
-Łącznie: **608 scenariuszy**.
+Łącznie: **638 scenariuszy**.
 
 | ID | Scenariusz | Plik | Tagi |
 |---|---|---|---|
@@ -526,6 +526,36 @@
 | EDIT-02 | EDIT-02: anulowanie edycji zachowuje dane i historię | [walidacja-anulowanie.spec.ts](../../tests/walidacja-anulowanie.spec.ts#L70) | `cancel` |
 | FIND-04 | FIND-04: brak wyników usuwa poprzednią listę — teacher | [walidacja-anulowanie.spec.ts](../../tests/walidacja-anulowanie.spec.ts#L107) | `search` |
 | FIND-04 | FIND-04: brak wyników usuwa poprzednią listę — school | [walidacja-anulowanie.spec.ts](../../tests/walidacja-anulowanie.spec.ts#L107) | `search` |
+| ORD-DOC-01 | ORD-DOC-01: dokument PDF można podejrzeć i pobrać bez zmiany bajtów | [zamowienia-dokumenty.spec.ts](../../tests/zamowienia-dokumenty.spec.ts#L39) | `school`, `order`, `attachment`, `order-document`, `download` |
+| ORD-DOC-02 | ORD-DOC-02: dokument JPG można podejrzeć i pobrać bez zmiany bajtów | [zamowienia-dokumenty.spec.ts](../../tests/zamowienia-dokumenty.spec.ts#L39) | `school`, `order`, `attachment`, `order-document`, `download` |
+| ORD-DOC-03 | ORD-DOC-03: dokument PNG można podejrzeć i pobrać bez zmiany bajtów | [zamowienia-dokumenty.spec.ts](../../tests/zamowienia-dokumenty.spec.ts#L39) | `school`, `order`, `attachment`, `order-document`, `download` |
+| ORD-DOC-04 | ORD-DOC-04: podgląd i pobieranie każdego z kilku dokumentów | [zamowienia-dokumenty.spec.ts](../../tests/zamowienia-dokumenty.spec.ts#L56) | `school`, `order`, `attachment`, `order-document`, `download` |
+| ORD-DOC-05 | ORD-DOC-05: dodanie dokumentu podczas edycji zachowuje poprzedni | [zamowienia-dokumenty.spec.ts](../../tests/zamowienia-dokumenty.spec.ts#L81) | `school`, `order`, `attachment`, `order-document`, `edit` |
+| ORD-DOC-06 | ORD-DOC-06: usunięcie jednego zapisanego dokumentu nie usuwa pozostałych | [zamowienia-dokumenty.spec.ts](../../tests/zamowienia-dokumenty.spec.ts#L106) | `school`, `order`, `attachment`, `order-document`, `edit` |
+| ORD-DOC-07 | ORD-DOC-07: edycja ilości nie zmienia ID ani zawartości dokumentu | [zamowienia-dokumenty.spec.ts](../../tests/zamowienia-dokumenty.spec.ts#L125) | `school`, `order`, `attachment`, `order-document`, `edit` |
+| ORD-DOC-08 | ORD-DOC-08: zamiana produktu zachowuje istniejące dokumenty | [zamowienia-dokumenty.spec.ts](../../tests/zamowienia-dokumenty.spec.ts#L137) | `school`, `order`, `attachment`, `order-document`, `edit` |
+| ORD-DOC-09 | ORD-DOC-09: anulowanie dodania i usunięcia dokumentów nie zmienia repozytorium | [zamowienia-dokumenty.spec.ts](../../tests/zamowienia-dokumenty.spec.ts#L150) | `school`, `order`, `attachment`, `order-document`, `cancel` |
+| ORD-DOC-10 | ORD-DOC-10: identyczne nazwy oryginalne nie nadpisują różnych dokumentów | [zamowienia-dokumenty.spec.ts](../../tests/zamowienia-dokumenty.spec.ts#L167) | `school`, `order`, `attachment`, `order-document`, `filename` |
+| ORD-DOC-11 | ORD-DOC-11: osiem dokumentów jest przechowywanych niezależnie | [zamowienia-dokumenty.spec.ts](../../tests/zamowienia-dokumenty.spec.ts#L184) | `school`, `order`, `attachment`, `order-document`, `multiple` |
+| ORD-DOC-12 | ORD-DOC-12: zamówienie dokumentowe pokazuje autora i datę utworzenia | [zamowienia-dokumenty.spec.ts](../../tests/zamowienia-dokumenty.spec.ts#L197) | `school`, `order`, `attachment`, `order-document`, `audit` |
+| ORD-DOC-13 | ORD-DOC-13: filtr roku ukrywa i przywraca zamówienie z dokumentem | [zamowienia-dokumenty.spec.ts](../../tests/zamowienia-dokumenty.spec.ts#L220) | `school`, `order`, `attachment`, `order-document`, `year` |
+| ORD-DOC-14 | ORD-DOC-14: usunięcie zamówienia usuwa widoczne powiązania dokumentów | [zamowienia-dokumenty.spec.ts](../../tests/zamowienia-dokumenty.spec.ts#L251) | `school`, `order`, `attachment`, `order-document`, `delete` |
+| ORD-DOC-15 | ORD-DOC-15: API odrzuca błędny format dokumentu bez utraty zapisanych plików | [zamowienia-dokumenty.spec.ts](../../tests/zamowienia-dokumenty.spec.ts#L269) | `school`, `order`, `attachment`, `order-document`, `api`, `negative` |
+| ORD-DOC-16 | ORD-DOC-16: API odrzuca błędny size dokumentu bez utraty zapisanych plików | [zamowienia-dokumenty.spec.ts](../../tests/zamowienia-dokumenty.spec.ts#L269) | `school`, `order`, `attachment`, `order-document`, `api`, `negative` |
+| ORD-DOC-17 | ORD-DOC-17: błąd uploadu podczas edycji nie usuwa poprzedniego dokumentu | [zamowienia-dokumenty.spec.ts](../../tests/zamowienia-dokumenty.spec.ts#L297) | `school`, `order`, `attachment`, `order-document`, `network` |
+| ORD-DOC-18 | ORD-DOC-18: oświadczenie ma te same dokumenty u nauczyciela i w pierwotnej szkole | [zamowienia-dokumenty.spec.ts](../../tests/zamowienia-dokumenty.spec.ts#L333) | `school`, `teacher`, `order`, `order-document`, `statement` |
+| ORD-DOC-19 | ORD-DOC-19: edycja oświadczenia pozwala dodać dokument bez utraty poprzedniego | [zamowienia-dokumenty.spec.ts](../../tests/zamowienia-dokumenty.spec.ts#L362) | `teacher`, `order`, `order-document`, `statement`, `edit` |
+| ORD-DOC-20 | ORD-DOC-20: usunięcie pojedynczego skanu oświadczenia zachowuje drugi | [zamowienia-dokumenty.spec.ts](../../tests/zamowienia-dokumenty.spec.ts#L382) | `teacher`, `order`, `order-document`, `statement`, `edit` |
+| ORD-DOC-21 | ORD-DOC-21: oświadczenie bez szkoły nie pokazuje skanów w szkole | [zamowienia-dokumenty.spec.ts](../../tests/zamowienia-dokumenty.spec.ts#L402) | `school`, `teacher`, `order`, `order-document`, `statement`, `negative` |
+| ORD-DOC-22 | ORD-DOC-22: zmiana szkoły nauczyciela nie przenosi dokumentu oświadczenia | [zamowienia-dokumenty.spec.ts](../../tests/zamowienia-dokumenty.spec.ts#L417) | `school`, `teacher`, `order`, `order-document`, `statement`, `isolation` |
+| ORD-DOC-23 | ORD-DOC-23: bez powodu Oświadczenie dodawanie plików nauczyciela jest niedostępne | [zamowienia-dokumenty.spec.ts](../../tests/zamowienia-dokumenty.spec.ts#L445) | `teacher`, `order`, `order-document`, `statement`, `negative` |
+| ORD-DOC-24 | ORD-DOC-24: oświadczenie odrzuca błędny format pliku w UI | [zamowienia-dokumenty.spec.ts](../../tests/zamowienia-dokumenty.spec.ts#L465) | `teacher`, `order`, `order-document`, `statement`, `validation` |
+| ORD-DOC-25 | ORD-DOC-25: oświadczenie odrzuca błędny size pliku w UI | [zamowienia-dokumenty.spec.ts](../../tests/zamowienia-dokumenty.spec.ts#L465) | `teacher`, `order`, `order-document`, `statement`, `validation` |
+| ORD-DOC-26 | ORD-DOC-26: oświadczenie akceptuje granicę 10 MB w formularzu | [zamowienia-dokumenty.spec.ts](../../tests/zamowienia-dokumenty.spec.ts#L481) | `teacher`, `order`, `order-document`, `statement`, `boundary` |
+| ORD-DOC-27 | ORD-DOC-27: oświadczenie jest tylko do odczytu z poziomu zamówień szkoły | [zamowienia-dokumenty.spec.ts](../../tests/zamowienia-dokumenty.spec.ts#L496) | `school`, `teacher`, `order`, `order-document`, `statement`, `readonly` |
+| ORD-DOC-28 | ORD-DOC-28: zamówienie z integracji nie udostępnia edycji szkolnej | [zamowienia-dokumenty.spec.ts](../../tests/zamowienia-dokumenty.spec.ts#L516) | `school`, `order`, `order-document`, `integration`, `readonly` |
+| ORD-DOC-29 | ORD-DOC-29: usunięcie oświadczenia usuwa widoczne powiązania dokumentów u nauczyciela i w szkole | [zamowienia-dokumenty.spec.ts](../../tests/zamowienia-dokumenty.spec.ts#L534) | `school`, `teacher`, `order`, `order-document`, `statement`, `delete` |
+| ORD-DOC-30 | ORD-DOC-30: edycja przez formularz zmienia produkt i ilość bez utraty dokumentu | [zamowienia-dokumenty.spec.ts](../../tests/zamowienia-dokumenty.spec.ts#L558) | `school`, `order`, `order-document`, `edit` |
 | ORD-CLASS-01 | ORD-CLASS-01: kolumna Klasa jest widoczna i zgodna z makietą - lista | [zamowienia-klasa.spec.ts](../../tests/zamowienia-klasa.spec.ts#L19) | `school`, `order`, `order-class`, `layout` |
 | ORD-CLASS-02 | ORD-CLASS-02: kolumna Klasa jest widoczna i zgodna z makietą - szczegóły | [zamowienia-klasa.spec.ts](../../tests/zamowienia-klasa.spec.ts#L19) | `school`, `order`, `order-class`, `layout` |
 | ORD-CLASS-03 | ORD-CLASS-03: kolumna Klasa jest widoczna i zgodna z makietą - pozycje | [zamowienia-klasa.spec.ts](../../tests/zamowienia-klasa.spec.ts#L19) | `school`, `order`, `order-class`, `layout` |
@@ -595,22 +625,22 @@
 | ORD-45 | ORD-45: zamówienie utworzone dla szkoły A nie pojawia się w szkole B | [zamowienia-walidacja.spec.ts](../../tests/zamowienia-walidacja.spec.ts#L427) | `school`, `order`, `isolation` |
 | ORD-46 | ORD-46: reload zachowuje ID, produkt i ilość zamówienia | [zamowienia-walidacja.spec.ts](../../tests/zamowienia-walidacja.spec.ts#L450) | `school`, `order`, `persistence` |
 | ORD-47 | ORD-47: zapisane zamówienie ma numeryczne ID i widoczny wiersz na liście | [zamowienia-walidacja.spec.ts](../../tests/zamowienia-walidacja.spec.ts#L479) | `school`, `order`, `list` |
-| ORD-48 | ORD-48: poprawny JPG można dodać jako załącznik | [zamowienia-zalaczniki.spec.ts](../../tests/zamowienia-zalaczniki.spec.ts#L44) | `school`, `order`, `attachment` |
-| ORD-49 | ORD-49: poprawny PNG można dodać jako załącznik | [zamowienia-zalaczniki.spec.ts](../../tests/zamowienia-zalaczniki.spec.ts#L44) | `school`, `order`, `attachment` |
-| ORD-50 | ORD-50: poprawny PDF można dodać jako załącznik | [zamowienia-zalaczniki.spec.ts](../../tests/zamowienia-zalaczniki.spec.ts#L44) | `school`, `order`, `attachment` |
-| ORD-51 | ORD-51: można dodać kilka załączników do jednego zamówienia | [zamowienia-zalaczniki.spec.ts](../../tests/zamowienia-zalaczniki.spec.ts#L60) | `school`, `order`, `attachment` |
-| ORD-52 | ORD-52: można usunąć jeden z kilku załączników | [zamowienia-zalaczniki.spec.ts](../../tests/zamowienia-zalaczniki.spec.ts#L83) | `school`, `order`, `attachment` |
-| ORD-53 | ORD-53: po usunięciu wszystkich załączników lista jest pusta | [zamowienia-zalaczniki.spec.ts](../../tests/zamowienia-zalaczniki.spec.ts#L127) | `school`, `order`, `attachment` |
-| ORD-54 | ORD-54: zmiana filtrów nie usuwa załącznika | [zamowienia-zalaczniki.spec.ts](../../tests/zamowienia-zalaczniki.spec.ts#L162) | `school`, `order`, `attachment`, `filter` |
-| ORD-55 | ORD-55: dodanie produktu nie usuwa załącznika | [zamowienia-zalaczniki.spec.ts](../../tests/zamowienia-zalaczniki.spec.ts#L185) | `school`, `order`, `attachment`, `product` |
-| ORD-56 | ORD-56: załącznik jest trwały po zapisaniu i ponownym otwarciu edycji zamówienia | [zamowienia-zalaczniki.spec.ts](../../tests/zamowienia-zalaczniki.spec.ts#L204) | `school`, `order`, `attachment`, `persistence` |
-| ORD-57 | ORD-57: kilka załączników jest trwałych po zapisaniu zamówienia | [zamowienia-zalaczniki.spec.ts](../../tests/zamowienia-zalaczniki.spec.ts#L259) | `school`, `order`, `attachment`, `persistence` |
-| ORD-58 | ORD-58: anulowanie formularza z załącznikiem nie przenosi pliku do kolejnego formularza | [zamowienia-zalaczniki.spec.ts](../../tests/zamowienia-zalaczniki.spec.ts#L313) | `school`, `order`, `attachment`, `cancel` |
-| ORD-59 | ORD-59: niedozwolony typ pliku WEBP jest odrzucany | [zamowienia-zalaczniki.spec.ts](../../tests/zamowienia-zalaczniki.spec.ts#L340) | `school`, `order`, `attachment`, `validation` |
-| ORD-60 | ORD-60: niedozwolony typ pliku TXT jest odrzucany | [zamowienia-zalaczniki.spec.ts](../../tests/zamowienia-zalaczniki.spec.ts#L340) | `school`, `order`, `attachment`, `validation` |
-| ORD-61 | ORD-61: plik większy niż 10 MB jest odrzucany | [zamowienia-zalaczniki.spec.ts](../../tests/zamowienia-zalaczniki.spec.ts#L354) | `school`, `order`, `attachment`, `validation` |
-| ORD-62 | ORD-62: plik o rozmiarze dokładnie 10 MB jest akceptowany | [zamowienia-zalaczniki.spec.ts](../../tests/zamowienia-zalaczniki.spec.ts#L369) | `school`, `order`, `attachment`, `boundary` |
-| ORD-63 | ORD-63: zamówienie z załącznikiem pokazuje ikonę dokumentu na liście | [zamowienia-zalaczniki.spec.ts](../../tests/zamowienia-zalaczniki.spec.ts#L384) | `school`, `order`, `attachment`, `list` |
-| ORD-64 | ORD-64: zamówienie bez załącznika nie pokazuje ikony dokumentu | [zamowienia-zalaczniki.spec.ts](../../tests/zamowienia-zalaczniki.spec.ts#L430) | `school`, `order`, `attachment`, `list`, `negative` |
-| ORD-65 | ORD-65: po usunięciu ostatniego załącznika ikona dokumentu znika | [zamowienia-zalaczniki.spec.ts](../../tests/zamowienia-zalaczniki.spec.ts#L454) | `school`, `order`, `attachment`, `edit`, `list` |
-| ORD-66 | ORD-66: kilka załączników daje pojedynczą ikonę dokumentu na liście | [zamowienia-zalaczniki.spec.ts](../../tests/zamowienia-zalaczniki.spec.ts#L531) | `school`, `order`, `attachment`, `list` |
+| ORD-48 | ORD-48: poprawny JPG można dodać jako załącznik | [zamowienia-zalaczniki.spec.ts](../../tests/zamowienia-zalaczniki.spec.ts#L45) | `school`, `order`, `attachment` |
+| ORD-49 | ORD-49: poprawny PNG można dodać jako załącznik | [zamowienia-zalaczniki.spec.ts](../../tests/zamowienia-zalaczniki.spec.ts#L45) | `school`, `order`, `attachment` |
+| ORD-50 | ORD-50: poprawny PDF można dodać jako załącznik | [zamowienia-zalaczniki.spec.ts](../../tests/zamowienia-zalaczniki.spec.ts#L45) | `school`, `order`, `attachment` |
+| ORD-51 | ORD-51: można dodać kilka załączników do jednego zamówienia | [zamowienia-zalaczniki.spec.ts](../../tests/zamowienia-zalaczniki.spec.ts#L61) | `school`, `order`, `attachment` |
+| ORD-52 | ORD-52: można usunąć jeden z kilku załączników | [zamowienia-zalaczniki.spec.ts](../../tests/zamowienia-zalaczniki.spec.ts#L84) | `school`, `order`, `attachment` |
+| ORD-53 | ORD-53: po usunięciu wszystkich załączników lista jest pusta | [zamowienia-zalaczniki.spec.ts](../../tests/zamowienia-zalaczniki.spec.ts#L128) | `school`, `order`, `attachment` |
+| ORD-54 | ORD-54: zmiana filtrów nie usuwa załącznika | [zamowienia-zalaczniki.spec.ts](../../tests/zamowienia-zalaczniki.spec.ts#L163) | `school`, `order`, `attachment`, `filter` |
+| ORD-55 | ORD-55: dodanie produktu nie usuwa załącznika | [zamowienia-zalaczniki.spec.ts](../../tests/zamowienia-zalaczniki.spec.ts#L186) | `school`, `order`, `attachment`, `product` |
+| ORD-56 | ORD-56: załącznik jest trwały po zapisaniu i ponownym otwarciu edycji zamówienia | [zamowienia-zalaczniki.spec.ts](../../tests/zamowienia-zalaczniki.spec.ts#L205) | `school`, `order`, `attachment`, `persistence` |
+| ORD-57 | ORD-57: kilka załączników jest trwałych po zapisaniu zamówienia | [zamowienia-zalaczniki.spec.ts](../../tests/zamowienia-zalaczniki.spec.ts#L260) | `school`, `order`, `attachment`, `persistence` |
+| ORD-58 | ORD-58: anulowanie formularza z załącznikiem nie przenosi pliku do kolejnego formularza | [zamowienia-zalaczniki.spec.ts](../../tests/zamowienia-zalaczniki.spec.ts#L314) | `school`, `order`, `attachment`, `cancel` |
+| ORD-59 | ORD-59: niedozwolony typ pliku WEBP jest odrzucany | [zamowienia-zalaczniki.spec.ts](../../tests/zamowienia-zalaczniki.spec.ts#L341) | `school`, `order`, `attachment`, `validation` |
+| ORD-60 | ORD-60: niedozwolony typ pliku TXT jest odrzucany | [zamowienia-zalaczniki.spec.ts](../../tests/zamowienia-zalaczniki.spec.ts#L341) | `school`, `order`, `attachment`, `validation` |
+| ORD-61 | ORD-61: plik większy niż 10 MB jest odrzucany | [zamowienia-zalaczniki.spec.ts](../../tests/zamowienia-zalaczniki.spec.ts#L355) | `school`, `order`, `attachment`, `validation` |
+| ORD-62 | ORD-62: plik o rozmiarze dokładnie 10 MB jest akceptowany | [zamowienia-zalaczniki.spec.ts](../../tests/zamowienia-zalaczniki.spec.ts#L370) | `school`, `order`, `attachment`, `boundary` |
+| ORD-63 | ORD-63: zamówienie z załącznikiem pokazuje ikonę dokumentu na liście | [zamowienia-zalaczniki.spec.ts](../../tests/zamowienia-zalaczniki.spec.ts#L385) | `school`, `order`, `attachment`, `list` |
+| ORD-64 | ORD-64: zamówienie bez załącznika nie pokazuje ikony dokumentu | [zamowienia-zalaczniki.spec.ts](../../tests/zamowienia-zalaczniki.spec.ts#L431) | `school`, `order`, `attachment`, `list`, `negative` |
+| ORD-65 | ORD-65: po usunięciu ostatniego załącznika ikona dokumentu znika | [zamowienia-zalaczniki.spec.ts](../../tests/zamowienia-zalaczniki.spec.ts#L455) | `school`, `order`, `attachment`, `edit`, `list` |
+| ORD-66 | ORD-66: kilka załączników daje pojedynczą ikonę dokumentu na liście | [zamowienia-zalaczniki.spec.ts](../../tests/zamowienia-zalaczniki.spec.ts#L532) | `school`, `order`, `attachment`, `list` |

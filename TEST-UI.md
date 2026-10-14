@@ -65,6 +65,8 @@ W pakiecie Szkoły są też SFLT-01–SFLT-32 (`szkola-wyszukiwanie-filtry.spec.
 
 ## Przepływ uruchomienia
 
+Pakiet Zamówienia obejmuje również `zamowienia-dokumenty.spec.ts`: ORD-DOC-01–ORD-DOC-30, grep `@order-document`. Przygotowanie zamówień i większości dokumentów odbywa się przez API; testy operacji formularza używają UI. ORD-DOC-28 wymaga zmiennej `OCTOPUS_ORDER_EXTERNAL_REFERENCE` z istniejącym testowym zamówieniem z integracji. [Konfiguracja i zakres](docs/tests/dokumenty-zamowien.md).
+
 Pakiet Zamówienia obejmuje `zamowienia-klasa.spec.ts` (ORD-CLASS-01–ORD-CLASS-22). Grep `@order-class` wybiera testy kolumny Klasa. Przygotowanie, edycje i sprzątanie zamówień korzystają z API; UI służy do kontroli trzech widoków. LS jest warunkowo pomijany z powodu braku produktu. [Dokumentacja](docs/tests/klasa-w-zamowieniach.md).
 
 ```text

@@ -25,15 +25,16 @@ import {
 
 import { ORDER_PRODUCTS } from "./data/order-product-data";
 import { prepareOrderSchool, withOrderCleanup, createSimpleOrder } from "./support/order-scenario";
+import { documentFile } from "./support/order-documents";
 
 test.describe.configure({
   mode: "parallel",
 });
 
 for (const file of [
-  makeUpload("ord-test.jpg", "image/jpeg"),
-  makeUpload("ord-test.png", "image/png"),
-  makeUpload("ord-test.pdf", "application/pdf"),
+  documentFile("jpg", 1, "ord-test.jpg"),
+  documentFile("png", 1, "ord-test.png"),
+  documentFile("pdf", 1, "ord-test.pdf"),
 ]) {
   const id = file.name.endsWith(".jpg")
     ? "ORD-48"
