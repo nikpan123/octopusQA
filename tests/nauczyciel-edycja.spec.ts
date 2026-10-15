@@ -15,7 +15,8 @@ test("EDIT-04: zmiana imienia jest trwała i widoczna w historii @teacher @edit"
   scenario: s,
   school,
 }) => {
-  const teacherId = await s.createTeacher(school.id, school.name);
+  const teacherId = await test.step("Przygotowanie: utworzenie nauczyciela testowego", async () =>
+    s.createTeacher(school.id, school.name));
 
   const newFirstName = "Adam";
 
@@ -27,7 +28,8 @@ test("EDIT-04: zmiana imienia jest trwała i widoczna w historii @teacher @edit"
 
   const form = await openBasicTeacherEdit(page, s.app);
 
-  await expect(form.locator("#firstName")).toHaveValue("Testowy");
+  await test.step('Sprawdzenie: wartość pola w widoku — form.locator("#firstName"); oczekiwane: "Testowy"', async () =>
+    expect(form.locator("#firstName")).toHaveValue("Testowy"));
 
   await typeValue(form.locator("#firstName"), newFirstName);
 
@@ -36,39 +38,45 @@ test("EDIT-04: zmiana imienia jest trwała i widoczna w historii @teacher @edit"
   /*
    * Od razu po zapisie.
    */
-  await expect(s.app.detail("firstName")).toHaveValue(newFirstName);
+  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("firstName"); oczekiwane: newFirstName', async () =>
+    expect(s.app.detail("firstName")).toHaveValue(newFirstName));
 
   /*
    * Ponowne otwarcie.
    */
   await s.app.openPanel("teacher", teacherId);
 
-  await expect(s.app.detail("firstName")).toHaveValue(newFirstName);
+  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("firstName"); oczekiwane: newFirstName', async () =>
+    expect(s.app.detail("firstName")).toHaveValue(newFirstName));
 
   /*
    * Nazwisko zostało automatycznie
    * znormalizowane przez Octopusa.
    */
-  await expect(s.app.detail("lastName")).toHaveValue(expectedLastName);
+  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("lastName"); oczekiwane: expectedLastName', async () =>
+    expect(s.app.detail("lastName")).toHaveValue(expectedLastName));
 
   /*
    * E-mail pozostaje bez zmian.
    */
-  await expect(s.app.detail("email")).toHaveValue(s.email);
+  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("email"); oczekiwane: s.email', async () =>
+    expect(s.app.detail("email")).toHaveValue(s.email));
 
   /*
    * Relacja ze szkołą pozostaje.
    */
-  await expect(
-    page.getByRole("row").filter({
-      hasText: school.name,
-    }),
-  ).toHaveCount(1);
+  await test.step('Sprawdzenie: liczba elementów w widoku — page.getByRole("row").filter({ hasText: school.name, }); oczekiwane: 1', async () =>
+    expect(
+      page.getByRole("row").filter({
+        hasText: school.name,
+      }),
+    ).toHaveCount(1));
 
   /*
    * Historia zmiany imienia.
    */
-  await expectTeacherHistoryChange(page, "Imię", newFirstName);
+  await test.step("Sprawdzenie: expectTeacherHistoryChange", async () =>
+    expectTeacherHistoryChange(page, "Imię", newFirstName));
 });
 
 /*
@@ -83,7 +91,8 @@ test("EDIT-05: zmiana nazwiska jest trwała i widoczna w historii @teacher @edit
   scenario: s,
   school,
 }) => {
-  const teacherId = await s.createTeacher(school.id, school.name);
+  const teacherId = await test.step("Przygotowanie: utworzenie nauczyciela testowego", async () =>
+    s.createTeacher(school.id, school.name));
 
   const inputLastName = "Nowak";
 
@@ -91,7 +100,8 @@ test("EDIT-05: zmiana nazwiska jest trwała i widoczna w historii @teacher @edit
 
   const form = await openBasicTeacherEdit(page, s.app);
 
-  await expect(form.locator("#lastName")).toHaveValue(s.id);
+  await test.step('Sprawdzenie: wartość pola w widoku — form.locator("#lastName"); oczekiwane: s.id', async () =>
+    expect(form.locator("#lastName")).toHaveValue(s.id));
 
   await typeValue(form.locator("#lastName"), inputLastName);
 
@@ -99,13 +109,17 @@ test("EDIT-05: zmiana nazwiska jest trwała i widoczna w historii @teacher @edit
 
   await s.app.openPanel("teacher", teacherId);
 
-  await expect(s.app.detail("lastName")).toHaveValue(expectedLastName);
+  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("lastName"); oczekiwane: expectedLastName', async () =>
+    expect(s.app.detail("lastName")).toHaveValue(expectedLastName));
 
-  await expect(s.app.detail("firstName")).toHaveValue("Testowy");
+  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("firstName"); oczekiwane: "Testowy"', async () =>
+    expect(s.app.detail("firstName")).toHaveValue("Testowy"));
 
-  await expect(s.app.detail("email")).toHaveValue(s.email);
+  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("email"); oczekiwane: s.email', async () =>
+    expect(s.app.detail("email")).toHaveValue(s.email));
 
-  await expectTeacherHistoryChange(page, "Nazwisko", expectedLastName);
+  await test.step("Sprawdzenie: expectTeacherHistoryChange", async () =>
+    expectTeacherHistoryChange(page, "Nazwisko", expectedLastName));
 });
 
 /*
@@ -120,7 +134,8 @@ test("EDIT-06: jednoczesna zmiana imienia i nazwiska zapisuje oba pola @teacher 
   scenario: s,
   school,
 }) => {
-  const teacherId = await s.createTeacher(school.id, school.name);
+  const teacherId = await test.step("Przygotowanie: utworzenie nauczyciela testowego", async () =>
+    s.createTeacher(school.id, school.name));
 
   const inputFirstName = "Adam";
 
@@ -140,11 +155,14 @@ test("EDIT-06: jednoczesna zmiana imienia i nazwiska zapisuje oba pola @teacher 
 
   await s.app.openPanel("teacher", teacherId);
 
-  await expect(s.app.detail("firstName")).toHaveValue(expectedFirstName);
+  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("firstName"); oczekiwane: expectedFirstName', async () =>
+    expect(s.app.detail("firstName")).toHaveValue(expectedFirstName));
 
-  await expect(s.app.detail("lastName")).toHaveValue(expectedLastName);
+  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("lastName"); oczekiwane: expectedLastName', async () =>
+    expect(s.app.detail("lastName")).toHaveValue(expectedLastName));
 
-  await expectTeacherHistoryChange(page, "Imię", expectedFirstName);
+  await test.step("Sprawdzenie: expectTeacherHistoryChange", async () =>
+    expectTeacherHistoryChange(page, "Imię", expectedFirstName));
 
   /*
    * Ponowne wejście,
@@ -153,7 +171,8 @@ test("EDIT-06: jednoczesna zmiana imienia i nazwiska zapisuje oba pola @teacher 
    */
   await s.app.openPanel("teacher", teacherId);
 
-  await expectTeacherHistoryChange(page, "Nazwisko", expectedLastName);
+  await test.step("Sprawdzenie: expectTeacherHistoryChange", async () =>
+    expectTeacherHistoryChange(page, "Nazwisko", expectedLastName));
 });
 
 /*
@@ -168,7 +187,8 @@ test("EDIT-07: wielkość liter imienia jest normalizowana @teacher @edit @norma
   scenario: s,
   school,
 }) => {
-  const teacherId = await s.createTeacher(school.id, school.name);
+  const teacherId = await test.step("Przygotowanie: utworzenie nauczyciela testowego", async () =>
+    s.createTeacher(school.id, school.name));
 
   const input = "BoŻeNa";
 
@@ -182,13 +202,15 @@ test("EDIT-07: wielkość liter imienia jest normalizowana @teacher @edit @norma
 
   await s.app.openPanel("teacher", teacherId);
 
-  await expect(s.app.detail("firstName")).toHaveValue(expected);
+  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("firstName"); oczekiwane: expected', async () =>
+    expect(s.app.detail("firstName")).toHaveValue(expected));
 
   /*
    * Nazwisko również może zostać
    * znormalizowane przy tym samym zapisie.
    */
-  await expect(s.app.detail("lastName")).toHaveValue(normalizeTeacherName(s.id));
+  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("lastName"); oczekiwane: normalizeTeacherName(s.id)', async () =>
+    expect(s.app.detail("lastName")).toHaveValue(normalizeTeacherName(s.id)));
 });
 
 /*
@@ -203,7 +225,8 @@ test("EDIT-08: wielkość liter nazwiska jest normalizowana @teacher @edit @norm
   scenario: s,
   school,
 }) => {
-  const teacherId = await s.createTeacher(school.id, school.name);
+  const teacherId = await test.step("Przygotowanie: utworzenie nauczyciela testowego", async () =>
+    s.createTeacher(school.id, school.name));
 
   const input = "nOWAK";
 
@@ -217,7 +240,8 @@ test("EDIT-08: wielkość liter nazwiska jest normalizowana @teacher @edit @norm
 
   await s.app.openPanel("teacher", teacherId);
 
-  await expect(s.app.detail("lastName")).toHaveValue(expected);
+  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("lastName"); oczekiwane: expected', async () =>
+    expect(s.app.detail("lastName")).toHaveValue(expected));
 });
 
 /*
@@ -232,7 +256,8 @@ test("EDIT-09: nazwisko z łącznikiem można zapisać @teacher @edit", async ({
   scenario: s,
   school,
 }) => {
-  const teacherId = await s.createTeacher(school.id, school.name);
+  const teacherId = await test.step("Przygotowanie: utworzenie nauczyciela testowego", async () =>
+    s.createTeacher(school.id, school.name));
 
   const lastName = "Nowak-Kowalska";
 
@@ -252,7 +277,8 @@ test("EDIT-09: nazwisko z łącznikiem można zapisać @teacher @edit", async ({
    * Sprawdzamy wartość bez rozróżniania
    * wielkości liter.
    */
-  await expect(s.app.detail("lastName")).toHaveValue(/^nowak-kowalska$/i);
+  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("lastName"); oczekiwane: /^nowak-kowalska$/i', async () =>
+    expect(s.app.detail("lastName")).toHaveValue(/^nowak-kowalska$/i));
 });
 
 /*
@@ -267,7 +293,8 @@ test("EDIT-10: puste imię blokuje zapis @teacher @edit @validation", async ({
   scenario: s,
   school,
 }) => {
-  const teacherId = await s.createTeacher(school.id, school.name);
+  const teacherId = await test.step("Przygotowanie: utworzenie nauczyciela testowego", async () =>
+    s.createTeacher(school.id, school.name));
 
   const form = await openBasicTeacherEdit(page, s.app);
 
@@ -283,7 +310,8 @@ test("EDIT-10: puste imię blokuje zapis @teacher @edit @validation", async ({
     })
     .click();
 
-  await expect(form).toBeVisible();
+  await test.step("Sprawdzenie: widoczność elementu — form", async () =>
+    expect(form).toBeVisible());
 
   await cancelTeacherDialog(form);
 
@@ -294,9 +322,11 @@ test("EDIT-10: puste imię blokuje zapis @teacher @edit @validation", async ({
    */
   await s.app.openPanel("teacher", teacherId);
 
-  await expect(s.app.detail("firstName")).toHaveValue("Testowy");
+  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("firstName"); oczekiwane: "Testowy"', async () =>
+    expect(s.app.detail("firstName")).toHaveValue("Testowy"));
 
-  await expect(s.app.detail("lastName")).toHaveValue(s.id);
+  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("lastName"); oczekiwane: s.id', async () =>
+    expect(s.app.detail("lastName")).toHaveValue(s.id));
 });
 
 /*
@@ -311,7 +341,8 @@ test("EDIT-11: puste nazwisko blokuje zapis @teacher @edit @validation", async (
   scenario: s,
   school,
 }) => {
-  const teacherId = await s.createTeacher(school.id, school.name);
+  const teacherId = await test.step("Przygotowanie: utworzenie nauczyciela testowego", async () =>
+    s.createTeacher(school.id, school.name));
 
   const form = await openBasicTeacherEdit(page, s.app);
 
@@ -327,7 +358,8 @@ test("EDIT-11: puste nazwisko blokuje zapis @teacher @edit @validation", async (
     })
     .click();
 
-  await expect(form).toBeVisible();
+  await test.step("Sprawdzenie: widoczność elementu — form", async () =>
+    expect(form).toBeVisible());
 
   await cancelTeacherDialog(form);
 
@@ -338,7 +370,8 @@ test("EDIT-11: puste nazwisko blokuje zapis @teacher @edit @validation", async (
    * więc nazwisko powinno zostać
    * takie jak przed edycją.
    */
-  await expect(s.app.detail("lastName")).toHaveValue(s.id);
+  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("lastName"); oczekiwane: s.id', async () =>
+    expect(s.app.detail("lastName")).toHaveValue(s.id));
 });
 
 /*

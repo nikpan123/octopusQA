@@ -1,3 +1,4 @@
+import { apiStep } from "./api-step";
 import { expect, type APIRequestContext } from "@playwright/test";
 
 import type { AuthSession } from "../../scripts/auth.mjs";
@@ -9,6 +10,7 @@ export type TeacherSubjectLevel = {
 };
 
 export type CreateTeacherOptions = {
+  testRecord?: boolean;
   firstName?: string;
   lastName: string;
   email: string;
@@ -138,70 +140,84 @@ export class OctopusApiFactory {
   }
 
   async createTeacher(options: CreateTeacherOptions): Promise<string> {
-    return this.metrics.measure("setup.api.teacher", async () => {
-      const userId = Number(localStorageValue(this.authSession, "id"));
-      if (!Number.isSafeInteger(userId) || userId <= 0) {
-        throw new Error("Sesja Octopusa nie zawiera poprawnego ID użytkownika.");
-      }
+    return await apiStep(
+      "Przygotowanie API: utworzenie nauczyciela, szkół i nauczanych przedmiotów",
+      async () => {
+        return this.metrics.measure("setup.api.teacher", async () => {
+          if (options.testRecord === false) {
+            expect(
+              options.lastName,
+              "Bez flagi tworzymy wyłącznie własne rekordy regresji",
+            ).toMatch(/^REG_\d+_[a-f0-9]{6}$/);
+            expect(options.email).toBe(`${options.lastName.toLowerCase()}@example.invalid`);
+          }
+          const userId = Number(localStorageValue(this.authSession, "id"));
+          if (!Number.isSafeInteger(userId) || userId <= 0) {
+            throw new Error("Sesja Octopusa nie zawiera poprawnego ID użytkownika.");
+          }
 
-      const teacherStatus = await Promise.all(
-        (options.subjectLevels ?? []).map((entry) => this.resolveSubjectLevel(entry)),
-      );
-      const createdAt = new Date().toISOString();
-      const teacher = await this.post<CreatedTeacher>("/api/Teacher/AddTeacher", {
-        lastName: options.lastName,
-        firstName: options.firstName ?? "Testowy",
-        email: options.email,
-        dateOfBirth: null,
-        phone: "",
-        sourceId: 84,
-        createdBy: userId,
-        createdAt,
-        statusId: 22,
-        sex: false,
-        rodo: [
-          {
-            marketing: false,
-            email: false,
-            call: false,
-            rodoSourceId: 84,
-          },
-        ],
-        teacherStatus,
-        teacherSchools: options.schoolIds.map((schoolId) => ({
-          schoolId: Number(schoolId),
-        })),
-      });
+          const teacherStatus = await Promise.all(
+            (options.subjectLevels ?? []).map((entry) => this.resolveSubjectLevel(entry)),
+          );
+          const createdAt = new Date().toISOString();
+          const teacher = await this.post<CreatedTeacher>("/api/Teacher/AddTeacher", {
+            lastName: options.lastName,
+            firstName: options.firstName ?? "Testowy",
+            email: options.email,
+            dateOfBirth: null,
+            phone: "",
+            sourceId: 84,
+            createdBy: userId,
+            createdAt,
+            statusId: 22,
+            sex: false,
+            rodo: [
+              {
+                marketing: false,
+                email: false,
+                call: false,
+                rodoSourceId: 84,
+              },
+            ],
+            teacherStatus,
+            teacherSchools: options.schoolIds.map((schoolId) => ({
+              schoolId: Number(schoolId),
+            })),
+          });
 
-      const teacherId = String(teacher.id);
-      expect(teacherId, "API powinno zwrócić ID utworzonego nauczyciela").toMatch(/^\d+$/);
-      expect(teacher.email).toBe(options.email);
+          const teacherId = String(teacher.id);
+          expect(teacherId, "API powinno zwrócić ID utworzonego nauczyciela").toMatch(/^\d+$/);
+          expect(teacher.email).toBe(options.email);
 
-      const historyEntry = {
-        teacherId: teacher.id,
-        createdBy: userId,
-        email: "",
-        id: -1,
-        firstName: "",
-        lastName: "",
-      };
+          const historyEntry = {
+            teacherId: teacher.id,
+            createdBy: userId,
+            email: "",
+            id: -1,
+            firstName: "",
+            lastName: "",
+          };
 
-      for (let attempt = 1; attempt <= 3; attempt += 1) {
-        try {
-          await this.post<void>("/api/TeacherEntryHistory/Add", historyEntry);
-          break;
-        } catch (error) {
-          if (attempt === 3 || !isOptimisticConcurrencyError(error)) throw error;
+          for (let attempt = 1; attempt <= 3; attempt += 1) {
+            try {
+              await this.post<void>("/api/TeacherEntryHistory/Add", historyEntry);
+              break;
+            } catch (error) {
+              if (attempt === 3 || !isOptimisticConcurrencyError(error)) throw error;
 
-          this.metrics.increment("setup.api.teacher-history.retry");
-          await new Promise((resolve) => setTimeout(resolve, attempt * 100));
-        }
-      }
-      await this.post<void>(`/api/Teacher/InsertIntoTestTeachers?teacherId=${teacherId}`, {
-        teacherId,
-      });
+              this.metrics.increment("setup.api.teacher-history.retry");
+              await new Promise((resolve) => setTimeout(resolve, attempt * 100));
+            }
+          }
+          if (options.testRecord !== false) {
+            await this.post<void>(`/api/Teacher/InsertIntoTestTeachers?teacherId=${teacherId}`, {
+              teacherId,
+            });
+          }
 
-      return teacherId;
-    });
+          return teacherId;
+        });
+      },
+    );
   }
 }

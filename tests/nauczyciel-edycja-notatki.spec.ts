@@ -19,7 +19,8 @@ test("EDIT-28: uwagi nauczyciela są trwałe @teacher @edit", async ({
   scenario: s,
   school,
 }) => {
-  const teacherId = await s.createTeacher(school.id, school.name);
+  const teacherId = await test.step("Przygotowanie: utworzenie nauczyciela testowego", async () =>
+    s.createTeacher(school.id, school.name));
 
   const note = "Test automatyczny - uwaga nauczyciela";
 
@@ -56,7 +57,8 @@ test("EDIT-28: uwagi nauczyciela są trwałe @teacher @edit", async ({
 
   const noteField = (await textarea.count()) > 0 ? textarea.first() : editableInput.first();
 
-  await expect(noteField).toBeVisible();
+  await test.step("Sprawdzenie: widoczność elementu — noteField", async () =>
+    expect(noteField).toBeVisible());
 
   /*
    * =====================================================
@@ -68,7 +70,8 @@ test("EDIT-28: uwagi nauczyciela są trwałe @teacher @edit", async ({
 
   await noteField.press("Tab");
 
-  await expect(noteField).toHaveValue(note);
+  await test.step("Sprawdzenie: wartość pola w widoku — noteField; oczekiwane: note", async () =>
+    expect(noteField).toHaveValue(note));
 
   /*
    * =====================================================
@@ -91,7 +94,8 @@ test("EDIT-28: uwagi nauczyciela są trwałe @teacher @edit", async ({
    * w tooltipach Angular Material.
    */
 
-  await expect(teacherNotesInput(page)).toHaveValue(note);
+  await test.step("Sprawdzenie: wartość pola w widoku — teacherNotesInput(page); oczekiwane: note", async () =>
+    expect(teacherNotesInput(page)).toHaveValue(note));
 
   /*
    * =====================================================
@@ -101,7 +105,8 @@ test("EDIT-28: uwagi nauczyciela są trwałe @teacher @edit", async ({
 
   await s.app.openPanel("teacher", teacherId);
 
-  await expect(teacherNotesInput(page)).toHaveValue(note);
+  await test.step("Sprawdzenie: wartość pola w widoku — teacherNotesInput(page); oczekiwane: note", async () =>
+    expect(teacherNotesInput(page)).toHaveValue(note));
 
   /*
    * =====================================================
@@ -112,19 +117,22 @@ test("EDIT-28: uwagi nauczyciela są trwałe @teacher @edit", async ({
    * pozostałych podstawowych danych.
    */
 
-  await expect(s.app.detail("email")).toHaveValue(s.email);
+  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("email"); oczekiwane: s.email', async () =>
+    expect(s.app.detail("email")).toHaveValue(s.email));
 
-  await expect(s.app.detail("firstName")).toHaveValue("Testowy");
+  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("firstName"); oczekiwane: "Testowy"', async () =>
+    expect(s.app.detail("firstName")).toHaveValue("Testowy"));
 
   /*
    * Relacja ze szkołą również musi pozostać.
    */
 
-  await expect(
-    page.getByRole("row").filter({
-      hasText: school.name,
-    }),
-  ).toHaveCount(1);
+  await test.step('Sprawdzenie: liczba elementów w widoku — page.getByRole("row").filter({ hasText: school.name, }); oczekiwane: 1', async () =>
+    expect(
+      page.getByRole("row").filter({
+        hasText: school.name,
+      }),
+    ).toHaveCount(1));
 
   /*
    * =====================================================
@@ -140,7 +148,8 @@ test("EDIT-29: nauczyciel może posiadać wiele notatek @teacher @edit @notes", 
   scenario: s,
   school,
 }) => {
-  const teacherId = await s.createTeacher(school.id, school.name);
+  const teacherId = await test.step("Przygotowanie: utworzenie nauczyciela testowego", async () =>
+    s.createTeacher(school.id, school.name));
 
   const firstNote = "Pierwsza notatka testowa";
 
@@ -177,7 +186,8 @@ test("EDIT-29: nauczyciel może posiadać wiele notatek @teacher @edit @notes", 
    * ostatnią dodaną uwagę.
    */
 
-  await expect(teacherNotesInput(page)).toHaveValue(secondNote);
+  await test.step("Sprawdzenie: wartość pola w widoku — teacherNotesInput(page); oczekiwane: secondNote", async () =>
+    expect(teacherNotesInput(page)).toHaveValue(secondNote));
 
   /*
    * =====================================================
@@ -187,9 +197,11 @@ test("EDIT-29: nauczyciel może posiadać wiele notatek @teacher @edit @notes", 
 
   const dialog = await openTeacherNotesEdit(page);
 
-  await expect(teacherNoteRow(dialog, firstNote)).toHaveCount(1);
+  await test.step("Sprawdzenie: liczba elementów w widoku — teacherNoteRow(dialog, firstNote); oczekiwane: 1", async () =>
+    expect(teacherNoteRow(dialog, firstNote)).toHaveCount(1));
 
-  await expect(teacherNoteRow(dialog, secondNote)).toHaveCount(1);
+  await test.step("Sprawdzenie: liczba elementów w widoku — teacherNoteRow(dialog, secondNote); oczekiwane: 1", async () =>
+    expect(teacherNoteRow(dialog, secondNote)).toHaveCount(1));
 
   await cancelTeacherNotesEdit(dialog);
 
@@ -203,7 +215,8 @@ test("EDIT-30: notatkę nauczyciela można zarchiwizować @teacher @edit @notes"
   scenario: s,
   school,
 }) => {
-  const teacherId = await s.createTeacher(school.id, school.name);
+  const teacherId = await test.step("Przygotowanie: utworzenie nauczyciela testowego", async () =>
+    s.createTeacher(school.id, school.name));
 
   const note = "Notatka przeznaczona do archiwizacji";
 
@@ -237,23 +250,26 @@ test("EDIT-30: notatkę nauczyciela można zarchiwizować @teacher @edit @notes"
 
   const row = teacherNoteRow(dialog, note);
 
-  await expect(row).toHaveCount(1);
+  await test.step("Sprawdzenie: liczba elementów w widoku — row; oczekiwane: 1", async () =>
+    expect(row).toHaveCount(1));
 
   const checkbox = row.getByRole("checkbox");
 
-  await expect(checkbox).toBeChecked();
+  await test.step("Sprawdzenie: zaznaczenie opcji — checkbox", async () =>
+    expect(checkbox).toBeChecked());
 
   /*
    * Zarchiwizowana notatka nadal istnieje
    * w historii notatek.
    */
 
-  await expect(
-    row.getByRole("cell", {
-      name: note,
-      exact: true,
-    }),
-  ).toBeVisible();
+  await test.step('Sprawdzenie: widoczność elementu — row.getByRole("cell", { name: note, exact: true, })', async () =>
+    expect(
+      row.getByRole("cell", {
+        name: note,
+        exact: true,
+      }),
+    ).toBeVisible());
 
   await cancelTeacherNotesEdit(dialog);
 
@@ -265,7 +281,8 @@ test("EDIT-31: anulowanie nie zapisuje nowej notatki nauczyciela @teacher @edit 
   scenario: s,
   school,
 }) => {
-  const teacherId = await s.createTeacher(school.id, school.name);
+  const teacherId = await test.step("Przygotowanie: utworzenie nauczyciela testowego", async () =>
+    s.createTeacher(school.id, school.name));
 
   const existingNote = "Notatka istniejąca";
 
@@ -293,7 +310,8 @@ test("EDIT-31: anulowanie nie zapisuje nowej notatki nauczyciela @teacher @edit 
 
   await input.fill(cancelledNote);
 
-  await expect(input).toHaveValue(cancelledNote);
+  await test.step("Sprawdzenie: wartość pola w widoku — input; oczekiwane: cancelledNote", async () =>
+    expect(input).toHaveValue(cancelledNote));
 
   /*
    * =====================================================
@@ -317,13 +335,15 @@ test("EDIT-31: anulowanie nie zapisuje nowej notatki nauczyciela @teacher @edit 
    * Stara notatka nadal istnieje.
    */
 
-  await expect(teacherNoteRow(checkDialog, existingNote)).toHaveCount(1);
+  await test.step("Sprawdzenie: liczba elementów w widoku — teacherNoteRow(checkDialog, existingNote); oczekiwane: 1", async () =>
+    expect(teacherNoteRow(checkDialog, existingNote)).toHaveCount(1));
 
   /*
    * Anulowana notatka nie powstała.
    */
 
-  await expectTeacherNoteMissing(checkDialog, cancelledNote);
+  await test.step("Sprawdzenie: expectTeacherNoteMissing", async () =>
+    expectTeacherNoteMissing(checkDialog, cancelledNote));
 
   await cancelTeacherNotesEdit(checkDialog);
 });
@@ -333,7 +353,8 @@ test("EDIT-32: zapisana notatka posiada autora i datę @teacher @edit @notes", a
   scenario: s,
   school,
 }) => {
-  const teacherId = await s.createTeacher(school.id, school.name);
+  const teacherId = await test.step("Przygotowanie: utworzenie nauczyciela testowego", async () =>
+    s.createTeacher(school.id, school.name));
 
   const note = "Notatka sprawdzająca autora i datę";
 
@@ -359,7 +380,8 @@ test("EDIT-32: zapisana notatka posiada autora i datę @teacher @edit @notes", a
 
   const row = teacherNoteRow(dialog, note);
 
-  await expect(row).toHaveCount(1);
+  await test.step("Sprawdzenie: liczba elementów w widoku — row; oczekiwane: 1", async () =>
+    expect(row).toHaveCount(1));
 
   const cells = row.locator("td");
 
@@ -372,7 +394,8 @@ test("EDIT-32: zapisana notatka posiada autora i datę @teacher @edit @notes", a
    * 3 - Autor
    */
 
-  await expect(cells.nth(1)).toHaveText(note);
+  await test.step("Sprawdzenie: tekst w widoku — cells.nth(1); oczekiwane: note", async () =>
+    expect(cells.nth(1)).toHaveText(note));
 
   /*
    * Data w UI:
@@ -381,12 +404,14 @@ test("EDIT-32: zapisana notatka posiada autora i datę @teacher @edit @notes", a
    * Komórka może zawierać dodatkowe
    * białe znaki na początku i końcu.
    */
-  await expect(cells.nth(2)).toHaveText(/^\s*\d{4}-\d{2}-\d{2}\s*$/);
+  await test.step("Sprawdzenie: tekst w widoku — cells.nth(2); oczekiwane: /^\\s*\\d{4}-\\d{2}-\\d{2}\\s*$/", async () =>
+    expect(cells.nth(2)).toHaveText(/^\s*\d{4}-\d{2}-\d{2}\s*$/));
 
   /*
    * Autor nie może być pusty.
    */
-  await expect(cells.nth(3)).not.toHaveText(/^\s*$/);
+  await test.step("Sprawdzenie: negacja — tekst w widoku — cells.nth(3); oczekiwane: /^\\s*$/", async () =>
+    expect(cells.nth(3)).not.toHaveText(/^\s*$/));
 
   await cancelTeacherNotesEdit(dialog);
 });
@@ -396,7 +421,8 @@ test("EDIT-33: notatka nauczyciela ma limit 220 znaków @teacher @edit @notes @v
   scenario: s,
   school,
 }) => {
-  const teacherId = await s.createTeacher(school.id, school.name);
+  const teacherId = await test.step("Przygotowanie: utworzenie nauczyciela testowego", async () =>
+    s.createTeacher(school.id, school.name));
 
   const maxLengthNote = "A".repeat(220);
 
@@ -416,7 +442,8 @@ test("EDIT-33: notatka nauczyciela ma limit 220 znaków @teacher @edit @notes @v
 
   await input.fill(maxLengthNote);
 
-  await expect(input).toHaveValue(maxLengthNote);
+  await test.step("Sprawdzenie: wartość pola w widoku — input; oczekiwane: maxLengthNote", async () =>
+    expect(input).toHaveValue(maxLengthNote));
 
   await saveTeacherNotesEdit(dialog);
 
@@ -428,7 +455,8 @@ test("EDIT-33: notatka nauczyciela ma limit 220 znaków @teacher @edit @notes @v
 
   dialog = await openTeacherNotesEdit(page);
 
-  await expect(teacherNoteRow(dialog, maxLengthNote)).toHaveCount(1);
+  await test.step("Sprawdzenie: liczba elementów w widoku — teacherNoteRow(dialog, maxLengthNote); oczekiwane: 1", async () =>
+    expect(teacherNoteRow(dialog, maxLengthNote)).toHaveCount(1));
 
   await cancelTeacherNotesEdit(dialog);
 
@@ -450,11 +478,14 @@ test("EDIT-33: notatka nauczyciela ma limit 220 znaków @teacher @edit @notes @v
    * Pole nie powinno pozwolić zachować
    * wartości dłuższej niż 220.
    */
-  await expect.poll(async () => (await input.inputValue()).length).toBeLessThanOrEqual(220);
+  await test.step("Sprawdzenie: wartość nie większa od granicy — async () => (await input.inputValue()).length; granica: 220", async () =>
+    expect.poll(async () => (await input.inputValue()).length).toBeLessThanOrEqual(220));
 
   const actualValue = await input.inputValue();
 
-  expect(actualValue.length).toBe(220);
+  await test.step("Sprawdzenie: zgodność wartości — actualValue.length; oczekiwane: 220", async () => {
+    expect(actualValue.length).toBe(220);
+  });
 
   await cancelTeacherNotesEdit(dialog);
 });
@@ -464,7 +495,8 @@ test("EDIT-34: pusta notatka nauczyciela nie jest zapisywana @teacher @edit @not
   scenario: s,
   school,
 }) => {
-  const teacherId = await s.createTeacher(school.id, school.name);
+  const teacherId = await test.step("Przygotowanie: utworzenie nauczyciela testowego", async () =>
+    s.createTeacher(school.id, school.name));
 
   const existingNote = "Notatka kontrolna";
 
@@ -488,7 +520,9 @@ test("EDIT-34: pusta notatka nauczyciela nie jest zapisywana @teacher @edit @not
 
   const beforeCount = await teacherNoteRows(dialog).count();
 
-  expect(beforeCount).toBeGreaterThan(0);
+  await test.step("Sprawdzenie: wartość powyżej granicy — beforeCount; granica: 0", async () => {
+    expect(beforeCount).toBeGreaterThan(0);
+  });
 
   await cancelTeacherNotesEdit(dialog);
 
@@ -502,18 +536,21 @@ test("EDIT-34: pusta notatka nauczyciela nie jest zapisywana @teacher @edit @not
 
   const input = teacherNoteInput(dialog);
 
-  await expect(input).toBeVisible();
+  await test.step("Sprawdzenie: widoczność elementu — input", async () =>
+    expect(input).toBeVisible());
 
   await input.fill("");
 
-  await expect(input).toHaveValue("");
+  await test.step('Sprawdzenie: wartość pola w widoku — input; oczekiwane: ""', async () =>
+    expect(input).toHaveValue(""));
 
   const saveButton = dialog.getByRole("button", {
     name: "Zapisz",
     exact: true,
   });
 
-  await expect(saveButton).toBeVisible();
+  await test.step("Sprawdzenie: widoczność elementu — saveButton", async () =>
+    expect(saveButton).toBeVisible());
 
   await saveButton.click();
 
@@ -559,13 +596,16 @@ test("EDIT-34: pusta notatka nauczyciela nie jest zapisywana @teacher @edit @not
 
   const afterCount = await teacherNoteRows(checkDialog).count();
 
-  expect(afterCount).toBe(beforeCount);
+  await test.step("Sprawdzenie: zgodność wartości — afterCount; oczekiwane: beforeCount", async () => {
+    expect(afterCount).toBe(beforeCount);
+  });
 
   /*
    * Istniejąca poprawna notatka
    * nadal musi być obecna.
    */
-  await expect(teacherNoteRow(checkDialog, existingNote)).toHaveCount(1);
+  await test.step("Sprawdzenie: liczba elementów w widoku — teacherNoteRow(checkDialog, existingNote); oczekiwane: 1", async () =>
+    expect(teacherNoteRow(checkDialog, existingNote)).toHaveCount(1));
 
   /*
    * =====================================================

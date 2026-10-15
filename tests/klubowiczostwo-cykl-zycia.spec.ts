@@ -43,18 +43,23 @@ test("CLUB-30: odznaczenie opcji wszystkich klas NASZYCH czyści cały wybór @t
   page,
   scenario: s,
 }) => {
-  await prepareClubTeacher(page, s);
+  await test.step("Przygotowanie: nauczyciel i szkoły do potwierdzeń klubowych", async () =>
+    prepareClubTeacher(page, s));
 
   const { form } = await openNewClubForm(page);
   await selectSchool(form, s.schoolName);
 
   await ownSelectAll(form).check();
-  for (const className of MATH_SP_CLASSES) await expect(ownClass(form, className)).toBeChecked();
+  for (const className of MATH_SP_CLASSES)
+    await test.step("Sprawdzenie: zaznaczenie opcji — ownClass(form, className)", async () =>
+      expect(ownClass(form, className)).toBeChecked());
 
   await ownSelectAll(form).uncheck();
   for (const className of MATH_SP_CLASSES) {
-    await expect(ownClass(form, className)).not.toBeChecked();
-    await expect(foreignClass(form, className)).toBeEnabled();
+    await test.step("Sprawdzenie: negacja — zaznaczenie opcji — ownClass(form, className)", async () =>
+      expect(ownClass(form, className)).not.toBeChecked());
+    await test.step("Sprawdzenie: dostępność działania — foreignClass(form, className)", async () =>
+      expect(foreignClass(form, className)).toBeEnabled());
   }
 
   await cancelClubForm(form);
@@ -64,20 +69,24 @@ test("CLUB-31: odznaczenie opcji wszystkich klas OBCYCH czyści cały wybór @te
   page,
   scenario: s,
 }) => {
-  await prepareClubTeacher(page, s);
+  await test.step("Przygotowanie: nauczyciel i szkoły do potwierdzeń klubowych", async () =>
+    prepareClubTeacher(page, s));
 
   const { form } = await openNewClubForm(page);
   await selectSchool(form, s.schoolName);
 
   await foreignSelectAll(form).check();
   for (const className of MATH_SP_CLASSES) {
-    await expect(foreignClass(form, className)).toBeChecked();
+    await test.step("Sprawdzenie: zaznaczenie opcji — foreignClass(form, className)", async () =>
+      expect(foreignClass(form, className)).toBeChecked());
   }
 
   await foreignSelectAll(form).uncheck();
   for (const className of MATH_SP_CLASSES) {
-    await expect(foreignClass(form, className)).not.toBeChecked();
-    await expect(ownClass(form, className)).toBeEnabled();
+    await test.step("Sprawdzenie: negacja — zaznaczenie opcji — foreignClass(form, className)", async () =>
+      expect(foreignClass(form, className)).not.toBeChecked());
+    await test.step("Sprawdzenie: dostępność działania — ownClass(form, className)", async () =>
+      expect(ownClass(form, className)).toBeEnabled());
   }
 
   await cancelClubForm(form);
@@ -87,7 +96,9 @@ test("CLUB-32: edycja zmienia klasę NASZĄ na OBCĄ i zachowuje wydawnictwo @te
   page,
   scenario: s,
 }) => {
-  const { teacherId } = await prepareClubTeacher(page, s);
+  const { teacherId } =
+    await test.step("Przygotowanie: nauczyciel i szkoły do potwierdzeń klubowych", async () =>
+      prepareClubTeacher(page, s));
 
   const { form } = await openNewClubForm(page);
   await selectSchool(form, s.schoolName);
@@ -103,9 +114,12 @@ test("CLUB-32: edycja zmienia klasę NASZĄ na OBCĄ i zachowuje wydawnictwo @te
 
   await s.app.openPanel("teacher", teacherId);
   const verifyForm = await openClubEdit(page, confirmationId);
-  await expect(ownClass(verifyForm, "4")).not.toBeChecked();
-  await expect(foreignClass(verifyForm, "4")).toBeChecked();
-  await expect(foreignClasses(verifyForm).getByRole("combobox")).toContainText(publisher);
+  await test.step('Sprawdzenie: negacja — zaznaczenie opcji — ownClass(verifyForm, "4")', async () =>
+    expect(ownClass(verifyForm, "4")).not.toBeChecked());
+  await test.step('Sprawdzenie: zaznaczenie opcji — foreignClass(verifyForm, "4")', async () =>
+    expect(foreignClass(verifyForm, "4")).toBeChecked());
+  await test.step('Sprawdzenie: obecność tekstu w widoku — foreignClasses(verifyForm).getByRole("combobox"); oczekiwane: publisher', async () =>
+    expect(foreignClasses(verifyForm).getByRole("combobox")).toContainText(publisher));
   await cancelClubForm(verifyForm);
 
   await s.record("confirmationId", confirmationId);
@@ -116,7 +130,9 @@ test("CLUB-33: klasa OBCA bez wydawnictwa blokuje utworzenie formularza @teacher
   page,
   scenario: s,
 }) => {
-  const { teacherId } = await prepareClubTeacher(page, s);
+  const { teacherId } =
+    await test.step("Przygotowanie: nauczyciel i szkoły do potwierdzeń klubowych", async () =>
+      prepareClubTeacher(page, s));
 
   const { form } = await openNewClubForm(page);
   await selectSchool(form, s.schoolName);
@@ -124,14 +140,16 @@ test("CLUB-33: klasa OBCA bez wydawnictwa blokuje utworzenie formularza @teacher
   await disableTeacherEmail(form);
 
   await form.getByRole("button", { name: "Zapisz", exact: true }).click();
-  await expect(form).toBeVisible();
+  await test.step("Sprawdzenie: widoczność elementu — form", async () =>
+    expect(form).toBeVisible());
 
   await s.app.openPanel("teacher", teacherId);
-  await expect(
-    confirmations(page)
-      .getByRole("row")
-      .filter({ has: page.getByRole("cell", { name: "Matematyka", exact: true }) }),
-  ).toHaveCount(0);
+  await test.step('Sprawdzenie: liczba elementów w widoku — confirmations(page) .getByRole("row") .filter({ has: page.getByRole("cell", { name: "Matematyka", exact: true }) }); oczekiwane: 0', async () =>
+    expect(
+      confirmations(page)
+        .getByRole("row")
+        .filter({ has: page.getByRole("cell", { name: "Matematyka", exact: true }) }),
+    ).toHaveCount(0));
 
   await s.record("validationCase", "foreign-class-without-publisher");
   await s.record("clubCreated", "false");
@@ -141,7 +159,9 @@ test("CLUB-34: zmianę wydawnictwa klasy OBCEJ można zapisać podczas edycji @t
   page,
   scenario: s,
 }) => {
-  const { teacherId } = await prepareClubTeacher(page, s);
+  const { teacherId } =
+    await test.step("Przygotowanie: nauczyciel i szkoły do potwierdzeń klubowych", async () =>
+      prepareClubTeacher(page, s));
 
   const { form } = await openNewClubForm(page);
   await selectSchool(form, s.schoolName);
@@ -156,8 +176,10 @@ test("CLUB-34: zmianę wydawnictwa klasy OBCEJ można zapisać podczas edycji @t
 
   await s.app.openPanel("teacher", teacherId);
   const verifyForm = await openClubEdit(page, confirmationId);
-  await expect(foreignClass(verifyForm, "4")).toBeChecked();
-  await expect(foreignClasses(verifyForm).getByRole("combobox")).toContainText(secondPublisher);
+  await test.step('Sprawdzenie: zaznaczenie opcji — foreignClass(verifyForm, "4")', async () =>
+    expect(foreignClass(verifyForm, "4")).toBeChecked());
+  await test.step('Sprawdzenie: obecność tekstu w widoku — foreignClasses(verifyForm).getByRole("combobox"); oczekiwane: secondPublisher', async () =>
+    expect(foreignClasses(verifyForm).getByRole("combobox")).toContainText(secondPublisher));
   await cancelClubForm(verifyForm);
 
   await s.record("confirmationId", confirmationId);
@@ -169,7 +191,9 @@ test("CLUB-35: usunięcie ostatniej klasy OBCEJ zachowuje klasę NASZĄ @teacher
   page,
   scenario: s,
 }) => {
-  const { teacherId } = await prepareClubTeacher(page, s);
+  const { teacherId } =
+    await test.step("Przygotowanie: nauczyciel i szkoły do potwierdzeń klubowych", async () =>
+      prepareClubTeacher(page, s));
 
   const { form } = await openNewClubForm(page);
   await selectSchool(form, s.schoolName);
@@ -185,8 +209,10 @@ test("CLUB-35: usunięcie ostatniej klasy OBCEJ zachowuje klasę NASZĄ @teacher
 
   await s.app.openPanel("teacher", teacherId);
   const verifyForm = await openClubEdit(page, confirmationId);
-  await expect(ownClass(verifyForm, "4")).toBeChecked();
-  await expect(foreignClass(verifyForm, "5")).not.toBeChecked();
+  await test.step('Sprawdzenie: zaznaczenie opcji — ownClass(verifyForm, "4")', async () =>
+    expect(ownClass(verifyForm, "4")).toBeChecked());
+  await test.step('Sprawdzenie: negacja — zaznaczenie opcji — foreignClass(verifyForm, "5")', async () =>
+    expect(foreignClass(verifyForm, "5")).not.toBeChecked());
   await cancelClubForm(verifyForm);
 
   await s.record("confirmationId", confirmationId);
@@ -196,7 +222,9 @@ test("CLUB-36: edycja może dodać kolejną klasę NASZĄ bez utraty poprzedniej
   page,
   scenario: s,
 }) => {
-  const { teacherId } = await prepareClubTeacher(page, s);
+  const { teacherId } =
+    await test.step("Przygotowanie: nauczyciel i szkoły do potwierdzeń klubowych", async () =>
+      prepareClubTeacher(page, s));
 
   const { form } = await openNewClubForm(page);
   await selectSchool(form, s.schoolName);
@@ -210,8 +238,10 @@ test("CLUB-36: edycja może dodać kolejną klasę NASZĄ bez utraty poprzedniej
 
   await s.app.openPanel("teacher", teacherId);
   const verifyForm = await openClubEdit(page, confirmationId);
-  await expect(ownClass(verifyForm, "4")).toBeChecked();
-  await expect(ownClass(verifyForm, "5")).toBeChecked();
+  await test.step('Sprawdzenie: zaznaczenie opcji — ownClass(verifyForm, "4")', async () =>
+    expect(ownClass(verifyForm, "4")).toBeChecked());
+  await test.step('Sprawdzenie: zaznaczenie opcji — ownClass(verifyForm, "5")', async () =>
+    expect(ownClass(verifyForm, "5")).toBeChecked());
   await cancelClubForm(verifyForm);
 
   await s.record("confirmationId", confirmationId);
@@ -221,9 +251,10 @@ test("CLUB-37: zmiana przedmiotu nie przenosi klas wybranych dla Matematyki do F
   page,
   scenario: s,
 }) => {
-  await prepareClubTeacher(page, s, {
-    additionalSubjectLevels: [{ subject: "Fizyka", level: "Szkoła Podstawowa" }],
-  });
+  await test.step("Przygotowanie: nauczyciel i szkoły do potwierdzeń klubowych", async () =>
+    prepareClubTeacher(page, s, {
+      additionalSubjectLevels: [{ subject: "Fizyka", level: "Szkoła Podstawowa" }],
+    }));
 
   const { form } = await openNewClubForm(page, null);
   await selectClubSubject(page, form, "Matematyka");
@@ -234,9 +265,11 @@ test("CLUB-37: zmiana przedmiotu nie przenosi klas wybranych dla Matematyki do F
   // wskazanie tej samej szkoły pozwala sprawdzić wyłącznie stan klas Fizyki.
   await selectSchool(form, s.schoolName);
 
-  await expect(ownClass(form, "4")).toHaveCount(0);
+  await test.step('Sprawdzenie: liczba elementów w widoku — ownClass(form, "4"); oczekiwane: 0', async () =>
+    expect(ownClass(form, "4")).toHaveCount(0));
   for (const className of PHYSICS_SP_OWN_CLASSES) {
-    await expect(ownClass(form, className)).not.toBeChecked();
+    await test.step("Sprawdzenie: negacja — zaznaczenie opcji — ownClass(form, className)", async () =>
+      expect(ownClass(form, className)).not.toBeChecked());
   }
 
   await cancelClubForm(form);
@@ -246,9 +279,11 @@ test("CLUB-38: ta sama szkoła i rok mogą mieć osobne potwierdzenia Matematyki
   page,
   scenario: s,
 }) => {
-  const { teacherId } = await prepareClubTeacher(page, s, {
-    additionalSubjectLevels: [{ subject: "Fizyka", level: "Szkoła Podstawowa" }],
-  });
+  const { teacherId } =
+    await test.step("Przygotowanie: nauczyciel i szkoły do potwierdzeń klubowych", async () =>
+      prepareClubTeacher(page, s, {
+        additionalSubjectLevels: [{ subject: "Fizyka", level: "Szkoła Podstawowa" }],
+      }));
 
   const { form: mathForm, schoolYear } = await openNewClubForm(page, null);
   await selectClubSubject(page, mathForm, "Matematyka");
@@ -265,11 +300,17 @@ test("CLUB-38: ta sama szkoła i rok mogą mieć osobne potwierdzenia Matematyki
   const physicsConfirmationId = await saveClubForm(page, physicsForm, "Fizyka");
 
   await s.app.openPanel("teacher", teacherId);
-  await expect(confirmationRow(page, mathConfirmationId)).toContainText("Matematyka");
-  await expect(confirmationRow(page, mathConfirmationId)).toContainText(schoolYear);
-  await expect(confirmationRow(page, physicsConfirmationId)).toContainText("Fizyka");
-  await expect(confirmationRow(page, physicsConfirmationId)).toContainText(schoolYear);
-  expect(mathConfirmationId).not.toBe(physicsConfirmationId);
+  await test.step('Sprawdzenie: obecność tekstu w widoku — confirmationRow(page, mathConfirmationId); oczekiwane: "Matematyka"', async () =>
+    expect(confirmationRow(page, mathConfirmationId)).toContainText("Matematyka"));
+  await test.step("Sprawdzenie: obecność tekstu w widoku — confirmationRow(page, mathConfirmationId); oczekiwane: schoolYear", async () =>
+    expect(confirmationRow(page, mathConfirmationId)).toContainText(schoolYear));
+  await test.step('Sprawdzenie: obecność tekstu w widoku — confirmationRow(page, physicsConfirmationId); oczekiwane: "Fizyka"', async () =>
+    expect(confirmationRow(page, physicsConfirmationId)).toContainText("Fizyka"));
+  await test.step("Sprawdzenie: obecność tekstu w widoku — confirmationRow(page, physicsConfirmationId); oczekiwane: schoolYear", async () =>
+    expect(confirmationRow(page, physicsConfirmationId)).toContainText(schoolYear));
+  await test.step("Sprawdzenie: negacja — zgodność wartości — mathConfirmationId; oczekiwane: physicsConfirmationId", async () => {
+    expect(mathConfirmationId).not.toBe(physicsConfirmationId);
+  });
 
   await s.record("schoolYear", schoolYear);
   await s.record("mathConfirmationId", mathConfirmationId);
@@ -281,7 +322,9 @@ test("CLUB-39: usuniętego formularza klubowego nie można edytować @teacher @c
   page,
   scenario: s,
 }) => {
-  const { teacherId } = await prepareClubTeacher(page, s);
+  const { teacherId } =
+    await test.step("Przygotowanie: nauczyciel i szkoły do potwierdzeń klubowych", async () =>
+      prepareClubTeacher(page, s));
 
   const { form } = await openNewClubForm(page);
   await selectSchool(form, s.schoolName);
@@ -296,11 +339,13 @@ test("CLUB-39: usuniętego formularza klubowego nie można edytować @teacher @c
 
   await s.app.openPanel("teacher", teacherId);
   const deletedRow = confirmationRow(page, confirmationId);
-  await expect(deletedRow.getByRole("cell").nth(2).locator("mat-icon")).toHaveText("backspace");
+  await test.step('Sprawdzenie: tekst w widoku — deletedRow.getByRole("cell").nth(2).locator("mat-icon"); oczekiwane: "backspace"', async () =>
+    expect(deletedRow.getByRole("cell").nth(2).locator("mat-icon")).toHaveText("backspace"));
   await deletedRow.click();
-  await expect(
-    confirmations(page).getByRole("button", { name: "Edytuj", exact: true }),
-  ).toBeDisabled();
+  await test.step('Sprawdzenie: zablokowanie działania — confirmations(page).getByRole("button", { name: "Edytuj", exact: true })', async () =>
+    expect(
+      confirmations(page).getByRole("button", { name: "Edytuj", exact: true }),
+    ).toBeDisabled());
 
   await s.record("confirmationId", confirmationId);
   await s.record("clubDeleted", "true");
@@ -310,7 +355,9 @@ test("CLUB-40: po usunięciu można utworzyć nowe potwierdzenie dla tej samej s
   page,
   scenario: s,
 }) => {
-  const { teacherId } = await prepareClubTeacher(page, s);
+  const { teacherId } =
+    await test.step("Przygotowanie: nauczyciel i szkoły do potwierdzeń klubowych", async () =>
+      prepareClubTeacher(page, s));
 
   const { form: firstForm, schoolYear } = await openNewClubForm(page);
   await selectSchool(firstForm, s.schoolName);
@@ -324,27 +371,36 @@ test("CLUB-40: po usunięciu można utworzyć nowe potwierdzenie dla tej samej s
   await confirmDeleteIfShown(page);
 
   await s.app.openPanel("teacher", teacherId);
-  await expect(
-    confirmationRow(page, deletedConfirmationId).getByRole("cell").nth(2).locator("mat-icon"),
-  ).toHaveText("backspace");
+  await test.step('Sprawdzenie: tekst w widoku — confirmationRow(page, deletedConfirmationId).getByRole("cell").nth(2).locator("mat-icon"); oczekiwane: "backspace"', async () =>
+    expect(
+      confirmationRow(page, deletedConfirmationId).getByRole("cell").nth(2).locator("mat-icon"),
+    ).toHaveText("backspace"));
 
   const { form: replacementForm, schoolYear: replacementSchoolYear } = await openNewClubForm(page);
-  expect(replacementSchoolYear).toBe(schoolYear);
+  await test.step("Sprawdzenie: zgodność wartości — replacementSchoolYear; oczekiwane: schoolYear", async () => {
+    expect(replacementSchoolYear).toBe(schoolYear);
+  });
   await selectSchool(replacementForm, s.schoolName);
   const replacementClass = "5";
   await ownClass(replacementForm, replacementClass).check();
   await disableTeacherEmail(replacementForm);
   const replacementConfirmationId = await saveClubForm(page, replacementForm);
 
-  expect(replacementConfirmationId).not.toBe(deletedConfirmationId);
-  await expect(deletedConfirmationIcon(page, deletedConfirmationId)).toHaveText("backspace");
-  await expect(confirmationRow(page, replacementConfirmationId)).toHaveCount(1);
-  await expect(
-    confirmationRow(page, replacementConfirmationId).getByRole("cell").nth(2).locator("mat-icon"),
-  ).toHaveCount(0);
+  await test.step("Sprawdzenie: negacja — zgodność wartości — replacementConfirmationId; oczekiwane: deletedConfirmationId", async () => {
+    expect(replacementConfirmationId).not.toBe(deletedConfirmationId);
+  });
+  await test.step('Sprawdzenie: tekst w widoku — deletedConfirmationIcon(page, deletedConfirmationId); oczekiwane: "backspace"', async () =>
+    expect(deletedConfirmationIcon(page, deletedConfirmationId)).toHaveText("backspace"));
+  await test.step("Sprawdzenie: liczba elementów w widoku — confirmationRow(page, replacementConfirmationId); oczekiwane: 1", async () =>
+    expect(confirmationRow(page, replacementConfirmationId)).toHaveCount(1));
+  await test.step('Sprawdzenie: liczba elementów w widoku — confirmationRow(page, replacementConfirmationId).getByRole("cell").nth(2).locator("mat-icon"); oczekiwane: 0', async () =>
+    expect(
+      confirmationRow(page, replacementConfirmationId).getByRole("cell").nth(2).locator("mat-icon"),
+    ).toHaveCount(0));
 
   const verifyForm = await openClubEdit(page, replacementConfirmationId);
-  await expect(ownClass(verifyForm, replacementClass)).toBeChecked();
+  await test.step("Sprawdzenie: zaznaczenie opcji — ownClass(verifyForm, replacementClass)", async () =>
+    expect(ownClass(verifyForm, replacementClass)).toBeChecked());
   await cancelClubForm(verifyForm);
 
   await s.record("deletedConfirmationId", deletedConfirmationId);
@@ -356,7 +412,9 @@ test("CLUB-41: usunięte potwierdzenie można przywrócić, gdy nie istnieje inn
   page,
   scenario: s,
 }) => {
-  const { teacherId } = await prepareClubTeacher(page, s);
+  const { teacherId } =
+    await test.step("Przygotowanie: nauczyciel i szkoły do potwierdzeń klubowych", async () =>
+      prepareClubTeacher(page, s));
 
   const { form } = await openNewClubForm(page);
   await selectSchool(form, s.schoolName);
@@ -369,16 +427,17 @@ test("CLUB-41: usunięte potwierdzenie można przywrócić, gdy nie istnieje inn
   await restoreClubConfirmation(page, confirmationId);
 
   await s.app.openPanel("teacher", teacherId);
-  await expect(deletedConfirmationIcon(page, confirmationId)).toHaveCount(0);
+  await test.step("Sprawdzenie: liczba elementów w widoku — deletedConfirmationIcon(page, confirmationId); oczekiwane: 0", async () =>
+    expect(deletedConfirmationIcon(page, confirmationId)).toHaveCount(0));
 
   const editForm = await openClubEdit(page, confirmationId);
-  await expect(ownClass(editForm, "4")).toBeChecked();
+  await test.step('Sprawdzenie: zaznaczenie opcji — ownClass(editForm, "4")', async () =>
+    expect(ownClass(editForm, "4")).toBeChecked());
   await cancelClubForm(editForm);
 
   const history = await openClubHistory(page, confirmationId);
-  await expect(clubHistoryEntry(page, history, { modification: /^Przywrócono po/i })).toHaveCount(
-    1,
-  );
+  await test.step("Sprawdzenie: liczba elementów w widoku — clubHistoryEntry(page, history, { modification: /^Przywrócono po/i }); oczekiwane: 1", async () =>
+    expect(clubHistoryEntry(page, history, { modification: /^Przywrócono po/i })).toHaveCount(1));
 
   await s.record("confirmationId", confirmationId);
   await s.record("restoredClass", "4");
@@ -388,7 +447,9 @@ test("CLUB-42: aktywne potwierdzenie dla tego samego roku, przedmiotu i szkoły 
   page,
   scenario: s,
 }) => {
-  const { teacherId } = await prepareClubTeacher(page, s);
+  const { teacherId } =
+    await test.step("Przygotowanie: nauczyciel i szkoły do potwierdzeń klubowych", async () =>
+      prepareClubTeacher(page, s));
 
   const { form: deletedForm } = await openNewClubForm(page);
   await selectSchool(deletedForm, s.schoolName);
@@ -410,17 +471,23 @@ test("CLUB-42: aktywne potwierdzenie dla tego samego roku, przedmiotu i szkoły 
       "Nie można przywrócić formularza, ponieważ na ten rok/przedmiot/szkołę istnieje już potwierdzenie.",
   });
 
-  await expect(warning).toBeVisible();
-  await expect(warning).toContainText(`ID potwierdzenia: ${activeConfirmationId}`);
+  await test.step("Sprawdzenie: widoczność elementu — warning", async () =>
+    expect(warning).toBeVisible());
+  await test.step("Sprawdzenie: obecność tekstu w widoku — warning; oczekiwane: `ID potwierdzenia: ${activeConfirmationId}`", async () =>
+    expect(warning).toContainText(`ID potwierdzenia: ${activeConfirmationId}`));
   await warning.getByRole("button", { name: "OK", exact: true }).click();
-  await expect(warning).toHaveCount(0);
+  await test.step("Sprawdzenie: liczba elementów w widoku — warning; oczekiwane: 0", async () =>
+    expect(warning).toHaveCount(0));
 
   await s.app.openPanel("teacher", teacherId);
-  await expect(deletedConfirmationIcon(page, deletedConfirmationId)).toHaveText("backspace");
-  await expect(deletedConfirmationIcon(page, activeConfirmationId)).toHaveCount(0);
+  await test.step('Sprawdzenie: tekst w widoku — deletedConfirmationIcon(page, deletedConfirmationId); oczekiwane: "backspace"', async () =>
+    expect(deletedConfirmationIcon(page, deletedConfirmationId)).toHaveText("backspace"));
+  await test.step("Sprawdzenie: liczba elementów w widoku — deletedConfirmationIcon(page, activeConfirmationId); oczekiwane: 0", async () =>
+    expect(deletedConfirmationIcon(page, activeConfirmationId)).toHaveCount(0));
 
   const activeEditForm = await openClubEdit(page, activeConfirmationId);
-  await expect(ownClass(activeEditForm, "5")).toBeChecked();
+  await test.step('Sprawdzenie: zaznaczenie opcji — ownClass(activeEditForm, "5")', async () =>
+    expect(ownClass(activeEditForm, "5")).toBeChecked());
   await cancelClubForm(activeEditForm);
 
   await s.record("deletedConfirmationId", deletedConfirmationId);
@@ -431,7 +498,9 @@ test("CLUB-43: przywrócenie zachowuje wszystkie wcześniej wybrane klasy NASZE 
   page,
   scenario: s,
 }) => {
-  const { teacherId } = await prepareClubTeacher(page, s);
+  const { teacherId } =
+    await test.step("Przygotowanie: nauczyciel i szkoły do potwierdzeń klubowych", async () =>
+      prepareClubTeacher(page, s));
 
   const { form } = await openNewClubForm(page);
   await selectSchool(form, s.schoolName);
@@ -446,15 +515,18 @@ test("CLUB-43: przywrócenie zachowuje wszystkie wcześniej wybrane klasy NASZE 
 
   for (const className of MATH_SP_CLASSES) {
     if (["4", "6", "8"].includes(className)) {
-      await expect(ownClass(restoreEditForm, className)).toBeChecked();
+      await test.step("Sprawdzenie: zaznaczenie opcji — ownClass(restoreEditForm, className)", async () =>
+        expect(ownClass(restoreEditForm, className)).toBeChecked());
     } else {
-      await expect(ownClass(restoreEditForm, className)).not.toBeChecked();
+      await test.step("Sprawdzenie: negacja — zaznaczenie opcji — ownClass(restoreEditForm, className)", async () =>
+        expect(ownClass(restoreEditForm, className)).not.toBeChecked());
     }
   }
 
   await cancelClubForm(restoreEditForm);
   await s.app.openPanel("teacher", teacherId);
-  await expect(deletedConfirmationIcon(page, confirmationId)).toHaveCount(0);
+  await test.step("Sprawdzenie: liczba elementów w widoku — deletedConfirmationIcon(page, confirmationId); oczekiwane: 0", async () =>
+    expect(deletedConfirmationIcon(page, confirmationId)).toHaveCount(0));
 
   await s.record("confirmationId", confirmationId);
   await s.record("restoredClasses", "4,6,8");
@@ -464,7 +536,9 @@ test("CLUB-44: przywrócenie zachowuje klasę OBCĄ i wydawnictwo @teacher @club
   page,
   scenario: s,
 }) => {
-  const { teacherId } = await prepareClubTeacher(page, s);
+  const { teacherId } =
+    await test.step("Przygotowanie: nauczyciel i szkoły do potwierdzeń klubowych", async () =>
+      prepareClubTeacher(page, s));
 
   const { form } = await openNewClubForm(page);
   await selectSchool(form, s.schoolName);
@@ -477,11 +551,14 @@ test("CLUB-44: przywrócenie zachowuje klasę OBCĄ i wydawnictwo @teacher @club
   await restoreClubConfirmation(page, confirmationId);
 
   await s.app.openPanel("teacher", teacherId);
-  await expect(deletedConfirmationIcon(page, confirmationId)).toHaveCount(0);
+  await test.step("Sprawdzenie: liczba elementów w widoku — deletedConfirmationIcon(page, confirmationId); oczekiwane: 0", async () =>
+    expect(deletedConfirmationIcon(page, confirmationId)).toHaveCount(0));
 
   const editForm = await openClubEdit(page, confirmationId);
-  await expect(foreignClass(editForm, "4")).toBeChecked();
-  await expect(foreignClasses(editForm).getByRole("combobox")).toContainText(publisher);
+  await test.step('Sprawdzenie: zaznaczenie opcji — foreignClass(editForm, "4")', async () =>
+    expect(foreignClass(editForm, "4")).toBeChecked());
+  await test.step('Sprawdzenie: obecność tekstu w widoku — foreignClasses(editForm).getByRole("combobox"); oczekiwane: publisher', async () =>
+    expect(foreignClasses(editForm).getByRole("combobox")).toContainText(publisher));
   await cancelClubForm(editForm);
 
   await s.record("confirmationId", confirmationId);
@@ -492,9 +569,11 @@ test("CLUB-45: aktywne potwierdzenie innego przedmiotu nie blokuje przywrócenia
   page,
   scenario: s,
 }) => {
-  const { teacherId } = await prepareClubTeacher(page, s, {
-    additionalSubjectLevels: [{ subject: "Fizyka", level: "Szkoła Podstawowa" }],
-  });
+  const { teacherId } =
+    await test.step("Przygotowanie: nauczyciel i szkoły do potwierdzeń klubowych", async () =>
+      prepareClubTeacher(page, s, {
+        additionalSubjectLevels: [{ subject: "Fizyka", level: "Szkoła Podstawowa" }],
+      }));
 
   const { form: mathForm } = await openNewClubForm(page, null);
   await selectClubSubject(page, mathForm, "Matematyka");
@@ -514,12 +593,15 @@ test("CLUB-45: aktywne potwierdzenie innego przedmiotu nie blokuje przywrócenia
   await restoreClubConfirmation(page, mathConfirmationId);
 
   const mathEditForm = await openClubEdit(page, mathConfirmationId);
-  await expect(ownClass(mathEditForm, "4")).toBeChecked();
+  await test.step('Sprawdzenie: zaznaczenie opcji — ownClass(mathEditForm, "4")', async () =>
+    expect(ownClass(mathEditForm, "4")).toBeChecked());
   await cancelClubForm(mathEditForm);
 
   await s.app.openPanel("teacher", teacherId);
-  await expect(deletedConfirmationIcon(page, mathConfirmationId)).toHaveCount(0);
-  await expect(deletedConfirmationIcon(page, physicsConfirmationId)).toHaveCount(0);
+  await test.step("Sprawdzenie: liczba elementów w widoku — deletedConfirmationIcon(page, mathConfirmationId); oczekiwane: 0", async () =>
+    expect(deletedConfirmationIcon(page, mathConfirmationId)).toHaveCount(0));
+  await test.step("Sprawdzenie: liczba elementów w widoku — deletedConfirmationIcon(page, physicsConfirmationId); oczekiwane: 0", async () =>
+    expect(deletedConfirmationIcon(page, physicsConfirmationId)).toHaveCount(0));
 
   await s.record("restoredMathConfirmationId", mathConfirmationId);
   await s.record("activePhysicsConfirmationId", physicsConfirmationId);
@@ -529,7 +611,9 @@ test("CLUB-46: nowsze potwierdzenie blokuje przywrócenie starszego dla tego sam
   page,
   scenario: s,
 }) => {
-  const { teacherId } = await prepareClubTeacher(page, s);
+  const { teacherId } =
+    await test.step("Przygotowanie: nauczyciel i szkoły do potwierdzeń klubowych", async () =>
+      prepareClubTeacher(page, s));
 
   const { form: previousForm, schoolYear: currentSchoolYear } = await openNewClubForm(page);
   const previousSchoolYear = `${Number(currentSchoolYear.slice(0, 4)) - 1}/${Number(
@@ -554,19 +638,27 @@ test("CLUB-46: nowsze potwierdzenie blokuje przywrócenie starszego dla tego sam
     hasText: "Na ten przedmiot/poziom/szkołę istnieje nowsze potwierdzenie.",
   });
 
-  await expect(warning).toBeVisible();
-  await expect(warning).toContainText(`ID potwierdzenia: ${currentConfirmationId}`);
+  await test.step("Sprawdzenie: widoczność elementu — warning", async () =>
+    expect(warning).toBeVisible());
+  await test.step("Sprawdzenie: obecność tekstu w widoku — warning; oczekiwane: `ID potwierdzenia: ${currentConfirmationId}`", async () =>
+    expect(warning).toContainText(`ID potwierdzenia: ${currentConfirmationId}`));
   await warning.getByRole("button", { name: "OK", exact: true }).click();
-  await expect(warning).toHaveCount(0);
+  await test.step("Sprawdzenie: liczba elementów w widoku — warning; oczekiwane: 0", async () =>
+    expect(warning).toHaveCount(0));
 
   await s.app.openPanel("teacher", teacherId);
-  await expect(confirmationRow(page, previousConfirmationId)).toContainText(previousSchoolYear);
-  await expect(confirmationRow(page, currentConfirmationId)).toContainText(currentSchoolYear);
-  await expect(deletedConfirmationIcon(page, previousConfirmationId)).toHaveText("backspace");
-  await expect(deletedConfirmationIcon(page, currentConfirmationId)).toHaveCount(0);
+  await test.step("Sprawdzenie: obecność tekstu w widoku — confirmationRow(page, previousConfirmationId); oczekiwane: previousSchoolYear", async () =>
+    expect(confirmationRow(page, previousConfirmationId)).toContainText(previousSchoolYear));
+  await test.step("Sprawdzenie: obecność tekstu w widoku — confirmationRow(page, currentConfirmationId); oczekiwane: currentSchoolYear", async () =>
+    expect(confirmationRow(page, currentConfirmationId)).toContainText(currentSchoolYear));
+  await test.step('Sprawdzenie: tekst w widoku — deletedConfirmationIcon(page, previousConfirmationId); oczekiwane: "backspace"', async () =>
+    expect(deletedConfirmationIcon(page, previousConfirmationId)).toHaveText("backspace"));
+  await test.step("Sprawdzenie: liczba elementów w widoku — deletedConfirmationIcon(page, currentConfirmationId); oczekiwane: 0", async () =>
+    expect(deletedConfirmationIcon(page, currentConfirmationId)).toHaveCount(0));
 
   const currentEditForm = await openClubEdit(page, currentConfirmationId);
-  await expect(ownClass(currentEditForm, "5")).toBeChecked();
+  await test.step('Sprawdzenie: zaznaczenie opcji — ownClass(currentEditForm, "5")', async () =>
+    expect(ownClass(currentEditForm, "5")).toBeChecked());
   await cancelClubForm(currentEditForm);
 
   await s.record("blockedPreviousConfirmationId", previousConfirmationId);
@@ -578,12 +670,14 @@ test("CLUB-47: aktywne potwierdzenie innej szkoły nie blokuje przywrócenia @te
   page,
   scenario: s,
 }) => {
-  const firstSchoolId = await s.createSchool();
+  const firstSchoolId = await test.step("Przygotowanie: utworzenie szkoły testowej", async () =>
+    s.createSchool());
   const firstSchoolName = s.schoolName;
   const { id: secondSchoolId, name: secondSchoolName } = clubSchools.spB;
-  const teacherId = await s.createTeacher(firstSchoolId, firstSchoolName, {
-    additionalSchoolIds: [secondSchoolId],
-  });
+  const teacherId = await test.step("Przygotowanie: utworzenie nauczyciela testowego", async () =>
+    s.createTeacher(firstSchoolId, firstSchoolName, {
+      additionalSchoolIds: [secondSchoolId],
+    }));
 
   const { form: firstSchoolForm } = await openNewClubForm(page);
   await selectSchool(firstSchoolForm, firstSchoolName);
@@ -601,18 +695,24 @@ test("CLUB-47: aktywne potwierdzenie innej szkoły nie blokuje przywrócenia @te
   await restoreClubConfirmation(page, firstSchoolConfirmationId);
 
   const firstSchoolEditForm = await openClubEdit(page, firstSchoolConfirmationId);
-  await expect(firstSchoolEditForm).toContainText(firstSchoolName);
-  await expect(firstSchoolEditForm).toContainText(secondSchoolName);
-  await expect(ownClass(firstSchoolEditForm, "4")).toBeChecked();
+  await test.step("Sprawdzenie: obecność tekstu w widoku — firstSchoolEditForm; oczekiwane: firstSchoolName", async () =>
+    expect(firstSchoolEditForm).toContainText(firstSchoolName));
+  await test.step("Sprawdzenie: obecność tekstu w widoku — firstSchoolEditForm; oczekiwane: secondSchoolName", async () =>
+    expect(firstSchoolEditForm).toContainText(secondSchoolName));
+  await test.step('Sprawdzenie: zaznaczenie opcji — ownClass(firstSchoolEditForm, "4")', async () =>
+    expect(ownClass(firstSchoolEditForm, "4")).toBeChecked());
   await cancelClubForm(firstSchoolEditForm);
 
   const secondSchoolEditForm = await openClubEdit(page, secondSchoolConfirmationId);
-  await expect(ownClass(secondSchoolEditForm, "5")).toBeChecked();
+  await test.step('Sprawdzenie: zaznaczenie opcji — ownClass(secondSchoolEditForm, "5")', async () =>
+    expect(ownClass(secondSchoolEditForm, "5")).toBeChecked());
   await cancelClubForm(secondSchoolEditForm);
 
   await s.app.openPanel("teacher", teacherId);
-  await expect(deletedConfirmationIcon(page, firstSchoolConfirmationId)).toHaveCount(0);
-  await expect(deletedConfirmationIcon(page, secondSchoolConfirmationId)).toHaveCount(0);
+  await test.step("Sprawdzenie: liczba elementów w widoku — deletedConfirmationIcon(page, firstSchoolConfirmationId); oczekiwane: 0", async () =>
+    expect(deletedConfirmationIcon(page, firstSchoolConfirmationId)).toHaveCount(0));
+  await test.step("Sprawdzenie: liczba elementów w widoku — deletedConfirmationIcon(page, secondSchoolConfirmationId); oczekiwane: 0", async () =>
+    expect(deletedConfirmationIcon(page, secondSchoolConfirmationId)).toHaveCount(0));
 
   await s.record("restoredFirstSchoolConfirmationId", firstSchoolConfirmationId);
   await s.record("activeSecondSchoolConfirmationId", secondSchoolConfirmationId);
@@ -622,7 +722,9 @@ test("CLUB-48: przywrócone potwierdzenie można edytować @teacher @club @resto
   page,
   scenario: s,
 }) => {
-  const { teacherId } = await prepareClubTeacher(page, s);
+  const { teacherId } =
+    await test.step("Przygotowanie: nauczyciel i szkoły do potwierdzeń klubowych", async () =>
+      prepareClubTeacher(page, s));
 
   const { form } = await openNewClubForm(page);
   await selectSchool(form, s.schoolName);
@@ -641,8 +743,10 @@ test("CLUB-48: przywrócone potwierdzenie można edytować @teacher @club @resto
 
   await s.app.openPanel("teacher", teacherId);
   const verifyForm = await openClubEdit(page, confirmationId);
-  await expect(ownClass(verifyForm, "4")).not.toBeChecked();
-  await expect(ownClass(verifyForm, "5")).toBeChecked();
+  await test.step('Sprawdzenie: negacja — zaznaczenie opcji — ownClass(verifyForm, "4")', async () =>
+    expect(ownClass(verifyForm, "4")).not.toBeChecked());
+  await test.step('Sprawdzenie: zaznaczenie opcji — ownClass(verifyForm, "5")', async () =>
+    expect(ownClass(verifyForm, "5")).toBeChecked());
   await cancelClubForm(verifyForm);
 
   await s.record("confirmationId", confirmationId);
@@ -654,7 +758,9 @@ test("CLUB-49: edycja, weryfikacja negatywna, usunięcie i historia wymagają wy
   page,
   scenario: s,
 }) => {
-  const { teacherId } = await prepareClubTeacher(page, s);
+  const { teacherId } =
+    await test.step("Przygotowanie: nauczyciel i szkoły do potwierdzeń klubowych", async () =>
+      prepareClubTeacher(page, s));
 
   const { form } = await openNewClubForm(page);
   await selectSchool(form, s.schoolName);
@@ -671,11 +777,15 @@ test("CLUB-49: edycja, weryfikacja negatywna, usunięcie i historia wymagają wy
     confirmations(page).getByRole("button", { name: "Historia", exact: true }),
   ];
 
-  for (const button of actionButtons) await expect(button).toBeDisabled();
+  for (const button of actionButtons)
+    await test.step("Sprawdzenie: zablokowanie działania — button", async () =>
+      expect(button).toBeDisabled());
 
   await confirmationRow(page, confirmationId).click();
 
-  for (const button of actionButtons) await expect(button).toBeEnabled();
+  for (const button of actionButtons)
+    await test.step("Sprawdzenie: dostępność działania — button", async () =>
+      expect(button).toBeEnabled());
 
   await s.record("confirmationId", confirmationId);
 });
@@ -684,7 +794,9 @@ test("CLUB-50: weryfikacja negatywna zmienia klasę NASZĄ na OBCĄ z wydawnictw
   page,
   scenario: s,
 }) => {
-  const { teacherId } = await prepareClubTeacher(page, s);
+  const { teacherId } =
+    await test.step("Przygotowanie: nauczyciel i szkoły do potwierdzeń klubowych", async () =>
+      prepareClubTeacher(page, s));
 
   const { form } = await openNewClubForm(page);
   await selectSchool(form, s.schoolName);
@@ -693,30 +805,33 @@ test("CLUB-50: weryfikacja negatywna zmienia klasę NASZĄ na OBCĄ z wydawnictw
   const confirmationId = await saveClubForm(page, form);
 
   await negativelyVerifyClubConfirmation(page, confirmationId);
-  await expect(
-    subjectLevelRow(page).getByRole("cell", { name: "Obcy", exact: true }),
-  ).toBeVisible();
+  await test.step('Sprawdzenie: widoczność elementu — subjectLevelRow(page).getByRole("cell", { name: "Obcy", exact: true })', async () =>
+    expect(subjectLevelRow(page).getByRole("cell", { name: "Obcy", exact: true })).toBeVisible());
 
   const history = await openClubHistory(page, confirmationId);
-  await expect(
-    clubHistoryEntry(page, history, {
-      className: "4",
-      modification: /^Weryfikacja neg/i,
-    }),
-  ).toHaveCount(1);
+  await test.step('Sprawdzenie: liczba elementów w widoku — clubHistoryEntry(page, history, { className: "4", modification: /^Weryfikacja neg/i, }); oczekiwane: 1', async () =>
+    expect(
+      clubHistoryEntry(page, history, {
+        className: "4",
+        modification: /^Weryfikacja neg/i,
+      }),
+    ).toHaveCount(1));
   await history.getByRole("button", { name: "Zamknij", exact: true }).click();
-  await expect(history).toHaveCount(0);
+  await test.step("Sprawdzenie: liczba elementów w widoku — history; oczekiwane: 0", async () =>
+    expect(history).toHaveCount(0));
 
   const editForm = await openClubEdit(page, confirmationId);
-  await expect(ownClass(editForm, "4")).not.toBeChecked();
-  await expect(foreignClass(editForm, "4")).toBeChecked();
-  await expect(foreignClasses(editForm).getByRole("combobox")).toContainText("INNE");
+  await test.step('Sprawdzenie: negacja — zaznaczenie opcji — ownClass(editForm, "4")', async () =>
+    expect(ownClass(editForm, "4")).not.toBeChecked());
+  await test.step('Sprawdzenie: zaznaczenie opcji — foreignClass(editForm, "4")', async () =>
+    expect(foreignClass(editForm, "4")).toBeChecked());
+  await test.step('Sprawdzenie: obecność tekstu w widoku — foreignClasses(editForm).getByRole("combobox"); oczekiwane: "INNE"', async () =>
+    expect(foreignClasses(editForm).getByRole("combobox")).toContainText("INNE"));
   await cancelClubForm(editForm);
 
   await s.app.openPanel("teacher", teacherId);
-  await expect(
-    subjectLevelRow(page).getByRole("cell", { name: "Obcy", exact: true }),
-  ).toBeVisible();
+  await test.step('Sprawdzenie: widoczność elementu — subjectLevelRow(page).getByRole("cell", { name: "Obcy", exact: true })', async () =>
+    expect(subjectLevelRow(page).getByRole("cell", { name: "Obcy", exact: true })).toBeVisible());
 
   await s.record("confirmationId", confirmationId);
   await s.record("negativePublisher", "INNE");
@@ -726,7 +841,8 @@ test("CLUB-51: weryfikacja negatywna zmienia wszystkie klasy NASZE na OBCE @teac
   page,
   scenario: s,
 }) => {
-  await prepareClubTeacher(page, s);
+  await test.step("Przygotowanie: nauczyciel i szkoły do potwierdzeń klubowych", async () =>
+    prepareClubTeacher(page, s));
 
   const verifiedClasses = ["4", "6", "8"];
   const { form } = await openNewClubForm(page);
@@ -739,10 +855,13 @@ test("CLUB-51: weryfikacja negatywna zmienia wszystkie klasy NASZE na OBCE @teac
 
   const editForm = await openClubEdit(page, confirmationId);
   for (const className of verifiedClasses) {
-    await expect(ownClass(editForm, className)).not.toBeChecked();
-    await expect(foreignClass(editForm, className)).toBeChecked();
+    await test.step("Sprawdzenie: negacja — zaznaczenie opcji — ownClass(editForm, className)", async () =>
+      expect(ownClass(editForm, className)).not.toBeChecked());
+    await test.step("Sprawdzenie: zaznaczenie opcji — foreignClass(editForm, className)", async () =>
+      expect(foreignClass(editForm, className)).toBeChecked());
   }
-  await expect(foreignClasses(editForm).getByRole("combobox")).toContainText("INNE");
+  await test.step('Sprawdzenie: obecność tekstu w widoku — foreignClasses(editForm).getByRole("combobox"); oczekiwane: "INNE"', async () =>
+    expect(foreignClasses(editForm).getByRole("combobox")).toContainText("INNE"));
   await cancelClubForm(editForm);
 
   await s.record("confirmationId", confirmationId);
@@ -753,7 +872,9 @@ test("CLUB-52: potwierdzenie zweryfikowane negatywnie można zmienić z powrotem
   page,
   scenario: s,
 }) => {
-  const { teacherId } = await prepareClubTeacher(page, s);
+  const { teacherId } =
+    await test.step("Przygotowanie: nauczyciel i szkoły do potwierdzeń klubowych", async () =>
+      prepareClubTeacher(page, s));
 
   const { form } = await openNewClubForm(page);
   await selectSchool(form, s.schoolName);
@@ -769,13 +890,14 @@ test("CLUB-52: potwierdzenie zweryfikowane negatywnie można zmienić z powrotem
   await saveClubEdit(editForm);
 
   await s.app.openPanel("teacher", teacherId);
-  await expect(
-    subjectLevelRow(page).getByRole("cell", { name: "Nasz", exact: true }),
-  ).toBeVisible();
+  await test.step('Sprawdzenie: widoczność elementu — subjectLevelRow(page).getByRole("cell", { name: "Nasz", exact: true })', async () =>
+    expect(subjectLevelRow(page).getByRole("cell", { name: "Nasz", exact: true })).toBeVisible());
 
   const verifyForm = await openClubEdit(page, confirmationId);
-  await expect(ownClass(verifyForm, "4")).toBeChecked();
-  await expect(foreignClass(verifyForm, "4")).not.toBeChecked();
+  await test.step('Sprawdzenie: zaznaczenie opcji — ownClass(verifyForm, "4")', async () =>
+    expect(ownClass(verifyForm, "4")).toBeChecked());
+  await test.step('Sprawdzenie: negacja — zaznaczenie opcji — foreignClass(verifyForm, "4")', async () =>
+    expect(foreignClass(verifyForm, "4")).not.toBeChecked());
   await cancelClubForm(verifyForm);
 
   await s.record("confirmationId", confirmationId);

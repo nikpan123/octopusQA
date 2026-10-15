@@ -30,7 +30,8 @@ test("EDIT-12: poprawny e-mail można zmienić i zmiana jest widoczna w historii
   scenario: s,
   school,
 }) => {
-  const teacherId = await s.createTeacher(school.id, school.name);
+  const teacherId = await test.step("Przygotowanie: utworzenie nauczyciela testowego", async () =>
+    s.createTeacher(school.id, school.name));
 
   const oldEmail = s.email;
 
@@ -42,11 +43,14 @@ test("EDIT-12: poprawny e-mail można zmienić i zmiana jest widoczna w historii
    * =====================================================
    */
 
-  await expect(s.app.detail("email")).toHaveValue(oldEmail);
+  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("email"); oczekiwane: oldEmail', async () =>
+    expect(s.app.detail("email")).toHaveValue(oldEmail));
 
-  await expect(s.app.detail("firstName")).toHaveValue("Testowy");
+  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("firstName"); oczekiwane: "Testowy"', async () =>
+    expect(s.app.detail("firstName")).toHaveValue("Testowy"));
 
-  await expect(s.app.detail("lastName")).toHaveValue(s.id);
+  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("lastName"); oczekiwane: s.id', async () =>
+    expect(s.app.detail("lastName")).toHaveValue(s.id));
 
   /*
    * =====================================================
@@ -56,17 +60,19 @@ test("EDIT-12: poprawny e-mail można zmienić i zmiana jest widoczna w historii
 
   const dialog = await openTeacherEmailEdit(page);
 
-  await expect(
-    dialog.getByText("Stary adres", {
-      exact: true,
-    }),
-  ).toBeVisible();
+  await test.step('Sprawdzenie: widoczność elementu — dialog.getByText("Stary adres", { exact: true, })', async () =>
+    expect(
+      dialog.getByText("Stary adres", {
+        exact: true,
+      }),
+    ).toBeVisible());
 
-  await expect(
-    dialog.getByText("Nowy adres", {
-      exact: true,
-    }),
-  ).toBeVisible();
+  await test.step('Sprawdzenie: widoczność elementu — dialog.getByText("Nowy adres", { exact: true, })', async () =>
+    expect(
+      dialog.getByText("Nowy adres", {
+        exact: true,
+      }),
+    ).toBeVisible());
 
   /*
    * =====================================================
@@ -76,7 +82,8 @@ test("EDIT-12: poprawny e-mail można zmienić i zmiana jest widoczna w historii
 
   const inputs = dialog.locator('input:not([type="checkbox"])');
 
-  await expect(inputs).toHaveCount(2);
+  await test.step("Sprawdzenie: liczba elementów w widoku — inputs; oczekiwane: 2", async () =>
+    expect(inputs).toHaveCount(2));
 
   const oldEmailInput = inputs.nth(0);
 
@@ -85,14 +92,17 @@ test("EDIT-12: poprawny e-mail można zmienić i zmiana jest widoczna w historii
   /*
    * Stary adres.
    */
-  await expect(oldEmailInput).toHaveValue(oldEmail);
+  await test.step("Sprawdzenie: wartość pola w widoku — oldEmailInput; oczekiwane: oldEmail", async () =>
+    expect(oldEmailInput).toHaveValue(oldEmail));
 
   /*
    * Nowy adres.
    */
-  await expect(newEmailInput).toBeEnabled();
+  await test.step("Sprawdzenie: dostępność działania — newEmailInput", async () =>
+    expect(newEmailInput).toBeEnabled());
 
-  await expect(newEmailInput).toHaveValue("");
+  await test.step('Sprawdzenie: wartość pola w widoku — newEmailInput; oczekiwane: ""', async () =>
+    expect(newEmailInput).toHaveValue(""));
 
   /*
    * =====================================================
@@ -102,7 +112,8 @@ test("EDIT-12: poprawny e-mail można zmienić i zmiana jest widoczna w historii
 
   await typeValue(newEmailInput, newEmail);
 
-  await expect(newEmailInput).toHaveValue(newEmail);
+  await test.step("Sprawdzenie: wartość pola w widoku — newEmailInput; oczekiwane: newEmail", async () =>
+    expect(newEmailInput).toHaveValue(newEmail));
 
   /*
    * =====================================================
@@ -115,13 +126,16 @@ test("EDIT-12: poprawny e-mail można zmienić i zmiana jest widoczna w historii
     exact: true,
   });
 
-  await expect(saveButton).toBeVisible();
+  await test.step("Sprawdzenie: widoczność elementu — saveButton", async () =>
+    expect(saveButton).toBeVisible());
 
-  await expect(saveButton).toBeEnabled();
+  await test.step("Sprawdzenie: dostępność działania — saveButton", async () =>
+    expect(saveButton).toBeEnabled());
 
   await saveButton.click();
 
-  await expect(dialog).toHaveCount(0);
+  await test.step("Sprawdzenie: liczba elementów w widoku — dialog; oczekiwane: 0", async () =>
+    expect(dialog).toHaveCount(0));
 
   /*
    * =====================================================
@@ -129,7 +143,8 @@ test("EDIT-12: poprawny e-mail można zmienić i zmiana jest widoczna w historii
    * =====================================================
    */
 
-  await expect(s.app.detail("email")).toHaveValue(newEmail);
+  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("email"); oczekiwane: newEmail', async () =>
+    expect(s.app.detail("email")).toHaveValue(newEmail));
 
   /*
    * =====================================================
@@ -139,26 +154,30 @@ test("EDIT-12: poprawny e-mail można zmienić i zmiana jest widoczna w historii
 
   await s.app.openPanel("teacher", teacherId);
 
-  await expect(s.app.detail("email")).toHaveValue(newEmail);
+  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("email"); oczekiwane: newEmail', async () =>
+    expect(s.app.detail("email")).toHaveValue(newEmail));
 
   /*
    * Edycja e-maila jest osobną operacją.
    * Dane podstawowe nie powinny się zmienić.
    */
 
-  await expect(s.app.detail("firstName")).toHaveValue("Testowy");
+  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("firstName"); oczekiwane: "Testowy"', async () =>
+    expect(s.app.detail("firstName")).toHaveValue("Testowy"));
 
-  await expect(s.app.detail("lastName")).toHaveValue(s.id);
+  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("lastName"); oczekiwane: s.id', async () =>
+    expect(s.app.detail("lastName")).toHaveValue(s.id));
 
   /*
    * Relacja ze szkołą pozostaje.
    */
 
-  await expect(
-    page.getByRole("row").filter({
-      hasText: school.name,
-    }),
-  ).toHaveCount(1);
+  await test.step('Sprawdzenie: liczba elementów w widoku — page.getByRole("row").filter({ hasText: school.name, }); oczekiwane: 1', async () =>
+    expect(
+      page.getByRole("row").filter({
+        hasText: school.name,
+      }),
+    ).toHaveCount(1));
 
   /*
    * =====================================================
@@ -174,7 +193,8 @@ test("EDIT-12: poprawny e-mail można zmienić i zmiana jest widoczna w historii
    * Data: YYYY-MM-DD HH:mm
    */
 
-  await expectTeacherHistoryChange(page, "Email", newEmail);
+  await test.step("Sprawdzenie: expectTeacherHistoryChange", async () =>
+    expectTeacherHistoryChange(page, "Email", newEmail));
 
   /*
    * =====================================================
@@ -203,7 +223,8 @@ test("EDIT-13: niepoprawny e-mail blokuje zapis @teacher @edit @validation", asy
   scenario: s,
   school,
 }) => {
-  const teacherId = await s.createTeacher(school.id, school.name);
+  const teacherId = await test.step("Przygotowanie: utworzenie nauczyciela testowego", async () =>
+    s.createTeacher(school.id, school.name));
 
   const oldEmail = s.email;
 
@@ -213,7 +234,8 @@ test("EDIT-13: niepoprawny e-mail blokuje zapis @teacher @edit @validation", asy
    * =====================================================
    */
 
-  await expect(s.app.detail("email")).toHaveValue(oldEmail);
+  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("email"); oczekiwane: oldEmail', async () =>
+    expect(s.app.detail("email")).toHaveValue(oldEmail));
 
   /*
    * =====================================================
@@ -223,19 +245,22 @@ test("EDIT-13: niepoprawny e-mail blokuje zapis @teacher @edit @validation", asy
 
   const dialog = await openTeacherEmailEdit(page);
 
-  await expect(dialog).toBeVisible();
+  await test.step("Sprawdzenie: widoczność elementu — dialog", async () =>
+    expect(dialog).toBeVisible());
 
-  await expect(
-    dialog.getByText("Stary adres", {
-      exact: true,
-    }),
-  ).toBeVisible();
+  await test.step('Sprawdzenie: widoczność elementu — dialog.getByText("Stary adres", { exact: true, })', async () =>
+    expect(
+      dialog.getByText("Stary adres", {
+        exact: true,
+      }),
+    ).toBeVisible());
 
-  await expect(
-    dialog.getByText("Nowy adres", {
-      exact: true,
-    }),
-  ).toBeVisible();
+  await test.step('Sprawdzenie: widoczność elementu — dialog.getByText("Nowy adres", { exact: true, })', async () =>
+    expect(
+      dialog.getByText("Nowy adres", {
+        exact: true,
+      }),
+    ).toBeVisible());
 
   /*
    * =====================================================
@@ -245,7 +270,8 @@ test("EDIT-13: niepoprawny e-mail blokuje zapis @teacher @edit @validation", asy
 
   const inputs = dialog.locator('input:not([type="checkbox"])');
 
-  await expect(inputs).toHaveCount(2);
+  await test.step("Sprawdzenie: liczba elementów w widoku — inputs; oczekiwane: 2", async () =>
+    expect(inputs).toHaveCount(2));
 
   const oldEmailInput = inputs.nth(0);
 
@@ -254,14 +280,17 @@ test("EDIT-13: niepoprawny e-mail blokuje zapis @teacher @edit @validation", asy
   /*
    * Stary adres.
    */
-  await expect(oldEmailInput).toHaveValue(oldEmail);
+  await test.step("Sprawdzenie: wartość pola w widoku — oldEmailInput; oczekiwane: oldEmail", async () =>
+    expect(oldEmailInput).toHaveValue(oldEmail));
 
   /*
    * Nowy adres początkowo pusty.
    */
-  await expect(newEmailInput).toBeEnabled();
+  await test.step("Sprawdzenie: dostępność działania — newEmailInput", async () =>
+    expect(newEmailInput).toBeEnabled());
 
-  await expect(newEmailInput).toHaveValue("");
+  await test.step('Sprawdzenie: wartość pola w widoku — newEmailInput; oczekiwane: ""', async () =>
+    expect(newEmailInput).toHaveValue(""));
 
   /*
    * =====================================================
@@ -273,12 +302,14 @@ test("EDIT-13: niepoprawny e-mail blokuje zapis @teacher @edit @validation", asy
 
   await newEmailInput.press("Tab");
 
-  await expect(newEmailInput).toHaveValue("invalid-email");
+  await test.step('Sprawdzenie: wartość pola w widoku — newEmailInput; oczekiwane: "invalid-email"', async () =>
+    expect(newEmailInput).toHaveValue("invalid-email"));
 
   /*
    * Angular oznacza pole jako niepoprawne.
    */
-  await expect(newEmailInput).toHaveAttribute("aria-invalid", "true");
+  await test.step('Sprawdzenie: wartość atrybutu — newEmailInput; oczekiwane: "aria-invalid"', async () =>
+    expect(newEmailInput).toHaveAttribute("aria-invalid", "true"));
 
   /*
    * =====================================================
@@ -291,19 +322,22 @@ test("EDIT-13: niepoprawny e-mail blokuje zapis @teacher @edit @validation", asy
     exact: true,
   });
 
-  await expect(saveButton).toBeVisible();
+  await test.step("Sprawdzenie: widoczność elementu — saveButton", async () =>
+    expect(saveButton).toBeVisible());
 
   await saveButton.click();
 
   /*
    * Niepoprawna wartość nie może zamknąć dialogu.
    */
-  await expect(dialog).toBeVisible();
+  await test.step("Sprawdzenie: widoczność elementu — dialog", async () =>
+    expect(dialog).toBeVisible());
 
   /*
    * Pole nadal ma być oznaczone jako błędne.
    */
-  await expect(newEmailInput).toHaveAttribute("aria-invalid", "true");
+  await test.step('Sprawdzenie: wartość atrybutu — newEmailInput; oczekiwane: "aria-invalid"', async () =>
+    expect(newEmailInput).toHaveAttribute("aria-invalid", "true"));
 
   /*
    * =====================================================
@@ -324,23 +358,27 @@ test("EDIT-13: niepoprawny e-mail blokuje zapis @teacher @edit @validation", asy
   /*
    * Niepoprawny e-mail nie został zapisany.
    */
-  await expect(s.app.detail("email")).toHaveValue(oldEmail);
+  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("email"); oczekiwane: oldEmail', async () =>
+    expect(s.app.detail("email")).toHaveValue(oldEmail));
 
   /*
    * Pozostałe dane również bez zmian.
    */
-  await expect(s.app.detail("firstName")).toHaveValue("Testowy");
+  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("firstName"); oczekiwane: "Testowy"', async () =>
+    expect(s.app.detail("firstName")).toHaveValue("Testowy"));
 
-  await expect(s.app.detail("lastName")).toHaveValue(s.id);
+  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("lastName"); oczekiwane: s.id', async () =>
+    expect(s.app.detail("lastName")).toHaveValue(s.id));
 
   /*
    * Relacja ze szkołą pozostaje.
    */
-  await expect(
-    page.getByRole("row").filter({
-      hasText: school.name,
-    }),
-  ).toHaveCount(1);
+  await test.step('Sprawdzenie: liczba elementów w widoku — page.getByRole("row").filter({ hasText: school.name, }); oczekiwane: 1', async () =>
+    expect(
+      page.getByRole("row").filter({
+        hasText: school.name,
+      }),
+    ).toHaveCount(1));
 
   await s.record("invalidEmail", "invalid-email");
 
@@ -359,7 +397,8 @@ test("EDIT-14: poprawny telefon można dodać @teacher @edit", async ({
   scenario: s,
   school,
 }) => {
-  const teacherId = await s.createTeacher(school.id, school.name);
+  const teacherId = await test.step("Przygotowanie: utworzenie nauczyciela testowego", async () =>
+    s.createTeacher(school.id, school.name));
 
   const phone = "500500500";
 
@@ -369,9 +408,11 @@ test("EDIT-14: poprawny telefon można dodać @teacher @edit", async ({
    * =====================================================
    */
 
-  await expect(s.app.detail("email")).toHaveValue(s.email);
+  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("email"); oczekiwane: s.email', async () =>
+    expect(s.app.detail("email")).toHaveValue(s.email));
 
-  await expectTeacherPhoneNotSaved(page, phone);
+  await test.step("Sprawdzenie: expectTeacherPhoneNotSaved", async () =>
+    expectTeacherPhoneNotSaved(page, phone));
 
   /*
    * =====================================================
@@ -381,9 +422,11 @@ test("EDIT-14: poprawny telefon można dodać @teacher @edit", async ({
 
   const newPhoneInput = teacherNewPhoneInput(page);
 
-  await expect(newPhoneInput).toBeVisible();
+  await test.step("Sprawdzenie: widoczność elementu — newPhoneInput", async () =>
+    expect(newPhoneInput).toBeVisible());
 
-  await expect(newPhoneInput).toBeEnabled();
+  await test.step("Sprawdzenie: dostępność działania — newPhoneInput", async () =>
+    expect(newPhoneInput).toBeEnabled());
 
   await newPhoneInput.fill(phone);
 
@@ -398,7 +441,9 @@ test("EDIT-14: poprawny telefon można dodać @teacher @edit", async ({
    */
   const typedValue = await newPhoneInput.inputValue();
 
-  expect(typedValue.replace(/\D/g, "")).toBe(phone);
+  await test.step('Sprawdzenie: zgodność wartości — typedValue.replace(/\\D/g, ""); oczekiwane: phone', async () => {
+    expect(typedValue.replace(/\D/g, "")).toBe(phone);
+  });
 
   /*
    * =====================================================
@@ -408,9 +453,11 @@ test("EDIT-14: poprawny telefon można dodać @teacher @edit", async ({
 
   const addButton = teacherPhoneAddButton(page);
 
-  await expect(addButton).toBeVisible();
+  await test.step("Sprawdzenie: widoczność elementu — addButton", async () =>
+    expect(addButton).toBeVisible());
 
-  await expect(addButton).toBeEnabled();
+  await test.step("Sprawdzenie: dostępność działania — addButton", async () =>
+    expect(addButton).toBeEnabled());
 
   await addButton.click();
 
@@ -429,7 +476,8 @@ test("EDIT-14: poprawny telefon można dodać @teacher @edit", async ({
    *
    * Sprawdzamy rzeczywistą wartość inputów.
    */
-  await expectSavedTeacherPhone(page, phone);
+  await test.step("Sprawdzenie: expectSavedTeacherPhone", async () =>
+    expectSavedTeacherPhone(page, phone));
 
   /*
    * =====================================================
@@ -443,7 +491,8 @@ test("EDIT-14: poprawny telefon można dodać @teacher @edit", async ({
    * Telefon nadal musi istnieć
    * po ponownym pobraniu danych.
    */
-  await expectSavedTeacherPhone(page, phone);
+  await test.step("Sprawdzenie: expectSavedTeacherPhone", async () =>
+    expectSavedTeacherPhone(page, phone));
 
   /*
    * =====================================================
@@ -451,21 +500,26 @@ test("EDIT-14: poprawny telefon można dodać @teacher @edit", async ({
    * =====================================================
    */
 
-  await expect(s.app.detail("email")).toHaveValue(s.email);
+  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("email"); oczekiwane: s.email', async () =>
+    expect(s.app.detail("email")).toHaveValue(s.email));
 
-  await expect(s.app.detail("firstName")).toHaveValue("Testowy");
+  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("firstName"); oczekiwane: "Testowy"', async () =>
+    expect(s.app.detail("firstName")).toHaveValue("Testowy"));
 
-  await expect(s.app.detail("lastName")).toHaveValue(s.id);
+  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("lastName"); oczekiwane: s.id', async () =>
+    expect(s.app.detail("lastName")).toHaveValue(s.id));
 
-  await expect(
-    page.getByRole("row").filter({
-      hasText: school.name,
-    }),
-  ).toHaveCount(1);
+  await test.step('Sprawdzenie: liczba elementów w widoku — page.getByRole("row").filter({ hasText: school.name, }); oczekiwane: 1', async () =>
+    expect(
+      page.getByRole("row").filter({
+        hasText: school.name,
+      }),
+    ).toHaveCount(1));
 
   await s.record("addedPhone", phone);
 
-  await expectTeacherPhoneHistoryChange(page, "Dodany numer", phone);
+  await test.step("Sprawdzenie: expectTeacherPhoneHistoryChange", async () =>
+    expectTeacherPhoneHistoryChange(page, "Dodany numer", phone));
 });
 
 test("EDIT-15: można dodać drugi numer telefonu @teacher @edit", async ({
@@ -473,7 +527,8 @@ test("EDIT-15: można dodać drugi numer telefonu @teacher @edit", async ({
   scenario: s,
   school,
 }) => {
-  const teacherId = await s.createTeacher(school.id, school.name);
+  const teacherId = await test.step("Przygotowanie: utworzenie nauczyciela testowego", async () =>
+    s.createTeacher(school.id, school.name));
 
   const firstPhone = "500500500";
 
@@ -490,18 +545,21 @@ test("EDIT-15: można dodać drugi numer telefonu @teacher @edit", async ({
 
   let addButton = teacherPhoneAddButton(page);
 
-  await expect(addButton).toBeEnabled();
+  await test.step("Sprawdzenie: dostępność działania — addButton", async () =>
+    expect(addButton).toBeEnabled());
 
   await addButton.click();
 
-  await expectSavedTeacherPhones(page, [firstPhone]);
+  await test.step("Sprawdzenie: expectSavedTeacherPhones", async () =>
+    expectSavedTeacherPhones(page, [firstPhone]));
 
   /*
    * Drugi numer.
    */
   newPhoneInput = teacherNewPhoneInput(page);
 
-  await expect(newPhoneInput).toBeEnabled();
+  await test.step("Sprawdzenie: dostępność działania — newPhoneInput", async () =>
+    expect(newPhoneInput).toBeEnabled());
 
   await newPhoneInput.fill(secondPhone);
 
@@ -509,14 +567,16 @@ test("EDIT-15: można dodać drugi numer telefonu @teacher @edit", async ({
 
   addButton = teacherPhoneAddButton(page);
 
-  await expect(addButton).toBeEnabled();
+  await test.step("Sprawdzenie: dostępność działania — addButton", async () =>
+    expect(addButton).toBeEnabled());
 
   await addButton.click();
 
   /*
    * Powinny istnieć dwa numery.
    */
-  await expectSavedTeacherPhones(page, [firstPhone, secondPhone]);
+  await test.step("Sprawdzenie: expectSavedTeacherPhones", async () =>
+    expectSavedTeacherPhones(page, [firstPhone, secondPhone]));
 
   /*
    * Ponowne otwarcie — oba numery
@@ -524,15 +584,18 @@ test("EDIT-15: można dodać drugi numer telefonu @teacher @edit", async ({
    */
   await s.app.openPanel("teacher", teacherId);
 
-  await expectSavedTeacherPhones(page, [firstPhone, secondPhone]);
+  await test.step("Sprawdzenie: expectSavedTeacherPhones", async () =>
+    expectSavedTeacherPhones(page, [firstPhone, secondPhone]));
 
   await s.record("firstPhone", firstPhone);
 
   await s.record("secondPhone", secondPhone);
 
-  await expectTeacherPhoneHistoryChange(page, "Dodany numer", firstPhone);
+  await test.step("Sprawdzenie: expectTeacherPhoneHistoryChange", async () =>
+    expectTeacherPhoneHistoryChange(page, "Dodany numer", firstPhone));
 
-  await expectTeacherPhoneHistoryChange(page, "Dodany numer", secondPhone);
+  await test.step("Sprawdzenie: expectTeacherPhoneHistoryChange", async () =>
+    expectTeacherPhoneHistoryChange(page, "Dodany numer", secondPhone));
 });
 
 test("EDIT-16: przy dwóch telefonach nie można dodać trzeciego @teacher @edit", async ({
@@ -540,7 +603,8 @@ test("EDIT-16: przy dwóch telefonach nie można dodać trzeciego @teacher @edit
   scenario: s,
   school,
 }) => {
-  await s.createTeacher(school.id, school.name);
+  await test.step("Przygotowanie: utworzenie nauczyciela testowego", async () =>
+    s.createTeacher(school.id, school.name));
 
   const firstPhone = "500500500";
 
@@ -562,7 +626,8 @@ test("EDIT-16: przy dwóch telefonach nie można dodać trzeciego @teacher @edit
 
   let addButton = teacherPhoneAddButton(page);
 
-  await expect(addButton).toBeEnabled();
+  await test.step("Sprawdzenie: dostępność działania — addButton", async () =>
+    expect(addButton).toBeEnabled());
 
   await addButton.click();
 
@@ -580,11 +645,13 @@ test("EDIT-16: przy dwóch telefonach nie można dodać trzeciego @teacher @edit
 
   addButton = teacherPhoneAddButton(page);
 
-  await expect(addButton).toBeEnabled();
+  await test.step("Sprawdzenie: dostępność działania — addButton", async () =>
+    expect(addButton).toBeEnabled());
 
   await addButton.click();
 
-  await expectSavedTeacherPhones(page, [firstPhone, secondPhone]);
+  await test.step("Sprawdzenie: expectSavedTeacherPhones", async () =>
+    expectSavedTeacherPhones(page, [firstPhone, secondPhone]));
 
   /*
    * Trzeci numer wpisujemy do pola,
@@ -598,14 +665,17 @@ test("EDIT-16: przy dwóch telefonach nie można dodać trzeciego @teacher @edit
 
   const inputValue = await input.inputValue();
 
-  expect(inputValue.replace(/\D/g, "")).toBe(thirdPhone);
+  await test.step('Sprawdzenie: zgodność wartości — inputValue.replace(/\\D/g, ""); oczekiwane: thirdPhone', async () => {
+    expect(inputValue.replace(/\D/g, "")).toBe(thirdPhone);
+  });
 
   addButton = teacherPhoneAddButton(page);
 
   /*
    * Limit dwóch numerów został osiągnięty.
    */
-  await expect(addButton).toBeDisabled();
+  await test.step("Sprawdzenie: zablokowanie działania — addButton", async () =>
+    expect(addButton).toBeDisabled());
 
   /*
    * Nadal zapisane są tylko dwa numery.
@@ -613,18 +683,23 @@ test("EDIT-16: przy dwóch telefonach nie można dodać trzeciego @teacher @edit
    * Trzeci numer jest jedynie wpisany
    * w prawym polu.
    */
-  await expectSavedTeacherPhones(page, [firstPhone, secondPhone]);
+  await test.step("Sprawdzenie: expectSavedTeacherPhones", async () =>
+    expectSavedTeacherPhones(page, [firstPhone, secondPhone]));
 
   /*
    * Trzeci numer NIE został zapisany.
    */
-  await expectTeacherPhoneNotSaved(page, thirdPhone);
+  await test.step("Sprawdzenie: expectTeacherPhoneNotSaved", async () =>
+    expectTeacherPhoneNotSaved(page, thirdPhone));
 
-  await expectTeacherPhoneHistoryChange(page, "Dodany numer", firstPhone);
+  await test.step("Sprawdzenie: expectTeacherPhoneHistoryChange", async () =>
+    expectTeacherPhoneHistoryChange(page, "Dodany numer", firstPhone));
 
-  await expectTeacherPhoneHistoryChange(page, "Dodany numer", secondPhone);
+  await test.step("Sprawdzenie: expectTeacherPhoneHistoryChange", async () =>
+    expectTeacherPhoneHistoryChange(page, "Dodany numer", secondPhone));
 
-  await expectTeacherPhoneHistoryMissing(page, "Dodany numer", thirdPhone);
+  await test.step("Sprawdzenie: expectTeacherPhoneHistoryMissing", async () =>
+    expectTeacherPhoneHistoryMissing(page, "Dodany numer", thirdPhone));
 });
 
 test("EDIT-17: można usunąć zapisany numer telefonu @teacher @edit", async ({
@@ -632,7 +707,8 @@ test("EDIT-17: można usunąć zapisany numer telefonu @teacher @edit", async ({
   scenario: s,
   school,
 }) => {
-  const teacherId = await s.createTeacher(school.id, school.name);
+  const teacherId = await test.step("Przygotowanie: utworzenie nauczyciela testowego", async () =>
+    s.createTeacher(school.id, school.name));
 
   const firstPhone = "500500500";
   const secondPhone = "444444444";
@@ -649,7 +725,8 @@ test("EDIT-17: można usunąć zapisany numer telefonu @teacher @edit", async ({
   await input.fill(firstPhone);
   await input.press("Tab");
 
-  await expect(teacherPhoneAddButton(page)).toBeEnabled();
+  await test.step("Sprawdzenie: dostępność działania — teacherPhoneAddButton(page)", async () =>
+    expect(teacherPhoneAddButton(page)).toBeEnabled());
 
   await teacherPhoneAddButton(page).click();
 
@@ -664,11 +741,13 @@ test("EDIT-17: można usunąć zapisany numer telefonu @teacher @edit", async ({
   await input.fill(secondPhone);
   await input.press("Tab");
 
-  await expect(teacherPhoneAddButton(page)).toBeEnabled();
+  await test.step("Sprawdzenie: dostępność działania — teacherPhoneAddButton(page)", async () =>
+    expect(teacherPhoneAddButton(page)).toBeEnabled());
 
   await teacherPhoneAddButton(page).click();
 
-  await expectSavedTeacherPhones(page, [firstPhone, secondPhone]);
+  await test.step("Sprawdzenie: expectSavedTeacherPhones", async () =>
+    expectSavedTeacherPhones(page, [firstPhone, secondPhone]));
 
   /*
    * =====================================================
@@ -678,7 +757,8 @@ test("EDIT-17: można usunąć zapisany numer telefonu @teacher @edit", async ({
 
   const deleteButtons = teacherPhoneDeleteButtons(page);
 
-  await expect(deleteButtons).toHaveCount(2);
+  await test.step("Sprawdzenie: liczba elementów w widoku — deleteButtons; oczekiwane: 2", async () =>
+    expect(deleteButtons).toHaveCount(2));
 
   /*
    * Helper sam klika ikonę kosza
@@ -692,9 +772,11 @@ test("EDIT-17: można usunąć zapisany numer telefonu @teacher @edit", async ({
    * Pierwszy numer został usunięty,
    * drugi nadal istnieje.
    */
-  await expectSavedTeacherPhones(page, [secondPhone]);
+  await test.step("Sprawdzenie: expectSavedTeacherPhones", async () =>
+    expectSavedTeacherPhones(page, [secondPhone]));
 
-  await expectTeacherPhoneNotSaved(page, firstPhone);
+  await test.step("Sprawdzenie: expectTeacherPhoneNotSaved", async () =>
+    expectTeacherPhoneNotSaved(page, firstPhone));
 
   /*
    * =====================================================
@@ -711,7 +793,8 @@ test("EDIT-17: można usunąć zapisany numer telefonu @teacher @edit", async ({
    * Po usunięciu jednego numeru
    * powinno ponownie zwolnić się miejsce.
    */
-  await expect(teacherPhoneAddButton(page)).toBeEnabled();
+  await test.step("Sprawdzenie: dostępność działania — teacherPhoneAddButton(page)", async () =>
+    expect(teacherPhoneAddButton(page)).toBeEnabled());
 
   await teacherPhoneAddButton(page).click();
 
@@ -721,7 +804,8 @@ test("EDIT-17: można usunąć zapisany numer telefonu @teacher @edit", async ({
    * 444-444-444
    * 324-322-342
    */
-  await expectSavedTeacherPhones(page, [secondPhone, thirdPhone]);
+  await test.step("Sprawdzenie: expectSavedTeacherPhones", async () =>
+    expectSavedTeacherPhones(page, [secondPhone, thirdPhone]));
 
   /*
    * =====================================================
@@ -731,9 +815,11 @@ test("EDIT-17: można usunąć zapisany numer telefonu @teacher @edit", async ({
 
   await s.app.openPanel("teacher", teacherId);
 
-  await expectSavedTeacherPhones(page, [secondPhone, thirdPhone]);
+  await test.step("Sprawdzenie: expectSavedTeacherPhones", async () =>
+    expectSavedTeacherPhones(page, [secondPhone, thirdPhone]));
 
-  await expectTeacherPhoneNotSaved(page, firstPhone);
+  await test.step("Sprawdzenie: expectTeacherPhoneNotSaved", async () =>
+    expectTeacherPhoneNotSaved(page, firstPhone));
 
   /*
    * =====================================================
@@ -741,13 +827,17 @@ test("EDIT-17: można usunąć zapisany numer telefonu @teacher @edit", async ({
    * =====================================================
    */
 
-  await expectTeacherPhoneHistoryChange(page, "Dodany numer", firstPhone);
+  await test.step("Sprawdzenie: expectTeacherPhoneHistoryChange", async () =>
+    expectTeacherPhoneHistoryChange(page, "Dodany numer", firstPhone));
 
-  await expectTeacherPhoneHistoryChange(page, "Dodany numer", secondPhone);
+  await test.step("Sprawdzenie: expectTeacherPhoneHistoryChange", async () =>
+    expectTeacherPhoneHistoryChange(page, "Dodany numer", secondPhone));
 
-  await expectTeacherPhoneHistoryChange(page, "Usunięty numer", firstPhone);
+  await test.step("Sprawdzenie: expectTeacherPhoneHistoryChange", async () =>
+    expectTeacherPhoneHistoryChange(page, "Usunięty numer", firstPhone));
 
-  await expectTeacherPhoneHistoryChange(page, "Dodany numer", thirdPhone);
+  await test.step("Sprawdzenie: expectTeacherPhoneHistoryChange", async () =>
+    expectTeacherPhoneHistoryChange(page, "Dodany numer", thirdPhone));
 
   /*
    * =====================================================
@@ -757,17 +847,21 @@ test("EDIT-17: można usunąć zapisany numer telefonu @teacher @edit", async ({
 
   await s.app.openPanel("teacher", teacherId);
 
-  await expect(s.app.detail("email")).toHaveValue(s.email);
+  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("email"); oczekiwane: s.email', async () =>
+    expect(s.app.detail("email")).toHaveValue(s.email));
 
-  await expect(s.app.detail("firstName")).toHaveValue("Testowy");
+  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("firstName"); oczekiwane: "Testowy"', async () =>
+    expect(s.app.detail("firstName")).toHaveValue("Testowy"));
 
-  await expect(s.app.detail("lastName")).toHaveValue(s.id);
+  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("lastName"); oczekiwane: s.id', async () =>
+    expect(s.app.detail("lastName")).toHaveValue(s.id));
 
-  await expect(
-    page.getByRole("row").filter({
-      hasText: school.name,
-    }),
-  ).toHaveCount(1);
+  await test.step('Sprawdzenie: liczba elementów w widoku — page.getByRole("row").filter({ hasText: school.name, }); oczekiwane: 1', async () =>
+    expect(
+      page.getByRole("row").filter({
+        hasText: school.name,
+      }),
+    ).toHaveCount(1));
 
   await s.record("removedPhone", firstPhone);
 
@@ -781,7 +875,8 @@ test("EDIT-18: anulowanie usunięcia telefonu nie zmienia danych @teacher @edit"
   scenario: s,
   school,
 }) => {
-  const teacherId = await s.createTeacher(school.id, school.name);
+  const teacherId = await test.step("Przygotowanie: utworzenie nauczyciela testowego", async () =>
+    s.createTeacher(school.id, school.name));
 
   const firstPhone = "500500500";
 
@@ -799,7 +894,8 @@ test("EDIT-18: anulowanie usunięcia telefonu nie zmienia danych @teacher @edit"
 
   await input.press("Tab");
 
-  await expect(teacherPhoneAddButton(page)).toBeEnabled();
+  await test.step("Sprawdzenie: dostępność działania — teacherPhoneAddButton(page)", async () =>
+    expect(teacherPhoneAddButton(page)).toBeEnabled());
 
   await teacherPhoneAddButton(page).click();
 
@@ -815,14 +911,16 @@ test("EDIT-18: anulowanie usunięcia telefonu nie zmienia danych @teacher @edit"
 
   await input.press("Tab");
 
-  await expect(teacherPhoneAddButton(page)).toBeEnabled();
+  await test.step("Sprawdzenie: dostępność działania — teacherPhoneAddButton(page)", async () =>
+    expect(teacherPhoneAddButton(page)).toBeEnabled());
 
   await teacherPhoneAddButton(page).click();
 
   /*
    * Oba numery są zapisane.
    */
-  await expectSavedTeacherPhones(page, [firstPhone, secondPhone]);
+  await test.step("Sprawdzenie: expectSavedTeacherPhones", async () =>
+    expectSavedTeacherPhones(page, [firstPhone, secondPhone]));
 
   /*
    * =====================================================
@@ -845,14 +943,17 @@ test("EDIT-18: anulowanie usunięcia telefonu nie zmienia danych @teacher @edit"
    * Nic nie powinno się zmienić.
    */
 
-  await expectSavedTeacherPhones(page, [firstPhone, secondPhone]);
+  await test.step("Sprawdzenie: expectSavedTeacherPhones", async () =>
+    expectSavedTeacherPhones(page, [firstPhone, secondPhone]));
 
   /*
    * Oba numery nadal istnieją.
    */
-  await expectSavedTeacherPhone(page, firstPhone);
+  await test.step("Sprawdzenie: expectSavedTeacherPhone", async () =>
+    expectSavedTeacherPhone(page, firstPhone));
 
-  await expectSavedTeacherPhone(page, secondPhone);
+  await test.step("Sprawdzenie: expectSavedTeacherPhone", async () =>
+    expectSavedTeacherPhone(page, secondPhone));
 
   /*
    * =====================================================
@@ -864,31 +965,39 @@ test("EDIT-18: anulowanie usunięcia telefonu nie zmienia danych @teacher @edit"
 
   await s.app.openPanel("teacher", teacherId);
 
-  await expectSavedTeacherPhones(page, [firstPhone, secondPhone]);
+  await test.step("Sprawdzenie: expectSavedTeacherPhones", async () =>
+    expectSavedTeacherPhones(page, [firstPhone, secondPhone]));
 
   /*
    * Pozostałe dane nauczyciela
    * również bez zmian.
    */
-  await expect(s.app.detail("email")).toHaveValue(s.email);
+  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("email"); oczekiwane: s.email', async () =>
+    expect(s.app.detail("email")).toHaveValue(s.email));
 
-  await expect(s.app.detail("firstName")).toHaveValue("Testowy");
+  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("firstName"); oczekiwane: "Testowy"', async () =>
+    expect(s.app.detail("firstName")).toHaveValue("Testowy"));
 
-  await expect(s.app.detail("lastName")).toHaveValue(s.id);
+  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("lastName"); oczekiwane: s.id', async () =>
+    expect(s.app.detail("lastName")).toHaveValue(s.id));
 
-  await expect(
-    page.getByRole("row").filter({
-      hasText: school.name,
-    }),
-  ).toHaveCount(1);
+  await test.step('Sprawdzenie: liczba elementów w widoku — page.getByRole("row").filter({ hasText: school.name, }); oczekiwane: 1', async () =>
+    expect(
+      page.getByRole("row").filter({
+        hasText: school.name,
+      }),
+    ).toHaveCount(1));
 
   await s.record("phoneDeleteCancelled", firstPhone);
 
-  await expectTeacherPhoneHistoryChange(page, "Dodany numer", firstPhone);
+  await test.step("Sprawdzenie: expectTeacherPhoneHistoryChange", async () =>
+    expectTeacherPhoneHistoryChange(page, "Dodany numer", firstPhone));
 
-  await expectTeacherPhoneHistoryChange(page, "Dodany numer", secondPhone);
+  await test.step("Sprawdzenie: expectTeacherPhoneHistoryChange", async () =>
+    expectTeacherPhoneHistoryChange(page, "Dodany numer", secondPhone));
 
-  await expectTeacherPhoneHistoryMissing(page, "Usunięty numer", firstPhone);
+  await test.step("Sprawdzenie: expectTeacherPhoneHistoryMissing", async () =>
+    expectTeacherPhoneHistoryMissing(page, "Usunięty numer", firstPhone));
 });
 
 /*
@@ -903,15 +1012,18 @@ test("EDIT-19: niepoprawny telefon blokuje dodanie @teacher @edit @validation", 
   scenario: s,
   school,
 }) => {
-  const teacherId = await s.createTeacher(school.id, school.name);
+  const teacherId = await test.step("Przygotowanie: utworzenie nauczyciela testowego", async () =>
+    s.createTeacher(school.id, school.name));
 
   const invalidPhone = "123";
 
   const phone = teacherNewPhoneInput(page);
 
-  await expect(phone).toBeVisible();
+  await test.step("Sprawdzenie: widoczność elementu — phone", async () =>
+    expect(phone).toBeVisible());
 
-  await expect(phone).toBeEnabled();
+  await test.step("Sprawdzenie: dostępność działania — phone", async () =>
+    expect(phone).toBeEnabled());
 
   /*
    * =====================================================
@@ -926,16 +1038,18 @@ test("EDIT-19: niepoprawny telefon blokuje dodanie @teacher @edit @validation", 
   /*
    * Pole jest oznaczone jako niepoprawne.
    */
-  await expect(phone).toHaveAttribute("aria-invalid", "true");
+  await test.step('Sprawdzenie: wartość atrybutu — phone; oczekiwane: "aria-invalid"', async () =>
+    expect(phone).toHaveAttribute("aria-invalid", "true"));
 
   /*
    * Octopus pokazuje komunikat walidacyjny.
    */
-  await expect(
-    page.getByText("Wprowadź poprawny numer telefonu", {
-      exact: true,
-    }),
-  ).toBeVisible();
+  await test.step('Sprawdzenie: widoczność elementu — page.getByText("Wprowadź poprawny numer telefonu", { exact: true, })', async () =>
+    expect(
+      page.getByText("Wprowadź poprawny numer telefonu", {
+        exact: true,
+      }),
+    ).toBeVisible());
 
   /*
    * =====================================================
@@ -948,9 +1062,11 @@ test("EDIT-19: niepoprawny telefon blokuje dodanie @teacher @edit @validation", 
 
   const addButton = teacherPhoneAddButton(page);
 
-  await expect(addButton).toBeVisible();
+  await test.step("Sprawdzenie: widoczność elementu — addButton", async () =>
+    expect(addButton).toBeVisible());
 
-  await expect(addButton).toBeEnabled();
+  await test.step("Sprawdzenie: dostępność działania — addButton", async () =>
+    expect(addButton).toBeEnabled());
 
   await addButton.click();
 
@@ -958,22 +1074,25 @@ test("EDIT-19: niepoprawny telefon blokuje dodanie @teacher @edit @validation", 
    * Po kliknięciu numer nadal nie może
    * zostać zapisany.
    */
-  await expectTeacherPhoneNotSaved(page, invalidPhone);
+  await test.step("Sprawdzenie: expectTeacherPhoneNotSaved", async () =>
+    expectTeacherPhoneNotSaved(page, invalidPhone));
 
   /*
    * Komunikat walidacyjny nadal powinien
    * być widoczny.
    */
-  await expect(
-    page.getByText("Wprowadź poprawny numer telefonu", {
-      exact: true,
-    }),
-  ).toBeVisible();
+  await test.step('Sprawdzenie: widoczność elementu — page.getByText("Wprowadź poprawny numer telefonu", { exact: true, })', async () =>
+    expect(
+      page.getByText("Wprowadź poprawny numer telefonu", {
+        exact: true,
+      }),
+    ).toBeVisible());
 
   /*
    * Pole nadal powinno być niepoprawne.
    */
-  await expect(phone).toHaveAttribute("aria-invalid", "true");
+  await test.step('Sprawdzenie: wartość atrybutu — phone; oczekiwane: "aria-invalid"', async () =>
+    expect(phone).toHaveAttribute("aria-invalid", "true"));
 
   /*
    * =====================================================
@@ -986,13 +1105,15 @@ test("EDIT-19: niepoprawny telefon blokuje dodanie @teacher @edit @validation", 
   /*
    * Numer 123 nie został zapisany.
    */
-  await expectTeacherPhoneNotSaved(page, invalidPhone);
+  await test.step("Sprawdzenie: expectTeacherPhoneNotSaved", async () =>
+    expectTeacherPhoneNotSaved(page, invalidPhone));
 
   /*
    * Nieudana próba dodania
    * nie powinna tworzyć wpisu historii.
    */
-  await expectTeacherPhoneHistoryMissing(page, "Dodany numer", invalidPhone);
+  await test.step("Sprawdzenie: expectTeacherPhoneHistoryMissing", async () =>
+    expectTeacherPhoneHistoryMissing(page, "Dodany numer", invalidPhone));
 });
 
 /*
@@ -1007,7 +1128,8 @@ test("EDIT-20: nauczyciel może pozostać bez e-maila jeśli posiada telefon @te
   scenario: s,
   school,
 }) => {
-  const teacherId = await s.createTeacher(school.id, school.name);
+  const teacherId = await test.step("Przygotowanie: utworzenie nauczyciela testowego", async () =>
+    s.createTeacher(school.id, school.name));
 
   const phone = "500500500";
 
@@ -1023,11 +1145,13 @@ test("EDIT-20: nauczyciel może pozostać bez e-maila jeśli posiada telefon @te
 
   await phoneInput.press("Tab");
 
-  await expect(teacherPhoneAddButton(page)).toBeEnabled();
+  await test.step("Sprawdzenie: dostępność działania — teacherPhoneAddButton(page)", async () =>
+    expect(teacherPhoneAddButton(page)).toBeEnabled());
 
   await teacherPhoneAddButton(page).click();
 
-  await expectSavedTeacherPhone(page, phone);
+  await test.step("Sprawdzenie: expectSavedTeacherPhone", async () =>
+    expectSavedTeacherPhone(page, phone));
 
   /*
    * =====================================================
@@ -1045,7 +1169,8 @@ test("EDIT-20: nauczyciel może pozostać bez e-maila jeśli posiada telefon @te
    * Dialog edycji e-maila powinien
    * również zostać zamknięty.
    */
-  await expect(emailDialog).toHaveCount(0);
+  await test.step("Sprawdzenie: liczba elementów w widoku — emailDialog; oczekiwane: 0", async () =>
+    expect(emailDialog).toHaveCount(0));
 
   /*
    * =====================================================
@@ -1053,9 +1178,11 @@ test("EDIT-20: nauczyciel może pozostać bez e-maila jeśli posiada telefon @te
    * =====================================================
    */
 
-  await expect(s.app.detail("email")).toHaveValue("");
+  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("email"); oczekiwane: ""', async () =>
+    expect(s.app.detail("email")).toHaveValue(""));
 
-  await expectSavedTeacherPhone(page, phone);
+  await test.step("Sprawdzenie: expectSavedTeacherPhone", async () =>
+    expectSavedTeacherPhone(page, phone));
 
   /*
    * =====================================================
@@ -1065,15 +1192,18 @@ test("EDIT-20: nauczyciel może pozostać bez e-maila jeśli posiada telefon @te
 
   await s.app.openPanel("teacher", teacherId);
 
-  await expect(s.app.detail("email")).toHaveValue("");
+  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("email"); oczekiwane: ""', async () =>
+    expect(s.app.detail("email")).toHaveValue(""));
 
-  await expectSavedTeacherPhone(page, phone);
+  await test.step("Sprawdzenie: expectSavedTeacherPhone", async () =>
+    expectSavedTeacherPhone(page, phone));
 
   /*
    * Telefon nadal powinien być
    * zapisany w historii.
    */
-  await expectTeacherPhoneHistoryChange(page, "Dodany numer", phone);
+  await test.step("Sprawdzenie: expectTeacherPhoneHistoryChange", async () =>
+    expectTeacherPhoneHistoryChange(page, "Dodany numer", phone));
 
   await s.record("teacherEmail", "");
 
@@ -1092,31 +1222,39 @@ test("EDIT-21: nauczyciel może istnieć bez telefonu jeśli posiada e-mail @tea
   scenario: s,
   school,
 }) => {
-  const teacherId = await s.createTeacher(school.id, school.name);
+  const teacherId = await test.step("Przygotowanie: utworzenie nauczyciela testowego", async () =>
+    s.createTeacher(school.id, school.name));
 
   /*
    * Fixture tworzy nauczyciela
    * z e-mailem i bez telefonu.
    */
-  await expect(s.app.detail("email")).toHaveValue(s.email);
+  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("email"); oczekiwane: s.email', async () =>
+    expect(s.app.detail("email")).toHaveValue(s.email));
 
-  await expect(s.app.detail("email")).not.toHaveValue("");
+  await test.step('Sprawdzenie: negacja — wartość pola w widoku — s.app.detail("email"); oczekiwane: ""', async () =>
+    expect(s.app.detail("email")).not.toHaveValue(""));
 
   /*
    * Żaden numer nie został zapisany.
    */
   const savedPhones = await getSavedTeacherPhones(page);
 
-  expect(savedPhones).toEqual([]);
+  await test.step("Sprawdzenie: zgodność całej struktury i wartości — savedPhones; oczekiwane: []", async () => {
+    expect(savedPhones).toEqual([]);
+  });
 
   /*
    * Ponowne otwarcie.
    */
   await s.app.openPanel("teacher", teacherId);
 
-  await expect(s.app.detail("email")).toHaveValue(s.email);
+  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("email"); oczekiwane: s.email', async () =>
+    expect(s.app.detail("email")).toHaveValue(s.email));
 
-  expect(await getSavedTeacherPhones(page)).toEqual([]);
+  await test.step("Sprawdzenie: zgodność całej struktury i wartości — await getSavedTeacherPhones(page); oczekiwane: []", async () => {
+    expect(await getSavedTeacherPhones(page)).toEqual([]);
+  });
 });
 
 /*
@@ -1131,14 +1269,17 @@ test("EDIT-22: brak e-maila i telefonu wymaga dodatkowego potwierdzenia @teacher
   scenario: s,
   school,
 }) => {
-  const teacherId = await s.createTeacher(school.id, school.name);
+  const teacherId = await test.step("Przygotowanie: utworzenie nauczyciela testowego", async () =>
+    s.createTeacher(school.id, school.name));
 
   const oldEmail = s.email;
 
   /*
    * Brak telefonów.
    */
-  expect(await getSavedTeacherPhones(page)).toEqual([]);
+  await test.step("Sprawdzenie: zgodność całej struktury i wartości — await getSavedTeacherPhones(page); oczekiwane: []", async () => {
+    expect(await getSavedTeacherPhones(page)).toEqual([]);
+  });
 
   /*
    * Otwieramy edycję e-maila.
@@ -1162,7 +1303,8 @@ test("EDIT-22: brak e-maila i telefonu wymaga dodatkowego potwierdzenia @teacher
    */
   const minimalRecordWarning = await openTeacherMinimalRecordWarning(page);
 
-  await expect(minimalRecordWarning).toContainText("Czy na pewno usunąć?");
+  await test.step('Sprawdzenie: obecność tekstu w widoku — minimalRecordWarning; oczekiwane: "Czy na pewno usunąć?"', async () =>
+    expect(minimalRecordWarning).toContainText("Czy na pewno usunąć?"));
 
   /*
    * W tym teście wybieramy "Nie",
@@ -1175,12 +1317,15 @@ test("EDIT-22: brak e-maila i telefonu wymaga dodatkowego potwierdzenia @teacher
    */
   await s.app.openPanel("teacher", teacherId);
 
-  await expect(s.app.detail("email")).toHaveValue(oldEmail);
+  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("email"); oczekiwane: oldEmail', async () =>
+    expect(s.app.detail("email")).toHaveValue(oldEmail));
 
   /*
    * Nadal brak telefonów.
    */
-  expect(await getSavedTeacherPhones(page)).toEqual([]);
+  await test.step("Sprawdzenie: zgodność całej struktury i wartości — await getSavedTeacherPhones(page); oczekiwane: []", async () => {
+    expect(await getSavedTeacherPhones(page)).toEqual([]);
+  });
 });
 
 test("EDIT-23: można usunąć e-mail bez telefonu po potwierdzeniu ostrzeżenia o rekordzie minimalnym @teacher @edit @validation", async ({
@@ -1188,7 +1333,8 @@ test("EDIT-23: można usunąć e-mail bez telefonu po potwierdzeniu ostrzeżenia
   scenario: s,
   school,
 }) => {
-  const teacherId = await s.createTeacher(school.id, school.name);
+  const teacherId = await test.step("Przygotowanie: utworzenie nauczyciela testowego", async () =>
+    s.createTeacher(school.id, school.name));
 
   const oldEmail = s.email;
 
@@ -1198,12 +1344,15 @@ test("EDIT-23: można usunąć e-mail bez telefonu po potwierdzeniu ostrzeżenia
    * =====================================================
    */
 
-  await expect(s.app.detail("email")).toHaveValue(oldEmail);
+  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("email"); oczekiwane: oldEmail', async () =>
+    expect(s.app.detail("email")).toHaveValue(oldEmail));
 
   /*
    * Nauczyciel nie posiada telefonu.
    */
-  expect(await getSavedTeacherPhones(page)).toEqual([]);
+  await test.step("Sprawdzenie: zgodność całej struktury i wartości — await getSavedTeacherPhones(page); oczekiwane: []", async () => {
+    expect(await getSavedTeacherPhones(page)).toEqual([]);
+  });
 
   /*
    * =====================================================
@@ -1238,11 +1387,13 @@ test("EDIT-23: można usunąć e-mail bez telefonu po potwierdzeniu ostrzeżenia
 
   const minimalRecordWarning = await openTeacherMinimalRecordWarning(page);
 
-  await expect(minimalRecordWarning).toContainText(
-    "Rekord nie będzie spełniał wymagań rekordu minimalnego",
-  );
+  await test.step('Sprawdzenie: obecność tekstu w widoku — minimalRecordWarning; oczekiwane: "Rekord nie będzie spełniał wymagań rekordu minimalnego"', async () =>
+    expect(minimalRecordWarning).toContainText(
+      "Rekord nie będzie spełniał wymagań rekordu minimalnego",
+    ));
 
-  await expect(minimalRecordWarning).toContainText("Czy na pewno usunąć?");
+  await test.step('Sprawdzenie: obecność tekstu w widoku — minimalRecordWarning; oczekiwane: "Czy na pewno usunąć?"', async () =>
+    expect(minimalRecordWarning).toContainText("Czy na pewno usunąć?"));
 
   /*
    * Tym razem potwierdzamy operację.
@@ -1255,9 +1406,12 @@ test("EDIT-23: można usunąć e-mail bez telefonu po potwierdzeniu ostrzeżenia
    * =====================================================
    */
 
-  await expect(s.app.detail("email")).toHaveValue("");
+  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("email"); oczekiwane: ""', async () =>
+    expect(s.app.detail("email")).toHaveValue(""));
 
-  expect(await getSavedTeacherPhones(page)).toEqual([]);
+  await test.step("Sprawdzenie: zgodność całej struktury i wartości — await getSavedTeacherPhones(page); oczekiwane: []", async () => {
+    expect(await getSavedTeacherPhones(page)).toEqual([]);
+  });
 
   /*
    * =====================================================
@@ -1270,12 +1424,15 @@ test("EDIT-23: można usunąć e-mail bez telefonu po potwierdzeniu ostrzeżenia
   /*
    * E-mail nadal jest usunięty.
    */
-  await expect(s.app.detail("email")).toHaveValue("");
+  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("email"); oczekiwane: ""', async () =>
+    expect(s.app.detail("email")).toHaveValue(""));
 
   /*
    * Nadal brak telefonu.
    */
-  expect(await getSavedTeacherPhones(page)).toEqual([]);
+  await test.step("Sprawdzenie: zgodność całej struktury i wartości — await getSavedTeacherPhones(page); oczekiwane: []", async () => {
+    expect(await getSavedTeacherPhones(page)).toEqual([]);
+  });
 
   /*
    * =====================================================
@@ -1283,15 +1440,18 @@ test("EDIT-23: można usunąć e-mail bez telefonu po potwierdzeniu ostrzeżenia
    * =====================================================
    */
 
-  await expect(s.app.detail("firstName")).toHaveValue("Testowy");
+  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("firstName"); oczekiwane: "Testowy"', async () =>
+    expect(s.app.detail("firstName")).toHaveValue("Testowy"));
 
-  await expect(s.app.detail("lastName")).toHaveValue(s.id);
+  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("lastName"); oczekiwane: s.id', async () =>
+    expect(s.app.detail("lastName")).toHaveValue(s.id));
 
-  await expect(
-    page.getByRole("row").filter({
-      hasText: school.name,
-    }),
-  ).toHaveCount(1);
+  await test.step('Sprawdzenie: liczba elementów w widoku — page.getByRole("row").filter({ hasText: school.name, }); oczekiwane: 1', async () =>
+    expect(
+      page.getByRole("row").filter({
+        hasText: school.name,
+      }),
+    ).toHaveCount(1));
 
   /*
    * Zapisujemy informację do danych przebiegu.

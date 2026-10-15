@@ -1,3 +1,4 @@
+import { apiStep } from "./api-step";
 import { expect, type Locator, type Page } from "@playwright/test";
 
 export type CreateSchoolApiOptions = {
@@ -385,58 +386,63 @@ export class Octopus {
     schoolType = "Szkoła podstawowa",
     options: CreateSchoolApiOptions = {},
   ) {
-    const { origin, token } = await this.octopusAuth();
+    return await apiStep(
+      "Przygotowanie API: zapis szkoły i sprawdzenie utworzonego rekordu",
+      async () => {
+        const { origin, token } = await this.octopusAuth();
 
-    const payload = await this.buildSchoolApiPayload(name, number, schoolType, options);
+        const payload = await this.buildSchoolApiPayload(name, number, schoolType, options);
 
-    const endpoint = new URL("/api/Institution/AddNewInstitution", origin).toString();
+        const endpoint = new URL("/api/Institution/AddNewInstitution", origin).toString();
 
-    const response = await this.page.context().request.post(endpoint, {
-      data: payload,
-      failOnStatusCode: false,
-      headers: {
-        Accept: "application/json, text/plain, */*",
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
+        const response = await this.page.context().request.post(endpoint, {
+          data: payload,
+          failOnStatusCode: false,
+          headers: {
+            Accept: "application/json, text/plain, */*",
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
+
+        const responseText = await response.text();
+
+        expect(
+          response.ok(),
+          `API AddNewInstitution zwróciło ${response.status()}: ${responseText.slice(0, 2_000)}`,
+        ).toBeTruthy();
+
+        let responseJson: unknown = null;
+
+        if (responseText.trim()) {
+          try {
+            responseJson = JSON.parse(responseText);
+          } catch {
+            responseJson = responseText.trim();
+          }
+        }
+
+        let schoolId = extractCreatedSchoolId(responseJson);
+
+        if (!schoolId) {
+          const location = response.headers()["location"];
+
+          const fromLocation = location?.match(/(?:school-panel\/|\/)(\d+)(?:$|[?#])/);
+
+          schoolId = fromLocation?.[1] ?? null;
+        }
+
+        if (!schoolId) {
+          schoolId = await this.findCreatedSchoolIdByName(name);
+        } else {
+          await this.openPanel("school", schoolId);
+        }
+
+        await expect(this.detail("name")).toHaveValue(name);
+
+        return schoolId;
       },
-    });
-
-    const responseText = await response.text();
-
-    expect(
-      response.ok(),
-      `API AddNewInstitution zwróciło ${response.status()}: ${responseText.slice(0, 2_000)}`,
-    ).toBeTruthy();
-
-    let responseJson: unknown = null;
-
-    if (responseText.trim()) {
-      try {
-        responseJson = JSON.parse(responseText);
-      } catch {
-        responseJson = responseText.trim();
-      }
-    }
-
-    let schoolId = extractCreatedSchoolId(responseJson);
-
-    if (!schoolId) {
-      const location = response.headers()["location"];
-
-      const fromLocation = location?.match(/(?:school-panel\/|\/)(\d+)(?:$|[?#])/);
-
-      schoolId = fromLocation?.[1] ?? null;
-    }
-
-    if (!schoolId) {
-      schoolId = await this.findCreatedSchoolIdByName(name);
-    } else {
-      await this.openPanel("school", schoolId);
-    }
-
-    await expect(this.detail("name")).toHaveValue(name);
-
-    return schoolId;
+    );
   }
 
   async createSchool(

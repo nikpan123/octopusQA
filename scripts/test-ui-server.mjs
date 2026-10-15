@@ -28,6 +28,9 @@ export const SUITES = {
       "tests/nauczyciel-edycja-notatki.spec.ts",
       "tests/nauczyciel-edycja-rodo.spec.ts",
       "tests/nauczyciel-rozszerzenie.spec.ts",
+      "tests/nauczyciel-uprawnienia.spec.ts",
+      "tests/uprawnienia-api.spec.ts",
+      "tests/uprawnienia-cykl-zycia.spec.ts",
     ],
   },
   schools: {
@@ -36,8 +39,13 @@ export const SUITES = {
       "tests/szkola-dodawanie.spec.ts",
       "tests/szkola-edycja.spec.ts",
       "tests/szkola-nauczyciel.spec.ts",
+      "tests/szkola-nauczyciele-filtry.spec.ts",
+      "tests/szkola-wyszukiwanie-filtry.spec.ts",
       "tests/szkola-struktura.spec.ts",
       "tests/szkola-struktura-dodawanie.spec.ts",
+      "tests/szkola-kategoria.spec.ts",
+      "tests/szkola-kategoria-dodawanie.spec.ts",
+      "tests/szkola-prog.spec.ts",
       "tests/walidacja-anulowanie.spec.ts",
     ],
   },
@@ -48,6 +56,8 @@ export const SUITES = {
       "tests/zamowienia-produkty.spec.ts",
       "tests/zamowienia-walidacja.spec.ts",
       "tests/zamowienia-zalaczniki.spec.ts",
+      "tests/zamowienia-klasa.spec.ts",
+      "tests/zamowienia-dokumenty.spec.ts",
     ],
   },
   clubs: {
@@ -296,7 +306,7 @@ function finalizeRunCounts(exitCode) {
 export function extractTestId(text) {
   return (
     text.match(
-      /\b(?:ORD|CLUB|SCH(?:-EDIT)?|MED(?:-YEAR)?|ADD|EDIT|TEA|FIND|REL|STR)-[A-Z0-9-]+\b/,
+      /\b(?:ORD|CLUB|SCH(?:-EDIT)?|MED(?:-YEAR)?|ADD|EDIT|TEA|FIND|REL|STR|CAT|TFL|SFLT|THR|PERM|ACC|ACL)-[A-Z0-9-]+\b/,
     )?.[0] || null
   );
 }

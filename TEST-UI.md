@@ -16,6 +16,21 @@ http://127.0.0.1:4173
 
 Inny port można wskazać przez `OCTOPUS_TEST_UI_PORT`.
 
+### Panel już działa — błąd EADDRINUSE
+
+Komunikat `listen EADDRINUSE ... 127.0.0.1:4173` oznacza, że port 4173 jest już zajęty. Najpierw otwórz [http://127.0.0.1:4173](http://127.0.0.1:4173). Jeżeli widzisz Octopus Test Runner, panel działa i nie trzeba drugi raz wykonywać `npm run test-ui`. Odśwież istniejącą kartę klawiszem F5.
+
+Panel może działać w innym terminalu albo w tle, również gdy terminal, w którym właśnie wpisujesz polecenie, jest pusty. Nie zatrzymuj przypadkowych procesów Node.js — mogą należeć do VS Code albo aktywnych testów.
+
+Jeżeli pod tym adresem nie ma naszego panelu, trzeba ustalić, jaki program zajmuje port. Alternatywnie można uruchomić panel na innym, wolnym porcie, np. 4174:
+
+```powershell
+$env:OCTOPUS_TEST_UI_PORT = "4174"
+npm run test-ui
+```
+
+Wtedy otwórz `http://127.0.0.1:4174`. Nie uruchamiaj równoczesnych testów na tym samym środowisku z dwóch paneli. Zmiana portu nie zwalnia blokady trwających testów.
+
 ## Funkcje
 
 - wybór środowiska DEV lub TEST;
@@ -40,7 +55,21 @@ Pakiet **Szkoły** obejmuje zarówno `szkola-struktura.spec.ts` (STR-01–STR-87
 
 Po zmianie serwera panelu należy ponownie uruchomić `npm run test-ui`, a w przeglądarce odświeżyć stronę i listę przyciskiem **Odśwież**. Nowe testy tworzenia szkoły korzystają z dedykowanych danych; relacje są sprzątane, szkoły testowe pozostają zgodnie z opisem [testów Struktury](docs/tests/struktura-szkoly-krok-po-kroku.md).
 
+### Kategoria szkoły w panelu
+
+Pakiet **Szkoły** zawiera `szkola-kategoria.spec.ts` (CAT-01–CAT-34) oraz `szkola-kategoria-dodawanie.spec.ts` (CAT-35–CAT-53). Grep `@category` wybiera oba zestawy, a `@category.*@school-add` tylko testy tworzenia; na liście można wybrać pojedyncze ID CAT. [Dokumentacja kategorii](docs/tests/kategoria-szkoly.md) rozpisuje sprawdzenia i stan weryfikacji. Po dodaniu nowego pliku serwer panelu wymaga ponownego uruchomienia — dopiero po zakończeniu aktywnych testów. Nie należy zatrzymywać trwającej regresji ani usuwać jej blokady, aby wymusić drugi start.
+
+W pakiecie Szkoły dostępny jest również `szkola-nauczyciele-filtry.spec.ts` z TFL-01–TFL-30. Grep `@teacher-filter` wybiera całość; ID `TFL-26:` wybiera regresję aktualnego GWO przed przyszłym Obcy po GWO. Formularze są przygotowywane przez API, a filtry i liczniki sprawdzane w UI. Aktywny rok domyślny to 2026/2027; po zmianie roku systemu ustaw `OCTOPUS_TFL_CURRENT_SCHOOL_YEAR` przed startem panelu. TFL-26 jest pomijany z powodem do pojawienia się przyszłego roku 2027/2028 w słowniku (około kwietnia). Testy nie zostały uruchomione na prośbę użytkownika. [Instrukcja każdego scenariusza](docs/tests/filtry-nauczycieli-w-szkole.md) opisuje tworzone dane, oczekiwania i sprzątanie.
+
+W pakiecie Szkoły są też SFLT-01–SFLT-32 (`szkola-wyszukiwanie-filtry.spec.ts`), wybierane przez `@school-search`. SFLT-28–SFLT-30 wymagają skonfigurowania kontrolowanych szkół z SI, a SFLT-31 jest oczekiwanym błędem brakującego pola Notatki. [Dokumentacja wyszukiwarki](docs/tests/wyszukiwarka-szkol-filtry.md) zawiera kroki i konfigurację. Testy nie zostały uruchomione.
+
 ## Przepływ uruchomienia
+
+Pakiet Zamówienia obejmuje również `zamowienia-dokumenty.spec.ts`: ORD-DOC-01–ORD-DOC-30, grep `@order-document`. Przygotowanie zamówień i większości dokumentów odbywa się przez API; testy operacji formularza używają UI. ORD-DOC-28 wymaga zmiennej `OCTOPUS_ORDER_EXTERNAL_REFERENCE` z istniejącym testowym zamówieniem z integracji. [Konfiguracja i zakres](docs/tests/dokumenty-zamowien.md).
+
+Pakiet Szkoły obejmuje THR-01–THR-22 (`@threshold`). Pakiet Nauczyciele obejmuje PERM-01–PERM-25, ACC-01–ACC-10 oraz ACL-01–ACL-17 (`@entitlement`). Dodatkowe filtry to `@access-api` i `@access-lifecycle`. Parser obsługuje pojedyncze ID tych grup. [Dane, bezpieczeństwo i zakres Uprawnień](docs/tests/uprawnienia-i-progi.md). Przed odświeżeniem konfiguracji uruchomionego serwera panelu poczekaj na koniec aktywnych testów. Grep `@unmarked` wybiera PERM-23–PERM-25: wariant bez flag Testowy u nauczyciela i szkół.
+
+Pakiet Zamówienia obejmuje `zamowienia-klasa.spec.ts` (ORD-CLASS-01–ORD-CLASS-22). Grep `@order-class` wybiera testy kolumny Klasa. Przygotowanie, edycje i sprzątanie zamówień korzystają z API; UI służy do kontroli trzech widoków. LS jest warunkowo pomijany z powodu braku produktu. [Dokumentacja](docs/tests/klasa-w-zamowieniach.md).
 
 ```text
 przeglądarka :4173

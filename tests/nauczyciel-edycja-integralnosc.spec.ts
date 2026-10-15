@@ -17,7 +17,8 @@ test("EDIT-43: ponowny zapis już znormalizowanych danych bez zmian nie modyfiku
   scenario: s,
   school,
 }) => {
-  const teacherId = await s.createTeacher(school.id, school.name);
+  const teacherId = await test.step("Przygotowanie: utworzenie nauczyciela testowego", async () =>
+    s.createTeacher(school.id, school.name));
 
   const inputLastName = "nOWAK";
 
@@ -57,11 +58,14 @@ test("EDIT-43: ponowny zapis już znormalizowanych danych bez zmian nie modyfiku
    * Dlatego przed wykonaniem snapshotu czekamy na
    * konkretne oczekiwane wartości.
    */
-  await expect(s.app.detail("firstName")).toHaveValue("Testowy");
+  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("firstName"); oczekiwane: "Testowy"', async () =>
+    expect(s.app.detail("firstName")).toHaveValue("Testowy"));
 
-  await expect(s.app.detail("lastName")).toHaveValue(normalizedLastName);
+  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("lastName"); oczekiwane: normalizedLastName', async () =>
+    expect(s.app.detail("lastName")).toHaveValue(normalizedLastName));
 
-  await expect(s.app.detail("email")).toHaveValue(s.email);
+  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("email"); oczekiwane: s.email', async () =>
+    expect(s.app.detail("email")).toHaveValue(s.email));
 
   /*
    * Zapamiętujemy stan po pierwszym,
@@ -97,9 +101,11 @@ test("EDIT-43: ponowny zapis już znormalizowanych danych bez zmian nie modyfiku
    * Formularz już powinien zawierać
    * znormalizowane dane.
    */
-  await expect(form.locator("#firstName")).toHaveValue(before.firstName);
+  await test.step('Sprawdzenie: wartość pola w widoku — form.locator("#firstName"); oczekiwane: before.firstName', async () =>
+    expect(form.locator("#firstName")).toHaveValue(before.firstName));
 
-  await expect(form.locator("#lastName")).toHaveValue(before.lastName);
+  await test.step('Sprawdzenie: wartość pola w widoku — form.locator("#lastName"); oczekiwane: before.lastName', async () =>
+    expect(form.locator("#lastName")).toHaveValue(before.lastName));
 
   /*
    * Nie dotykamy żadnego pola.
@@ -114,11 +120,14 @@ test("EDIT-43: ponowny zapis już znormalizowanych danych bez zmian nie modyfiku
 
   await s.app.openPanel("teacher", teacherId);
 
-  await expect(s.app.detail("firstName")).toHaveValue(before.firstName);
+  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("firstName"); oczekiwane: before.firstName', async () =>
+    expect(s.app.detail("firstName")).toHaveValue(before.firstName));
 
-  await expect(s.app.detail("lastName")).toHaveValue(before.lastName);
+  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("lastName"); oczekiwane: before.lastName', async () =>
+    expect(s.app.detail("lastName")).toHaveValue(before.lastName));
 
-  await expect(s.app.detail("email")).toHaveValue(before.email);
+  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("email"); oczekiwane: before.email', async () =>
+    expect(s.app.detail("email")).toHaveValue(before.email));
 
   /*
    * =====================================================
@@ -126,7 +135,8 @@ test("EDIT-43: ponowny zapis już znormalizowanych danych bez zmian nie modyfiku
    * =====================================================
    */
 
-  await expectTeacherHistorySnapshot(page, historyBefore);
+  await test.step("Sprawdzenie: expectTeacherHistorySnapshot", async () =>
+    expectTeacherHistorySnapshot(page, historyBefore));
 });
 
 /*
@@ -141,7 +151,8 @@ test("EDIT-44: anulowanie wielu zmian zachowuje poprzednie dane i historię @tea
   scenario: s,
   school,
 }) => {
-  const teacherId = await s.createTeacher(school.id, school.name);
+  const teacherId = await test.step("Przygotowanie: utworzenie nauczyciela testowego", async () =>
+    s.createTeacher(school.id, school.name));
 
   const before = {
     firstName: await s.app.detail("firstName").inputValue(),
@@ -165,13 +176,17 @@ test("EDIT-44: anulowanie wielu zmian zachowuje poprzednie dane i historię @tea
 
   await s.app.openPanel("teacher", teacherId);
 
-  await expect(s.app.detail("firstName")).toHaveValue(before.firstName);
+  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("firstName"); oczekiwane: before.firstName', async () =>
+    expect(s.app.detail("firstName")).toHaveValue(before.firstName));
 
-  await expect(s.app.detail("lastName")).toHaveValue(before.lastName);
+  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("lastName"); oczekiwane: before.lastName', async () =>
+    expect(s.app.detail("lastName")).toHaveValue(before.lastName));
 
-  await expect(s.app.detail("email")).toHaveValue(before.email);
+  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("email"); oczekiwane: before.email', async () =>
+    expect(s.app.detail("email")).toHaveValue(before.email));
 
-  await expectTeacherHistorySnapshot(page, historyBefore);
+  await test.step("Sprawdzenie: expectTeacherHistorySnapshot", async () =>
+    expectTeacherHistorySnapshot(page, historyBefore));
 });
 
 /*
@@ -186,7 +201,8 @@ test("EDIT-45: zmienione dane są trwałe po przejściu do szkoły i powrocie @t
   scenario: s,
   school,
 }) => {
-  const teacherId = await s.createTeacher(school.id, school.name);
+  const teacherId = await test.step("Przygotowanie: utworzenie nauczyciela testowego", async () =>
+    s.createTeacher(school.id, school.name));
 
   const newFirstName = "Adam";
 
@@ -203,23 +219,27 @@ test("EDIT-45: zmienione dane są trwałe po przejściu do szkoły i powrocie @t
    */
   await s.app.openPanel("school", school.id);
 
-  await expect(
-    page.getByRole("heading", {
-      name: "Dane podstawowe szkoły",
-      exact: true,
-    }),
-  ).toBeVisible();
+  await test.step('Sprawdzenie: widoczność elementu — page.getByRole("heading", { name: "Dane podstawowe szkoły", exact: true, })', async () =>
+    expect(
+      page.getByRole("heading", {
+        name: "Dane podstawowe szkoły",
+        exact: true,
+      }),
+    ).toBeVisible());
 
   /*
    * Powrót do nauczyciela.
    */
   await s.app.openPanel("teacher", teacherId);
 
-  await expect(s.app.detail("firstName")).toHaveValue(newFirstName);
+  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("firstName"); oczekiwane: newFirstName', async () =>
+    expect(s.app.detail("firstName")).toHaveValue(newFirstName));
 
-  await expect(s.app.detail("lastName")).toHaveValue(expectedLastName);
+  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("lastName"); oczekiwane: expectedLastName', async () =>
+    expect(s.app.detail("lastName")).toHaveValue(expectedLastName));
 
-  await expect(s.app.detail("email")).toHaveValue(s.email);
+  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("email"); oczekiwane: s.email', async () =>
+    expect(s.app.detail("email")).toHaveValue(s.email));
 });
 
 /*
@@ -234,7 +254,8 @@ test("EDIT-46: edycja danych nauczyciela nie usuwa relacji ze szkołą @teacher 
   scenario: s,
   school,
 }) => {
-  const teacherId = await s.createTeacher(school.id, school.name);
+  const teacherId = await test.step("Przygotowanie: utworzenie nauczyciela testowego", async () =>
+    s.createTeacher(school.id, school.name));
 
   const newFirstName = "Adam";
 
@@ -247,11 +268,12 @@ test("EDIT-46: edycja danych nauczyciela nie usuwa relacji ze szkołą @teacher 
   /*
    * Relacja widoczna od strony nauczyciela.
    */
-  await expect(
-    page.getByRole("row").filter({
-      hasText: school.name,
-    }),
-  ).toHaveCount(1);
+  await test.step('Sprawdzenie: liczba elementów w widoku — page.getByRole("row").filter({ hasText: school.name, }); oczekiwane: 1', async () =>
+    expect(
+      page.getByRole("row").filter({
+        hasText: school.name,
+      }),
+    ).toHaveCount(1));
 
   /*
    * Relacja widoczna od strony szkoły.
@@ -260,11 +282,14 @@ test("EDIT-46: edycja danych nauczyciela nie usuwa relacji ze szkołą @teacher 
 
   const teacherRow = await s.app.schoolTeacherRow(teacherId);
 
-  await expect(teacherRow).toHaveCount(1);
+  await test.step("Sprawdzenie: liczba elementów w widoku — teacherRow; oczekiwane: 1", async () =>
+    expect(teacherRow).toHaveCount(1));
 
-  await expect(teacherRow).toContainText(newFirstName);
+  await test.step("Sprawdzenie: obecność tekstu w widoku — teacherRow; oczekiwane: newFirstName", async () =>
+    expect(teacherRow).toContainText(newFirstName));
 
-  await expect(teacherRow).toContainText(normalizeTeacherName(s.id));
+  await test.step("Sprawdzenie: obecność tekstu w widoku — teacherRow; oczekiwane: normalizeTeacherName(s.id)", async () =>
+    expect(teacherRow).toContainText(normalizeTeacherName(s.id)));
 });
 
 /*
@@ -279,7 +304,8 @@ test("EDIT-47: jednoczesna zmiana wielu pól tworzy komplet wpisów historii @te
   scenario: s,
   school,
 }) => {
-  const teacherId = await s.createTeacher(school.id, school.name);
+  const teacherId = await test.step("Przygotowanie: utworzenie nauczyciela testowego", async () =>
+    s.createTeacher(school.id, school.name));
 
   const inputFirstName = "Adam";
 
@@ -299,15 +325,18 @@ test("EDIT-47: jednoczesna zmiana wielu pól tworzy komplet wpisów historii @te
 
   await s.app.openPanel("teacher", teacherId);
 
-  await expect(s.app.detail("firstName")).toHaveValue(expectedFirstName);
+  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("firstName"); oczekiwane: expectedFirstName', async () =>
+    expect(s.app.detail("firstName")).toHaveValue(expectedFirstName));
 
-  await expect(s.app.detail("lastName")).toHaveValue(expectedLastName);
+  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("lastName"); oczekiwane: expectedLastName', async () =>
+    expect(s.app.detail("lastName")).toHaveValue(expectedLastName));
 
   /*
    * Korzystamy z istniejącego helpera
    * zamiast ręcznie powielać selektory historii.
    */
-  await expectTeacherHistoryChange(page, "Imię", expectedFirstName);
+  await test.step("Sprawdzenie: expectTeacherHistoryChange", async () =>
+    expectTeacherHistoryChange(page, "Imię", expectedFirstName));
 
   /*
    * Helper ponownie otworzy tab historii,
@@ -316,5 +345,6 @@ test("EDIT-47: jednoczesna zmiana wielu pól tworzy komplet wpisów historii @te
    */
   await s.app.openPanel("teacher", teacherId);
 
-  await expectTeacherHistoryChange(page, "Nazwisko", expectedLastName);
+  await test.step("Sprawdzenie: expectTeacherHistoryChange", async () =>
+    expectTeacherHistoryChange(page, "Nazwisko", expectedLastName));
 });

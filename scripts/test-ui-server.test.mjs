@@ -9,6 +9,10 @@ test("pakiet Szkoły zawiera oba pliki Struktury", () => {
   for (const file of [
     "tests/szkola-struktura.spec.ts",
     "tests/szkola-struktura-dodawanie.spec.ts",
+    "tests/szkola-kategoria.spec.ts",
+    "tests/szkola-kategoria-dodawanie.spec.ts",
+    "tests/szkola-nauczyciele-filtry.spec.ts",
+    "tests/szkola-wyszukiwanie-filtry.spec.ts",
   ]) {
     assert.ok(SUITES.schools.files.includes(file));
     assert.ok(result.args.includes(file));
@@ -19,6 +23,32 @@ test("parser rozpoznaje krótkie ID STR, także trzycyfrowe", () => {
   assert.equal(extractTestId("Struktura szkoły › STR-89: test @school"), "STR-89");
   assert.equal(extractTestId("Struktura › STR-106: timeout @structure"), "STR-106");
   assert.equal(extractTestId("ORD-43: zamówienie"), "ORD-43");
+  assert.equal(extractTestId("Klasa w zamówieniach › ORD-CLASS-22: rozwijanie"), "ORD-CLASS-22");
+  assert.equal(extractTestId("Dokumenty › ORD-DOC-30: edycja"), "ORD-DOC-30");
+  assert.equal(extractTestId("Kategoria szkoły › CAT-34: zmiana uczniów"), "CAT-34");
+  assert.equal(extractTestId("Filtrowanie nauczycieli › TFL-26: przyszły rok"), "TFL-26");
+  assert.equal(extractTestId("Wyszukiwarka szkół › SFLT-32: RSPO"), "SFLT-32");
+  assert.equal(extractTestId("Próg › THR-22: anulowanie"), "THR-22");
+  assert.equal(extractTestId("Uprawnienia › PERM-15: dane"), "PERM-15");
+  assert.equal(extractTestId("Eksport › ACC-06: duplikaty"), "ACC-06");
+  assert.equal(extractTestId("Aktywność › ACL-12: zawieszenie"), "ACL-12");
+});
+
+test("pakiety obejmują progi i uprawnienia", () => {
+  assert.ok(SUITES.schools.files.includes("tests/szkola-prog.spec.ts"));
+  for (const file of [
+    "tests/nauczyciel-uprawnienia.spec.ts",
+    "tests/uprawnienia-api.spec.ts",
+    "tests/uprawnienia-cykl-zycia.spec.ts",
+  ])
+    assert.ok(SUITES.teachers.files.includes(file));
+});
+
+test("pakiet Zamówienia zawiera testy kolumny Klasa", () => {
+  const result = buildRunArguments({ suite: "orders", environment: "dev", workers: 2 });
+  assert.ok(SUITES.orders.files.includes("tests/zamowienia-klasa.spec.ts"));
+  assert.ok(result.args.includes("tests/zamowienia-klasa.spec.ts"));
+  assert.ok(result.args.includes("tests/zamowienia-dokumenty.spec.ts"));
 });
 
 test("listowanie rozdziela ID, nazwę i lokalizację testu struktury", () => {

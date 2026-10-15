@@ -6,7 +6,8 @@ test("EDIT-03: zapis nazwiska jest trwały i widoczny w historii @teacher @edit"
   scenario: s,
   school,
 }) => {
-  const teacherId = await s.createTeacher(school.id, school.name);
+  const teacherId = await test.step("Przygotowanie: utworzenie nauczyciela testowego", async () =>
+    s.createTeacher(school.id, school.name));
   // Edycja nazwiska dopuszcza litery i łącznik; identyfikujemy rekord przez ID.
   const lastName = "Nowak";
   await s.record("editedLastName", lastName);
@@ -44,12 +45,13 @@ for (const kind of ["email", "phone"] as const) {
     scenario: s,
     school,
   }) => {
-    const form = await s.app.prepareTeacher(
-      s.id,
-      kind === "email" ? "invalid-email" : s.email,
-      school.id,
-      school.name,
-    );
+    const form = await test.step("Przygotowanie: wyszukanie nauczyciela testowego", async () =>
+      s.app.prepareTeacher(
+        s.id,
+        kind === "email" ? "invalid-email" : s.email,
+        school.id,
+        school.name,
+      ));
     await test.step("Sprawdź błędne pole i komunikat przy próbie zapisu", async () => {
       const field =
         kind === "email"
@@ -87,7 +89,8 @@ for (const criterion of ["Email", "Nazwisko"] as const) {
     scenario: s,
     school,
   }) => {
-    const teacherId = await s.createTeacher(school.id, school.name);
+    const teacherId = await test.step("Przygotowanie: utworzenie nauczyciela testowego", async () =>
+      s.createTeacher(school.id, school.name));
     await s.app.openPanel("teacher");
     const search = await s.app.openSearch("teacher");
     const searchField = s.app.field(search, criterion);
@@ -96,27 +99,34 @@ for (const criterion of ["Email", "Nazwisko"] as const) {
       // wystarcza natywne zdarzenie input oraz opuszczenie pola.
       await searchField.fill(s.email);
       await searchField.press("Tab");
-      await expect(searchField).toHaveValue(s.email);
+      await test.step("Sprawdzenie: wartość pola w widoku — searchField; oczekiwane: s.email", async () =>
+        expect(searchField).toHaveValue(s.email));
     } else {
       await typeValue(searchField, s.id);
     }
     await search.getByRole("button", { name: "Szukaj", exact: true }).click();
-    await expect(search).toHaveCount(0);
+    await test.step("Sprawdzenie: liczba elementów w widoku — search; oczekiwane: 0", async () =>
+      expect(search).toHaveCount(0));
     const results = s.app.results("teacher");
     // Własna unikalna wartość: oczekujemy dokładnie jednego wyniku i właściwego ID.
-    await expect(results.getByRole("row").filter({ has: page.getByRole("gridcell") })).toHaveCount(
-      1,
-    );
+    await test.step('Sprawdzenie: liczba elementów w widoku — results.getByRole("row").filter({ has: page.getByRole("gridcell") }); oczekiwane: 1', async () =>
+      expect(results.getByRole("row").filter({ has: page.getByRole("gridcell") })).toHaveCount(1));
     const row = results
       .getByRole("row")
       .filter({ has: page.getByRole("gridcell", { name: teacherId, exact: true }) });
-    await expect(row).toHaveCount(1);
-    await expect(row).toContainText(s.id);
-    await expect(page.getByRole("heading", { name: "Rekordów: 1", exact: true })).toBeVisible();
+    await test.step("Sprawdzenie: liczba elementów w widoku — row; oczekiwane: 1", async () =>
+      expect(row).toHaveCount(1));
+    await test.step("Sprawdzenie: obecność tekstu w widoku — row; oczekiwane: s.id", async () =>
+      expect(row).toContainText(s.id));
+    await test.step('Sprawdzenie: widoczność elementu — page.getByRole("heading", { name: "Rekordów: 1", exact: true })', async () =>
+      expect(page.getByRole("heading", { name: "Rekordów: 1", exact: true })).toBeVisible());
     await row.click();
-    await expect(s.app.detail("lastName")).toHaveValue(s.id);
-    await expect(s.app.detail("email")).toHaveValue(s.email);
-    await expect(page).toHaveURL(new RegExp(`/teacher/teacher-panel/${teacherId}$`));
+    await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("lastName"); oczekiwane: s.id', async () =>
+      expect(s.app.detail("lastName")).toHaveValue(s.id));
+    await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("email"); oczekiwane: s.email', async () =>
+      expect(s.app.detail("email")).toHaveValue(s.email));
+    await test.step("Sprawdzenie: toHaveURL — page; oczekiwane: new RegExp(`/teacher/teacher-panel/${teacherId}$`)", async () =>
+      expect(page).toHaveURL(new RegExp(`/teacher/teacher-panel/${teacherId}$`)));
   });
 }
 
@@ -128,7 +138,8 @@ test("REL-02: druga szkoła zachowuje pierwszą relację i pokazuje nauczyciela 
 }) => {
   const secondId = secondSchool.id;
   await s.record("secondSchoolId", secondId);
-  const teacherId = await s.createTeacher(school.id, school.name);
+  const teacherId = await test.step("Przygotowanie: utworzenie nauczyciela testowego", async () =>
+    s.createTeacher(school.id, school.name));
   await test.step("Dodaj drugą szkołę istniejącemu nauczycielowi", async () => {
     await s.app.attachSchool(page.locator("body"), secondId, secondSchool.name);
     await expect(page.getByRole("row").filter({ hasText: school.name })).toHaveCount(1);

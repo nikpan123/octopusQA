@@ -52,12 +52,8 @@ async function createSchoolForEdit(
 ) {
   const number = String(Date.now());
 
-  const schoolId = await scenario.app.createSchool(
-    scenario.schoolName,
-    number,
-    schoolType,
-    options,
-  );
+  const schoolId = await test.step("Przygotowanie: utworzenie szkoły testowej", async () =>
+    scenario.app.createSchool(scenario.schoolName, number, schoolType, options));
 
   await scenario.app.markTestRecord();
 
@@ -92,7 +88,8 @@ test("SCH-EDIT-01: formularz edycji wczytuje nazwę szkoły @school @school-edit
 
   await cancelSchoolEdit(form);
 
-  await expect(s.app.detail("name")).toHaveValue(s.schoolName);
+  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("name"); oczekiwane: s.schoolName', async () =>
+    expect(s.app.detail("name")).toHaveValue(s.schoolName));
 });
 
 test("SCH-EDIT-02: anulowanie zmiany nazwy zachowuje poprzednią wartość @school @school-edit @cancel", async ({
@@ -109,11 +106,13 @@ test("SCH-EDIT-02: anulowanie zmiany nazwy zachowuje poprzednią wartość @scho
 
   await cancelSchoolEdit(form);
 
-  await expect(s.app.detail("name")).toHaveValue(s.schoolName);
+  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("name"); oczekiwane: s.schoolName', async () =>
+    expect(s.app.detail("name")).toHaveValue(s.schoolName));
 
   await s.app.openPanel("school", schoolId);
 
-  await expect(s.app.detail("name")).toHaveValue(s.schoolName);
+  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("name"); oczekiwane: s.schoolName', async () =>
+    expect(s.app.detail("name")).toHaveValue(s.schoolName));
 });
 
 test("SCH-EDIT-03: zmiana nazwy jest trwała po ponownym otwarciu szkoły @school @school-edit @positive", async ({
@@ -130,11 +129,13 @@ test("SCH-EDIT-03: zmiana nazwy jest trwała po ponownym otwarciu szkoły @schoo
 
   await saveSchoolEdit(form);
 
-  await expect(s.app.detail("name")).toHaveValue(updatedName);
+  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("name"); oczekiwane: updatedName', async () =>
+    expect(s.app.detail("name")).toHaveValue(updatedName));
 
   await s.app.openPanel("school", schoolId);
 
-  await expect(s.app.detail("name")).toHaveValue(updatedName);
+  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("name"); oczekiwane: updatedName', async () =>
+    expect(s.app.detail("name")).toHaveValue(updatedName));
 
   await s.record("updatedSchoolName", updatedName);
 });
@@ -167,17 +168,21 @@ test("SCH-EDIT-04: zmiana WWW i e-maila jest trwała @school @school-edit @posit
   const { currentInput: currentWebsiteInput, newInput: newWebsiteInput } =
     await schoolFieldEditInputs(websiteDialog);
 
-  await expect(currentWebsiteInput).toHaveValue(originalWebsite);
+  await test.step("Sprawdzenie: wartość pola w widoku — currentWebsiteInput; oczekiwane: originalWebsite", async () =>
+    expect(currentWebsiteInput).toHaveValue(originalWebsite));
 
-  await expect(newWebsiteInput).toHaveValue("");
+  await test.step('Sprawdzenie: wartość pola w widoku — newWebsiteInput; oczekiwane: ""', async () =>
+    expect(newWebsiteInput).toHaveValue(""));
 
   await newWebsiteInput.fill(updatedWebsite);
 
-  await expect(newWebsiteInput).toHaveValue(updatedWebsite);
+  await test.step("Sprawdzenie: wartość pola w widoku — newWebsiteInput; oczekiwane: updatedWebsite", async () =>
+    expect(newWebsiteInput).toHaveValue(updatedWebsite));
 
   await saveSchoolEdit(websiteDialog);
 
-  await expect(schoolPanelTextField(schoolDetails(page), "WWW")).toHaveValue(updatedWebsite);
+  await test.step('Sprawdzenie: wartość pola w widoku — schoolPanelTextField(schoolDetails(page), "WWW"); oczekiwane: updatedWebsite', async () =>
+    expect(schoolPanelTextField(schoolDetails(page), "WWW")).toHaveValue(updatedWebsite));
 
   // ---------------------------------------------------------------------------
   // E-MAIL
@@ -188,17 +193,21 @@ test("SCH-EDIT-04: zmiana WWW i e-maila jest trwała @school @school-edit @posit
   const { currentInput: currentEmailInput, newInput: newEmailInput } =
     await schoolFieldEditInputs(emailDialog);
 
-  await expect(currentEmailInput).toHaveValue(originalEmail);
+  await test.step("Sprawdzenie: wartość pola w widoku — currentEmailInput; oczekiwane: originalEmail", async () =>
+    expect(currentEmailInput).toHaveValue(originalEmail));
 
-  await expect(newEmailInput).toHaveValue("");
+  await test.step('Sprawdzenie: wartość pola w widoku — newEmailInput; oczekiwane: ""', async () =>
+    expect(newEmailInput).toHaveValue(""));
 
   await newEmailInput.fill(updatedEmail);
 
-  await expect(newEmailInput).toHaveValue(updatedEmail);
+  await test.step("Sprawdzenie: wartość pola w widoku — newEmailInput; oczekiwane: updatedEmail", async () =>
+    expect(newEmailInput).toHaveValue(updatedEmail));
 
   await saveSchoolEdit(emailDialog);
 
-  await expect(schoolPanelTextField(schoolDetails(page), "E-Mail")).toHaveValue(updatedEmail);
+  await test.step('Sprawdzenie: wartość pola w widoku — schoolPanelTextField(schoolDetails(page), "E-Mail"); oczekiwane: updatedEmail', async () =>
+    expect(schoolPanelTextField(schoolDetails(page), "E-Mail")).toHaveValue(updatedEmail));
 
   // ---------------------------------------------------------------------------
   // TRWAŁOŚĆ
@@ -206,9 +215,11 @@ test("SCH-EDIT-04: zmiana WWW i e-maila jest trwała @school @school-edit @posit
 
   await s.app.openPanel("school", schoolId);
 
-  await expect(schoolPanelTextField(schoolDetails(page), "WWW")).toHaveValue(updatedWebsite);
+  await test.step('Sprawdzenie: wartość pola w widoku — schoolPanelTextField(schoolDetails(page), "WWW"); oczekiwane: updatedWebsite', async () =>
+    expect(schoolPanelTextField(schoolDetails(page), "WWW")).toHaveValue(updatedWebsite));
 
-  await expect(schoolPanelTextField(schoolDetails(page), "E-Mail")).toHaveValue(updatedEmail);
+  await test.step('Sprawdzenie: wartość pola w widoku — schoolPanelTextField(schoolDetails(page), "E-Mail"); oczekiwane: updatedEmail', async () =>
+    expect(schoolPanelTextField(schoolDetails(page), "E-Mail")).toHaveValue(updatedEmail));
 
   await s.record("updatedSchoolWebsite", updatedWebsite);
 
@@ -233,15 +244,13 @@ test("SCH-EDIT-05: zmiana nazwy z SIO jest trwała @school @school-edit @positiv
 
   await saveSchoolEdit(form);
 
-  await expect(schoolPanelTextField(schoolDetails(page), "Nazwa z SIO")).toHaveValue(
-    updatedSioName,
-  );
+  await test.step('Sprawdzenie: wartość pola w widoku — schoolPanelTextField(schoolDetails(page), "Nazwa z SIO"); oczekiwane: updatedSioName', async () =>
+    expect(schoolPanelTextField(schoolDetails(page), "Nazwa z SIO")).toHaveValue(updatedSioName));
 
   await s.app.openPanel("school", schoolId);
 
-  await expect(schoolPanelTextField(schoolDetails(page), "Nazwa z SIO")).toHaveValue(
-    updatedSioName,
-  );
+  await test.step('Sprawdzenie: wartość pola w widoku — schoolPanelTextField(schoolDetails(page), "Nazwa z SIO"); oczekiwane: updatedSioName', async () =>
+    expect(schoolPanelTextField(schoolDetails(page), "Nazwa z SIO")).toHaveValue(updatedSioName));
 
   await s.record("updatedSchoolSioName", updatedSioName);
 });
@@ -264,9 +273,8 @@ test("SCH-EDIT-06: anulowanie zmiany nazwy z SIO zachowuje poprzednią wartość
 
   await s.app.openPanel("school", schoolId);
 
-  await expect(schoolPanelTextField(schoolDetails(page), "Nazwa z SIO")).toHaveValue(
-    originalSioName,
-  );
+  await test.step('Sprawdzenie: wartość pola w widoku — schoolPanelTextField(schoolDetails(page), "Nazwa z SIO"); oczekiwane: originalSioName', async () =>
+    expect(schoolPanelTextField(schoolDetails(page), "Nazwa z SIO")).toHaveValue(originalSioName));
 });
 
 test("SCH-EDIT-07: pusta nazwa nie pozwala zapisać edycji @school @school-edit @validation", async ({
@@ -290,13 +298,15 @@ test("SCH-EDIT-07: pusta nazwa nie pozwala zapisać edycji @school @school-edit 
     await save.click();
   }
 
-  await expect(form).toBeVisible();
+  await test.step("Sprawdzenie: widoczność elementu — form", async () =>
+    expect(form).toBeVisible());
 
   await cancelSchoolEdit(form);
 
   await s.app.openPanel("school", schoolId);
 
-  await expect(s.app.detail("name")).toHaveValue(s.schoolName);
+  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("name"); oczekiwane: s.schoolName', async () =>
+    expect(s.app.detail("name")).toHaveValue(s.schoolName));
 });
 
 test("SCH-EDIT-08: typ i poziom szkoły są nieedytowalne w edycji danych @school @school-edit @readonly", async ({
@@ -311,9 +321,13 @@ test("SCH-EDIT-08: typ i poziom szkoły są nieedytowalne w edycji danych @schoo
     .locator("input[disabled]")
     .evaluateAll((inputs) => inputs.map((input) => (input as HTMLInputElement).value));
 
-  expect(disabledValues).toContain("Szkoła podstawowa");
+  await test.step('Sprawdzenie: obecność oczekiwanego elementu — disabledValues; oczekiwane: "Szkoła podstawowa"', async () => {
+    expect(disabledValues).toContain("Szkoła podstawowa");
+  });
 
-  expect(disabledValues).toContain("Szkoła Podstawowa");
+  await test.step('Sprawdzenie: obecność oczekiwanego elementu — disabledValues; oczekiwane: "Szkoła Podstawowa"', async () => {
+    expect(disabledValues).toContain("Szkoła Podstawowa");
+  });
 
   await cancelSchoolEdit(form);
 });
@@ -338,21 +352,26 @@ test("SCH-EDIT-09: anulowanie edycji WWW zachowuje poprzednią wartość @school
 
   const { currentInput, newInput } = await schoolFieldEditInputs(dialog);
 
-  await expect(currentInput).toHaveValue(originalWebsite);
+  await test.step("Sprawdzenie: wartość pola w widoku — currentInput; oczekiwane: originalWebsite", async () =>
+    expect(currentInput).toHaveValue(originalWebsite));
 
-  await expect(newInput).toHaveValue("");
+  await test.step('Sprawdzenie: wartość pola w widoku — newInput; oczekiwane: ""', async () =>
+    expect(newInput).toHaveValue(""));
 
   await newInput.fill(discardedWebsite);
 
-  await expect(newInput).toHaveValue(discardedWebsite);
+  await test.step("Sprawdzenie: wartość pola w widoku — newInput; oczekiwane: discardedWebsite", async () =>
+    expect(newInput).toHaveValue(discardedWebsite));
 
   await cancelSchoolEdit(dialog);
 
-  await expect(schoolPanelTextField(schoolDetails(page), "WWW")).toHaveValue(originalWebsite);
+  await test.step('Sprawdzenie: wartość pola w widoku — schoolPanelTextField(schoolDetails(page), "WWW"); oczekiwane: originalWebsite', async () =>
+    expect(schoolPanelTextField(schoolDetails(page), "WWW")).toHaveValue(originalWebsite));
 
   await s.app.openPanel("school", schoolId);
 
-  await expect(schoolPanelTextField(schoolDetails(page), "WWW")).toHaveValue(originalWebsite);
+  await test.step('Sprawdzenie: wartość pola w widoku — schoolPanelTextField(schoolDetails(page), "WWW"); oczekiwane: originalWebsite', async () =>
+    expect(schoolPanelTextField(schoolDetails(page), "WWW")).toHaveValue(originalWebsite));
 });
 
 test("SCH-EDIT-10: WWW można usunąć i pusta wartość jest trwała @school @school-edit @positive @contact", async ({
@@ -365,27 +384,33 @@ test("SCH-EDIT-10: WWW można usunąć i pusta wartość jest trwała @school @s
     www: originalWebsite,
   });
 
-  await expect(schoolPanelTextField(schoolDetails(page), "WWW")).toHaveValue(originalWebsite);
+  await test.step('Sprawdzenie: wartość pola w widoku — schoolPanelTextField(schoolDetails(page), "WWW"); oczekiwane: originalWebsite', async () =>
+    expect(schoolPanelTextField(schoolDetails(page), "WWW")).toHaveValue(originalWebsite));
 
   const dialog = await openSchoolFieldEdit(page, "WWW");
 
   const { currentInput, newInput } = await schoolFieldEditInputs(dialog);
 
-  await expect(currentInput).toHaveValue(originalWebsite);
+  await test.step("Sprawdzenie: wartość pola w widoku — currentInput; oczekiwane: originalWebsite", async () =>
+    expect(currentInput).toHaveValue(originalWebsite));
 
-  await expect(newInput).toHaveValue("");
+  await test.step('Sprawdzenie: wartość pola w widoku — newInput; oczekiwane: ""', async () =>
+    expect(newInput).toHaveValue(""));
 
   const confirmation = await openSchoolFieldDeleteConfirmation(page, dialog, "WWW");
 
   await confirmSchoolFieldDelete(confirmation);
 
-  await expect(dialog).toHaveCount(0);
+  await test.step("Sprawdzenie: liczba elementów w widoku — dialog; oczekiwane: 0", async () =>
+    expect(dialog).toHaveCount(0));
 
-  await expect(schoolPanelTextField(schoolDetails(page), "WWW")).toHaveValue("");
+  await test.step('Sprawdzenie: wartość pola w widoku — schoolPanelTextField(schoolDetails(page), "WWW"); oczekiwane: ""', async () =>
+    expect(schoolPanelTextField(schoolDetails(page), "WWW")).toHaveValue(""));
 
   await s.app.openPanel("school", schoolId);
 
-  await expect(schoolPanelTextField(schoolDetails(page), "WWW")).toHaveValue("");
+  await test.step('Sprawdzenie: wartość pola w widoku — schoolPanelTextField(schoolDetails(page), "WWW"); oczekiwane: ""', async () =>
+    expect(schoolPanelTextField(schoolDetails(page), "WWW")).toHaveValue(""));
 
   await s.record("removedSchoolWebsite", originalWebsite);
 });
@@ -404,9 +429,11 @@ test("SCH-EDIT-10A: rezygnacja z usunięcia WWW zachowuje poprzedni adres @schoo
 
   const { currentInput, newInput } = await schoolFieldEditInputs(dialog);
 
-  await expect(currentInput).toHaveValue(originalWebsite);
+  await test.step("Sprawdzenie: wartość pola w widoku — currentInput; oczekiwane: originalWebsite", async () =>
+    expect(currentInput).toHaveValue(originalWebsite));
 
-  await expect(newInput).toHaveValue("");
+  await test.step('Sprawdzenie: wartość pola w widoku — newInput; oczekiwane: ""', async () =>
+    expect(newInput).toHaveValue(""));
 
   const confirmation = await openSchoolFieldDeleteConfirmation(page, dialog, "WWW");
 
@@ -414,19 +441,24 @@ test("SCH-EDIT-10A: rezygnacja z usunięcia WWW zachowuje poprzedni adres @schoo
 
   // Po wybraniu "Nie" wracamy
   // do dialogu edycji WWW.
-  await expect(dialog).toBeVisible();
+  await test.step("Sprawdzenie: widoczność elementu — dialog", async () =>
+    expect(dialog).toBeVisible());
 
-  await expect(currentInput).toHaveValue(originalWebsite);
+  await test.step("Sprawdzenie: wartość pola w widoku — currentInput; oczekiwane: originalWebsite", async () =>
+    expect(currentInput).toHaveValue(originalWebsite));
 
-  await expect(newInput).toHaveValue("");
+  await test.step('Sprawdzenie: wartość pola w widoku — newInput; oczekiwane: ""', async () =>
+    expect(newInput).toHaveValue(""));
 
   await cancelSchoolEdit(dialog);
 
-  await expect(schoolPanelTextField(schoolDetails(page), "WWW")).toHaveValue(originalWebsite);
+  await test.step('Sprawdzenie: wartość pola w widoku — schoolPanelTextField(schoolDetails(page), "WWW"); oczekiwane: originalWebsite', async () =>
+    expect(schoolPanelTextField(schoolDetails(page), "WWW")).toHaveValue(originalWebsite));
 
   await s.app.openPanel("school", schoolId);
 
-  await expect(schoolPanelTextField(schoolDetails(page), "WWW")).toHaveValue(originalWebsite);
+  await test.step('Sprawdzenie: wartość pola w widoku — schoolPanelTextField(schoolDetails(page), "WWW"); oczekiwane: originalWebsite', async () =>
+    expect(schoolPanelTextField(schoolDetails(page), "WWW")).toHaveValue(originalWebsite));
 });
 
 // =============================================================================
@@ -443,27 +475,33 @@ test("SCH-EDIT-11: e-mail można usunąć i pusta wartość jest trwała @school
     email: originalEmail,
   });
 
-  await expect(schoolPanelTextField(schoolDetails(page), "E-Mail")).toHaveValue(originalEmail);
+  await test.step('Sprawdzenie: wartość pola w widoku — schoolPanelTextField(schoolDetails(page), "E-Mail"); oczekiwane: originalEmail', async () =>
+    expect(schoolPanelTextField(schoolDetails(page), "E-Mail")).toHaveValue(originalEmail));
 
   const dialog = await openSchoolFieldEdit(page, "E-Mail");
 
   const { currentInput, newInput } = await schoolFieldEditInputs(dialog);
 
-  await expect(currentInput).toHaveValue(originalEmail);
+  await test.step("Sprawdzenie: wartość pola w widoku — currentInput; oczekiwane: originalEmail", async () =>
+    expect(currentInput).toHaveValue(originalEmail));
 
-  await expect(newInput).toHaveValue("");
+  await test.step('Sprawdzenie: wartość pola w widoku — newInput; oczekiwane: ""', async () =>
+    expect(newInput).toHaveValue(""));
 
   const confirmation = await openSchoolFieldDeleteConfirmation(page, dialog, "E-Mail");
 
   await confirmSchoolFieldDelete(confirmation);
 
-  await expect(dialog).toHaveCount(0);
+  await test.step("Sprawdzenie: liczba elementów w widoku — dialog; oczekiwane: 0", async () =>
+    expect(dialog).toHaveCount(0));
 
-  await expect(schoolPanelTextField(schoolDetails(page), "E-Mail")).toHaveValue("");
+  await test.step('Sprawdzenie: wartość pola w widoku — schoolPanelTextField(schoolDetails(page), "E-Mail"); oczekiwane: ""', async () =>
+    expect(schoolPanelTextField(schoolDetails(page), "E-Mail")).toHaveValue(""));
 
   await s.app.openPanel("school", schoolId);
 
-  await expect(schoolPanelTextField(schoolDetails(page), "E-Mail")).toHaveValue("");
+  await test.step('Sprawdzenie: wartość pola w widoku — schoolPanelTextField(schoolDetails(page), "E-Mail"); oczekiwane: ""', async () =>
+    expect(schoolPanelTextField(schoolDetails(page), "E-Mail")).toHaveValue(""));
 
   await s.record("removedSchoolEmail", originalEmail);
 });
@@ -484,21 +522,26 @@ test("SCH-EDIT-11A: anulowanie edycji e-maila zachowuje poprzedni adres @school 
 
   const { currentInput, newInput } = await schoolFieldEditInputs(dialog);
 
-  await expect(currentInput).toHaveValue(originalEmail);
+  await test.step("Sprawdzenie: wartość pola w widoku — currentInput; oczekiwane: originalEmail", async () =>
+    expect(currentInput).toHaveValue(originalEmail));
 
-  await expect(newInput).toHaveValue("");
+  await test.step('Sprawdzenie: wartość pola w widoku — newInput; oczekiwane: ""', async () =>
+    expect(newInput).toHaveValue(""));
 
   await newInput.fill(discardedEmail);
 
-  await expect(newInput).toHaveValue(discardedEmail);
+  await test.step("Sprawdzenie: wartość pola w widoku — newInput; oczekiwane: discardedEmail", async () =>
+    expect(newInput).toHaveValue(discardedEmail));
 
   await cancelSchoolEdit(dialog);
 
-  await expect(schoolPanelTextField(schoolDetails(page), "E-Mail")).toHaveValue(originalEmail);
+  await test.step('Sprawdzenie: wartość pola w widoku — schoolPanelTextField(schoolDetails(page), "E-Mail"); oczekiwane: originalEmail', async () =>
+    expect(schoolPanelTextField(schoolDetails(page), "E-Mail")).toHaveValue(originalEmail));
 
   await s.app.openPanel("school", schoolId);
 
-  await expect(schoolPanelTextField(schoolDetails(page), "E-Mail")).toHaveValue(originalEmail);
+  await test.step('Sprawdzenie: wartość pola w widoku — schoolPanelTextField(schoolDetails(page), "E-Mail"); oczekiwane: originalEmail', async () =>
+    expect(schoolPanelTextField(schoolDetails(page), "E-Mail")).toHaveValue(originalEmail));
 });
 
 test("SCH-EDIT-11B: rezygnacja z usunięcia e-maila zachowuje poprzedni adres @school @school-edit @cancel @contact", async ({
@@ -515,9 +558,11 @@ test("SCH-EDIT-11B: rezygnacja z usunięcia e-maila zachowuje poprzedni adres @s
 
   const { currentInput, newInput } = await schoolFieldEditInputs(dialog);
 
-  await expect(currentInput).toHaveValue(originalEmail);
+  await test.step("Sprawdzenie: wartość pola w widoku — currentInput; oczekiwane: originalEmail", async () =>
+    expect(currentInput).toHaveValue(originalEmail));
 
-  await expect(newInput).toHaveValue("");
+  await test.step('Sprawdzenie: wartość pola w widoku — newInput; oczekiwane: ""', async () =>
+    expect(newInput).toHaveValue(""));
 
   const confirmation = await openSchoolFieldDeleteConfirmation(page, dialog, "E-Mail");
 
@@ -525,19 +570,24 @@ test("SCH-EDIT-11B: rezygnacja z usunięcia e-maila zachowuje poprzedni adres @s
 
   // Po wybraniu "Nie" wracamy
   // do dialogu edycji e-maila.
-  await expect(dialog).toBeVisible();
+  await test.step("Sprawdzenie: widoczność elementu — dialog", async () =>
+    expect(dialog).toBeVisible());
 
-  await expect(currentInput).toHaveValue(originalEmail);
+  await test.step("Sprawdzenie: wartość pola w widoku — currentInput; oczekiwane: originalEmail", async () =>
+    expect(currentInput).toHaveValue(originalEmail));
 
-  await expect(newInput).toHaveValue("");
+  await test.step('Sprawdzenie: wartość pola w widoku — newInput; oczekiwane: ""', async () =>
+    expect(newInput).toHaveValue(""));
 
   await cancelSchoolEdit(dialog);
 
-  await expect(schoolPanelTextField(schoolDetails(page), "E-Mail")).toHaveValue(originalEmail);
+  await test.step('Sprawdzenie: wartość pola w widoku — schoolPanelTextField(schoolDetails(page), "E-Mail"); oczekiwane: originalEmail', async () =>
+    expect(schoolPanelTextField(schoolDetails(page), "E-Mail")).toHaveValue(originalEmail));
 
   await s.app.openPanel("school", schoolId);
 
-  await expect(schoolPanelTextField(schoolDetails(page), "E-Mail")).toHaveValue(originalEmail);
+  await test.step('Sprawdzenie: wartość pola w widoku — schoolPanelTextField(schoolDetails(page), "E-Mail"); oczekiwane: originalEmail', async () =>
+    expect(schoolPanelTextField(schoolDetails(page), "E-Mail")).toHaveValue(originalEmail));
 });
 
 test("SCH-EDIT-12: e-mail z wielkimi literami jest normalizowany po edycji @school @school-edit @positive @contact", async ({
@@ -558,21 +608,26 @@ test("SCH-EDIT-12: e-mail z wielkimi literami jest normalizowany po edycji @scho
 
   const { currentInput, newInput } = await schoolFieldEditInputs(dialog);
 
-  await expect(currentInput).toHaveValue(originalEmail);
+  await test.step("Sprawdzenie: wartość pola w widoku — currentInput; oczekiwane: originalEmail", async () =>
+    expect(currentInput).toHaveValue(originalEmail));
 
-  await expect(newInput).toHaveValue("");
+  await test.step('Sprawdzenie: wartość pola w widoku — newInput; oczekiwane: ""', async () =>
+    expect(newInput).toHaveValue(""));
 
   await newInput.fill(submittedEmail);
 
-  await expect(newInput).toHaveValue(submittedEmail);
+  await test.step("Sprawdzenie: wartość pola w widoku — newInput; oczekiwane: submittedEmail", async () =>
+    expect(newInput).toHaveValue(submittedEmail));
 
   await saveSchoolEdit(dialog);
 
-  await expect(schoolPanelTextField(schoolDetails(page), "E-Mail")).toHaveValue(normalizedEmail);
+  await test.step('Sprawdzenie: wartość pola w widoku — schoolPanelTextField(schoolDetails(page), "E-Mail"); oczekiwane: normalizedEmail', async () =>
+    expect(schoolPanelTextField(schoolDetails(page), "E-Mail")).toHaveValue(normalizedEmail));
 
   await s.app.openPanel("school", schoolId);
 
-  await expect(schoolPanelTextField(schoolDetails(page), "E-Mail")).toHaveValue(normalizedEmail);
+  await test.step('Sprawdzenie: wartość pola w widoku — schoolPanelTextField(schoolDetails(page), "E-Mail"); oczekiwane: normalizedEmail', async () =>
+    expect(schoolPanelTextField(schoolDetails(page), "E-Mail")).toHaveValue(normalizedEmail));
 
   await s.record("submittedSchoolEmail", submittedEmail);
 
@@ -597,11 +652,13 @@ test("SCH-EDIT-13: nazwa z polskimi znakami i interpunkcją jest trwała po edyc
 
   await saveSchoolEdit(form);
 
-  await expect(s.app.detail("name")).toHaveValue(updatedName);
+  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("name"); oczekiwane: updatedName', async () =>
+    expect(s.app.detail("name")).toHaveValue(updatedName));
 
   await s.app.openPanel("school", schoolId);
 
-  await expect(s.app.detail("name")).toHaveValue(updatedName);
+  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("name"); oczekiwane: updatedName', async () =>
+    expect(s.app.detail("name")).toHaveValue(updatedName));
 });
 
 test("SCH-EDIT-14: spacje na brzegach nazwy są usuwane po edycji @school @school-edit @positive @name", async ({
@@ -620,11 +677,13 @@ test("SCH-EDIT-14: spacje na brzegach nazwy są usuwane po edycji @school @schoo
 
   await saveSchoolEdit(form);
 
-  await expect(s.app.detail("name")).toHaveValue(expectedName);
+  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("name"); oczekiwane: expectedName', async () =>
+    expect(s.app.detail("name")).toHaveValue(expectedName));
 
   await s.app.openPanel("school", schoolId);
 
-  await expect(s.app.detail("name")).toHaveValue(expectedName);
+  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("name"); oczekiwane: expectedName', async () =>
+    expect(s.app.detail("name")).toHaveValue(expectedName));
 });
 
 test("SCH-EDIT-15: nazwę z SIO można wyczyścić @school @school-edit @positive @sio", async ({
@@ -643,11 +702,13 @@ test("SCH-EDIT-15: nazwę z SIO można wyczyścić @school @school-edit @positiv
 
   await saveSchoolEdit(form);
 
-  await expect(schoolPanelTextField(schoolDetails(page), "Nazwa z SIO")).toHaveValue("");
+  await test.step('Sprawdzenie: wartość pola w widoku — schoolPanelTextField(schoolDetails(page), "Nazwa z SIO"); oczekiwane: ""', async () =>
+    expect(schoolPanelTextField(schoolDetails(page), "Nazwa z SIO")).toHaveValue(""));
 
   await s.app.openPanel("school", schoolId);
 
-  await expect(schoolPanelTextField(schoolDetails(page), "Nazwa z SIO")).toHaveValue("");
+  await test.step('Sprawdzenie: wartość pola w widoku — schoolPanelTextField(schoolDetails(page), "Nazwa z SIO"); oczekiwane: ""', async () =>
+    expect(schoolPanelTextField(schoolDetails(page), "Nazwa z SIO")).toHaveValue(""));
 });
 
 const readonlySchoolTypeCases = [
@@ -694,9 +755,13 @@ for (const { type, level } of readonlySchoolTypeCases) {
       .locator("input[disabled]")
       .evaluateAll((inputs) => inputs.map((input) => (input as HTMLInputElement).value));
 
-    expect(disabledValues).toContain(type);
+    await test.step("Sprawdzenie: obecność oczekiwanego elementu — disabledValues; oczekiwane: type", async () => {
+      expect(disabledValues).toContain(type);
+    });
 
-    expect(disabledValues).toContain(level);
+    await test.step("Sprawdzenie: obecność oczekiwanego elementu — disabledValues; oczekiwane: level", async () => {
+      expect(disabledValues).toContain(level);
+    });
 
     await cancelSchoolEdit(form);
   });
@@ -747,9 +812,11 @@ test("SCH-EDIT-17: kolejne edycje różnych pól nie nadpisują wcześniejszych 
   const { currentInput: currentWebsiteInput, newInput: newWebsiteInput } =
     await schoolFieldEditInputs(websiteDialog);
 
-  await expect(currentWebsiteInput).toHaveValue(originalWebsite);
+  await test.step("Sprawdzenie: wartość pola w widoku — currentWebsiteInput; oczekiwane: originalWebsite", async () =>
+    expect(currentWebsiteInput).toHaveValue(originalWebsite));
 
-  await expect(newWebsiteInput).toHaveValue("");
+  await test.step('Sprawdzenie: wartość pola w widoku — newWebsiteInput; oczekiwane: ""', async () =>
+    expect(newWebsiteInput).toHaveValue(""));
 
   await newWebsiteInput.fill(updatedWebsite);
 
@@ -764,9 +831,11 @@ test("SCH-EDIT-17: kolejne edycje różnych pól nie nadpisują wcześniejszych 
   const { currentInput: currentEmailInput, newInput: newEmailInput } =
     await schoolFieldEditInputs(emailDialog);
 
-  await expect(currentEmailInput).toHaveValue(originalEmail);
+  await test.step("Sprawdzenie: wartość pola w widoku — currentEmailInput; oczekiwane: originalEmail", async () =>
+    expect(currentEmailInput).toHaveValue(originalEmail));
 
-  await expect(newEmailInput).toHaveValue("");
+  await test.step('Sprawdzenie: wartość pola w widoku — newEmailInput; oczekiwane: ""', async () =>
+    expect(newEmailInput).toHaveValue(""));
 
   await newEmailInput.fill(updatedEmail);
 
@@ -778,15 +847,17 @@ test("SCH-EDIT-17: kolejne edycje różnych pól nie nadpisują wcześniejszych 
 
   await s.app.openPanel("school", schoolId);
 
-  await expect(s.app.detail("name")).toHaveValue(updatedName);
+  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("name"); oczekiwane: updatedName', async () =>
+    expect(s.app.detail("name")).toHaveValue(updatedName));
 
-  await expect(schoolPanelTextField(schoolDetails(page), "Nazwa z SIO")).toHaveValue(
-    updatedSioName,
-  );
+  await test.step('Sprawdzenie: wartość pola w widoku — schoolPanelTextField(schoolDetails(page), "Nazwa z SIO"); oczekiwane: updatedSioName', async () =>
+    expect(schoolPanelTextField(schoolDetails(page), "Nazwa z SIO")).toHaveValue(updatedSioName));
 
-  await expect(schoolPanelTextField(schoolDetails(page), "WWW")).toHaveValue(updatedWebsite);
+  await test.step('Sprawdzenie: wartość pola w widoku — schoolPanelTextField(schoolDetails(page), "WWW"); oczekiwane: updatedWebsite', async () =>
+    expect(schoolPanelTextField(schoolDetails(page), "WWW")).toHaveValue(updatedWebsite));
 
-  await expect(schoolPanelTextField(schoolDetails(page), "E-Mail")).toHaveValue(updatedEmail);
+  await test.step('Sprawdzenie: wartość pola w widoku — schoolPanelTextField(schoolDetails(page), "E-Mail"); oczekiwane: updatedEmail', async () =>
+    expect(schoolPanelTextField(schoolDetails(page), "E-Mail")).toHaveValue(updatedEmail));
 });
 
 // =============================================================================
@@ -803,10 +874,13 @@ test("SCH-EDIT-18: zmiana adresu szkoły jest trwała @school @school-edit @posi
   const address = await openSchoolAddressEdit(page);
   await saveSchoolAddress(address, DEFAULT_POSTAL_CODE, DEFAULT_CITY, updatedNumber);
 
-  await expect(s.app.detail("address")).toHaveValue(new RegExp(updatedNumber));
+  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("address"); oczekiwane: new RegExp(updatedNumber)', async () =>
+    expect(s.app.detail("address")).toHaveValue(new RegExp(updatedNumber)));
   await s.app.openPanel("school", schoolId);
-  await expect(s.app.detail("address")).toHaveValue(new RegExp(updatedNumber));
-  await expect(s.app.detail("address")).toHaveValue(new RegExp(DEFAULT_CITY, "i"));
+  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("address"); oczekiwane: new RegExp(updatedNumber)', async () =>
+    expect(s.app.detail("address")).toHaveValue(new RegExp(updatedNumber)));
+  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("address"); oczekiwane: new RegExp(DEFAULT_CITY, "i")', async () =>
+    expect(s.app.detail("address")).toHaveValue(new RegExp(DEFAULT_CITY, "i")));
   await s.record("updatedSchoolAddress", await s.app.detail("address").inputValue());
 });
 
@@ -834,17 +908,22 @@ test("SCH-EDIT-19: dane SIO i liczba uczniów można zmienić i ponownie odczyta
   await schoolSioInput(form, "nip").fill(updated.nip);
   await saveSchoolSioEdit(form);
 
-  await expect(schoolPanelTextField(schoolDetails(page), "Liczba uczniów")).toHaveValue(
-    updated.quantityOfStudents,
-  );
+  await test.step('Sprawdzenie: wartość pola w widoku — schoolPanelTextField(schoolDetails(page), "Liczba uczniów"); oczekiwane: updated.quantityOfStudents', async () =>
+    expect(schoolPanelTextField(schoolDetails(page), "Liczba uczniów")).toHaveValue(
+      updated.quantityOfStudents,
+    ));
   await s.app.openPanel("school", schoolId);
   const persisted = await openSchoolSioForm(page);
-  await expect(schoolSioInput(persisted, "quantityOfStudents")).toHaveValue(
-    updated.quantityOfStudents,
-  );
-  await expect(schoolSioInput(persisted, "rspoNumber")).toHaveValue(updated.rspo);
-  await expect(schoolSioInput(persisted, "regon")).toHaveValue(updated.regon);
-  await expect(schoolSioInput(persisted, "nip")).toHaveValue(updated.nip);
+  await test.step('Sprawdzenie: wartość pola w widoku — schoolSioInput(persisted, "quantityOfStudents"); oczekiwane: updated.quantityOfStudents', async () =>
+    expect(schoolSioInput(persisted, "quantityOfStudents")).toHaveValue(
+      updated.quantityOfStudents,
+    ));
+  await test.step('Sprawdzenie: wartość pola w widoku — schoolSioInput(persisted, "rspoNumber"); oczekiwane: updated.rspo', async () =>
+    expect(schoolSioInput(persisted, "rspoNumber")).toHaveValue(updated.rspo));
+  await test.step('Sprawdzenie: wartość pola w widoku — schoolSioInput(persisted, "regon"); oczekiwane: updated.regon', async () =>
+    expect(schoolSioInput(persisted, "regon")).toHaveValue(updated.regon));
+  await test.step('Sprawdzenie: wartość pola w widoku — schoolSioInput(persisted, "nip"); oczekiwane: updated.nip', async () =>
+    expect(schoolSioInput(persisted, "nip")).toHaveValue(updated.nip));
   await cancelSchoolEdit(persisted);
   await s.record("updatedSchoolSioData", JSON.stringify(updated));
 });
@@ -869,8 +948,12 @@ test("SCH-EDIT-20: drugi telefon stacjonarny można dodać po przełączeniu typ
   const storedPhones = await schoolDetails(page)
     .locator('input[disabled][type="text"]')
     .evaluateAll((inputs) => inputs.map((input) => (input as HTMLInputElement).value));
-  expect(storedPhones.some((value) => value.replace(/\D/g, "") === "501234567")).toBeTruthy();
-  expect(storedPhones.some((value) => value.replace(/\D/g, "") === landline)).toBeTruthy();
+  await test.step('Sprawdzenie: spełnienie warunku — storedPhones.some((value) => value.replace(/\\D/g, "") === "501234567")', async () => {
+    expect(storedPhones.some((value) => value.replace(/\D/g, "") === "501234567")).toBeTruthy();
+  });
+  await test.step('Sprawdzenie: spełnienie warunku — storedPhones.some((value) => value.replace(/\\D/g, "") === landline)', async () => {
+    expect(storedPhones.some((value) => value.replace(/\D/g, "") === landline)).toBeTruthy();
+  });
   await s.record("addedSchoolPhone", landline);
 });
 
@@ -886,15 +969,22 @@ test("SCH-EDIT-21: zmiana nazwy tworzy kompletny wpis historii szkoły @school @
 
   const history = await openSchoolHistory(page);
   const valueCell = history.getByRole("gridcell", { name: updatedName, exact: true });
-  await expect(valueCell).toBeVisible();
+  await test.step("Sprawdzenie: widoczność elementu — valueCell", async () =>
+    expect(valueCell).toBeVisible());
   const row = valueCell.locator('xpath=ancestor::*[@role="row"][1]');
   const cells = row.getByRole("gridcell");
-  await expect(cells).toHaveCount(5);
-  await expect(cells.nth(0)).toContainText(/Nazwa/i);
-  await expect(cells.nth(1)).toHaveText(updatedName);
-  await expect(cells.nth(2)).not.toHaveText("");
-  await expect(cells.nth(3)).not.toHaveText("");
-  await expect(cells.nth(4)).not.toHaveText("");
+  await test.step("Sprawdzenie: liczba elementów w widoku — cells; oczekiwane: 5", async () =>
+    expect(cells).toHaveCount(5));
+  await test.step("Sprawdzenie: obecność tekstu w widoku — cells.nth(0); oczekiwane: /Nazwa/i", async () =>
+    expect(cells.nth(0)).toContainText(/Nazwa/i));
+  await test.step("Sprawdzenie: tekst w widoku — cells.nth(1); oczekiwane: updatedName", async () =>
+    expect(cells.nth(1)).toHaveText(updatedName));
+  await test.step('Sprawdzenie: negacja — tekst w widoku — cells.nth(2); oczekiwane: ""', async () =>
+    expect(cells.nth(2)).not.toHaveText(""));
+  await test.step('Sprawdzenie: negacja — tekst w widoku — cells.nth(3); oczekiwane: ""', async () =>
+    expect(cells.nth(3)).not.toHaveText(""));
+  await test.step('Sprawdzenie: negacja — tekst w widoku — cells.nth(4); oczekiwane: ""', async () =>
+    expect(cells.nth(4)).not.toHaveText(""));
 });
 
 // =============================================================================
@@ -932,11 +1022,14 @@ for (const failure of schoolEditFailureCases) {
     const form = await openSchoolEditForm(page);
     await replaceSchoolEditValue(form, s.schoolName, rejectedName);
     await form.getByRole("button", { name: "Zapisz", exact: true }).click();
-    await expect.poll(() => saveAttempts).toBe(1);
+    await test.step("Sprawdzenie: zgodność wartości — () => saveAttempts; oczekiwane: 1", async () =>
+      expect.poll(() => saveAttempts).toBe(1));
 
     await s.app.openPanel("school", schoolId);
-    await expect(s.app.detail("name")).toHaveValue(s.schoolName);
-    await expect(s.app.detail("name")).not.toHaveValue(rejectedName);
+    await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("name"); oczekiwane: s.schoolName', async () =>
+      expect(s.app.detail("name")).toHaveValue(s.schoolName));
+    await test.step('Sprawdzenie: negacja — wartość pola w widoku — s.app.detail("name"); oczekiwane: rejectedName', async () =>
+      expect(s.app.detail("name")).not.toHaveValue(rejectedName));
     await s.record("rejectedSchoolEdit", failure.label);
   });
 }

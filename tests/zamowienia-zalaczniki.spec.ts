@@ -25,15 +25,16 @@ import {
 
 import { ORDER_PRODUCTS } from "./data/order-product-data";
 import { prepareOrderSchool, withOrderCleanup, createSimpleOrder } from "./support/order-scenario";
+import { documentFile } from "./support/order-documents";
 
 test.describe.configure({
   mode: "parallel",
 });
 
 for (const file of [
-  makeUpload("ord-test.jpg", "image/jpeg"),
-  makeUpload("ord-test.png", "image/png"),
-  makeUpload("ord-test.pdf", "application/pdf"),
+  documentFile("jpg", 1, "ord-test.jpg"),
+  documentFile("png", 1, "ord-test.png"),
+  documentFile("pdf", 1, "ord-test.pdf"),
 ]) {
   const id = file.name.endsWith(".jpg")
     ? "ORD-48"
@@ -45,13 +46,15 @@ for (const file of [
     page,
     scenario: s,
   }) => {
-    await prepareOrderSchool(page, s);
+    await test.step("Przygotowanie: dedykowana szkoła do zamówień", async () =>
+      prepareOrderSchool(page, s));
 
     const form = await openNewOrderForm(page);
 
     await uploadOrderAttachment(page, form, file);
 
-    await expect(attachmentByName(form, file.name)).toBeVisible();
+    await test.step("Sprawdzenie: widoczność elementu — attachmentByName(form, file.name)", async () =>
+      expect(attachmentByName(form, file.name)).toBeVisible());
 
     await cancelOrderForm(form);
   });
@@ -61,7 +64,8 @@ test("ORD-51: można dodać kilka załączników do jednego zamówienia @school 
   page,
   scenario: s,
 }) => {
-  await prepareOrderSchool(page, s);
+  await test.step("Przygotowanie: dedykowana szkoła do zamówień", async () =>
+    prepareOrderSchool(page, s));
 
   const form = await openNewOrderForm(page);
 
@@ -73,9 +77,11 @@ test("ORD-51: można dodać kilka załączników do jednego zamówienia @school 
 
   await uploadOrderAttachment(page, form, second);
 
-  await expect(attachmentByName(form, first.name)).toBeVisible();
+  await test.step("Sprawdzenie: widoczność elementu — attachmentByName(form, first.name)", async () =>
+    expect(attachmentByName(form, first.name)).toBeVisible());
 
-  await expect(attachmentByName(form, second.name)).toBeVisible();
+  await test.step("Sprawdzenie: widoczność elementu — attachmentByName(form, second.name)", async () =>
+    expect(attachmentByName(form, second.name)).toBeVisible());
 
   await cancelOrderForm(form);
 });
@@ -84,7 +90,8 @@ test("ORD-52: można usunąć jeden z kilku załączników @school @order @attac
   page,
   scenario: s,
 }) => {
-  await prepareOrderSchool(page, s);
+  await test.step("Przygotowanie: dedykowana szkoła do zamówień", async () =>
+    prepareOrderSchool(page, s));
 
   const form = await openNewOrderForm(page);
 
@@ -100,9 +107,11 @@ test("ORD-52: można usunąć jeden z kilku załączników @school @order @attac
    * Przed usunięciem oba pliki
    * powinny znajdować się na liście.
    */
-  await expect(attachmentByName(form, first.name)).toBeVisible();
+  await test.step("Sprawdzenie: widoczność elementu — attachmentByName(form, first.name)", async () =>
+    expect(attachmentByName(form, first.name)).toBeVisible());
 
-  await expect(attachmentByName(form, second.name)).toBeVisible();
+  await test.step("Sprawdzenie: widoczność elementu — attachmentByName(form, second.name)", async () =>
+    expect(attachmentByName(form, second.name)).toBeVisible());
 
   /*
    * Usuwamy tylko pierwszy plik
@@ -113,13 +122,15 @@ test("ORD-52: można usunąć jeden z kilku załączników @school @order @attac
   /*
    * Pierwszy plik powinien zniknąć.
    */
-  await expect(attachmentByName(form, first.name)).toHaveCount(0);
+  await test.step("Sprawdzenie: liczba elementów w widoku — attachmentByName(form, first.name); oczekiwane: 0", async () =>
+    expect(attachmentByName(form, first.name)).toHaveCount(0));
 
   /*
    * Drugi plik nie może zostać usunięty
    * przy okazji.
    */
-  await expect(attachmentByName(form, second.name)).toBeVisible();
+  await test.step("Sprawdzenie: widoczność elementu — attachmentByName(form, second.name)", async () =>
+    expect(attachmentByName(form, second.name)).toBeVisible());
 
   await cancelOrderForm(form);
 });
@@ -128,7 +139,8 @@ test("ORD-53: po usunięciu wszystkich załączników lista jest pusta @school @
   page,
   scenario: s,
 }) => {
-  await prepareOrderSchool(page, s);
+  await test.step("Przygotowanie: dedykowana szkoła do zamówień", async () =>
+    prepareOrderSchool(page, s));
 
   const form = await openNewOrderForm(page);
 
@@ -140,9 +152,11 @@ test("ORD-53: po usunięciu wszystkich załączników lista jest pusta @school @
 
   await uploadOrderAttachment(page, form, second);
 
-  await expect(attachmentByName(form, first.name)).toBeVisible();
+  await test.step("Sprawdzenie: widoczność elementu — attachmentByName(form, first.name)", async () =>
+    expect(attachmentByName(form, first.name)).toBeVisible());
 
-  await expect(attachmentByName(form, second.name)).toBeVisible();
+  await test.step("Sprawdzenie: widoczność elementu — attachmentByName(form, second.name)", async () =>
+    expect(attachmentByName(form, second.name)).toBeVisible());
 
   /*
    * Każde usunięcie wymaga osobnego
@@ -152,9 +166,11 @@ test("ORD-53: po usunięciu wszystkich załączników lista jest pusta @school @
 
   await removeOrderAttachment(page, form, second.name);
 
-  await expect(attachmentByName(form, first.name)).toHaveCount(0);
+  await test.step("Sprawdzenie: liczba elementów w widoku — attachmentByName(form, first.name); oczekiwane: 0", async () =>
+    expect(attachmentByName(form, first.name)).toHaveCount(0));
 
-  await expect(attachmentByName(form, second.name)).toHaveCount(0);
+  await test.step("Sprawdzenie: liczba elementów w widoku — attachmentByName(form, second.name); oczekiwane: 0", async () =>
+    expect(attachmentByName(form, second.name)).toHaveCount(0));
 
   await cancelOrderForm(form);
 });
@@ -163,7 +179,8 @@ test("ORD-54: zmiana filtrów nie usuwa załącznika @school @order @attachment 
   page,
   scenario: s,
 }) => {
-  await prepareOrderSchool(page, s);
+  await test.step("Przygotowanie: dedykowana szkoła do zamówień", async () =>
+    prepareOrderSchool(page, s));
 
   const form = await openNewOrderForm(page);
 
@@ -177,7 +194,8 @@ test("ORD-54: zmiana filtrów nie usuwa załącznika @school @order @attachment 
 
   await searchOrderProducts(form, ORDER_PRODUCTS.physics7.search);
 
-  await expect(attachmentByName(form, file.name)).toBeVisible();
+  await test.step("Sprawdzenie: widoczność elementu — attachmentByName(form, file.name)", async () =>
+    expect(attachmentByName(form, file.name)).toBeVisible());
 
   await cancelOrderForm(form);
 });
@@ -186,7 +204,8 @@ test("ORD-55: dodanie produktu nie usuwa załącznika @school @order @attachment
   page,
   scenario: s,
 }) => {
-  await prepareOrderSchool(page, s);
+  await test.step("Przygotowanie: dedykowana szkoła do zamówień", async () =>
+    prepareOrderSchool(page, s));
 
   const form = await openNewOrderForm(page);
 
@@ -196,7 +215,8 @@ test("ORD-55: dodanie produktu nie usuwa załącznika @school @order @attachment
 
   await addOrderProduct(form, ORDER_PRODUCTS.physics7.products[1].code);
 
-  await expect(attachmentByName(form, file.name)).toBeVisible();
+  await test.step("Sprawdzenie: widoczność elementu — attachmentByName(form, file.name)", async () =>
+    expect(attachmentByName(form, file.name)).toBeVisible());
 
   await cancelOrderForm(form);
 });
@@ -205,7 +225,8 @@ test("ORD-56: załącznik jest trwały po zapisaniu i ponownym otwarciu edycji z
   page,
   scenario: s,
 }) => {
-  const school = await prepareOrderSchool(page, s);
+  const school = await test.step("Przygotowanie: dedykowana szkoła do zamówień", async () =>
+    prepareOrderSchool(page, s));
 
   await withOrderCleanup(page, s, school, async (track) => {
     await openOrders(page);
@@ -222,7 +243,8 @@ test("ORD-56: załącznik jest trwały po zapisaniu i ponownym otwarciu edycji z
      * Przed zapisem aplikacja pokazuje
      * jeszcze oryginalną nazwę pliku.
      */
-    await expect(attachmentByName(form, file.name)).toBeVisible();
+    await test.step("Sprawdzenie: widoczność elementu — attachmentByName(form, file.name)", async () =>
+      expect(attachmentByName(form, file.name)).toBeVisible());
 
     const code = ORDER_PRODUCTS.physics7.products[1].code;
 
@@ -247,10 +269,11 @@ test("ORD-56: załącznik jest trwały po zapisaniu i ponownym otwarciu edycji z
      * Sprawdzamy, czy istnieje dokładnie
      * jeden zapisany załącznik.
      */
-    await expect(
-      savedOrderAttachments(edit),
-      "Po ponownym otwarciu zamówienia powinien istnieć jeden zapisany załącznik",
-    ).toHaveCount(1);
+    await test.step("Sprawdzenie: liczba elementów w widoku — savedOrderAttachments(edit); oczekiwane: 1", async () =>
+      expect(
+        savedOrderAttachments(edit),
+        "Po ponownym otwarciu zamówienia powinien istnieć jeden zapisany załącznik",
+      ).toHaveCount(1));
 
     await cancelOrderForm(edit);
   });
@@ -260,7 +283,8 @@ test("ORD-57: kilka załączników jest trwałych po zapisaniu zamówienia @scho
   page,
   scenario: s,
 }) => {
-  const school = await prepareOrderSchool(page, s);
+  const school = await test.step("Przygotowanie: dedykowana szkoła do zamówień", async () =>
+    prepareOrderSchool(page, s));
 
   await withOrderCleanup(page, s, school, async (track) => {
     await openOrders(page);
@@ -281,9 +305,11 @@ test("ORD-57: kilka załączników jest trwałych po zapisaniu zamówienia @scho
      * Przed zapisem widzimy obie
      * oryginalne nazwy.
      */
-    await expect(attachmentByName(form, first.name)).toBeVisible();
+    await test.step("Sprawdzenie: widoczność elementu — attachmentByName(form, first.name)", async () =>
+      expect(attachmentByName(form, first.name)).toBeVisible());
 
-    await expect(attachmentByName(form, second.name)).toBeVisible();
+    await test.step("Sprawdzenie: widoczność elementu — attachmentByName(form, second.name)", async () =>
+      expect(attachmentByName(form, second.name)).toBeVisible());
 
     const code = ORDER_PRODUCTS.physics7.products[1].code;
 
@@ -301,10 +327,11 @@ test("ORD-57: kilka załączników jest trwałych po zapisaniu zamówienia @scho
      * Po zapisie oba pliki mają już
      * systemowe nazwy.
      */
-    await expect(
-      savedOrderAttachments(edit),
-      "Po ponownym otwarciu zamówienia powinny istnieć dwa zapisane załączniki",
-    ).toHaveCount(2);
+    await test.step("Sprawdzenie: liczba elementów w widoku — savedOrderAttachments(edit); oczekiwane: 2", async () =>
+      expect(
+        savedOrderAttachments(edit),
+        "Po ponownym otwarciu zamówienia powinny istnieć dwa zapisane załączniki",
+      ).toHaveCount(2));
 
     await cancelOrderForm(edit);
   });
@@ -314,7 +341,8 @@ test("ORD-58: anulowanie formularza z załącznikiem nie przenosi pliku do kolej
   page,
   scenario: s,
 }) => {
-  await prepareOrderSchool(page, s);
+  await test.step("Przygotowanie: dedykowana szkoła do zamówień", async () =>
+    prepareOrderSchool(page, s));
 
   const first = await openNewOrderForm(page);
 
@@ -326,9 +354,11 @@ test("ORD-58: anulowanie formularza z załącznikiem nie przenosi pliku do kolej
 
   const second = await openNewOrderForm(page);
 
-  await expect(attachmentByName(second, file.name)).toHaveCount(0);
+  await test.step("Sprawdzenie: liczba elementów w widoku — attachmentByName(second, file.name); oczekiwane: 0", async () =>
+    expect(attachmentByName(second, file.name)).toHaveCount(0));
 
-  await expect(second).toContainText("Brak załączników");
+  await test.step('Sprawdzenie: obecność tekstu w widoku — second; oczekiwane: "Brak załączników"', async () =>
+    expect(second).toContainText("Brak załączników"));
 
   await cancelOrderForm(second);
 });
@@ -341,7 +371,8 @@ for (const [id, file] of [
     page,
     scenario: s,
   }) => {
-    await prepareOrderSchool(page, s);
+    await test.step("Przygotowanie: dedykowana szkoła do zamówień", async () =>
+      prepareOrderSchool(page, s));
 
     const form = await openNewOrderForm(page);
 
@@ -355,7 +386,8 @@ test("ORD-61: plik większy niż 10 MB jest odrzucany @school @order @attachment
   page,
   scenario: s,
 }) => {
-  await prepareOrderSchool(page, s);
+  await test.step("Przygotowanie: dedykowana szkoła do zamówień", async () =>
+    prepareOrderSchool(page, s));
 
   const form = await openNewOrderForm(page);
 
@@ -370,7 +402,8 @@ test("ORD-62: plik o rozmiarze dokładnie 10 MB jest akceptowany @school @order 
   page,
   scenario: s,
 }) => {
-  await prepareOrderSchool(page, s);
+  await test.step("Przygotowanie: dedykowana szkoła do zamówień", async () =>
+    prepareOrderSchool(page, s));
 
   const form = await openNewOrderForm(page);
 
@@ -385,7 +418,8 @@ test("ORD-63: zamówienie z załącznikiem pokazuje ikonę dokumentu na liście 
   page,
   scenario: s,
 }) => {
-  const school = await prepareOrderSchool(page, s);
+  const school = await test.step("Przygotowanie: dedykowana szkoła do zamówień", async () =>
+    prepareOrderSchool(page, s));
 
   await withOrderCleanup(page, s, school, async (track) => {
     await openOrders(page);
@@ -418,12 +452,14 @@ test("ORD-63: zamówienie z załącznikiem pokazuje ikonę dokumentu na liście 
 
     const row = orderRow(orders, orderId);
 
-    await expect(row).toHaveCount(1);
+    await test.step("Sprawdzenie: liczba elementów w widoku — row; oczekiwane: 1", async () =>
+      expect(row).toHaveCount(1));
 
-    await expect(
-      orderAttachmentIcon(orders, orderId),
-      "Zamówienie z załącznikiem powinno mieć ikonę dokumentu",
-    ).toBeVisible();
+    await test.step("Sprawdzenie: widoczność elementu — orderAttachmentIcon(orders, orderId)", async () =>
+      expect(
+        orderAttachmentIcon(orders, orderId),
+        "Zamówienie z załącznikiem powinno mieć ikonę dokumentu",
+      ).toBeVisible());
   });
 });
 
@@ -431,7 +467,8 @@ test("ORD-64: zamówienie bez załącznika nie pokazuje ikony dokumentu @school 
   page,
   scenario: s,
 }) => {
-  const school = await prepareOrderSchool(page, s);
+  const school = await test.step("Przygotowanie: dedykowana szkoła do zamówień", async () =>
+    prepareOrderSchool(page, s));
 
   await withOrderCleanup(page, s, school, async (track) => {
     const created = await createSimpleOrder(page, ORDER_PRODUCTS.physics7.products[1].code, "1");
@@ -442,12 +479,14 @@ test("ORD-64: zamówienie bez załącznika nie pokazuje ikony dokumentu @school 
 
     const orders = await openOrders(page);
 
-    await expect(orderRow(orders, created.orderId)).toHaveCount(1);
+    await test.step("Sprawdzenie: liczba elementów w widoku — orderRow(orders, created.orderId); oczekiwane: 1", async () =>
+      expect(orderRow(orders, created.orderId)).toHaveCount(1));
 
-    await expect(
-      orderAttachmentIndicator(orders, created.orderId),
-      "Zamówienie bez załącznika nie powinno mieć ikony dokumentu",
-    ).toHaveCount(0);
+    await test.step("Sprawdzenie: liczba elementów w widoku — orderAttachmentIndicator(orders, created.orderId); oczekiwane: 0", async () =>
+      expect(
+        orderAttachmentIndicator(orders, created.orderId),
+        "Zamówienie bez załącznika nie powinno mieć ikony dokumentu",
+      ).toHaveCount(0));
   });
 });
 
@@ -455,7 +494,8 @@ test("ORD-65: po usunięciu ostatniego załącznika ikona dokumentu znika @schoo
   page,
   scenario: s,
 }) => {
-  const school = await prepareOrderSchool(page, s);
+  const school = await test.step("Przygotowanie: dedykowana szkoła do zamówień", async () =>
+    prepareOrderSchool(page, s));
 
   await withOrderCleanup(page, s, school, async (track) => {
     await openOrders(page);
@@ -486,7 +526,8 @@ test("ORD-65: po usunięciu ostatniego załącznika ikona dokumentu znika @schoo
 
     let orders = await openOrders(page);
 
-    await expect(orderAttachmentIndicator(orders, orderId)).toHaveCount(1);
+    await test.step("Sprawdzenie: liczba elementów w widoku — orderAttachmentIndicator(orders, orderId); oczekiwane: 1", async () =>
+      expect(orderAttachmentIndicator(orders, orderId)).toHaveCount(1));
 
     /*
      * Otwieramy edycję.
@@ -501,11 +542,14 @@ test("ORD-65: po usunięciu ostatniego załącznika ikona dokumentu znika @schoo
      */
     const attachments = savedOrderAttachments(edit);
 
-    await expect(attachments).toHaveCount(1);
+    await test.step("Sprawdzenie: liczba elementów w widoku — attachments; oczekiwane: 1", async () =>
+      expect(attachments).toHaveCount(1));
 
     const savedFileName = (await attachments.first().innerText()).trim();
 
-    expect(savedFileName).not.toBe("");
+    await test.step('Sprawdzenie: negacja — zgodność wartości — savedFileName; oczekiwane: ""', async () => {
+      expect(savedFileName).not.toBe("");
+    });
 
     /*
      * Usuwamy ostatni istniejący załącznik.
@@ -521,10 +565,11 @@ test("ORD-65: po usunięciu ostatniego załącznika ikona dokumentu znika @schoo
 
     orders = await openOrders(page);
 
-    await expect(
-      orderAttachmentIndicator(orders, orderId),
-      "Po usunięciu ostatniego załącznika ikona dokumentu powinna zniknąć",
-    ).toHaveCount(0);
+    await test.step("Sprawdzenie: liczba elementów w widoku — orderAttachmentIndicator(orders, orderId); oczekiwane: 0", async () =>
+      expect(
+        orderAttachmentIndicator(orders, orderId),
+        "Po usunięciu ostatniego załącznika ikona dokumentu powinna zniknąć",
+      ).toHaveCount(0));
   });
 });
 
@@ -532,7 +577,8 @@ test("ORD-66: kilka załączników daje pojedynczą ikonę dokumentu na liście 
   page,
   scenario: s,
 }) => {
-  const school = await prepareOrderSchool(page, s);
+  const school = await test.step("Przygotowanie: dedykowana szkoła do zamówień", async () =>
+    prepareOrderSchool(page, s));
 
   await withOrderCleanup(page, s, school, async (track) => {
     await openOrders(page);
@@ -568,11 +614,13 @@ test("ORD-66: kilka załączników daje pojedynczą ikonę dokumentu na liście 
      * lista pokazuje jeden wskaźnik,
      * że zamówienie posiada załączniki.
      */
-    await expect(
-      orderAttachmentIndicator(orders, orderId),
-      "Kilka załączników powinno być reprezentowane pojedynczą ikoną dokumentu",
-    ).toHaveCount(1);
+    await test.step("Sprawdzenie: liczba elementów w widoku — orderAttachmentIndicator(orders, orderId); oczekiwane: 1", async () =>
+      expect(
+        orderAttachmentIndicator(orders, orderId),
+        "Kilka załączników powinno być reprezentowane pojedynczą ikoną dokumentu",
+      ).toHaveCount(1));
 
-    await expect(orderAttachmentIndicator(orders, orderId)).toBeVisible();
+    await test.step("Sprawdzenie: widoczność elementu — orderAttachmentIndicator(orders, orderId)", async () =>
+      expect(orderAttachmentIndicator(orders, orderId)).toBeVisible());
   });
 });

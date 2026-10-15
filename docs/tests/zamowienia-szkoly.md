@@ -6,7 +6,11 @@ Sekcja `ORD-*` sprawdza obsługę zamówień szkoły w Octopusie: formularz, fil
 
 Aktualny zakres dokumentacji obejmuje **ORD-01–ORD-66**.
 
+Kolumna Klasa ma dodatkowe **22 scenariusze ORD-CLASS-01–ORD-CLASS-22**, opisane [krok po kroku](klasa-w-zamowieniach.md). Dane zamówień powstają i są sprzątane przez API, a wartości są sprawdzane w trzech widokach UI. Testów tych nie uruchomiono; przypadek LS jest warunkowo pomijany z powodu potwierdzonego braku produktu.
+
 ## 2. Pliki
+
+Dokumenty zamówień szkolnych i nauczycielskie Oświadczenia rozszerzają zestaw o ORD-DOC-01–ORD-DOC-30. [Dokumentacja](dokumenty-zamowien.md) porównuje wymagania z istniejącymi scenariuszami, opisuje nowe testy oraz luki ról, audytu i fizycznego repozytorium. Nowych scenariuszy nie uruchomiono. W ORD-48–ORD-50 podmieniono sztuczne bufory na rzeczywiste pliki testowe obsługiwanych formatów.
 
 ```text
 tests/zamowienia-szkoly.spec.ts

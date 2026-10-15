@@ -1,3 +1,4 @@
+import { apiStep } from "./api-step";
 import { expect, type APIRequestContext, type APIResponse } from "@playwright/test";
 import type { AuthSession } from "../../scripts/auth.mjs";
 import type { StructureSchool } from "./school-structure";
@@ -138,16 +139,18 @@ export class StructureApi {
   }
 
   async seed(parent: StructureSchool, child: StructureSchool, type: number) {
-    const response = await this.attempt(parent, child, type);
-    expect(response.ok(), `Seed relacji: ${response.status()}`).toBe(true);
-    expect(await response.json()).toMatchObject({ codeResult: 204 });
-    const relation = this.edges(await this.tree(parent)).find(
-      (edge) => edge.parent === this.unit(parent) && edge.child === this.unit(child),
-    );
-    expect(relation, "Zapisana relacja powinna istnieć w aktywnym drzewie").toBeDefined();
-    this.knownRelations.add(relation!.id);
-    this.knownKinds.set(relation!.id, type);
-    return relation!.id;
+    return await apiStep("Przygotowanie API: zapis relacji między szkołami", async () => {
+      const response = await this.attempt(parent, child, type);
+      expect(response.ok(), `Seed relacji: ${response.status()}`).toBe(true);
+      expect(await response.json()).toMatchObject({ codeResult: 204 });
+      const relation = this.edges(await this.tree(parent)).find(
+        (edge) => edge.parent === this.unit(parent) && edge.child === this.unit(child),
+      );
+      expect(relation, "Zapisana relacja powinna istnieć w aktywnym drzewie").toBeDefined();
+      this.knownRelations.add(relation!.id);
+      this.knownKinds.set(relation!.id, type);
+      return relation!.id;
+    });
   }
 
   edges(nodes: StructureNode[]) {
@@ -193,13 +196,15 @@ export class StructureApi {
   }
 
   async deactivate(id: number) {
-    expect(
-      this.knownRelations.has(id),
-      "Można usunąć wyłącznie relację przygotowaną przez test",
-    ).toBe(true);
-    await this.remove(id);
-    this.knownRelations.delete(id);
-    this.knownKinds.delete(id);
+    return await apiStep("API: dezaktywacja relacji testowej", async () => {
+      expect(
+        this.knownRelations.has(id),
+        "Można usunąć wyłącznie relację przygotowaną przez test",
+      ).toBe(true);
+      await this.remove(id);
+      this.knownRelations.delete(id);
+      this.knownKinds.delete(id);
+    });
   }
 
   acknowledgeDeleted(id: number) {
@@ -208,29 +213,31 @@ export class StructureApi {
   }
 
   async cleanup(schools: StructureSchool[]) {
-    // Najpierw usuwamy znane krawędzie. To rozrywa także ewentualny cykl,
-    // jeżeli wadliwy backend zaakceptował negatywny przypadek testowy.
-    // W pierwszej kolejności rozpinamy wielobudynkowość, aby nie blokowała
-    // sprzątania pozostałych relacji szkoły będącej dodatkową lokalizacją.
-    const known = [...this.knownRelations].sort(
-      (left, right) =>
-        Number(this.knownKinds.get(right) === 3) - Number(this.knownKinds.get(left) === 3),
-    );
-    for (const id of known) await this.remove(id);
-    this.knownRelations.clear();
-    this.knownKinds.clear();
-    const allowedUnits = new Set(this.units.values());
-    const remaining = new Set<number>();
-    for (const school of schools) {
-      for (const edge of this.edges(await this.tree(school))) {
-        expect(
-          allowedUnits.has(edge.parent) && allowedUnits.has(edge.child),
-          "Cleanup może dotyczyć wyłącznie rozwiązanych szkół AUTO_STR",
-        ).toBe(true);
-        if (edge.id > 0) remaining.add(edge.id);
+    return await apiStep("Sprzątanie API: usunięcie wyłącznie relacji testowych", async () => {
+      // Najpierw usuwamy znane krawędzie. To rozrywa także ewentualny cykl,
+      // jeżeli wadliwy backend zaakceptował negatywny przypadek testowy.
+      // W pierwszej kolejności rozpinamy wielobudynkowość, aby nie blokowała
+      // sprzątania pozostałych relacji szkoły będącej dodatkową lokalizacją.
+      const known = [...this.knownRelations].sort(
+        (left, right) =>
+          Number(this.knownKinds.get(right) === 3) - Number(this.knownKinds.get(left) === 3),
+      );
+      for (const id of known) await this.remove(id);
+      this.knownRelations.clear();
+      this.knownKinds.clear();
+      const allowedUnits = new Set(this.units.values());
+      const remaining = new Set<number>();
+      for (const school of schools) {
+        for (const edge of this.edges(await this.tree(school))) {
+          expect(
+            allowedUnits.has(edge.parent) && allowedUnits.has(edge.child),
+            "Cleanup może dotyczyć wyłącznie rozwiązanych szkół AUTO_STR",
+          ).toBe(true);
+          if (edge.id > 0) remaining.add(edge.id);
+        }
       }
-    }
-    for (const id of remaining) await this.remove(id);
-    for (const school of schools) expect(this.edges(await this.tree(school))).toHaveLength(0);
+      for (const id of remaining) await this.remove(id);
+      for (const school of schools) expect(this.edges(await this.tree(school))).toHaveLength(0);
+    });
   }
 }

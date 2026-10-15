@@ -128,7 +128,18 @@ export function schoolSioInput(
 }
 
 export async function saveSchoolSioEdit(form: Locator) {
+  const saved = form.page().waitForResponse((response) => {
+    const request = response.request();
+    return (
+      ["POST", "PUT", "PATCH"].includes(request.method()) &&
+      new URL(response.url()).pathname.startsWith("/api/") &&
+      /"quantityOfStudents"\s*:/i.test(request.postData() ?? "")
+    );
+  });
   await form.getByRole("button", { name: "Zapisz", exact: true }).click();
+  const response = await saved;
+  expect(response.ok(), "Zapis danych Akcji SIO powinien zakończyć się powodzeniem").toBe(true);
+  await response.finished();
   await expect(form).toHaveCount(0);
 }
 

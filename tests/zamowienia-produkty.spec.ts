@@ -31,7 +31,8 @@ test("ORD-12: wyszukiwanie po dokładnym kodzie zwraca właściwy produkt @schoo
   page,
   scenario: s,
 }) => {
-  await prepareOrderSchool(page, s);
+  await test.step("Przygotowanie: dedykowana szkoła do zamówień", async () =>
+    prepareOrderSchool(page, s));
 
   const form = await openNewOrderForm(page);
 
@@ -41,8 +42,10 @@ test("ORD-12: wyszukiwanie po dokładnym kodzie zwraca właściwy produkt @schoo
 
   const row = availableProductRow(form, product.code);
 
-  await expect(row).toHaveCount(1);
-  await expect(row).toContainText(product.title);
+  await test.step("Sprawdzenie: liczba elementów w widoku — row; oczekiwane: 1", async () =>
+    expect(row).toHaveCount(1));
+  await test.step("Sprawdzenie: obecność tekstu w widoku — row; oczekiwane: product.title", async () =>
+    expect(row).toContainText(product.title));
 
   await cancelOrderForm(form);
 });
@@ -51,14 +54,16 @@ test("ORD-13: wyszukiwanie po fragmencie kodu zwraca oba produkty fizyki 7 @scho
   page,
   scenario: s,
 }) => {
-  await prepareOrderSchool(page, s);
+  await test.step("Przygotowanie: dedykowana szkoła do zamówień", async () =>
+    prepareOrderSchool(page, s));
 
   const form = await openNewOrderForm(page);
 
   await searchOrderProducts(form, ORDER_PRODUCTS.physics7.search);
 
   for (const product of ORDER_PRODUCTS.physics7.products) {
-    await expect(availableProductRow(form, product.code)).toHaveCount(1);
+    await test.step("Sprawdzenie: liczba elementów w widoku — availableProductRow(form, product.code); oczekiwane: 1", async () =>
+      expect(availableProductRow(form, product.code)).toHaveCount(1));
   }
 
   await cancelOrderForm(form);
@@ -68,7 +73,8 @@ test("ORD-14: filtr Przedmiot ogranicza wyniki do fizyki @school @order @filter"
   page,
   scenario: s,
 }) => {
-  await prepareOrderSchool(page, s);
+  await test.step("Przygotowanie: dedykowana szkoła do zamówień", async () =>
+    prepareOrderSchool(page, s));
 
   const form = await openNewOrderForm(page);
 
@@ -78,10 +84,12 @@ test("ORD-14: filtr Przedmiot ogranicza wyniki do fizyki @school @order @filter"
 
   const rows = availableProductRows(form);
 
-  await expect(rows.first()).toBeVisible();
+  await test.step("Sprawdzenie: widoczność elementu — rows.first()", async () =>
+    expect(rows.first()).toBeVisible());
 
   for (const row of await rows.all()) {
-    await expect(row.getByRole("gridcell").nth(4)).toHaveText(ORDER_PRODUCTS.physics7.subjectCode);
+    await test.step('Sprawdzenie: tekst w widoku — row.getByRole("gridcell").nth(4); oczekiwane: ORDER_PRODUCTS.physics7.subjectCode', async () =>
+      expect(row.getByRole("gridcell").nth(4)).toHaveText(ORDER_PRODUCTS.physics7.subjectCode));
   }
 
   await cancelOrderForm(form);
@@ -91,7 +99,8 @@ test("ORD-15: filtr Poziom ogranicza wyniki do szkoły podstawowej @school @orde
   page,
   scenario: s,
 }) => {
-  await prepareOrderSchool(page, s);
+  await test.step("Przygotowanie: dedykowana szkoła do zamówień", async () =>
+    prepareOrderSchool(page, s));
 
   const form = await openNewOrderForm(page);
 
@@ -101,10 +110,12 @@ test("ORD-15: filtr Poziom ogranicza wyniki do szkoły podstawowej @school @orde
 
   const rows = availableProductRows(form);
 
-  await expect(rows.first()).toBeVisible();
+  await test.step("Sprawdzenie: widoczność elementu — rows.first()", async () =>
+    expect(rows.first()).toBeVisible());
 
   for (const row of await rows.all()) {
-    await expect(row.getByRole("gridcell").nth(1)).toHaveText(ORDER_PRODUCTS.physics7.levelCode);
+    await test.step('Sprawdzenie: tekst w widoku — row.getByRole("gridcell").nth(1); oczekiwane: ORDER_PRODUCTS.physics7.levelCode', async () =>
+      expect(row.getByRole("gridcell").nth(1)).toHaveText(ORDER_PRODUCTS.physics7.levelCode));
   }
 
   await cancelOrderForm(form);
@@ -114,7 +125,8 @@ test("ORD-16: filtr Klasa zwraca produkty klasy 7 @school @order @filter", async
   page,
   scenario: s,
 }) => {
-  await prepareOrderSchool(page, s);
+  await test.step("Przygotowanie: dedykowana szkoła do zamówień", async () =>
+    prepareOrderSchool(page, s));
 
   const form = await openNewOrderForm(page);
 
@@ -124,10 +136,12 @@ test("ORD-16: filtr Klasa zwraca produkty klasy 7 @school @order @filter", async
 
   const rows = availableProductRows(form);
 
-  await expect(rows.first()).toBeVisible();
+  await test.step("Sprawdzenie: widoczność elementu — rows.first()", async () =>
+    expect(rows.first()).toBeVisible());
 
   for (const row of await rows.all()) {
-    await expect(row.getByRole("gridcell").nth(2)).toContainText(ORDER_PRODUCTS.physics7.class);
+    await test.step('Sprawdzenie: obecność tekstu w widoku — row.getByRole("gridcell").nth(2); oczekiwane: ORDER_PRODUCTS.physics7.class', async () =>
+      expect(row.getByRole("gridcell").nth(2)).toContainText(ORDER_PRODUCTS.physics7.class));
   }
 
   await cancelOrderForm(form);
@@ -137,7 +151,8 @@ test("ORD-17: filtr Klasy pozwala wyszukiwać dla kilku klas jednocześnie @scho
   page,
   scenario: s,
 }) => {
-  await prepareOrderSchool(page, s);
+  await test.step("Przygotowanie: dedykowana szkoła do zamówień", async () =>
+    prepareOrderSchool(page, s));
 
   const form = await openNewOrderForm(page);
 
@@ -147,12 +162,15 @@ test("ORD-17: filtr Klasy pozwala wyszukiwać dla kilku klas jednocześnie @scho
 
   const rows = availableProductRows(form);
 
-  await expect(rows.first()).toBeVisible();
+  await test.step("Sprawdzenie: widoczność elementu — rows.first()", async () =>
+    expect(rows.first()).toBeVisible());
 
   for (const row of await rows.all()) {
     const classText = (await row.getByRole("gridcell").nth(2).innerText()).trim();
 
-    expect(classText.includes("5") || classText.includes("7")).toBeTruthy();
+    await test.step('Sprawdzenie: spełnienie warunku — classText.includes("5") || classText.includes("7")', async () => {
+      expect(classText.includes("5") || classText.includes("7")).toBeTruthy();
+    });
   }
 
   await cancelOrderForm(form);
@@ -162,7 +180,8 @@ test("ORD-18: Przedmiot i Poziom działają razem @school @order @filter", async
   page,
   scenario: s,
 }) => {
-  await prepareOrderSchool(page, s);
+  await test.step("Przygotowanie: dedykowana szkoła do zamówień", async () =>
+    prepareOrderSchool(page, s));
 
   const form = await openNewOrderForm(page);
 
@@ -173,7 +192,8 @@ test("ORD-18: Przedmiot i Poziom działają razem @school @order @filter", async
   await searchOrderProducts(form, ORDER_PRODUCTS.physics7.search);
 
   for (const product of ORDER_PRODUCTS.physics7.products) {
-    await expect(availableProductRow(form, product.code)).toHaveCount(1);
+    await test.step("Sprawdzenie: liczba elementów w widoku — availableProductRow(form, product.code); oczekiwane: 1", async () =>
+      expect(availableProductRow(form, product.code)).toHaveCount(1));
   }
 
   await cancelOrderForm(form);
@@ -183,7 +203,8 @@ test("ORD-19: Przedmiot, Poziom i Klasa działają razem @school @order @filter"
   page,
   scenario: s,
 }) => {
-  await prepareOrderSchool(page, s);
+  await test.step("Przygotowanie: dedykowana szkoła do zamówień", async () =>
+    prepareOrderSchool(page, s));
 
   const form = await openNewOrderForm(page);
 
@@ -196,7 +217,8 @@ test("ORD-19: Przedmiot, Poziom i Klasa działają razem @school @order @filter"
   await searchOrderProducts(form, ORDER_PRODUCTS.physics7.search);
 
   for (const product of ORDER_PRODUCTS.physics7.products) {
-    await expect(availableProductRow(form, product.code)).toHaveCount(1);
+    await test.step("Sprawdzenie: liczba elementów w widoku — availableProductRow(form, product.code); oczekiwane: 1", async () =>
+      expect(availableProductRow(form, product.code)).toHaveCount(1));
   }
 
   await cancelOrderForm(form);
@@ -206,7 +228,8 @@ test("ORD-20: wszystkie filtry razem zwracają oczekiwane produkty @school @orde
   page,
   scenario: s,
 }) => {
-  await prepareOrderSchool(page, s);
+  await test.step("Przygotowanie: dedykowana szkoła do zamówień", async () =>
+    prepareOrderSchool(page, s));
 
   const form = await openNewOrderForm(page);
 
@@ -225,17 +248,20 @@ test("ORD-20: wszystkie filtry razem zwracają oczekiwane produkty @school @orde
    */
   const availableClasses = await readOrderFilterOptions(page, form, "classes");
 
-  expect(
-    availableClasses,
-    `Dla ${ORDER_PRODUCTS.polish5.subject} / ${ORDER_PRODUCTS.polish5.level} powinna być dostępna klasa ${ORDER_PRODUCTS.polish5.class}. Dostępne klasy: ${availableClasses.join(", ")}`,
-  ).toContain(ORDER_PRODUCTS.polish5.class);
+  await test.step("Sprawdzenie: obecność oczekiwanego elementu — availableClasses; oczekiwane: ORDER_PRODUCTS.polish5.class", async () => {
+    expect(
+      availableClasses,
+      `Dla ${ORDER_PRODUCTS.polish5.subject} / ${ORDER_PRODUCTS.polish5.level} powinna być dostępna klasa ${ORDER_PRODUCTS.polish5.class}. Dostępne klasy: ${availableClasses.join(", ")}`,
+    ).toContain(ORDER_PRODUCTS.polish5.class);
+  });
 
   await selectOrderClasses(page, form, [ORDER_PRODUCTS.polish5.class]);
 
   await searchOrderProducts(form, ORDER_PRODUCTS.polish5.search);
 
   for (const product of ORDER_PRODUCTS.polish5.products) {
-    await expect(availableProductRow(form, product.code)).toHaveCount(1);
+    await test.step("Sprawdzenie: liczba elementów w widoku — availableProductRow(form, product.code); oczekiwane: 1", async () =>
+      expect(availableProductRow(form, product.code)).toHaveCount(1));
   }
 
   await cancelOrderForm(form);
@@ -245,13 +271,15 @@ test("ORD-21: nieistniejący kod daje pustą listę wyników @school @order @sea
   page,
   scenario: s,
 }) => {
-  await prepareOrderSchool(page, s);
+  await test.step("Przygotowanie: dedykowana szkoła do zamówień", async () =>
+    prepareOrderSchool(page, s));
 
   const form = await openNewOrderForm(page);
 
   await searchOrderProducts(form, `NO_SUCH_ORDER_PRODUCT_${Date.now()}`);
 
-  await expect(availableProductRows(form)).toHaveCount(0);
+  await test.step("Sprawdzenie: liczba elementów w widoku — availableProductRows(form); oczekiwane: 0", async () =>
+    expect(availableProductRows(form)).toHaveCount(0));
 
   await cancelOrderForm(form);
 });
@@ -260,19 +288,23 @@ test("ORD-22: drugie wyszukanie zastępuje wyniki pierwszego @school @order @sea
   page,
   scenario: s,
 }) => {
-  await prepareOrderSchool(page, s);
+  await test.step("Przygotowanie: dedykowana szkoła do zamówień", async () =>
+    prepareOrderSchool(page, s));
 
   const form = await openNewOrderForm(page);
 
   await searchOrderProducts(form, ORDER_PRODUCTS.physics7.search);
 
-  await expect(availableProductRow(form, ORDER_PRODUCTS.physics7.products[1].code)).toHaveCount(1);
+  await test.step("Sprawdzenie: liczba elementów w widoku — availableProductRow(form, ORDER_PRODUCTS.physics7.products[1].code); oczekiwane: 1", async () =>
+    expect(availableProductRow(form, ORDER_PRODUCTS.physics7.products[1].code)).toHaveCount(1));
 
   await searchOrderProducts(form, ORDER_PRODUCTS.polish5.search);
 
-  await expect(availableProductRow(form, ORDER_PRODUCTS.polish5.products[0].code)).toHaveCount(1);
+  await test.step("Sprawdzenie: liczba elementów w widoku — availableProductRow(form, ORDER_PRODUCTS.polish5.products[0].code); oczekiwane: 1", async () =>
+    expect(availableProductRow(form, ORDER_PRODUCTS.polish5.products[0].code)).toHaveCount(1));
 
-  await expect(availableProductRow(form, ORDER_PRODUCTS.physics7.products[1].code)).toHaveCount(0);
+  await test.step("Sprawdzenie: liczba elementów w widoku — availableProductRow(form, ORDER_PRODUCTS.physics7.products[1].code); oczekiwane: 0", async () =>
+    expect(availableProductRow(form, ORDER_PRODUCTS.physics7.products[1].code)).toHaveCount(0));
 
   await cancelOrderForm(form);
 });
@@ -281,7 +313,8 @@ test("ORD-23: Wyczyść filtry resetuje wszystkie kryteria @school @order @filte
   page,
   scenario: s,
 }) => {
-  await prepareOrderSchool(page, s);
+  await test.step("Przygotowanie: dedykowana szkoła do zamówień", async () =>
+    prepareOrderSchool(page, s));
 
   const form = await openNewOrderForm(page);
 
@@ -299,7 +332,7 @@ test("ORD-23: Wyczyść filtry resetuje wszystkie kryteria @school @order @filte
 
   await clearOrderFilters(form);
 
-  await expectFilterReset(form);
+  await test.step("Sprawdzenie: expectFilterReset", async () => expectFilterReset(form));
 
   await cancelOrderForm(form);
 });
@@ -308,7 +341,8 @@ test("ORD-24: wyszukiwanie działa poprawnie po wyczyszczeniu filtrów @school @
   page,
   scenario: s,
 }) => {
-  await prepareOrderSchool(page, s);
+  await test.step("Przygotowanie: dedykowana szkoła do zamówień", async () =>
+    prepareOrderSchool(page, s));
 
   const form = await openNewOrderForm(page);
 
@@ -324,7 +358,8 @@ test("ORD-24: wyszukiwanie działa poprawnie po wyczyszczeniu filtrów @school @
 
   await searchOrderProducts(form, ORDER_PRODUCTS.polish5.search);
 
-  await expect(availableProductRow(form, ORDER_PRODUCTS.polish5.products[0].code)).toHaveCount(1);
+  await test.step("Sprawdzenie: liczba elementów w widoku — availableProductRow(form, ORDER_PRODUCTS.polish5.products[0].code); oczekiwane: 1", async () =>
+    expect(availableProductRow(form, ORDER_PRODUCTS.polish5.products[0].code)).toHaveCount(1));
 
   await cancelOrderForm(form);
 });
@@ -337,7 +372,8 @@ test("ORD-25: strzałka w prawo przenosi wybrany produkt do Zamówienia @school 
   page,
   scenario: s,
 }) => {
-  await prepareOrderSchool(page, s);
+  await test.step("Przygotowanie: dedykowana szkoła do zamówień", async () =>
+    prepareOrderSchool(page, s));
 
   const form = await openNewOrderForm(page);
 
@@ -347,7 +383,8 @@ test("ORD-25: strzałka w prawo przenosi wybrany produkt do Zamówienia @school 
 
   await addOrderProductsFromCurrentResults(form, [code]);
 
-  await expect(selectedProductRow(form, code)).toHaveCount(1);
+  await test.step("Sprawdzenie: liczba elementów w widoku — selectedProductRow(form, code); oczekiwane: 1", async () =>
+    expect(selectedProductRow(form, code)).toHaveCount(1));
 
   await cancelOrderForm(form);
 });
@@ -356,7 +393,8 @@ test("ORD-26: kilka produktów można przenieść do Zamówienia jednym ruchem @
   page,
   scenario: s,
 }) => {
-  await prepareOrderSchool(page, s);
+  await test.step("Przygotowanie: dedykowana szkoła do zamówień", async () =>
+    prepareOrderSchool(page, s));
 
   const form = await openNewOrderForm(page);
 
@@ -367,7 +405,8 @@ test("ORD-26: kilka produktów można przenieść do Zamówienia jednym ruchem @
   await addOrderProductsFromCurrentResults(form, codes);
 
   for (const code of codes) {
-    await expect(selectedProductRow(form, code)).toHaveCount(1);
+    await test.step("Sprawdzenie: liczba elementów w widoku — selectedProductRow(form, code); oczekiwane: 1", async () =>
+      expect(selectedProductRow(form, code)).toHaveCount(1));
   }
 
   await cancelOrderForm(form);
@@ -377,7 +416,8 @@ test("ORD-27: strzałka w lewo cofa zaznaczony produkt @school @order @product",
   page,
   scenario: s,
 }) => {
-  await prepareOrderSchool(page, s);
+  await test.step("Przygotowanie: dedykowana szkoła do zamówień", async () =>
+    prepareOrderSchool(page, s));
 
   const form = await openNewOrderForm(page);
 
@@ -389,11 +429,13 @@ test("ORD-27: strzałka w lewo cofa zaznaczony produkt @school @order @product",
 
   await moveSelectedProductsLeft(form);
 
-  await expect(selectedProductRow(form, code)).toHaveCount(0);
+  await test.step("Sprawdzenie: liczba elementów w widoku — selectedProductRow(form, code); oczekiwane: 0", async () =>
+    expect(selectedProductRow(form, code)).toHaveCount(0));
 
   await searchOrderProducts(form, code);
 
-  await expect(availableProductRow(form, code)).toHaveCount(1);
+  await test.step("Sprawdzenie: liczba elementów w widoku — availableProductRow(form, code); oczekiwane: 1", async () =>
+    expect(availableProductRow(form, code)).toHaveCount(1));
 
   await cancelOrderForm(form);
 });
@@ -402,7 +444,8 @@ test("ORD-28: kosz usuwa wszystkie produkty z tworzonego zamówienia @school @or
   page,
   scenario: s,
 }) => {
-  await prepareOrderSchool(page, s);
+  await test.step("Przygotowanie: dedykowana szkoła do zamówień", async () =>
+    prepareOrderSchool(page, s));
 
   const form = await openNewOrderForm(page);
 
@@ -410,11 +453,13 @@ test("ORD-28: kosz usuwa wszystkie produkty z tworzonego zamówienia @school @or
 
   await addOrderProduct(form, ORDER_PRODUCTS.polish5.products[0].code);
 
-  await expect(selectedProductRows(form)).toHaveCount(2);
+  await test.step("Sprawdzenie: liczba elementów w widoku — selectedProductRows(form); oczekiwane: 2", async () =>
+    expect(selectedProductRows(form)).toHaveCount(2));
 
   await clearSelectedOrderProducts(form);
 
-  await expect(selectedProductRows(form)).toHaveCount(0);
+  await test.step("Sprawdzenie: liczba elementów w widoku — selectedProductRows(form); oczekiwane: 0", async () =>
+    expect(selectedProductRows(form)).toHaveCount(0));
 
   await cancelOrderForm(form);
 });
@@ -423,7 +468,8 @@ test("ORD-29: produkt już dodany do Zamówienia nie pojawia się ponownie w Gra
   page,
   scenario: s,
 }) => {
-  await prepareOrderSchool(page, s);
+  await test.step("Przygotowanie: dedykowana szkoła do zamówień", async () =>
+    prepareOrderSchool(page, s));
 
   const form = await openNewOrderForm(page);
 
@@ -433,9 +479,11 @@ test("ORD-29: produkt już dodany do Zamówienia nie pojawia się ponownie w Gra
 
   await searchOrderProducts(form, code);
 
-  await expect(availableProductRow(form, code)).toHaveCount(0);
+  await test.step("Sprawdzenie: liczba elementów w widoku — availableProductRow(form, code); oczekiwane: 0", async () =>
+    expect(availableProductRow(form, code)).toHaveCount(0));
 
-  await expect(selectedProductRow(form, code)).toHaveCount(1);
+  await test.step("Sprawdzenie: liczba elementów w widoku — selectedProductRow(form, code); oczekiwane: 1", async () =>
+    expect(selectedProductRow(form, code)).toHaveCount(1));
 
   await cancelOrderForm(form);
 });
@@ -444,7 +492,8 @@ test("ORD-30: wyszukanie kolejnego produktu nie usuwa wcześniej wybranego @scho
   page,
   scenario: s,
 }) => {
-  await prepareOrderSchool(page, s);
+  await test.step("Przygotowanie: dedykowana szkoła do zamówień", async () =>
+    prepareOrderSchool(page, s));
 
   const form = await openNewOrderForm(page);
 
@@ -454,7 +503,8 @@ test("ORD-30: wyszukanie kolejnego produktu nie usuwa wcześniej wybranego @scho
 
   await searchOrderProducts(form, ORDER_PRODUCTS.polish5.search);
 
-  await expect(selectedProductRow(form, selectedCode)).toHaveCount(1);
+  await test.step("Sprawdzenie: liczba elementów w widoku — selectedProductRow(form, selectedCode); oczekiwane: 1", async () =>
+    expect(selectedProductRow(form, selectedCode)).toHaveCount(1));
 
   await cancelOrderForm(form);
 });
@@ -463,7 +513,8 @@ test("ORD-31: zmiana filtrów nie usuwa produktów z Zamówienia @school @order 
   page,
   scenario: s,
 }) => {
-  await prepareOrderSchool(page, s);
+  await test.step("Przygotowanie: dedykowana szkoła do zamówień", async () =>
+    prepareOrderSchool(page, s));
 
   const form = await openNewOrderForm(page);
 
@@ -475,7 +526,8 @@ test("ORD-31: zmiana filtrów nie usuwa produktów z Zamówienia @school @order 
 
   await selectOrderSingleFilter(page, form, "level", ORDER_PRODUCTS.polish5.level);
 
-  await expect(selectedProductRow(form, selectedCode)).toHaveCount(1);
+  await test.step("Sprawdzenie: liczba elementów w widoku — selectedProductRow(form, selectedCode); oczekiwane: 1", async () =>
+    expect(selectedProductRow(form, selectedCode)).toHaveCount(1));
 
   await cancelOrderForm(form);
 });
@@ -484,7 +536,8 @@ test("ORD-32: dane produktu są spójne po przeniesieniu do Zamówienia @school 
   page,
   scenario: s,
 }) => {
-  await prepareOrderSchool(page, s);
+  await test.step("Przygotowanie: dedykowana szkoła do zamówień", async () =>
+    prepareOrderSchool(page, s));
 
   const form = await openNewOrderForm(page);
 
@@ -494,7 +547,8 @@ test("ORD-32: dane produktu są spójne po przeniesieniu do Zamówienia @school 
 
   const source = availableProductRow(form, product.code);
 
-  await expect(source).toHaveCount(1);
+  await test.step("Sprawdzenie: liczba elementów w widoku — source; oczekiwane: 1", async () =>
+    expect(source).toHaveCount(1));
 
   /*
    * Kolumny tabeli Gratisy:
@@ -510,25 +564,29 @@ test("ORD-32: dane produktu są spójne po przeniesieniu do Zamówienia @school 
 
   const sourceCells = source.getByRole("gridcell");
 
-  await expect(
-    sourceCells.nth(1),
-    "Produkt powinien mieć właściwy poziom przed przeniesieniem",
-  ).toHaveText(ORDER_PRODUCTS.physics7.levelCode);
+  await test.step("Sprawdzenie: tekst w widoku — sourceCells.nth(1); oczekiwane: ORDER_PRODUCTS.physics7.levelCode", async () =>
+    expect(
+      sourceCells.nth(1),
+      "Produkt powinien mieć właściwy poziom przed przeniesieniem",
+    ).toHaveText(ORDER_PRODUCTS.physics7.levelCode));
 
-  await expect(
-    sourceCells.nth(2),
-    "Produkt powinien mieć właściwą klasę przed przeniesieniem",
-  ).toContainText(ORDER_PRODUCTS.physics7.class);
+  await test.step("Sprawdzenie: obecność tekstu w widoku — sourceCells.nth(2); oczekiwane: ORDER_PRODUCTS.physics7.class", async () =>
+    expect(
+      sourceCells.nth(2),
+      "Produkt powinien mieć właściwą klasę przed przeniesieniem",
+    ).toContainText(ORDER_PRODUCTS.physics7.class));
 
-  await expect(
-    sourceCells.nth(3),
-    "Produkt powinien mieć właściwy tytuł przed przeniesieniem",
-  ).toHaveText(product.title);
+  await test.step("Sprawdzenie: tekst w widoku — sourceCells.nth(3); oczekiwane: product.title", async () =>
+    expect(
+      sourceCells.nth(3),
+      "Produkt powinien mieć właściwy tytuł przed przeniesieniem",
+    ).toHaveText(product.title));
 
-  await expect(
-    sourceCells.nth(4),
-    "Produkt powinien mieć właściwy przedmiot przed przeniesieniem",
-  ).toHaveText(ORDER_PRODUCTS.physics7.subjectCode);
+  await test.step("Sprawdzenie: tekst w widoku — sourceCells.nth(4); oczekiwane: ORDER_PRODUCTS.physics7.subjectCode", async () =>
+    expect(
+      sourceCells.nth(4),
+      "Produkt powinien mieć właściwy przedmiot przed przeniesieniem",
+    ).toHaveText(ORDER_PRODUCTS.physics7.subjectCode));
 
   const title = await selectAvailableProduct(form, product.code);
 
@@ -543,7 +601,8 @@ test("ORD-32: dane produktu są spójne po przeniesieniu do Zamówienia @school 
 
   const target = selectedProductRow(form, product.code);
 
-  await expect(target, "Produkt powinien znaleźć się w tabeli Zamówienie").toHaveCount(1);
+  await test.step("Sprawdzenie: liczba elementów w widoku — target; oczekiwane: 1", async () =>
+    expect(target, "Produkt powinien znaleźć się w tabeli Zamówienie").toHaveCount(1));
 
   /*
    * Po przeniesieniu weryfikujemy dane,
@@ -551,9 +610,11 @@ test("ORD-32: dane produktu są spójne po przeniesieniu do Zamówienia @school 
    * w tabeli Zamówienie.
    */
 
-  await expect(target).toContainText(product.code);
+  await test.step("Sprawdzenie: obecność tekstu w widoku — target; oczekiwane: product.code", async () =>
+    expect(target).toContainText(product.code));
 
-  await expect(target).toContainText(title);
+  await test.step("Sprawdzenie: obecność tekstu w widoku — target; oczekiwane: title", async () =>
+    expect(target).toContainText(title));
 
   await cancelOrderForm(form);
 });
