@@ -10,6 +10,8 @@ import {
   teacherDocumentRows,
   teacherDocumentEdit,
   type DocumentTarget,
+  type StoredDocument,
+  type DocumentFile,
 } from "./support/order-documents";
 import { showClassOrders } from "./support/order-class";
 import {
@@ -336,7 +338,7 @@ test.describe("Dokumenty zamówień ręcznych i oświadczeń", () => {
     classOrders: api,
   }) => {
     const target = await d.statement();
-    const expected = [];
+    const expected: Array<{ stored: StoredDocument; file: DocumentFile }> = [];
     for (const [index, extension] of (["pdf", "jpg", "png"] as const).entries()) {
       const file = documentFile(extension, index);
       expected.push({ stored: await d.upload(target, file), file });
@@ -450,10 +452,21 @@ test.describe("Dokumenty zamówień ręcznych i oświadczeń", () => {
     const form = await teacherDocumentEdit(d, target);
     const button = form.locator('[data-cy="button-add-file"]');
     await expect(button).toBeEnabled();
-    const reason = form.locator("mat-select").filter({ hasText: "Oświadczenie" });
-    await expect(reason).toHaveCount(1);
-    await reason.click();
-    await page.getByRole("option", { name: "Brak", exact: true }).click();
+    const productRow = form.getByRole("row").filter({
+      has: page.getByRole("gridcell", { name: "F7P", exact: true }),
+    });
+    await expect(productRow).toHaveCount(1);
+    await expect(productRow.locator("mat-select")).toHaveText("Oświadczenie");
+    await productRow.getByRole("checkbox", { disabled: false }).setChecked(true);
+    // Edytor komórki AG Grid jest odtwarzany po kliknięciu. Używamy
+    // osobnego dialogu zmiany powodu zamiast nietrwałej listy w komórce.
+    await form.getByRole("button", { name: "Zablokuj zaznaczone", exact: true }).click();
+    const blockadeDialog = page.locator("app-blockade-reason-dialog");
+    await expect(blockadeDialog).toBeVisible();
+    await blockadeDialog.getByRole("radio", { name: "Brak", exact: true }).check();
+    await blockadeDialog.getByRole("button", { name: "Zapisz", exact: true }).click();
+    await expect(blockadeDialog).toHaveCount(0);
+    await expect(productRow.locator("mat-select")).toHaveText("");
     await expect(button).toBeDisabled();
     await cancelOrderForm(form);
   });
