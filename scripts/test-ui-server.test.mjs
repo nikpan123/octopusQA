@@ -28,6 +28,20 @@ test("parser rozpoznaje krótkie ID STR, także trzycyfrowe", () => {
   assert.equal(extractTestId("Kategoria szkoły › CAT-34: zmiana uczniów"), "CAT-34");
   assert.equal(extractTestId("Filtrowanie nauczycieli › TFL-26: przyszły rok"), "TFL-26");
   assert.equal(extractTestId("Wyszukiwarka szkół › SFLT-32: RSPO"), "SFLT-32");
+  assert.equal(extractTestId("Próg › THR-22: anulowanie"), "THR-22");
+  assert.equal(extractTestId("Uprawnienia › PERM-15: dane"), "PERM-15");
+  assert.equal(extractTestId("Eksport › ACC-06: duplikaty"), "ACC-06");
+  assert.equal(extractTestId("Aktywność › ACL-12: zawieszenie"), "ACL-12");
+});
+
+test("pakiety obejmują progi i uprawnienia", () => {
+  assert.ok(SUITES.schools.files.includes("tests/szkola-prog.spec.ts"));
+  for (const file of [
+    "tests/nauczyciel-uprawnienia.spec.ts",
+    "tests/uprawnienia-api.spec.ts",
+    "tests/uprawnienia-cykl-zycia.spec.ts",
+  ])
+    assert.ok(SUITES.teachers.files.includes(file));
 });
 
 test("pakiet Zamówienia zawiera testy kolumny Klasa", () => {

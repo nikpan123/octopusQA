@@ -30,7 +30,8 @@ test("ORD-33: ilość 1 jest zachowywana w edytorze @school @order @quantity", a
   page,
   scenario: s,
 }) => {
-  await prepareOrderSchool(page, s);
+  await test.step("Przygotowanie: dedykowana szkoła do zamówień", async () =>
+    prepareOrderSchool(page, s));
 
   const form = await openNewOrderForm(page);
 
@@ -40,7 +41,8 @@ test("ORD-33: ilość 1 jest zachowywana w edytorze @school @order @quantity", a
 
   await setOrderQuantity(form, code, "1");
 
-  await expect(orderQuantityInput(form, code)).toHaveValue("1");
+  await test.step('Sprawdzenie: wartość pola w widoku — orderQuantityInput(form, code); oczekiwane: "1"', async () =>
+    expect(orderQuantityInput(form, code)).toHaveValue("1"));
 
   await cancelOrderForm(form);
 });
@@ -49,7 +51,8 @@ test("ORD-34: różne produkty zachowują niezależne ilości @school @order @qu
   page,
   scenario: s,
 }) => {
-  await prepareOrderSchool(page, s);
+  await test.step("Przygotowanie: dedykowana szkoła do zamówień", async () =>
+    prepareOrderSchool(page, s));
 
   const form = await openNewOrderForm(page);
 
@@ -63,9 +66,11 @@ test("ORD-34: różne produkty zachowują niezależne ilości @school @order @qu
 
   await setOrderQuantity(form, code2, "5");
 
-  await expect(orderQuantityInput(form, code1)).toHaveValue("2");
+  await test.step('Sprawdzenie: wartość pola w widoku — orderQuantityInput(form, code1); oczekiwane: "2"', async () =>
+    expect(orderQuantityInput(form, code1)).toHaveValue("2"));
 
-  await expect(orderQuantityInput(form, code2)).toHaveValue("5");
+  await test.step('Sprawdzenie: wartość pola w widoku — orderQuantityInput(form, code2); oczekiwane: "5"', async () =>
+    expect(orderQuantityInput(form, code2)).toHaveValue("5"));
 
   await cancelOrderForm(form);
 });
@@ -74,7 +79,8 @@ test("ORD-35: ostatnia zmiana ilości przed zapisem jest używana @school @order
   page,
   scenario: s,
 }) => {
-  const school = await prepareOrderSchool(page, s);
+  const school = await test.step("Przygotowanie: dedykowana szkoła do zamówień", async () =>
+    prepareOrderSchool(page, s));
 
   await withOrderCleanup(page, s, school, async (track) => {
     const code = ORDER_PRODUCTS.physics7.products[1].code;
@@ -97,13 +103,14 @@ test("ORD-35: ostatnia zmiana ilości przed zapisem jest używana @school @order
 
     const items = await expandOrderItems(orders, orderId);
 
-    await expectOrderItems(items, [
-      {
-        code,
-        title,
-        quantity: "3",
-      },
-    ]);
+    await test.step("Sprawdzenie: expectOrderItems", async () =>
+      expectOrderItems(items, [
+        {
+          code,
+          title,
+          quantity: "3",
+        },
+      ]));
   });
 });
 
@@ -111,7 +118,8 @@ test("ORD-36: Tab kończy edycję ilości w AG Grid @school @order @quantity", a
   page,
   scenario: s,
 }) => {
-  await prepareOrderSchool(page, s);
+  await test.step("Przygotowanie: dedykowana szkoła do zamówień", async () =>
+    prepareOrderSchool(page, s));
 
   const form = await openNewOrderForm(page);
 
@@ -121,8 +129,10 @@ test("ORD-36: Tab kończy edycję ilości w AG Grid @school @order @quantity", a
 
   const input = await editOrderQuantity(form, code, "4");
 
-  await expect(input).toHaveValue("4");
-  await expect(input).not.toBeFocused();
+  await test.step('Sprawdzenie: wartość pola w widoku — input; oczekiwane: "4"', async () =>
+    expect(input).toHaveValue("4"));
+  await test.step("Sprawdzenie: negacja — toBeFocused — input", async () =>
+    expect(input).not.toBeFocused());
 
   await cancelOrderForm(form);
 });
@@ -131,7 +141,8 @@ test("ORD-37: wpisanie 0 normalizuje ilość do 10 @school @order @quantity @bou
   page,
   scenario: s,
 }) => {
-  await prepareOrderSchool(page, s);
+  await test.step("Przygotowanie: dedykowana szkoła do zamówień", async () =>
+    prepareOrderSchool(page, s));
 
   const form = await openNewOrderForm(page);
 
@@ -141,7 +152,8 @@ test("ORD-37: wpisanie 0 normalizuje ilość do 10 @school @order @quantity @bou
 
   const input = await editOrderQuantity(form, code, "0");
 
-  await expect(input).toHaveValue("10");
+  await test.step('Sprawdzenie: wartość pola w widoku — input; oczekiwane: "10"', async () =>
+    expect(input).toHaveValue("10"));
 
   await cancelOrderForm(form);
 });
@@ -150,7 +162,8 @@ test("ORD-38: wartość ujemna nie jest akceptowana @school @order @quantity @bo
   page,
   scenario: s,
 }) => {
-  await prepareOrderSchool(page, s);
+  await test.step("Przygotowanie: dedykowana szkoła do zamówień", async () =>
+    prepareOrderSchool(page, s));
 
   const form = await openNewOrderForm(page);
 
@@ -160,7 +173,8 @@ test("ORD-38: wartość ujemna nie jest akceptowana @school @order @quantity @bo
 
   const input = await editOrderQuantity(form, code, "-1");
 
-  await expect(input).not.toHaveValue("-1");
+  await test.step('Sprawdzenie: negacja — wartość pola w widoku — input; oczekiwane: "-1"', async () =>
+    expect(input).not.toHaveValue("-1"));
 
   await cancelOrderForm(form);
 });
@@ -169,7 +183,8 @@ test("ORD-39: wyczyszczenie pola Ilość automatycznie przywraca wartość @scho
   page,
   scenario: s,
 }) => {
-  await prepareOrderSchool(page, s);
+  await test.step("Przygotowanie: dedykowana szkoła do zamówień", async () =>
+    prepareOrderSchool(page, s));
 
   const form = await openNewOrderForm(page);
 
@@ -179,7 +194,8 @@ test("ORD-39: wyczyszczenie pola Ilość automatycznie przywraca wartość @scho
 
   const input = orderQuantityInput(form, code);
 
-  await expect(input).toBeVisible();
+  await test.step("Sprawdzenie: widoczność elementu — input", async () =>
+    expect(input).toBeVisible());
 
   await input.click();
   await input.fill("");
@@ -190,9 +206,8 @@ test("ORD-39: wyczyszczenie pola Ilość automatycznie przywraca wartość @scho
    */
   await input.press("Tab");
 
-  await expect(input, "Po wyczyszczeniu ilość powinna automatycznie wrócić do 10").toHaveValue(
-    "10",
-  );
+  await test.step('Sprawdzenie: wartość pola w widoku — input; oczekiwane: "10"', async () =>
+    expect(input, "Po wyczyszczeniu ilość powinna automatycznie wrócić do 10").toHaveValue("10"));
 
   await cancelOrderForm(form);
 });
@@ -201,7 +216,8 @@ test("ORD-40: pusty formularz nie zapisuje zamówienia i oznacza Przedmiot jako 
   page,
   scenario: s,
 }) => {
-  await prepareOrderSchool(page, s);
+  await test.step("Przygotowanie: dedykowana szkoła do zamówień", async () =>
+    prepareOrderSchool(page, s));
 
   await openOrders(page);
 
@@ -216,11 +232,14 @@ test("ORD-40: pusty formularz nie zapisuje zamówienia i oznacza Przedmiot jako 
     })
     .click();
 
-  await expect(form).toBeVisible();
+  await test.step("Sprawdzenie: widoczność elementu — form", async () =>
+    expect(form).toBeVisible());
 
-  await expectOrderFilterInvalid(form, "subject");
+  await test.step("Sprawdzenie: expectOrderFilterInvalid", async () =>
+    expectOrderFilterInvalid(form, "subject"));
 
-  await expect.poll(() => getOrderIds(page)).toEqual(before);
+  await test.step("Sprawdzenie: zgodność całej struktury i wartości — () => getOrderIds(page); oczekiwane: before", async () =>
+    expect.poll(() => getOrderIds(page)).toEqual(before));
 
   await cancelOrderForm(form);
 });
@@ -229,7 +248,8 @@ test("ORD-41: zamówienie można zapisać bez wybranego Przedmiotu, jeśli produ
   page,
   scenario: s,
 }) => {
-  const school = await prepareOrderSchool(page, s);
+  const school = await test.step("Przygotowanie: dedykowana szkoła do zamówień", async () =>
+    prepareOrderSchool(page, s));
 
   await withOrderCleanup(page, s, school, async (track) => {
     const form = await openNewOrderForm(page);
@@ -251,7 +271,9 @@ test("ORD-41: zamówienie można zapisać bez wybranego Przedmiotu, jeśli produ
 
     await track(orderId);
 
-    expect(orderId).toMatch(/^\d+$/);
+    await test.step("Sprawdzenie: zgodność ze wzorcem — orderId; oczekiwane: /^\\d+$/", async () => {
+      expect(orderId).toMatch(/^\d+$/);
+    });
 
     /*
      * Weryfikujemy, że zapisany został
@@ -263,13 +285,14 @@ test("ORD-41: zamówienie można zapisać bez wybranego Przedmiotu, jeśli produ
 
     const items = await expandOrderItems(orders, orderId);
 
-    await expectOrderItems(items, [
-      {
-        code,
-        title,
-        quantity: "1",
-      },
-    ]);
+    await test.step("Sprawdzenie: expectOrderItems", async () =>
+      expectOrderItems(items, [
+        {
+          code,
+          title,
+          quantity: "1",
+        },
+      ]));
   });
 });
 
@@ -281,7 +304,8 @@ test("ORD-42: dwa szybkie kliknięcia Zapisz z krótkim odstępem tworzą tylko 
   page,
   scenario: s,
 }) => {
-  const school = await prepareOrderSchool(page, s);
+  const school = await test.step("Przygotowanie: dedykowana szkoła do zamówień", async () =>
+    prepareOrderSchool(page, s));
 
   await withOrderCleanup(page, s, school, async (track) => {
     /*
@@ -324,16 +348,20 @@ test("ORD-42: dwa szybkie kliknięcia Zapisz z krótkim odstępem tworzą tylko 
     }
 
     for (const orderId of createdOrderIds) {
-      expect(orderId).toMatch(/^\d+$/);
+      await test.step("Sprawdzenie: zgodność ze wzorcem — orderId; oczekiwane: /^\\d+$/", async () => {
+        expect(orderId).toMatch(/^\d+$/);
+      });
     }
 
     /*
      * Właściwa asercja ORD-42.
      */
-    expect(
-      createdOrderIds,
-      "Dwa szybkie kliknięcia Zapisz powinny utworzyć dokładnie jedno zamówienie",
-    ).toHaveLength(1);
+    await test.step("Sprawdzenie: liczba elementów — createdOrderIds; oczekiwane: 1", async () => {
+      expect(
+        createdOrderIds,
+        "Dwa szybkie kliknięcia Zapisz powinny utworzyć dokładnie jedno zamówienie",
+      ).toHaveLength(1);
+    });
   });
 });
 
@@ -341,7 +369,8 @@ test("ORD-43: dwa kolejne zamówienia dostają różne ID @school @order @identi
   page,
   scenario: s,
 }) => {
-  const school = await prepareOrderSchool(page, s);
+  const school = await test.step("Przygotowanie: dedykowana szkoła do zamówień", async () =>
+    prepareOrderSchool(page, s));
 
   await withOrderCleanup(page, s, school, async (track) => {
     const first = await createSimpleOrder(page, ORDER_PRODUCTS.physics7.products[1].code);
@@ -356,14 +385,20 @@ test("ORD-43: dwa kolejne zamówienia dostają różne ID @school @order @identi
      * Oba zamówienia powinny mieć
      * własne, numeryczne ID.
      */
-    expect(first.orderId).toMatch(/^\d+$/);
+    await test.step("Sprawdzenie: zgodność ze wzorcem — first.orderId; oczekiwane: /^\\d+$/", async () => {
+      expect(first.orderId).toMatch(/^\d+$/);
+    });
 
-    expect(second.orderId).toMatch(/^\d+$/);
+    await test.step("Sprawdzenie: zgodność ze wzorcem — second.orderId; oczekiwane: /^\\d+$/", async () => {
+      expect(second.orderId).toMatch(/^\d+$/);
+    });
 
     /*
      * Najważniejsza asercja ORD-43.
      */
-    expect(first.orderId).not.toBe(second.orderId);
+    await test.step("Sprawdzenie: negacja — zgodność wartości — first.orderId; oczekiwane: second.orderId", async () => {
+      expect(first.orderId).not.toBe(second.orderId);
+    });
 
     /*
      * Niczego tutaj nie usuwamy.
@@ -381,7 +416,8 @@ test("ORD-44: usunięcie pierwszego z dwóch zamówień nie usuwa drugiego @scho
   page,
   scenario: s,
 }) => {
-  const school = await prepareOrderSchool(page, s);
+  const school = await test.step("Przygotowanie: dedykowana szkoła do zamówień", async () =>
+    prepareOrderSchool(page, s));
 
   await withOrderCleanup(page, s, school, async (track, markCleaned) => {
     const first = await createSimpleOrder(page, ORDER_PRODUCTS.physics7.products[1].code);
@@ -398,7 +434,9 @@ test("ORD-44: usunięcie pierwszego z dwóch zamówień nie usuwa drugiego @scho
      */
     const deleteStatus = await deleteOrder(page, first.orderId);
 
-    expect(deleteStatus).toBe("DELETED");
+    await test.step('Sprawdzenie: zgodność wartości — deleteStatus; oczekiwane: "DELETED"', async () => {
+      expect(deleteStatus).toBe("DELETED");
+    });
 
     /*
      * Informujemy wspólny cleanup,
@@ -411,10 +449,11 @@ test("ORD-44: usunięcie pierwszego z dwóch zamówień nie usuwa drugiego @scho
      */
     const orders = await openOrders(page);
 
-    await expect(
-      orderRow(orders, second.orderId),
-      `Usunięcie ${first.orderId} nie powinno usunąć ${second.orderId}`,
-    ).toHaveCount(1);
+    await test.step("Sprawdzenie: liczba elementów w widoku — orderRow(orders, second.orderId); oczekiwane: 1", async () =>
+      expect(
+        orderRow(orders, second.orderId),
+        `Usunięcie ${first.orderId} nie powinno usunąć ${second.orderId}`,
+      ).toHaveCount(1));
 
     /*
      * second.orderId pozostaje w track(),
@@ -428,9 +467,11 @@ test("ORD-45: zamówienie utworzone dla szkoły A nie pojawia się w szkole B @s
   page,
   scenario: s,
 }) => {
-  const primary = await prepareOrderSchool(page, s, "primary");
+  const primary = await test.step("Przygotowanie: dedykowana szkoła do zamówień", async () =>
+    prepareOrderSchool(page, s, "primary"));
 
-  const secondary = await prepareOrderSchool(page, s, "secondary");
+  const secondary = await test.step("Przygotowanie: dedykowana szkoła do zamówień", async () =>
+    prepareOrderSchool(page, s, "secondary"));
 
   await s.app.openPanel("school", primary.id);
 
@@ -443,7 +484,8 @@ test("ORD-45: zamówienie utworzone dla szkoły A nie pojawia się w szkole B @s
 
     const secondaryOrders = await openOrders(page);
 
-    await expect(orderRow(secondaryOrders, created.orderId)).toHaveCount(0);
+    await test.step("Sprawdzenie: liczba elementów w widoku — orderRow(secondaryOrders, created.orderId); oczekiwane: 0", async () =>
+      expect(orderRow(secondaryOrders, created.orderId)).toHaveCount(0));
   });
 });
 
@@ -451,7 +493,8 @@ test("ORD-46: reload zachowuje ID, produkt i ilość zamówienia @school @order 
   page,
   scenario: s,
 }) => {
-  const school = await prepareOrderSchool(page, s);
+  const school = await test.step("Przygotowanie: dedykowana szkoła do zamówień", async () =>
+    prepareOrderSchool(page, s));
 
   await withOrderCleanup(page, s, school, async (track) => {
     const created = await createSimpleOrder(page, ORDER_PRODUCTS.physics7.products[1].code, "6");
@@ -462,17 +505,19 @@ test("ORD-46: reload zachowuje ID, produkt i ilość zamówienia @school @order 
 
     const orders = await openOrders(page);
 
-    await expect(orderRow(orders, created.orderId)).toHaveCount(1);
+    await test.step("Sprawdzenie: liczba elementów w widoku — orderRow(orders, created.orderId); oczekiwane: 1", async () =>
+      expect(orderRow(orders, created.orderId)).toHaveCount(1));
 
     const items = await expandOrderItems(orders, created.orderId);
 
-    await expectOrderItems(items, [
-      {
-        code: ORDER_PRODUCTS.physics7.products[1].code,
-        title: created.title,
-        quantity: "6",
-      },
-    ]);
+    await test.step("Sprawdzenie: expectOrderItems", async () =>
+      expectOrderItems(items, [
+        {
+          code: ORDER_PRODUCTS.physics7.products[1].code,
+          title: created.title,
+          quantity: "6",
+        },
+      ]));
   });
 });
 
@@ -480,22 +525,27 @@ test("ORD-47: zapisane zamówienie ma numeryczne ID i widoczny wiersz na liście
   page,
   scenario: s,
 }) => {
-  const school = await prepareOrderSchool(page, s);
+  const school = await test.step("Przygotowanie: dedykowana szkoła do zamówień", async () =>
+    prepareOrderSchool(page, s));
 
   await withOrderCleanup(page, s, school, async (track) => {
     const created = await createSimpleOrder(page, ORDER_PRODUCTS.physics7.products[1].code);
 
     await track(created.orderId);
 
-    expect(created.orderId).toMatch(/^\d+$/);
+    await test.step("Sprawdzenie: zgodność ze wzorcem — created.orderId; oczekiwane: /^\\d+$/", async () => {
+      expect(created.orderId).toMatch(/^\d+$/);
+    });
 
     const orders = ordersPanel(page);
 
     const row = orderRow(orders, created.orderId);
 
-    await expect(row).toHaveCount(1);
+    await test.step("Sprawdzenie: liczba elementów w widoku — row; oczekiwane: 1", async () =>
+      expect(row).toHaveCount(1));
 
-    await expect(row.getByRole("cell")).not.toHaveCount(0);
+    await test.step('Sprawdzenie: negacja — liczba elementów w widoku — row.getByRole("cell"); oczekiwane: 0', async () =>
+      expect(row.getByRole("cell")).not.toHaveCount(0));
   });
 });
 

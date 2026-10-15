@@ -19,19 +19,22 @@ test("EDIT-24: poprawna data urodzenia jest trwała @teacher @edit", async ({
   scenario: s,
   school,
 }) => {
-  const teacherId = await s.createTeacher(school.id, school.name);
+  const teacherId = await test.step("Przygotowanie: utworzenie nauczyciela testowego", async () =>
+    s.createTeacher(school.id, school.name));
 
   const form = await openBasicTeacherEdit(page, s.app);
 
   const birthDate = teacherBirthDateInput(form);
 
-  await expect(birthDate).toBeVisible();
+  await test.step("Sprawdzenie: widoczność elementu — birthDate", async () =>
+    expect(birthDate).toBeVisible());
 
   await birthDate.fill("15-05-1990");
 
   await birthDate.press("Tab");
 
-  await expect(birthDate).toHaveValue("15-05-1990");
+  await test.step('Sprawdzenie: wartość pola w widoku — birthDate; oczekiwane: "15-05-1990"', async () =>
+    expect(birthDate).toHaveValue("15-05-1990"));
 
   await saveBasicTeacherEdit(form);
 
@@ -41,13 +44,15 @@ test("EDIT-24: poprawna data urodzenia jest trwała @teacher @edit", async ({
    * Przy zapisie danych podstawowych
    * nazwisko zostaje znormalizowane.
    */
-  await expect(s.app.detail("lastName")).toHaveValue(normalizeTeacherName(s.id));
+  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("lastName"); oczekiwane: normalizeTeacherName(s.id)', async () =>
+    expect(s.app.detail("lastName")).toHaveValue(normalizeTeacherName(s.id)));
 
   /*
    * Data powinna być trwała
    * i prezentowana jako dd-mm-yyyy.
    */
-  await expect(s.app.detail("dateOfBirth")).toHaveValue("15-05-1990");
+  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("dateOfBirth"); oczekiwane: "15-05-1990"', async () =>
+    expect(s.app.detail("dateOfBirth")).toHaveValue("15-05-1990"));
 });
 
 /*
@@ -62,7 +67,8 @@ test("EDIT-25: niepoprawna data urodzenia blokuje zapis @teacher @edit @validati
   scenario: s,
   school,
 }) => {
-  const teacherId = await s.createTeacher(school.id, school.name);
+  const teacherId = await test.step("Przygotowanie: utworzenie nauczyciela testowego", async () =>
+    s.createTeacher(school.id, school.name));
 
   const form = await openBasicTeacherEdit(page, s.app);
 
@@ -82,7 +88,8 @@ test("EDIT-25: niepoprawna data urodzenia blokuje zapis @teacher @edit @validati
   /*
    * Formularz nie może się zamknąć.
    */
-  await expect(form).toBeVisible();
+  await test.step("Sprawdzenie: widoczność elementu — form", async () =>
+    expect(form).toBeVisible());
 
   await cancelTeacherDialog(form);
 
@@ -93,7 +100,8 @@ test("EDIT-25: niepoprawna data urodzenia blokuje zapis @teacher @edit @validati
    * więc nazwisko również nie powinno
    * zostać znormalizowane.
    */
-  await expect(s.app.detail("lastName")).toHaveValue(s.id);
+  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("lastName"); oczekiwane: s.id', async () =>
+    expect(s.app.detail("lastName")).toHaveValue(s.id));
 });
 
 /*
@@ -108,7 +116,8 @@ test("EDIT-26: pełny adres prywatny można dodać i jest zapisany w historii @t
   scenario: s,
   school,
 }) => {
-  const teacherId = await s.createTeacher(school.id, school.name);
+  const teacherId = await test.step("Przygotowanie: utworzenie nauczyciela testowego", async () =>
+    s.createTeacher(school.id, school.name));
 
   const address = {
     zipCode: "18-312",
@@ -157,13 +166,17 @@ test("EDIT-26: pełny adres prywatny można dodać i jest zapisany w historii @t
 
   const addressInput = page.locator("mat-form-field#address input");
 
-  await expect(addressInput).toHaveValue(new RegExp(address.zipCode));
+  await test.step("Sprawdzenie: wartość pola w widoku — addressInput; oczekiwane: new RegExp(address.zipCode)", async () =>
+    expect(addressInput).toHaveValue(new RegExp(address.zipCode)));
 
-  await expect(addressInput).toHaveValue(new RegExp(address.city, "i"));
+  await test.step('Sprawdzenie: wartość pola w widoku — addressInput; oczekiwane: new RegExp(address.city, "i")', async () =>
+    expect(addressInput).toHaveValue(new RegExp(address.city, "i")));
 
-  await expect(addressInput).toHaveValue(new RegExp(address.street, "i"));
+  await test.step('Sprawdzenie: wartość pola w widoku — addressInput; oczekiwane: new RegExp(address.street, "i")', async () =>
+    expect(addressInput).toHaveValue(new RegExp(address.street, "i")));
 
-  await expect(addressInput).toHaveValue(new RegExp(address.number));
+  await test.step("Sprawdzenie: wartość pola w widoku — addressInput; oczekiwane: new RegExp(address.number)", async () =>
+    expect(addressInput).toHaveValue(new RegExp(address.number)));
 
   /*
    * =====================================================
@@ -175,13 +188,17 @@ test("EDIT-26: pełny adres prywatny można dodać i jest zapisany w historii @t
 
   const addressAfterReload = page.locator("mat-form-field#address input");
 
-  await expect(addressAfterReload).toHaveValue(new RegExp(address.zipCode));
+  await test.step("Sprawdzenie: wartość pola w widoku — addressAfterReload; oczekiwane: new RegExp(address.zipCode)", async () =>
+    expect(addressAfterReload).toHaveValue(new RegExp(address.zipCode)));
 
-  await expect(addressAfterReload).toHaveValue(new RegExp(address.city, "i"));
+  await test.step('Sprawdzenie: wartość pola w widoku — addressAfterReload; oczekiwane: new RegExp(address.city, "i")', async () =>
+    expect(addressAfterReload).toHaveValue(new RegExp(address.city, "i")));
 
-  await expect(addressAfterReload).toHaveValue(new RegExp(address.street, "i"));
+  await test.step('Sprawdzenie: wartość pola w widoku — addressAfterReload; oczekiwane: new RegExp(address.street, "i")', async () =>
+    expect(addressAfterReload).toHaveValue(new RegExp(address.street, "i")));
 
-  await expect(addressAfterReload).toHaveValue(new RegExp(address.number));
+  await test.step("Sprawdzenie: wartość pola w widoku — addressAfterReload; oczekiwane: new RegExp(address.number)", async () =>
+    expect(addressAfterReload).toHaveValue(new RegExp(address.number)));
 
   /*
    * =====================================================
@@ -191,26 +208,29 @@ test("EDIT-26: pełny adres prywatny można dodać i jest zapisany w historii @t
 
   const history = await openTeacherHistory(page);
 
-  await expectTeacherPrivateAddressHistoryChange(
-    page,
-    history,
-    "Numer adres prywatny",
-    address.number,
-  );
+  await test.step("Sprawdzenie: expectTeacherPrivateAddressHistoryChange", async () =>
+    expectTeacherPrivateAddressHistoryChange(
+      page,
+      history,
+      "Numer adres prywatny",
+      address.number,
+    ));
 
-  await expectTeacherPrivateAddressHistoryChange(
-    page,
-    history,
-    "Miasto adres prywatny",
-    `${address.city} ${address.zipCode}`,
-  );
+  await test.step("Sprawdzenie: expectTeacherPrivateAddressHistoryChange", async () =>
+    expectTeacherPrivateAddressHistoryChange(
+      page,
+      history,
+      "Miasto adres prywatny",
+      `${address.city} ${address.zipCode}`,
+    ));
 
-  await expectTeacherPrivateAddressHistoryChange(
-    page,
-    history,
-    "Ulica adres prywatny",
-    address.street,
-  );
+  await test.step("Sprawdzenie: expectTeacherPrivateAddressHistoryChange", async () =>
+    expectTeacherPrivateAddressHistoryChange(
+      page,
+      history,
+      "Ulica adres prywatny",
+      address.street,
+    ));
 
   /*
    * =====================================================
@@ -229,7 +249,8 @@ test("EDIT-27: wszystkie dane istniejącego adresu prywatnego można zmienić @t
   scenario: s,
   school,
 }) => {
-  const teacherId = await s.createTeacher(school.id, school.name);
+  const teacherId = await test.step("Przygotowanie: utworzenie nauczyciela testowego", async () =>
+    s.createTeacher(school.id, school.name));
 
   const firstAddress = {
     zipCode: "18-312",
@@ -276,13 +297,17 @@ test("EDIT-27: wszystkie dane istniejącego adresu prywatnego można zmienić @t
 
   let addressInput = page.locator("mat-form-field#address input");
 
-  await expect(addressInput).toHaveValue(/18-312/);
+  await test.step("Sprawdzenie: wartość pola w widoku — addressInput; oczekiwane: /18-312/", async () =>
+    expect(addressInput).toHaveValue(/18-312/));
 
-  await expect(addressInput).toHaveValue(/Górskie Ponikły-Stok/i);
+  await test.step("Sprawdzenie: wartość pola w widoku — addressInput; oczekiwane: /Górskie Ponikły-Stok/i", async () =>
+    expect(addressInput).toHaveValue(/Górskie Ponikły-Stok/i));
 
-  await expect(addressInput).toHaveValue(/Kartuska/i);
+  await test.step("Sprawdzenie: wartość pola w widoku — addressInput; oczekiwane: /Kartuska/i", async () =>
+    expect(addressInput).toHaveValue(/Kartuska/i));
 
-  await expect(addressInput).toHaveValue(/123/);
+  await test.step("Sprawdzenie: wartość pola w widoku — addressInput; oczekiwane: /123/", async () =>
+    expect(addressInput).toHaveValue(/123/));
 
   /*
    * =====================================================
@@ -304,7 +329,8 @@ test("EDIT-27: wszystkie dane istniejącego adresu prywatnego można zmienić @t
 
   addressInput = page.locator("mat-form-field#address input");
 
-  await expect(addressInput).toHaveValue("");
+  await test.step('Sprawdzenie: wartość pola w widoku — addressInput; oczekiwane: ""', async () =>
+    expect(addressInput).toHaveValue(""));
 
   /*
    * =====================================================
@@ -333,13 +359,17 @@ test("EDIT-27: wszystkie dane istniejącego adresu prywatnego można zmienić @t
 
   addressInput = page.locator("mat-form-field#address input");
 
-  await expect(addressInput).toHaveValue(/80-395/);
+  await test.step("Sprawdzenie: wartość pola w widoku — addressInput; oczekiwane: /80-395/", async () =>
+    expect(addressInput).toHaveValue(/80-395/));
 
-  await expect(addressInput).toHaveValue(/Gdańsk/i);
+  await test.step("Sprawdzenie: wartość pola w widoku — addressInput; oczekiwane: /Gdańsk/i", async () =>
+    expect(addressInput).toHaveValue(/Gdańsk/i));
 
-  await expect(addressInput).toHaveValue(/Grunwaldzka/i);
+  await test.step("Sprawdzenie: wartość pola w widoku — addressInput; oczekiwane: /Grunwaldzka/i", async () =>
+    expect(addressInput).toHaveValue(/Grunwaldzka/i));
 
-  await expect(addressInput).toHaveValue(/567/);
+  await test.step("Sprawdzenie: wartość pola w widoku — addressInput; oczekiwane: /567/", async () =>
+    expect(addressInput).toHaveValue(/567/));
 
   /*
    * =====================================================
@@ -347,13 +377,17 @@ test("EDIT-27: wszystkie dane istniejącego adresu prywatnego można zmienić @t
    * =====================================================
    */
 
-  await expect(addressInput).not.toHaveValue(/18-312/);
+  await test.step("Sprawdzenie: negacja — wartość pola w widoku — addressInput; oczekiwane: /18-312/", async () =>
+    expect(addressInput).not.toHaveValue(/18-312/));
 
-  await expect(addressInput).not.toHaveValue(/Górskie Ponikły-Stok/i);
+  await test.step("Sprawdzenie: negacja — wartość pola w widoku — addressInput; oczekiwane: /Górskie Ponikły-Stok/i", async () =>
+    expect(addressInput).not.toHaveValue(/Górskie Ponikły-Stok/i));
 
-  await expect(addressInput).not.toHaveValue(/Kartuska/i);
+  await test.step("Sprawdzenie: negacja — wartość pola w widoku — addressInput; oczekiwane: /Kartuska/i", async () =>
+    expect(addressInput).not.toHaveValue(/Kartuska/i));
 
-  await expect(addressInput).not.toHaveValue(/123/);
+  await test.step("Sprawdzenie: negacja — wartość pola w widoku — addressInput; oczekiwane: /123/", async () =>
+    expect(addressInput).not.toHaveValue(/123/));
 
   /*
    * =====================================================
@@ -365,13 +399,17 @@ test("EDIT-27: wszystkie dane istniejącego adresu prywatnego można zmienić @t
 
   const addressAfterReload = page.locator("mat-form-field#address input");
 
-  await expect(addressAfterReload).toHaveValue(/80-395/);
+  await test.step("Sprawdzenie: wartość pola w widoku — addressAfterReload; oczekiwane: /80-395/", async () =>
+    expect(addressAfterReload).toHaveValue(/80-395/));
 
-  await expect(addressAfterReload).toHaveValue(/Gdańsk/i);
+  await test.step("Sprawdzenie: wartość pola w widoku — addressAfterReload; oczekiwane: /Gdańsk/i", async () =>
+    expect(addressAfterReload).toHaveValue(/Gdańsk/i));
 
-  await expect(addressAfterReload).toHaveValue(/Grunwaldzka/i);
+  await test.step("Sprawdzenie: wartość pola w widoku — addressAfterReload; oczekiwane: /Grunwaldzka/i", async () =>
+    expect(addressAfterReload).toHaveValue(/Grunwaldzka/i));
 
-  await expect(addressAfterReload).toHaveValue(/567/);
+  await test.step("Sprawdzenie: wartość pola w widoku — addressAfterReload; oczekiwane: /567/", async () =>
+    expect(addressAfterReload).toHaveValue(/567/));
 
   /*
    * =====================================================
@@ -385,51 +423,57 @@ test("EDIT-27: wszystkie dane istniejącego adresu prywatnego można zmienić @t
    * Drugi adres
    */
 
-  await expectTeacherPrivateAddressHistoryChange(
-    page,
-    history,
-    "Numer adres prywatny",
-    secondAddress.number,
-  );
+  await test.step("Sprawdzenie: expectTeacherPrivateAddressHistoryChange", async () =>
+    expectTeacherPrivateAddressHistoryChange(
+      page,
+      history,
+      "Numer adres prywatny",
+      secondAddress.number,
+    ));
 
-  await expectTeacherPrivateAddressHistoryChange(
-    page,
-    history,
-    "Miasto adres prywatny",
-    `${secondAddress.city} ${secondAddress.zipCode}`,
-  );
+  await test.step("Sprawdzenie: expectTeacherPrivateAddressHistoryChange", async () =>
+    expectTeacherPrivateAddressHistoryChange(
+      page,
+      history,
+      "Miasto adres prywatny",
+      `${secondAddress.city} ${secondAddress.zipCode}`,
+    ));
 
-  await expectTeacherPrivateAddressHistoryChange(
-    page,
-    history,
-    "Ulica adres prywatny",
-    secondAddress.street,
-  );
+  await test.step("Sprawdzenie: expectTeacherPrivateAddressHistoryChange", async () =>
+    expectTeacherPrivateAddressHistoryChange(
+      page,
+      history,
+      "Ulica adres prywatny",
+      secondAddress.street,
+    ));
 
   /*
    * Pierwszy adres
    */
 
-  await expectTeacherPrivateAddressHistoryChange(
-    page,
-    history,
-    "Numer adres prywatny",
-    firstAddress.number,
-  );
+  await test.step("Sprawdzenie: expectTeacherPrivateAddressHistoryChange", async () =>
+    expectTeacherPrivateAddressHistoryChange(
+      page,
+      history,
+      "Numer adres prywatny",
+      firstAddress.number,
+    ));
 
-  await expectTeacherPrivateAddressHistoryChange(
-    page,
-    history,
-    "Miasto adres prywatny",
-    `${firstAddress.city} ${firstAddress.zipCode}`,
-  );
+  await test.step("Sprawdzenie: expectTeacherPrivateAddressHistoryChange", async () =>
+    expectTeacherPrivateAddressHistoryChange(
+      page,
+      history,
+      "Miasto adres prywatny",
+      `${firstAddress.city} ${firstAddress.zipCode}`,
+    ));
 
-  await expectTeacherPrivateAddressHistoryChange(
-    page,
-    history,
-    "Ulica adres prywatny",
-    firstAddress.street,
-  );
+  await test.step("Sprawdzenie: expectTeacherPrivateAddressHistoryChange", async () =>
+    expectTeacherPrivateAddressHistoryChange(
+      page,
+      history,
+      "Ulica adres prywatny",
+      firstAddress.street,
+    ));
 
   /*
    * =====================================================
@@ -439,15 +483,18 @@ test("EDIT-27: wszystkie dane istniejącego adresu prywatnego można zmienić @t
 
   await s.app.openPanel("teacher", teacherId);
 
-  await expect(s.app.detail("email")).toHaveValue(s.email);
+  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("email"); oczekiwane: s.email', async () =>
+    expect(s.app.detail("email")).toHaveValue(s.email));
 
-  await expect(s.app.detail("firstName")).toHaveValue("Testowy");
+  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("firstName"); oczekiwane: "Testowy"', async () =>
+    expect(s.app.detail("firstName")).toHaveValue("Testowy"));
 
-  await expect(
-    page.getByRole("row").filter({
-      hasText: school.name,
-    }),
-  ).toHaveCount(1);
+  await test.step('Sprawdzenie: liczba elementów w widoku — page.getByRole("row").filter({ hasText: school.name, }); oczekiwane: 1', async () =>
+    expect(
+      page.getByRole("row").filter({
+        hasText: school.name,
+      }),
+    ).toHaveCount(1));
 
   /*
    * =====================================================

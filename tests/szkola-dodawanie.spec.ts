@@ -85,13 +85,19 @@ test("SCH-03: minimalny poprawny formularz tworzy szkołę @school @school-add @
   const { schoolId, saveRequestCount } = await saveSchoolAdd(page, form);
   await s.app.markTestRecord();
 
-  await expect(s.app.detail("name")).toHaveValue(s.schoolName);
-  await expect(s.app.detail("address")).toHaveValue(
-    `${DEFAULT_POSTAL_CODE} ${DEFAULT_CITY} ${number}`,
-  );
-  await expect(s.app.detail("level")).toHaveValue("Szkoła Podstawowa");
-  await expect(page.getByRole("checkbox", { name: "Testowy", exact: true })).toBeChecked();
-  expect(saveRequestCount).toBe(1);
+  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("name"); oczekiwane: s.schoolName', async () =>
+    expect(s.app.detail("name")).toHaveValue(s.schoolName));
+  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("address"); oczekiwane: `${DEFAULT_POSTAL_CODE} ${DEFAULT_CITY} ${number}`', async () =>
+    expect(s.app.detail("address")).toHaveValue(
+      `${DEFAULT_POSTAL_CODE} ${DEFAULT_CITY} ${number}`,
+    ));
+  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("level"); oczekiwane: "Szkoła Podstawowa"', async () =>
+    expect(s.app.detail("level")).toHaveValue("Szkoła Podstawowa"));
+  await test.step('Sprawdzenie: zaznaczenie opcji — page.getByRole("checkbox", { name: "Testowy", exact: true })', async () =>
+    expect(page.getByRole("checkbox", { name: "Testowy", exact: true })).toBeChecked());
+  await test.step("Sprawdzenie: zgodność wartości — saveRequestCount; oczekiwane: 1", async () => {
+    expect(saveRequestCount).toBe(1);
+  });
   await recordRetainedSchool(s, schoolId, number);
 });
 
@@ -104,7 +110,8 @@ test("SCH-04: brak nazwy blokuje zapis szkoły @school @school-add @validation",
   const address = await openSchoolAddressForm(page, form);
   await saveSchoolAddress(address, DEFAULT_POSTAL_CODE, DEFAULT_CITY, String(Date.now()));
 
-  await expectSchoolSaveBlocked(page, form);
+  await test.step("Sprawdzenie: expectSchoolSaveBlocked", async () =>
+    expectSchoolSaveBlocked(page, form));
   await cancelSchoolAdd(form);
   await s.app.searchMissing("school", "Nazwa szkoły", s.schoolName);
 });
@@ -118,7 +125,8 @@ test("SCH-05: brak typu blokuje zapis szkoły @school @school-add @validation", 
   const address = await openSchoolAddressForm(page, form);
   await saveSchoolAddress(address, DEFAULT_POSTAL_CODE, DEFAULT_CITY, String(Date.now()));
 
-  await expectSchoolSaveBlocked(page, form);
+  await test.step("Sprawdzenie: expectSchoolSaveBlocked", async () =>
+    expectSchoolSaveBlocked(page, form));
   await cancelSchoolAdd(form);
   await s.app.searchMissing("school", "Nazwa szkoły", s.schoolName);
 });
@@ -131,7 +139,8 @@ test("SCH-06: brak adresu blokuje zapis szkoły @school @school-add @validation 
   await fillSchoolName(s.app, form, s.schoolName);
   await selectSchoolType(page, form);
 
-  await expectSchoolSaveBlocked(page, form);
+  await test.step("Sprawdzenie: expectSchoolSaveBlocked", async () =>
+    expectSchoolSaveBlocked(page, form));
   await cancelSchoolAdd(form);
   await s.app.searchMissing("school", "Nazwa szkoły", s.schoolName);
 });
@@ -146,22 +155,26 @@ test("SCH-09: anulowanie adresu nie przenosi danych do formularza szkoły @schoo
   await selectSchoolType(page, form);
   const address = await openSchoolAddressForm(page, form);
   const city = await searchSchoolCity(address, DEFAULT_POSTAL_CODE);
-  await expect(city).toHaveCount(1);
+  await test.step("Sprawdzenie: liczba elementów w widoku — city; oczekiwane: 1", async () =>
+    expect(city).toHaveCount(1));
   await city.click();
   await address.locator('input[id="number"]').fill(number);
   await address.getByRole("button", { name: "Anuluj", exact: true }).click();
-  await expect(address).toHaveCount(0);
+  await test.step("Sprawdzenie: liczba elementów w widoku — address; oczekiwane: 0", async () =>
+    expect(address).toHaveCount(0));
 
-  await expect
-    .poll(async () => {
-      const values = await form
-        .locator("input")
-        .evaluateAll((inputs) => inputs.map((input) => (input as HTMLInputElement).value));
+  await test.step('Sprawdzenie: zgodność wartości — async () => { const values = await form .locator("input") .evaluateAll((inputs) => inputs.map((input) => (input as…; oczekiwane: false', async () =>
+    expect
+      .poll(async () => {
+        const values = await form
+          .locator("input")
+          .evaluateAll((inputs) => inputs.map((input) => (input as HTMLInputElement).value));
 
-      return [DEFAULT_POSTAL_CODE, DEFAULT_CITY, number].some((value) => values.includes(value));
-    })
-    .toBe(false);
-  await expectSchoolSaveBlocked(page, form);
+        return [DEFAULT_POSTAL_CODE, DEFAULT_CITY, number].some((value) => values.includes(value));
+      })
+      .toBe(false));
+  await test.step("Sprawdzenie: expectSchoolSaveBlocked", async () =>
+    expectSchoolSaveBlocked(page, form));
   await cancelSchoolAdd(form);
   await s.app.searchMissing("school", "Nazwa szkoły", s.schoolName);
 });
@@ -178,9 +191,12 @@ test("SCH-10: dwa szybkie kliknięcia Zapisz tworzą tylko jedną szkołę @scho
   });
   await s.app.markTestRecord();
 
-  expect(saveRequestCount).toBe(1);
+  await test.step("Sprawdzenie: zgodność wartości — saveRequestCount; oczekiwane: 1", async () => {
+    expect(saveRequestCount).toBe(1);
+  });
   await s.app.searchSchool(s.schoolName, schoolId);
-  await expect(page.getByRole("heading", { name: "Rekordów: 1", exact: true })).toBeVisible();
+  await test.step('Sprawdzenie: widoczność elementu — page.getByRole("heading", { name: "Rekordów: 1", exact: true })', async () =>
+    expect(page.getByRole("heading", { name: "Rekordów: 1", exact: true })).toBeVisible());
   await recordRetainedSchool(s, schoolId, number);
 });
 
@@ -194,11 +210,14 @@ test("SCH-11: dane szkoły są trwałe po ponownym otwarciu @school @school-add 
   await s.app.markTestRecord();
 
   await s.app.openPanel("school", schoolId);
-  await expect(s.app.detail("name")).toHaveValue(s.schoolName);
-  await expect(s.app.detail("address")).toHaveValue(
-    `${DEFAULT_POSTAL_CODE} ${DEFAULT_CITY} ${number}`,
-  );
-  await expect(page.getByRole("checkbox", { name: "Testowy", exact: true })).toBeChecked();
+  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("name"); oczekiwane: s.schoolName', async () =>
+    expect(s.app.detail("name")).toHaveValue(s.schoolName));
+  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("address"); oczekiwane: `${DEFAULT_POSTAL_CODE} ${DEFAULT_CITY} ${number}`', async () =>
+    expect(s.app.detail("address")).toHaveValue(
+      `${DEFAULT_POSTAL_CODE} ${DEFAULT_CITY} ${number}`,
+    ));
+  await test.step('Sprawdzenie: zaznaczenie opcji — page.getByRole("checkbox", { name: "Testowy", exact: true })', async () =>
+    expect(page.getByRole("checkbox", { name: "Testowy", exact: true })).toBeChecked());
   await recordRetainedSchool(s, schoolId, number);
 });
 
@@ -216,9 +235,12 @@ test("SCH-12: nową szkołę można znaleźć po nazwie i zidentyfikować po ID 
     .results("school")
     .getByRole("row")
     .filter({ has: page.getByRole("gridcell", { name: schoolId, exact: true }) });
-  await expect(row).toHaveCount(1);
-  await expect(row).toContainText(s.schoolName);
-  await expect(page.getByRole("heading", { name: "Rekordów: 1", exact: true })).toBeVisible();
+  await test.step("Sprawdzenie: liczba elementów w widoku — row; oczekiwane: 1", async () =>
+    expect(row).toHaveCount(1));
+  await test.step("Sprawdzenie: obecność tekstu w widoku — row; oczekiwane: s.schoolName", async () =>
+    expect(row).toContainText(s.schoolName));
+  await test.step('Sprawdzenie: widoczność elementu — page.getByRole("heading", { name: "Rekordów: 1", exact: true })', async () =>
+    expect(page.getByRole("heading", { name: "Rekordów: 1", exact: true })).toBeVisible());
   await recordRetainedSchool(s, schoolId, number);
 });
 
@@ -233,9 +255,12 @@ test("SCH-13: słownik zawiera wszystkie obsługiwane typy szkół @school @scho
   const form = await openSchoolAddForm(s.app);
   await form.getByRole("combobox").first().click();
 
-  await expect(page.getByRole("option")).toHaveCount(SUPPORTED_SCHOOL_TYPES.length);
+  await test.step('Sprawdzenie: liczba elementów w widoku — page.getByRole("option"); oczekiwane: SUPPORTED_SCHOOL_TYPES.length', async () =>
+    expect(page.getByRole("option")).toHaveCount(SUPPORTED_SCHOOL_TYPES.length));
   const schoolTypes = (await page.getByRole("option").allTextContents()).map((type) => type.trim());
-  expect(schoolTypes).toEqual(SUPPORTED_SCHOOL_TYPES);
+  await test.step("Sprawdzenie: zgodność całej struktury i wartości — schoolTypes; oczekiwane: SUPPORTED_SCHOOL_TYPES", async () => {
+    expect(schoolTypes).toEqual(SUPPORTED_SCHOOL_TYPES);
+  });
   await s.record("schoolTypes", JSON.stringify(schoolTypes));
 
   await page.getByRole("option", { name: "Szkoła podstawowa", exact: true }).click();
@@ -252,8 +277,10 @@ test("SCH-14: formularz tworzy liceum z właściwym typem @school @school-add @p
   await s.app.markTestRecord();
   await s.app.openPanel("school", schoolId);
 
-  await expect(s.app.detail("level")).toHaveValue("Szkoła Średnia");
-  await expect(s.app.detail("name")).toHaveValue(s.schoolName);
+  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("level"); oczekiwane: "Szkoła Średnia"', async () =>
+    expect(s.app.detail("level")).toHaveValue("Szkoła Średnia"));
+  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("name"); oczekiwane: s.schoolName', async () =>
+    expect(s.app.detail("name")).toHaveValue(s.schoolName));
   await s.record("schoolType", "Liceum");
   await recordRetainedSchool(s, schoolId, number);
 });
@@ -269,11 +296,14 @@ for (const { id, formType, panelLevel } of additionalSchoolTypeCases) {
     await s.app.markTestRecord();
     await s.app.openPanel("school", schoolId);
 
-    await expect(s.app.detail("name")).toHaveValue(s.schoolName);
-    await expect(s.app.detail("address")).toHaveValue(
-      `${DEFAULT_POSTAL_CODE} ${DEFAULT_CITY} ${number}`,
-    );
-    await expect(s.app.detail("level")).toHaveValue(new RegExp(`^${panelLevel}$`, "i"));
+    await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("name"); oczekiwane: s.schoolName', async () =>
+      expect(s.app.detail("name")).toHaveValue(s.schoolName));
+    await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("address"); oczekiwane: `${DEFAULT_POSTAL_CODE} ${DEFAULT_CITY} ${number}`', async () =>
+      expect(s.app.detail("address")).toHaveValue(
+        `${DEFAULT_POSTAL_CODE} ${DEFAULT_CITY} ${number}`,
+      ));
+    await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("level"); oczekiwane: new RegExp(`^${panelLevel}$`, "i")', async () =>
+      expect(s.app.detail("level")).toHaveValue(new RegExp(`^${panelLevel}$`, "i")));
     await s.record("schoolType", formType);
     await s.record("displayedSchoolLevel", await s.app.detail("level").inputValue());
     await recordRetainedSchool(s, schoolId, number);
@@ -302,8 +332,11 @@ test("SCH-17: nazwa złożona wyłącznie ze spacji nie pozwala utworzyć szkoł
   const address = await openSchoolAddressForm(page, form);
   await saveSchoolAddress(address, DEFAULT_POSTAL_CODE, DEFAULT_CITY, String(Date.now()));
 
-  await expectSchoolSaveBlocked(page, form);
-  expect(saveAttempts).toBe(0);
+  await test.step("Sprawdzenie: expectSchoolSaveBlocked", async () =>
+    expectSchoolSaveBlocked(page, form));
+  await test.step("Sprawdzenie: zgodność wartości — saveAttempts; oczekiwane: 0", async () => {
+    expect(saveAttempts).toBe(0);
+  });
 });
 
 test("SCH-18: nazwa z polskimi znakami i interpunkcją jest zachowana @school @school-add @positive @name", async ({
@@ -316,7 +349,8 @@ test("SCH-18: nazwa z polskimi znakami i interpunkcją jest zachowana @school @s
   const { schoolId } = await saveSchoolAdd(page, form);
   await s.app.markTestRecord();
 
-  await expect(s.app.detail("name")).toHaveValue(schoolName);
+  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("name"); oczekiwane: schoolName', async () =>
+    expect(s.app.detail("name")).toHaveValue(schoolName));
   await s.record("createdSchoolName", schoolName);
   await recordRetainedSchool(s, schoolId, number);
 });
@@ -331,7 +365,8 @@ test("SCH-27: spacje na brzegach nazwy są usuwane przy zapisie @school @school-
   const { schoolId } = await saveSchoolAdd(page, form);
   await s.app.markTestRecord();
 
-  await expect(s.app.detail("name")).toHaveValue(s.schoolName);
+  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("name"); oczekiwane: s.schoolName', async () =>
+    expect(s.app.detail("name")).toHaveValue(s.schoolName));
   await s.record("submittedSchoolName", nameWithSpaces);
   await s.record("createdSchoolName", await s.app.detail("name").inputValue());
   await recordRetainedSchool(s, schoolId, number);
@@ -350,11 +385,15 @@ test("SCH-28: identyczna nazwa i adres mogą utworzyć dwa różne rekordy @scho
   const { schoolId: secondSchoolId } = await saveSchoolAdd(page, secondForm);
   await s.app.markTestRecord();
 
-  expect(secondSchoolId).not.toBe(firstSchoolId);
-  await expect(s.app.detail("name")).toHaveValue(s.schoolName);
-  await expect(s.app.detail("address")).toHaveValue(
-    `${DEFAULT_POSTAL_CODE} ${DEFAULT_CITY} ${number}`,
-  );
+  await test.step("Sprawdzenie: negacja — zgodność wartości — secondSchoolId; oczekiwane: firstSchoolId", async () => {
+    expect(secondSchoolId).not.toBe(firstSchoolId);
+  });
+  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("name"); oczekiwane: s.schoolName', async () =>
+    expect(s.app.detail("name")).toHaveValue(s.schoolName));
+  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("address"); oczekiwane: `${DEFAULT_POSTAL_CODE} ${DEFAULT_CITY} ${number}`', async () =>
+    expect(s.app.detail("address")).toHaveValue(
+      `${DEFAULT_POSTAL_CODE} ${DEFAULT_CITY} ${number}`,
+    ));
   await s.app.searchSchool(s.schoolName, secondSchoolId, 2);
   await s.record("schoolIds", JSON.stringify([firstSchoolId, secondSchoolId]));
   await s.record("schoolAddress", `${DEFAULT_POSTAL_CODE} ${DEFAULT_CITY} ${number}`);
@@ -375,10 +414,13 @@ test("SCH-29: identyczna nazwa pod różnymi adresami tworzy dwa różne rekordy
   const { schoolId: secondSchoolId } = await saveSchoolAdd(page, secondForm);
   await s.app.markTestRecord();
 
-  expect(secondSchoolId).not.toBe(firstSchoolId);
-  await expect(s.app.detail("address")).toHaveValue(
-    `${DEFAULT_POSTAL_CODE} ${DEFAULT_CITY} ${secondNumber}`,
-  );
+  await test.step("Sprawdzenie: negacja — zgodność wartości — secondSchoolId; oczekiwane: firstSchoolId", async () => {
+    expect(secondSchoolId).not.toBe(firstSchoolId);
+  });
+  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("address"); oczekiwane: `${DEFAULT_POSTAL_CODE} ${DEFAULT_CITY} ${secondNumber}`', async () =>
+    expect(s.app.detail("address")).toHaveValue(
+      `${DEFAULT_POSTAL_CODE} ${DEFAULT_CITY} ${secondNumber}`,
+    ));
   await s.app.searchSchool(s.schoolName, secondSchoolId, 2);
   await s.record("schoolIds", JSON.stringify([firstSchoolId, secondSchoolId]));
   await s.record(
@@ -407,13 +449,14 @@ test("SCH-07: poprawny kod pocztowy pozwala wybrać miejscowość i zapisać adr
   await saveSchoolAddress(address, DEFAULT_POSTAL_CODE, DEFAULT_CITY, number);
 
   const expectedAddress = `${DEFAULT_POSTAL_CODE} ${DEFAULT_CITY} ${number}`;
-  await expect
-    .poll(() =>
-      form
-        .locator("input")
-        .evaluateAll((inputs) => inputs.map((input) => (input as HTMLInputElement).value)),
-    )
-    .toEqual(expect.arrayContaining([DEFAULT_POSTAL_CODE, DEFAULT_CITY, number]));
+  await test.step('Sprawdzenie: zgodność całej struktury i wartości — () => form .locator("input") .evaluateAll((inputs) => inputs.map((input) => (input as HTMLInputElement).value)); oczekiwane: expect.arrayContaining([DEFAULT_POSTAL_CODE, DEFAULT_CITY, number])', async () =>
+    expect
+      .poll(() =>
+        form
+          .locator("input")
+          .evaluateAll((inputs) => inputs.map((input) => (input as HTMLInputElement).value)),
+      )
+      .toEqual(expect.arrayContaining([DEFAULT_POSTAL_CODE, DEFAULT_CITY, number])));
   await s.record("schoolAddress", expectedAddress);
   await cancelSchoolAdd(form);
   await s.app.searchMissing("school", "Nazwa szkoły", s.schoolName);
@@ -431,29 +474,37 @@ test("SCH-08: nieznany kod pocztowy blokuje zapis adresu i szkoły @school @scho
   await typeSchoolPostalCode(address, unknownPostalCode);
   const city = address.getByRole("row").filter({ hasText: unknownPostalCode });
 
-  await expect(city).toHaveCount(0);
-  await expect(page.getByRole("option", { name: unknownPostalCode, exact: true })).toHaveCount(0);
+  await test.step("Sprawdzenie: liczba elementów w widoku — city; oczekiwane: 0", async () =>
+    expect(city).toHaveCount(0));
+  await test.step('Sprawdzenie: liczba elementów w widoku — page.getByRole("option", { name: unknownPostalCode, exact: true }); oczekiwane: 0', async () =>
+    expect(page.getByRole("option", { name: unknownPostalCode, exact: true })).toHaveCount(0));
   await address.getByRole("button", { name: "Zapisz", exact: true }).click();
   const missingAddress = page.locator("mat-dialog-container").filter({
     has: page.getByRole("heading", { name: "Zapisywanie adresu", exact: true }),
   });
-  await expect(missingAddress).toContainText("Brak wpisanego adresu");
+  await test.step('Sprawdzenie: obecność tekstu w widoku — missingAddress; oczekiwane: "Brak wpisanego adresu"', async () =>
+    expect(missingAddress).toContainText("Brak wpisanego adresu"));
   await missingAddress.getByRole("button", { name: "OK", exact: true }).click();
-  await expect(missingAddress).toHaveCount(0);
-  await expect(address).toBeVisible();
+  await test.step("Sprawdzenie: liczba elementów w widoku — missingAddress; oczekiwane: 0", async () =>
+    expect(missingAddress).toHaveCount(0));
+  await test.step("Sprawdzenie: widoczność elementu — address", async () =>
+    expect(address).toBeVisible());
   await address.getByRole("button", { name: "Anuluj", exact: true }).click();
-  await expect(address).toHaveCount(0);
+  await test.step("Sprawdzenie: liczba elementów w widoku — address; oczekiwane: 0", async () =>
+    expect(address).toHaveCount(0));
 
-  await expect
-    .poll(async () => {
-      const values = await form
-        .locator("input")
-        .evaluateAll((inputs) => inputs.map((input) => (input as HTMLInputElement).value));
+  await test.step('Sprawdzenie: zgodność wartości — async () => { const values = await form .locator("input") .evaluateAll((inputs) => inputs.map((input) => (input as…; oczekiwane: false', async () =>
+    expect
+      .poll(async () => {
+        const values = await form
+          .locator("input")
+          .evaluateAll((inputs) => inputs.map((input) => (input as HTMLInputElement).value));
 
-      return values.includes(unknownPostalCode);
-    })
-    .toBe(false);
-  await expectSchoolSaveBlocked(page, form);
+        return values.includes(unknownPostalCode);
+      })
+      .toBe(false));
+  await test.step("Sprawdzenie: expectSchoolSaveBlocked", async () =>
+    expectSchoolSaveBlocked(page, form));
   await cancelSchoolAdd(form);
   await s.app.searchMissing("school", "Nazwa szkoły", s.schoolName);
 });
@@ -469,13 +520,14 @@ test("SCH-19: numer budynku z literą jest zachowany w adresie @school @school-a
   const address = await openSchoolAddressForm(page, form);
   await saveSchoolAddress(address, DEFAULT_POSTAL_CODE, DEFAULT_CITY, number);
 
-  await expect
-    .poll(() =>
-      form
-        .locator("input")
-        .evaluateAll((inputs) => inputs.map((input) => (input as HTMLInputElement).value)),
-    )
-    .toEqual(expect.arrayContaining([DEFAULT_POSTAL_CODE, DEFAULT_CITY, number]));
+  await test.step('Sprawdzenie: zgodność całej struktury i wartości — () => form .locator("input") .evaluateAll((inputs) => inputs.map((input) => (input as HTMLInputElement).value)); oczekiwane: expect.arrayContaining([DEFAULT_POSTAL_CODE, DEFAULT_CITY, number])', async () =>
+    expect
+      .poll(() =>
+        form
+          .locator("input")
+          .evaluateAll((inputs) => inputs.map((input) => (input as HTMLInputElement).value)),
+      )
+      .toEqual(expect.arrayContaining([DEFAULT_POSTAL_CODE, DEFAULT_CITY, number])));
   await cancelSchoolAdd(form);
 });
 
@@ -493,11 +545,15 @@ test("SCH-20: wyczyszczenie wyszukiwania adresu usuwa wpisane kryteria @school @
   await street.fill("Testowa");
   await address.getByRole("button", { name: "Wyczyść pola", exact: true }).click();
 
-  await expect(postalCode).toHaveValue("");
-  await expect(city).toHaveValue("");
-  await expect(street).toHaveValue("");
+  await test.step('Sprawdzenie: wartość pola w widoku — postalCode; oczekiwane: ""', async () =>
+    expect(postalCode).toHaveValue(""));
+  await test.step('Sprawdzenie: wartość pola w widoku — city; oczekiwane: ""', async () =>
+    expect(city).toHaveValue(""));
+  await test.step('Sprawdzenie: wartość pola w widoku — street; oczekiwane: ""', async () =>
+    expect(street).toHaveValue(""));
   await address.getByRole("button", { name: "Anuluj", exact: true }).click();
-  await expect(address).toHaveCount(0);
+  await test.step("Sprawdzenie: liczba elementów w widoku — address; oczekiwane: 0", async () =>
+    expect(address).toHaveCount(0));
   await cancelSchoolAdd(form);
 });
 
@@ -510,9 +566,10 @@ test("SCH-26: numer budynku z separatorem jest zachowany po utworzeniu szkoły @
   const { schoolId } = await saveSchoolAdd(page, form);
   await s.app.markTestRecord();
 
-  await expect(s.app.detail("address")).toHaveValue(
-    `${DEFAULT_POSTAL_CODE} ${DEFAULT_CITY} ${number}`,
-  );
+  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("address"); oczekiwane: `${DEFAULT_POSTAL_CODE} ${DEFAULT_CITY} ${number}`', async () =>
+    expect(s.app.detail("address")).toHaveValue(
+      `${DEFAULT_POSTAL_CODE} ${DEFAULT_CITY} ${number}`,
+    ));
   await recordRetainedSchool(s, schoolId, number);
 });
 
@@ -525,20 +582,26 @@ test("SCH-41: brak numeru budynku blokuje zapis adresu i szkoły @school @school
   await selectSchoolType(page, form);
   const address = await openSchoolAddressForm(page, form);
   const city = await searchSchoolCity(address, DEFAULT_POSTAL_CODE);
-  await expect(city).toHaveCount(1);
+  await test.step("Sprawdzenie: liczba elementów w widoku — city; oczekiwane: 1", async () =>
+    expect(city).toHaveCount(1));
   await city.click();
 
   await address.getByRole("button", { name: "Zapisz", exact: true }).click();
   const missingAddress = page.locator("mat-dialog-container").filter({
     has: page.getByRole("heading", { name: "Zapisywanie adresu", exact: true }),
   });
-  await expect(missingAddress).toContainText("Brak wprowadzonego numeru");
+  await test.step('Sprawdzenie: obecność tekstu w widoku — missingAddress; oczekiwane: "Brak wprowadzonego numeru"', async () =>
+    expect(missingAddress).toContainText("Brak wprowadzonego numeru"));
   await missingAddress.getByRole("button", { name: "OK", exact: true }).click();
-  await expect(missingAddress).toHaveCount(0);
-  await expect(address).toBeVisible();
+  await test.step("Sprawdzenie: liczba elementów w widoku — missingAddress; oczekiwane: 0", async () =>
+    expect(missingAddress).toHaveCount(0));
+  await test.step("Sprawdzenie: widoczność elementu — address", async () =>
+    expect(address).toBeVisible());
   await address.getByRole("button", { name: "Anuluj", exact: true }).click();
-  await expect(address).toHaveCount(0);
-  await expectSchoolSaveBlocked(page, form);
+  await test.step("Sprawdzenie: liczba elementów w widoku — address; oczekiwane: 0", async () =>
+    expect(address).toHaveCount(0));
+  await test.step("Sprawdzenie: expectSchoolSaveBlocked", async () =>
+    expectSchoolSaveBlocked(page, form));
 });
 
 test("SCH-43: pełny adres z ulicą jest zachowany po utworzeniu szkoły @school @school-add @positive @address", async ({
@@ -566,7 +629,8 @@ test("SCH-43: pełny adres z ulicą jest zachowany po utworzeniu szkoły @school
   await s.app.markTestRecord();
 
   for (const value of Object.values(addressData))
-    await expect(s.app.detail("address")).toHaveValue(new RegExp(value, "i"));
+    await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("address"); oczekiwane: new RegExp(value, "i")', async () =>
+      expect(s.app.detail("address")).toHaveValue(new RegExp(value, "i")));
   await s.record("schoolAddress", JSON.stringify(addressData));
   await s.record("schoolRetentionStatus", "KEPT_NO_DELETE_ENDPOINT");
   await s.record("schoolId", schoolId);
@@ -581,22 +645,28 @@ test("SCH-44: wyczyszczenie wybranego adresu usuwa utworzony adres @school @scho
   await selectSchoolType(page, form);
   const address = await openSchoolAddressForm(page, form);
   const city = await searchSchoolCity(address, DEFAULT_POSTAL_CODE);
-  await expect(city).toHaveCount(1);
+  await test.step("Sprawdzenie: liczba elementów w widoku — city; oczekiwane: 1", async () =>
+    expect(city).toHaveCount(1));
   await city.click();
   await address.locator('input[id="number"]').fill("123");
   await address.getByRole("button", { name: "Wyczyść pola", exact: true }).click();
-  await expect(address.locator('input[id="number"]')).toHaveValue("");
+  await test.step('Sprawdzenie: wartość pola w widoku — address.locator(\'input[id="number"]\'); oczekiwane: ""', async () =>
+    expect(address.locator('input[id="number"]')).toHaveValue(""));
 
   await address.getByRole("button", { name: "Zapisz", exact: true }).click();
   const missingAddress = page.locator("mat-dialog-container").filter({
     has: page.getByRole("heading", { name: "Zapisywanie adresu", exact: true }),
   });
-  await expect(missingAddress).toContainText("Brak wpisanego adresu");
+  await test.step('Sprawdzenie: obecność tekstu w widoku — missingAddress; oczekiwane: "Brak wpisanego adresu"', async () =>
+    expect(missingAddress).toContainText("Brak wpisanego adresu"));
   await missingAddress.getByRole("button", { name: "OK", exact: true }).click();
-  await expect(missingAddress).toHaveCount(0);
+  await test.step("Sprawdzenie: liczba elementów w widoku — missingAddress; oczekiwane: 0", async () =>
+    expect(missingAddress).toHaveCount(0));
   await address.getByRole("button", { name: "Anuluj", exact: true }).click();
-  await expect(address).toHaveCount(0);
-  await expectSchoolSaveBlocked(page, form);
+  await test.step("Sprawdzenie: liczba elementów w widoku — address; oczekiwane: 0", async () =>
+    expect(address).toHaveCount(0));
+  await test.step("Sprawdzenie: expectSchoolSaveBlocked", async () =>
+    expectSchoolSaveBlocked(page, form));
 });
 
 test("SCH-45: ponowne dodanie adresu zastępuje adres przed utworzeniem szkoły @school @school-add @positive @address", async ({
@@ -622,9 +692,11 @@ test("SCH-45: ponowne dodanie adresu zastępuje adres przed utworzeniem szkoły 
   const { schoolId } = await saveSchoolAdd(page, form);
   await s.app.markTestRecord();
 
-  await expect(s.app.detail("address")).not.toHaveValue(new RegExp(firstNumber));
+  await test.step('Sprawdzenie: negacja — wartość pola w widoku — s.app.detail("address"); oczekiwane: new RegExp(firstNumber)', async () =>
+    expect(s.app.detail("address")).not.toHaveValue(new RegExp(firstNumber)));
   for (const value of Object.values(replacement))
-    await expect(s.app.detail("address")).toHaveValue(new RegExp(value, "i"));
+    await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("address"); oczekiwane: new RegExp(value, "i")', async () =>
+      expect(s.app.detail("address")).toHaveValue(new RegExp(value, "i")));
   await s.record("replacedSchoolAddress", JSON.stringify(replacement));
   await s.record("schoolRetentionStatus", "KEPT_NO_DELETE_ENDPOINT");
   await s.record("schoolId", schoolId);
@@ -638,18 +710,21 @@ test("SCH-46: anulowanie zmiany adresu zachowuje poprzedni adres @school @school
   const form = await prepareCompleteSchoolAdd(page, s.app, s.schoolName, originalNumber);
   const address = await openSchoolAddressForm(page, form);
   const replacementCity = await searchSchoolCity(address, "18-312", "Górskie Ponikły-Stok");
-  await expect(replacementCity).toHaveCount(1);
+  await test.step("Sprawdzenie: liczba elementów w widoku — replacementCity; oczekiwane: 1", async () =>
+    expect(replacementCity).toHaveCount(1));
   await replacementCity.click();
   await address.locator('input[id="number"]').fill("456");
   await address.getByRole("button", { name: "Anuluj", exact: true }).click();
-  await expect(address).toHaveCount(0);
+  await test.step("Sprawdzenie: liczba elementów w widoku — address; oczekiwane: 0", async () =>
+    expect(address).toHaveCount(0));
 
   const { schoolId } = await saveSchoolAdd(page, form);
   await s.app.markTestRecord();
 
-  await expect(s.app.detail("address")).toHaveValue(
-    `${DEFAULT_POSTAL_CODE} ${DEFAULT_CITY} ${originalNumber}`,
-  );
+  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("address"); oczekiwane: `${DEFAULT_POSTAL_CODE} ${DEFAULT_CITY} ${originalNumber}`', async () =>
+    expect(s.app.detail("address")).toHaveValue(
+      `${DEFAULT_POSTAL_CODE} ${DEFAULT_CITY} ${originalNumber}`,
+    ));
   await s.record("cancelledReplacementAddress", "18-312 Górskie Ponikły-Stok 456");
   await recordRetainedSchool(s, schoolId, originalNumber);
 });
@@ -662,17 +737,21 @@ test("SCH-47: wyczyszczenie adresu i anulowanie zachowuje poprzedni adres @schoo
   const form = await prepareCompleteSchoolAdd(page, s.app, s.schoolName, originalNumber);
   const address = await openSchoolAddressForm(page, form);
   await address.getByRole("button", { name: "Wyczyść pola", exact: true }).click();
-  await expect(address.locator('input[id="zip_code_input"]')).toHaveValue("");
-  await expect(address.locator('input[id="number"]')).toHaveValue("");
+  await test.step('Sprawdzenie: wartość pola w widoku — address.locator(\'input[id="zip_code_input"]\'); oczekiwane: ""', async () =>
+    expect(address.locator('input[id="zip_code_input"]')).toHaveValue(""));
+  await test.step('Sprawdzenie: wartość pola w widoku — address.locator(\'input[id="number"]\'); oczekiwane: ""', async () =>
+    expect(address.locator('input[id="number"]')).toHaveValue(""));
   await address.getByRole("button", { name: "Anuluj", exact: true }).click();
-  await expect(address).toHaveCount(0);
+  await test.step("Sprawdzenie: liczba elementów w widoku — address; oczekiwane: 0", async () =>
+    expect(address).toHaveCount(0));
 
   const { schoolId } = await saveSchoolAdd(page, form);
   await s.app.markTestRecord();
 
-  await expect(s.app.detail("address")).toHaveValue(
-    `${DEFAULT_POSTAL_CODE} ${DEFAULT_CITY} ${originalNumber}`,
-  );
+  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("address"); oczekiwane: `${DEFAULT_POSTAL_CODE} ${DEFAULT_CITY} ${originalNumber}`', async () =>
+    expect(s.app.detail("address")).toHaveValue(
+      `${DEFAULT_POSTAL_CODE} ${DEFAULT_CITY} ${originalNumber}`,
+    ));
   await recordRetainedSchool(s, schoolId, originalNumber);
 });
 
@@ -684,16 +763,18 @@ test("SCH-15: usunięcie dodanego adresu ponownie blokuje zapis szkoły @school 
   const form = await prepareCompleteSchoolAdd(page, s.app, s.schoolName, number);
 
   await form.getByRole("button", { name: "Usuń adres szkoły", exact: true }).click();
-  await expect
-    .poll(async () => {
-      const values = await form
-        .locator("input")
-        .evaluateAll((inputs) => inputs.map((input) => (input as HTMLInputElement).value));
+  await test.step('Sprawdzenie: zgodność wartości — async () => { const values = await form .locator("input") .evaluateAll((inputs) => inputs.map((input) => (input as…; oczekiwane: false', async () =>
+    expect
+      .poll(async () => {
+        const values = await form
+          .locator("input")
+          .evaluateAll((inputs) => inputs.map((input) => (input as HTMLInputElement).value));
 
-      return [DEFAULT_POSTAL_CODE, DEFAULT_CITY, number].some((value) => values.includes(value));
-    })
-    .toBe(false);
-  await expectSchoolSaveBlocked(page, form);
+        return [DEFAULT_POSTAL_CODE, DEFAULT_CITY, number].some((value) => values.includes(value));
+      })
+      .toBe(false));
+  await test.step("Sprawdzenie: expectSchoolSaveBlocked", async () =>
+    expectSchoolSaveBlocked(page, form));
   await cancelSchoolAdd(form);
 });
 
@@ -712,7 +793,8 @@ test("SCH-30: nazwa z SIO jest zachowana po utworzeniu szkoły @school @school-a
   const { schoolId } = await saveSchoolAdd(page, form);
   await s.app.markTestRecord();
 
-  await expect(schoolPanelTextField(schoolDetails(page), "Nazwa z SIO")).toHaveValue(sioName);
+  await test.step('Sprawdzenie: wartość pola w widoku — schoolPanelTextField(schoolDetails(page), "Nazwa z SIO"); oczekiwane: sioName', async () =>
+    expect(schoolPanelTextField(schoolDetails(page), "Nazwa z SIO")).toHaveValue(sioName));
   await s.record("schoolSioName", sioName);
   await recordRetainedSchool(s, schoolId, number);
 });
@@ -728,9 +810,8 @@ test("SCH-32: liczba uczniów jest zachowana po utworzeniu szkoły @school @scho
   const { schoolId } = await saveSchoolAdd(page, form);
   await s.app.markTestRecord();
 
-  await expect(schoolPanelTextField(schoolDetails(page), "Liczba uczniów")).toHaveValue(
-    studentCount,
-  );
+  await test.step('Sprawdzenie: wartość pola w widoku — schoolPanelTextField(schoolDetails(page), "Liczba uczniów"); oczekiwane: studentCount', async () =>
+    expect(schoolPanelTextField(schoolDetails(page), "Liczba uczniów")).toHaveValue(studentCount));
   await s.record("schoolStudentCount", studentCount);
   await recordRetainedSchool(s, schoolId, number);
 });
@@ -747,8 +828,11 @@ test("SCH-33: numer RSPO jest przekazywany podczas tworzenia szkoły @school @sc
   const { schoolId, saveRequestBody } = await saveSchoolAdd(page, form);
   await s.app.markTestRecord();
 
-  expect(saveRequestBody).toContain(rspo);
-  await expect(s.app.detail("name")).toHaveValue(s.schoolName);
+  await test.step("Sprawdzenie: obecność oczekiwanego elementu — saveRequestBody; oczekiwane: rspo", async () => {
+    expect(saveRequestBody).toContain(rspo);
+  });
+  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("name"); oczekiwane: s.schoolName', async () =>
+    expect(s.app.detail("name")).toHaveValue(s.schoolName));
   await s.record("schoolRspo", rspo);
   await recordRetainedSchool(s, schoolId, number);
 });
@@ -765,8 +849,11 @@ test("SCH-34: numer REGON jest przekazywany podczas tworzenia szkoły @school @s
   const { schoolId, saveRequestBody } = await saveSchoolAdd(page, form);
   await s.app.markTestRecord();
 
-  expect(saveRequestBody).toContain(regon);
-  await expect(s.app.detail("name")).toHaveValue(s.schoolName);
+  await test.step("Sprawdzenie: obecność oczekiwanego elementu — saveRequestBody; oczekiwane: regon", async () => {
+    expect(saveRequestBody).toContain(regon);
+  });
+  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("name"); oczekiwane: s.schoolName', async () =>
+    expect(s.app.detail("name")).toHaveValue(s.schoolName));
   await s.record("schoolRegon", regon);
   await recordRetainedSchool(s, schoolId, number);
 });
@@ -783,8 +870,11 @@ test("SCH-35: numer NIP jest przekazywany podczas tworzenia szkoły @school @sch
   const { schoolId, saveRequestBody } = await saveSchoolAdd(page, form);
   await s.app.markTestRecord();
 
-  expect(saveRequestBody).toContain(nip);
-  await expect(s.app.detail("name")).toHaveValue(s.schoolName);
+  await test.step("Sprawdzenie: obecność oczekiwanego elementu — saveRequestBody; oczekiwane: nip", async () => {
+    expect(saveRequestBody).toContain(nip);
+  });
+  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("name"); oczekiwane: s.schoolName', async () =>
+    expect(s.app.detail("name")).toHaveValue(s.schoolName));
   await s.record("schoolNip", nip);
   await recordRetainedSchool(s, schoolId, number);
 });
@@ -795,14 +885,19 @@ test("SCH-51: REGON z wiodącymi zerami zachowuje pełną długość @school @sc
 }) => {
   const number = String(Date.now());
   const regon = validRegon(1);
-  expect(regon).toBe("000000017");
+  await test.step('Sprawdzenie: zgodność wartości — regon; oczekiwane: "000000017"', async () => {
+    expect(regon).toBe("000000017");
+  });
   const form = await prepareCompleteSchoolAdd(page, s.app, s.schoolName, number);
   await fillSchoolAddTextField(form, "REGON", regon);
   const { schoolId, saveRequestBody } = await saveSchoolAdd(page, form);
   await s.app.markTestRecord();
 
-  expect(saveRequestBody).toContain(`"${regon}"`);
-  await expect(s.app.detail("name")).toHaveValue(s.schoolName);
+  await test.step('Sprawdzenie: obecność oczekiwanego elementu — saveRequestBody; oczekiwane: `"${regon}"`', async () => {
+    expect(saveRequestBody).toContain(`"${regon}"`);
+  });
+  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("name"); oczekiwane: s.schoolName', async () =>
+    expect(s.app.detail("name")).toHaveValue(s.schoolName));
   await s.record("schoolRegon", regon);
   await recordRetainedSchool(s, schoolId, number);
 });
@@ -813,14 +908,19 @@ test("SCH-52: NIP z wiodącymi zerami zachowuje pełną długość @school @scho
 }) => {
   const number = String(Date.now());
   const nip = validNip(1);
-  expect(nip).toBe("0000000017");
+  await test.step('Sprawdzenie: zgodność wartości — nip; oczekiwane: "0000000017"', async () => {
+    expect(nip).toBe("0000000017");
+  });
   const form = await prepareCompleteSchoolAdd(page, s.app, s.schoolName, number);
   await fillSchoolAddTextField(form, "NIP", nip);
   const { schoolId, saveRequestBody } = await saveSchoolAdd(page, form);
   await s.app.markTestRecord();
 
-  expect(saveRequestBody).toContain(`"${nip}"`);
-  await expect(s.app.detail("name")).toHaveValue(s.schoolName);
+  await test.step('Sprawdzenie: obecność oczekiwanego elementu — saveRequestBody; oczekiwane: `"${nip}"`', async () => {
+    expect(saveRequestBody).toContain(`"${nip}"`);
+  });
+  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("name"); oczekiwane: s.schoolName', async () =>
+    expect(s.app.detail("name")).toHaveValue(s.schoolName));
   await s.record("schoolNip", nip);
   await recordRetainedSchool(s, schoolId, number);
 });
@@ -836,9 +936,8 @@ test("SCH-49: zerowa liczba uczniów jest zachowana @school @school-add @positiv
   const { schoolId } = await saveSchoolAdd(page, form);
   await s.app.markTestRecord();
 
-  await expect(schoolPanelTextField(schoolDetails(page), "Liczba uczniów")).toHaveValue(
-    studentCount,
-  );
+  await test.step('Sprawdzenie: wartość pola w widoku — schoolPanelTextField(schoolDetails(page), "Liczba uczniów"); oczekiwane: studentCount', async () =>
+    expect(schoolPanelTextField(schoolDetails(page), "Liczba uczniów")).toHaveValue(studentCount));
   await s.record("schoolStudentCount", studentCount);
   await recordRetainedSchool(s, schoolId, number);
 });
@@ -860,8 +959,10 @@ test("SCH-31: WWW i e-mail są zachowane po utworzeniu szkoły @school @school-a
   const { schoolId } = await saveSchoolAdd(page, form);
   await s.app.markTestRecord();
 
-  await expect(schoolPanelTextField(schoolDetails(page), "WWW")).toHaveValue(website);
-  await expect(schoolPanelTextField(schoolDetails(page), "E-Mail")).toHaveValue(email);
+  await test.step('Sprawdzenie: wartość pola w widoku — schoolPanelTextField(schoolDetails(page), "WWW"); oczekiwane: website', async () =>
+    expect(schoolPanelTextField(schoolDetails(page), "WWW")).toHaveValue(website));
+  await test.step('Sprawdzenie: wartość pola w widoku — schoolPanelTextField(schoolDetails(page), "E-Mail"); oczekiwane: email', async () =>
+    expect(schoolPanelTextField(schoolDetails(page), "E-Mail")).toHaveValue(email));
   await s.record("schoolWebsite", website);
   await s.record("schoolEmail", email);
   await recordRetainedSchool(s, schoolId, number);
@@ -878,8 +979,11 @@ test("SCH-53: pełny adres WWW ze ścieżką i parametrami jest zachowany @schoo
   const { schoolId, saveRequestBody } = await saveSchoolAdd(page, form);
   await s.app.markTestRecord();
 
-  expect(saveRequestBody).toContain(website);
-  await expect(schoolPanelTextField(schoolDetails(page), "WWW")).toHaveValue(website);
+  await test.step("Sprawdzenie: obecność oczekiwanego elementu — saveRequestBody; oczekiwane: website", async () => {
+    expect(saveRequestBody).toContain(website);
+  });
+  await test.step('Sprawdzenie: wartość pola w widoku — schoolPanelTextField(schoolDetails(page), "WWW"); oczekiwane: website', async () =>
+    expect(schoolPanelTextField(schoolDetails(page), "WWW")).toHaveValue(website));
   await s.record("schoolWebsite", website);
   await recordRetainedSchool(s, schoolId, number);
 });
@@ -896,8 +1000,11 @@ test("SCH-54: e-mail z wielkimi literami jest normalizowany do małych liter @sc
   const { schoolId, saveRequestBody } = await saveSchoolAdd(page, form);
   await s.app.markTestRecord();
 
-  expect(saveRequestBody).toContain(email);
-  await expect(schoolPanelTextField(schoolDetails(page), "E-Mail")).toHaveValue(normalizedEmail);
+  await test.step("Sprawdzenie: obecność oczekiwanego elementu — saveRequestBody; oczekiwane: email", async () => {
+    expect(saveRequestBody).toContain(email);
+  });
+  await test.step('Sprawdzenie: wartość pola w widoku — schoolPanelTextField(schoolDetails(page), "E-Mail"); oczekiwane: normalizedEmail', async () =>
+    expect(schoolPanelTextField(schoolDetails(page), "E-Mail")).toHaveValue(normalizedEmail));
   await s.record("submittedSchoolEmail", email);
   await s.record("schoolEmail", normalizedEmail);
   await recordRetainedSchool(s, schoolId, number);
@@ -911,18 +1018,24 @@ test("SCH-36: przełącznik komórka ustawia format numeru i resetuje się po za
   const phone = "501234567";
   const form = await prepareCompleteSchoolAdd(page, s.app, s.schoolName, number);
   const mobile = form.getByRole("checkbox", { name: "komórka", exact: true });
-  await expect(mobile).not.toBeChecked();
+  await test.step("Sprawdzenie: negacja — zaznaczenie opcji — mobile", async () =>
+    expect(mobile).not.toBeChecked());
   await mobile.check();
   const phoneInput = await fillSchoolPhone(form, phone);
-  await expect(phoneInput).toHaveValue(/^\d{3}-\d{3}-\d{3}$/);
+  await test.step("Sprawdzenie: wartość pola w widoku — phoneInput; oczekiwane: /^\\d{3}-\\d{3}-\\d{3}$/", async () =>
+    expect(phoneInput).toHaveValue(/^\d{3}-\d{3}-\d{3}$/));
   const { schoolId, saveRequestBody } = await saveSchoolAdd(page, form);
   await s.app.markTestRecord();
 
-  expect(saveRequestBody.replace(/\D/g, "")).toContain(phone);
-  await expect(schoolPanelTextField(schoolDetails(page), "Telefon")).toHaveValue(/501\D*234\D*567/);
-  await expect(
-    schoolDetails(page).getByRole("checkbox", { name: "komórka", exact: true }),
-  ).not.toBeChecked();
+  await test.step('Sprawdzenie: obecność oczekiwanego elementu — saveRequestBody.replace(/\\D/g, ""); oczekiwane: phone', async () => {
+    expect(saveRequestBody.replace(/\D/g, "")).toContain(phone);
+  });
+  await test.step('Sprawdzenie: wartość pola w widoku — schoolPanelTextField(schoolDetails(page), "Telefon"); oczekiwane: /501\\D*234\\D*567/', async () =>
+    expect(schoolPanelTextField(schoolDetails(page), "Telefon")).toHaveValue(/501\D*234\D*567/));
+  await test.step('Sprawdzenie: negacja — zaznaczenie opcji — schoolDetails(page).getByRole("checkbox", { name: "komórka", exact: true })', async () =>
+    expect(
+      schoolDetails(page).getByRole("checkbox", { name: "komórka", exact: true }),
+    ).not.toBeChecked());
   await s.record("schoolPhone", phone);
   await s.record("schoolPhoneFormat", "mobile");
   await s.record("schoolPhoneTypeSelectorAfterSave", "unchecked");
@@ -937,19 +1050,25 @@ test("SCH-37: telefon stacjonarny zachowuje właściwy format po utworzeniu szko
   const phone = "312321412";
   const form = await prepareCompleteSchoolAdd(page, s.app, s.schoolName, number);
   const mobile = form.getByRole("checkbox", { name: "komórka", exact: true });
-  await expect(mobile).not.toBeChecked();
+  await test.step("Sprawdzenie: negacja — zaznaczenie opcji — mobile", async () =>
+    expect(mobile).not.toBeChecked());
   const phoneInput = await fillSchoolPhone(form, phone);
-  await expect(phoneInput).toHaveValue(/^\(\d{2}\)\s*-\s*\d{3}\s*-\s*\d{2}\s*-\s*\d{2}$/);
+  await test.step("Sprawdzenie: wartość pola w widoku — phoneInput; oczekiwane: /^\\(\\d{2}\\)\\s*-\\s*\\d{3}\\s*-\\s*\\d{2}\\s*-\\s*\\d{2}$/", async () =>
+    expect(phoneInput).toHaveValue(/^\(\d{2}\)\s*-\s*\d{3}\s*-\s*\d{2}\s*-\s*\d{2}$/));
   const { schoolId, saveRequestBody } = await saveSchoolAdd(page, form);
   await s.app.markTestRecord();
 
-  expect(saveRequestBody.replace(/\D/g, "")).toContain(phone);
-  await expect(schoolPanelTextField(schoolDetails(page), "Telefon")).toHaveValue(
-    /\(31\)\D*232\D*14\D*12/,
-  );
-  await expect(
-    schoolDetails(page).getByRole("checkbox", { name: "komórka", exact: true }),
-  ).not.toBeChecked();
+  await test.step('Sprawdzenie: obecność oczekiwanego elementu — saveRequestBody.replace(/\\D/g, ""); oczekiwane: phone', async () => {
+    expect(saveRequestBody.replace(/\D/g, "")).toContain(phone);
+  });
+  await test.step('Sprawdzenie: wartość pola w widoku — schoolPanelTextField(schoolDetails(page), "Telefon"); oczekiwane: /\\(31\\)\\D*232\\D*14\\D*12/', async () =>
+    expect(schoolPanelTextField(schoolDetails(page), "Telefon")).toHaveValue(
+      /\(31\)\D*232\D*14\D*12/,
+    ));
+  await test.step('Sprawdzenie: negacja — zaznaczenie opcji — schoolDetails(page).getByRole("checkbox", { name: "komórka", exact: true })', async () =>
+    expect(
+      schoolDetails(page).getByRole("checkbox", { name: "komórka", exact: true }),
+    ).not.toBeChecked());
   await s.record("schoolPhone", phone);
   await s.record("schoolPhoneFormat", "landline");
   await s.record("schoolPhoneTypeSelectorAfterSave", "unchecked");
@@ -969,8 +1088,11 @@ test("SCH-38: niepoprawny e-mail blokuje utworzenie szkoły @school @school-add 
   const form = await prepareCompleteSchoolAdd(page, s.app, s.schoolName, number);
   await fillSchoolAddTextField(form, "E-mail", "niepoprawny-email");
 
-  await expectSchoolSaveBlocked(page, form);
-  expect(saveAttempts).toBe(0);
+  await test.step("Sprawdzenie: expectSchoolSaveBlocked", async () =>
+    expectSchoolSaveBlocked(page, form));
+  await test.step("Sprawdzenie: zgodność wartości — saveAttempts; oczekiwane: 0", async () => {
+    expect(saveAttempts).toBe(0);
+  });
 });
 
 test("SCH-39: niepełny telefon blokuje utworzenie szkoły @school @school-add @validation @contact", async ({
@@ -985,12 +1107,16 @@ test("SCH-39: niepełny telefon blokuje utworzenie szkoły @school @school-add @
   });
   const form = await prepareCompleteSchoolAdd(page, s.app, s.schoolName, number);
   const phone = schoolAddTextField(form, "Nr telefonu");
-  await expect(phone).toHaveCount(1);
+  await test.step("Sprawdzenie: liczba elementów w widoku — phone; oczekiwane: 1", async () =>
+    expect(phone).toHaveCount(1));
   await phone.fill("50123");
   await phone.press("Tab");
 
-  await expectSchoolSaveBlocked(page, form);
-  expect(saveAttempts).toBe(0);
+  await test.step("Sprawdzenie: expectSchoolSaveBlocked", async () =>
+    expectSchoolSaveBlocked(page, form));
+  await test.step("Sprawdzenie: zgodność wartości — saveAttempts; oczekiwane: 0", async () => {
+    expect(saveAttempts).toBe(0);
+  });
 });
 
 test("SCH-40: przełączenie komórka zmienia maskę bez utraty cyfr @school @school-add @contact @format", async ({
@@ -1004,10 +1130,13 @@ test("SCH-40: przełączenie komórka zmienia maskę bez utraty cyfr @school @sc
 
   await mobile.check();
   const phoneInput = await fillSchoolPhone(form, phone);
-  await expect(phoneInput).toHaveValue(/^\d{3}-\d{3}-\d{3}$/);
+  await test.step("Sprawdzenie: wartość pola w widoku — phoneInput; oczekiwane: /^\\d{3}-\\d{3}-\\d{3}$/", async () =>
+    expect(phoneInput).toHaveValue(/^\d{3}-\d{3}-\d{3}$/));
   await mobile.uncheck();
-  await expect(phoneInput).toHaveValue(/^\(\d{2}\)\s*-\s*\d{3}\s*-\s*\d{2}\s*-\s*\d{2}$/);
-  await expect.poll(async () => (await phoneInput.inputValue()).replace(/\D/g, "")).toBe(phone);
+  await test.step("Sprawdzenie: wartość pola w widoku — phoneInput; oczekiwane: /^\\(\\d{2}\\)\\s*-\\s*\\d{3}\\s*-\\s*\\d{2}\\s*-\\s*\\d{2}$/", async () =>
+    expect(phoneInput).toHaveValue(/^\(\d{2}\)\s*-\s*\d{3}\s*-\s*\d{2}\s*-\s*\d{2}$/));
+  await test.step('Sprawdzenie: zgodność wartości — async () => (await phoneInput.inputValue()).replace(/\\D/g, ""); oczekiwane: phone', async () =>
+    expect.poll(async () => (await phoneInput.inputValue()).replace(/\D/g, "")).toBe(phone));
 
   await cancelSchoolAdd(form);
 });
@@ -1023,8 +1152,11 @@ test("SCH-48: e-mail z subdomeną jest zachowany @school @school-add @positive @
   const { schoolId, saveRequestBody } = await saveSchoolAdd(page, form);
   await s.app.markTestRecord();
 
-  expect(saveRequestBody).toContain(email);
-  await expect(schoolPanelTextField(schoolDetails(page), "E-Mail")).toHaveValue(email);
+  await test.step("Sprawdzenie: obecność oczekiwanego elementu — saveRequestBody; oczekiwane: email", async () => {
+    expect(saveRequestBody).toContain(email);
+  });
+  await test.step('Sprawdzenie: wartość pola w widoku — schoolPanelTextField(schoolDetails(page), "E-Mail"); oczekiwane: email', async () =>
+    expect(schoolPanelTextField(schoolDetails(page), "E-Mail")).toHaveValue(email));
   await s.record("schoolEmail", email);
   await recordRetainedSchool(s, schoolId, number);
 });
@@ -1045,18 +1177,25 @@ test("SCH-50: e-mail z aliasem plus jest odrzucany przez backend @school @school
 
   await form.getByRole("button", { name: "Zapisz", exact: true }).click();
   const response = await failedSave;
-  expect(response.ok()).toBe(false);
+  await test.step("Sprawdzenie: zgodność wartości — response.ok(); oczekiwane: false", async () => {
+    expect(response.ok()).toBe(false);
+  });
   await response.finished();
 
   const warning = page.locator("mat-dialog-container").filter({
     has: page.getByRole("heading", { name: "Uwaga", exact: true }),
   });
-  await expect(warning).toContainText("Email jest źle podany");
+  await test.step('Sprawdzenie: obecność tekstu w widoku — warning; oczekiwane: "Email jest źle podany"', async () =>
+    expect(warning).toContainText("Email jest źle podany"));
   await warning.getByRole("button", { name: "OK", exact: true }).click();
-  await expect(warning).toHaveCount(0);
-  await expect(form).toHaveCount(0);
-  await expect(page).toHaveURL(/\/school\/school-panel$/);
-  await expect(s.app.detail("name")).toHaveValue("");
+  await test.step("Sprawdzenie: liczba elementów w widoku — warning; oczekiwane: 0", async () =>
+    expect(warning).toHaveCount(0));
+  await test.step("Sprawdzenie: liczba elementów w widoku — form; oczekiwane: 0", async () =>
+    expect(form).toHaveCount(0));
+  await test.step("Sprawdzenie: toHaveURL — page; oczekiwane: /\\/school\\/school-panel$/", async () =>
+    expect(page).toHaveURL(/\/school\/school-panel$/));
+  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("name"); oczekiwane: ""', async () =>
+    expect(s.app.detail("name")).toHaveValue(""));
   await s.record("rejectedSchoolEmail", email);
   await s.record("schoolCreationStatus", "REJECTED_BY_EMAIL_VALIDATION");
 });
@@ -1089,13 +1228,21 @@ test("SCH-16: błąd serwera nie otwiera nieistniejącej szkoły @school @school
 
   await form.getByRole("button", { name: "Zapisz", exact: true }).click();
   const response = await failedSave;
-  expect(response.status()).toBe(500);
+  await test.step("Sprawdzenie: zgodność wartości — response.status(); oczekiwane: 500", async () => {
+    expect(response.status()).toBe(500);
+  });
   await response.finished();
-  await expect(form).toHaveCount(0);
-  expect(saveAttempts).toBe(1);
-  await expect(page).toHaveURL(/\/school\/school-panel$/);
-  await expect(s.app.detail("name")).toHaveValue("");
-  await expect(s.app.detail("address")).toHaveValue("");
+  await test.step("Sprawdzenie: liczba elementów w widoku — form; oczekiwane: 0", async () =>
+    expect(form).toHaveCount(0));
+  await test.step("Sprawdzenie: zgodność wartości — saveAttempts; oczekiwane: 1", async () => {
+    expect(saveAttempts).toBe(1);
+  });
+  await test.step("Sprawdzenie: toHaveURL — page; oczekiwane: /\\/school\\/school-panel$/", async () =>
+    expect(page).toHaveURL(/\/school\/school-panel$/));
+  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("name"); oczekiwane: ""', async () =>
+    expect(s.app.detail("name")).toHaveValue(""));
+  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("address"); oczekiwane: ""', async () =>
+    expect(s.app.detail("address")).toHaveValue(""));
 });
 
 const schoolAddFailureCases = [
@@ -1126,11 +1273,16 @@ for (const failure of schoolAddFailureCases) {
     });
 
     await form.getByRole("button", { name: "Zapisz", exact: true }).click();
-    await expect.poll(() => saveAttempts).toBe(1);
-    await expect(form).toHaveCount(0);
-    await expect(page).toHaveURL(/\/school\/school-panel$/);
-    await expect(s.app.detail("name")).toHaveValue("");
-    await expect(s.app.detail("address")).toHaveValue("");
+    await test.step("Sprawdzenie: zgodność wartości — () => saveAttempts; oczekiwane: 1", async () =>
+      expect.poll(() => saveAttempts).toBe(1));
+    await test.step("Sprawdzenie: liczba elementów w widoku — form; oczekiwane: 0", async () =>
+      expect(form).toHaveCount(0));
+    await test.step("Sprawdzenie: toHaveURL — page; oczekiwane: /\\/school\\/school-panel$/", async () =>
+      expect(page).toHaveURL(/\/school\/school-panel$/));
+    await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("name"); oczekiwane: ""', async () =>
+      expect(s.app.detail("name")).toHaveValue(""));
+    await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("address"); oczekiwane: ""', async () =>
+      expect(s.app.detail("address")).toHaveValue(""));
     await s.record("rejectedSchoolCreation", failure.label);
   });
 }
@@ -1168,22 +1320,30 @@ test("SCH-42: pełny formularz zachowuje wszystkie dane opcjonalne @school @scho
   await s.app.markTestRecord();
 
   for (const value of [sioName, website, email, studentCount, rspo, regon, nip])
-    expect(saveRequestBody).toContain(value);
-  expect(saveRequestBody.replace(/\D/g, "")).toContain(phone);
+    await test.step("Sprawdzenie: obecność oczekiwanego elementu — saveRequestBody; oczekiwane: value", async () => {
+      expect(saveRequestBody).toContain(value);
+    });
+  await test.step('Sprawdzenie: obecność oczekiwanego elementu — saveRequestBody.replace(/\\D/g, ""); oczekiwane: phone', async () => {
+    expect(saveRequestBody.replace(/\D/g, "")).toContain(phone);
+  });
 
   // Kluczowe pola sprawdzamy po ponownym otwarciu rekordu, a nie tylko
   // bezpośrednio po odpowiedzi POST AddNewInstitution.
   await s.app.openPanel("school", schoolId);
-  await expect(schoolPanelTextField(schoolDetails(page), "Nazwa z SIO")).toHaveValue(sioName);
-  await expect(schoolPanelTextField(schoolDetails(page), "WWW")).toHaveValue(website);
-  await expect(schoolPanelTextField(schoolDetails(page), "E-Mail")).toHaveValue(email);
-  await expect(schoolPanelTextField(schoolDetails(page), "Liczba uczniów")).toHaveValue(
-    studentCount,
-  );
-  await expect(schoolPanelTextField(schoolDetails(page), "Telefon")).toHaveValue(/501\D*234\D*567/);
-  await expect(
-    schoolDetails(page).getByRole("checkbox", { name: "komórka", exact: true }),
-  ).not.toBeChecked();
+  await test.step('Sprawdzenie: wartość pola w widoku — schoolPanelTextField(schoolDetails(page), "Nazwa z SIO"); oczekiwane: sioName', async () =>
+    expect(schoolPanelTextField(schoolDetails(page), "Nazwa z SIO")).toHaveValue(sioName));
+  await test.step('Sprawdzenie: wartość pola w widoku — schoolPanelTextField(schoolDetails(page), "WWW"); oczekiwane: website', async () =>
+    expect(schoolPanelTextField(schoolDetails(page), "WWW")).toHaveValue(website));
+  await test.step('Sprawdzenie: wartość pola w widoku — schoolPanelTextField(schoolDetails(page), "E-Mail"); oczekiwane: email', async () =>
+    expect(schoolPanelTextField(schoolDetails(page), "E-Mail")).toHaveValue(email));
+  await test.step('Sprawdzenie: wartość pola w widoku — schoolPanelTextField(schoolDetails(page), "Liczba uczniów"); oczekiwane: studentCount', async () =>
+    expect(schoolPanelTextField(schoolDetails(page), "Liczba uczniów")).toHaveValue(studentCount));
+  await test.step('Sprawdzenie: wartość pola w widoku — schoolPanelTextField(schoolDetails(page), "Telefon"); oczekiwane: /501\\D*234\\D*567/', async () =>
+    expect(schoolPanelTextField(schoolDetails(page), "Telefon")).toHaveValue(/501\D*234\D*567/));
+  await test.step('Sprawdzenie: negacja — zaznaczenie opcji — schoolDetails(page).getByRole("checkbox", { name: "komórka", exact: true })', async () =>
+    expect(
+      schoolDetails(page).getByRole("checkbox", { name: "komórka", exact: true }),
+    ).not.toBeChecked());
   await s.record(
     "schoolOptionalData",
     JSON.stringify({ sioName, website, email, studentCount, rspo, regon, nip, phone }),
@@ -1205,18 +1365,32 @@ test("SCH-55: pola opcjonalne mogą pozostać puste i szkoła nadal jest trwała
   await s.app.markTestRecord();
 
   const body = JSON.parse(saveRequestBody) as Record<string, unknown>;
-  expect(body.fullName ?? "").toBe("");
-  expect(body.email ?? "").toBe("");
-  expect(body.www ?? "").toBe("");
-  expect(body.regon ?? "").toBe("");
-  expect(body.nip ?? "").toBe("");
-  expect(body.rspo ?? "").toBe("");
+  await test.step('Sprawdzenie: zgodność wartości — body.fullName ?? ""; oczekiwane: ""', async () => {
+    expect(body.fullName ?? "").toBe("");
+  });
+  await test.step('Sprawdzenie: zgodność wartości — body.email ?? ""; oczekiwane: ""', async () => {
+    expect(body.email ?? "").toBe("");
+  });
+  await test.step('Sprawdzenie: zgodność wartości — body.www ?? ""; oczekiwane: ""', async () => {
+    expect(body.www ?? "").toBe("");
+  });
+  await test.step('Sprawdzenie: zgodność wartości — body.regon ?? ""; oczekiwane: ""', async () => {
+    expect(body.regon ?? "").toBe("");
+  });
+  await test.step('Sprawdzenie: zgodność wartości — body.nip ?? ""; oczekiwane: ""', async () => {
+    expect(body.nip ?? "").toBe("");
+  });
+  await test.step('Sprawdzenie: zgodność wartości — body.rspo ?? ""; oczekiwane: ""', async () => {
+    expect(body.rspo ?? "").toBe("");
+  });
 
   await s.app.openPanel("school", schoolId);
-  await expect(s.app.detail("name")).toHaveValue(s.schoolName);
-  await expect(s.app.detail("address")).toHaveValue(
-    `${DEFAULT_POSTAL_CODE} ${DEFAULT_CITY} ${number}`,
-  );
+  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("name"); oczekiwane: s.schoolName', async () =>
+    expect(s.app.detail("name")).toHaveValue(s.schoolName));
+  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("address"); oczekiwane: `${DEFAULT_POSTAL_CODE} ${DEFAULT_CITY} ${number}`', async () =>
+    expect(s.app.detail("address")).toHaveValue(
+      `${DEFAULT_POSTAL_CODE} ${DEFAULT_CITY} ${number}`,
+    ));
   await recordRetainedSchool(s, schoolId, number);
 });
 
@@ -1232,7 +1406,8 @@ test("SCH-56: anulowanie kompletnego formularza po uzupełnieniu danych opcjonal
   await fillSchoolAddTextField(form, "Liczba uczniów", "123");
 
   await cancelSchoolAdd(form);
-  await expect(page).toHaveURL(/\/school\/school-panel$/);
+  await test.step("Sprawdzenie: toHaveURL — page; oczekiwane: /\\/school\\/school-panel$/", async () =>
+    expect(page).toHaveURL(/\/school\/school-panel$/));
   await s.app.searchMissing("school", "Nazwa szkoły", s.schoolName);
 });
 
@@ -1246,10 +1421,13 @@ test("SCH-57: ponowne otwarcie szkoły zachowuje typ, poziom i adres @school @sc
   await s.app.markTestRecord();
 
   await s.app.openPanel("school", schoolId);
-  await expect(s.app.detail("name")).toHaveValue(s.schoolName);
-  await expect(s.app.detail("address")).toHaveValue(
-    `${DEFAULT_POSTAL_CODE} ${DEFAULT_CITY} ${number}`,
-  );
-  await expect(s.app.detail("level")).toHaveValue(/Szkoła Średnia/i);
+  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("name"); oczekiwane: s.schoolName', async () =>
+    expect(s.app.detail("name")).toHaveValue(s.schoolName));
+  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("address"); oczekiwane: `${DEFAULT_POSTAL_CODE} ${DEFAULT_CITY} ${number}`', async () =>
+    expect(s.app.detail("address")).toHaveValue(
+      `${DEFAULT_POSTAL_CODE} ${DEFAULT_CITY} ${number}`,
+    ));
+  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("level"); oczekiwane: /Szkoła Średnia/i', async () =>
+    expect(s.app.detail("level")).toHaveValue(/Szkoła Średnia/i));
   await recordRetainedSchool(s, schoolId, number);
 });

@@ -6,6 +6,7 @@ import { Octopus } from "./octopus";
 import type { TeacherSubjectLevel } from "./api-factory";
 
 export type CreateScenarioTeacherOptions = {
+  testRecord?: boolean;
   additionalSchoolIds?: string[];
   subjectLevels?: TeacherSubjectLevel[];
 };
@@ -62,6 +63,7 @@ export const test = base.extend<{ scenario: Scenario }>({
           await record("schoolId", schoolId);
           await record("relatedSchoolName", relatedSchoolName);
           const teacherId = await apiFactory.createTeacher({
+            testRecord: options.testRecord,
             lastName: id,
             email,
             schoolIds: [schoolId, ...(options.additionalSchoolIds ?? [])],

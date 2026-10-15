@@ -67,6 +67,8 @@ W pakiecie Szkoły są też SFLT-01–SFLT-32 (`szkola-wyszukiwanie-filtry.spec.
 
 Pakiet Zamówienia obejmuje również `zamowienia-dokumenty.spec.ts`: ORD-DOC-01–ORD-DOC-30, grep `@order-document`. Przygotowanie zamówień i większości dokumentów odbywa się przez API; testy operacji formularza używają UI. ORD-DOC-28 wymaga zmiennej `OCTOPUS_ORDER_EXTERNAL_REFERENCE` z istniejącym testowym zamówieniem z integracji. [Konfiguracja i zakres](docs/tests/dokumenty-zamowien.md).
 
+Pakiet Szkoły obejmuje THR-01–THR-22 (`@threshold`). Pakiet Nauczyciele obejmuje PERM-01–PERM-25, ACC-01–ACC-10 oraz ACL-01–ACL-17 (`@entitlement`). Dodatkowe filtry to `@access-api` i `@access-lifecycle`. Parser obsługuje pojedyncze ID tych grup. [Dane, bezpieczeństwo i zakres Uprawnień](docs/tests/uprawnienia-i-progi.md). Przed odświeżeniem konfiguracji uruchomionego serwera panelu poczekaj na koniec aktywnych testów. Grep `@unmarked` wybiera PERM-23–PERM-25: wariant bez flag Testowy u nauczyciela i szkół.
+
 Pakiet Zamówienia obejmuje `zamowienia-klasa.spec.ts` (ORD-CLASS-01–ORD-CLASS-22). Grep `@order-class` wybiera testy kolumny Klasa. Przygotowanie, edycje i sprzątanie zamówień korzystają z API; UI służy do kontroli trzech widoków. LS jest warunkowo pomijany z powodu braku produktu. [Dokumentacja](docs/tests/klasa-w-zamowieniach.md).
 
 ```text

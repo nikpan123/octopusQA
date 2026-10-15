@@ -8,12 +8,13 @@ for (const missing of ["imię", "nazwisko", "szkoła", "kontakt"] as const) {
     school,
   }) => {
     const schoolId = missing === "szkoła" ? undefined : school.id;
-    const form = await s.app.prepareTeacher(
-      s.id,
-      missing === "kontakt" ? "" : s.email,
-      schoolId,
-      schoolId ? school.name : undefined,
-    );
+    const form = await test.step("Przygotowanie: wyszukanie nauczyciela testowego", async () =>
+      s.app.prepareTeacher(
+        s.id,
+        missing === "kontakt" ? "" : s.email,
+        schoolId,
+        schoolId ? school.name : undefined,
+      ));
     if (missing === "imię") await typeValue(s.app.field(form, "*Imię"), "");
     if (missing === "nazwisko") await typeValue(s.app.field(form, "*Nazwisko"), "");
     await test.step("Spróbuj zapisać i sprawdź wyjaśnienie odmowy", async () => {
@@ -50,9 +51,11 @@ test("TEA-03: anulowanie kompletnego formularza nie tworzy nauczyciela @cancel",
   scenario: s,
   school,
 }) => {
-  const form = await s.app.prepareTeacher(s.id, s.email, school.id, school.name);
+  const form = await test.step("Przygotowanie: wyszukanie nauczyciela testowego", async () =>
+    s.app.prepareTeacher(s.id, s.email, school.id, school.name));
   await form.getByRole("button", { name: "Anuluj", exact: true }).click();
-  await expect(form).toHaveCount(0);
+  await test.step("Sprawdzenie: liczba elementów w widoku — form; oczekiwane: 0", async () =>
+    expect(form).toHaveCount(0));
   await s.app.openPanel("teacher");
   await s.app.searchMissing("teacher", "Email", s.email);
 });
@@ -60,9 +63,11 @@ test("TEA-03: anulowanie kompletnego formularza nie tworzy nauczyciela @cancel",
 test("SCH-02: anulowanie kompletnego formularza nie tworzy szkoły @cancel", async ({
   scenario: s,
 }) => {
-  const form = await s.app.prepareSchool(s.schoolName, String(Date.now()));
+  const form = await test.step("Przygotowanie: wyszukanie szkoły testowej", async () =>
+    s.app.prepareSchool(s.schoolName, String(Date.now())));
   await form.getByRole("button", { name: "Anuluj", exact: true }).click();
-  await expect(form).toHaveCount(0);
+  await test.step("Sprawdzenie: liczba elementów w widoku — form; oczekiwane: 0", async () =>
+    expect(form).toHaveCount(0));
   await s.app.openPanel("school");
   await s.app.searchMissing("school", "Nazwa szkoły", s.schoolName);
 });
@@ -72,13 +77,17 @@ test("EDIT-02: anulowanie edycji zachowuje dane i historię @cancel", async ({
   scenario: s,
   school,
 }) => {
-  const teacherId = await s.createTeacher(school.id, school.name);
+  const teacherId = await test.step("Przygotowanie: utworzenie nauczyciela testowego", async () =>
+    s.createTeacher(school.id, school.name));
   await s.app.openPanel("teacher", teacherId);
   // Dane kontaktowe doczytują się niezależnie od ID i przycisku edycji.
   // Nie zapisuj pustego stanu ładowania jako wartości oczekiwanej.
-  await expect(s.app.detail("firstName")).toHaveValue("Testowy");
-  await expect(s.app.detail("lastName")).toHaveValue(s.id);
-  await expect(s.app.detail("email")).toHaveValue(s.email);
+  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("firstName"); oczekiwane: "Testowy"', async () =>
+    expect(s.app.detail("firstName")).toHaveValue("Testowy"));
+  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("lastName"); oczekiwane: s.id', async () =>
+    expect(s.app.detail("lastName")).toHaveValue(s.id));
+  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("email"); oczekiwane: s.email', async () =>
+    expect(s.app.detail("email")).toHaveValue(s.email));
   const before = {
     firstName: await s.app.detail("firstName").inputValue(),
     lastName: await s.app.detail("lastName").inputValue(),
@@ -86,21 +95,27 @@ test("EDIT-02: anulowanie edycji zachowuje dane i historię @cancel", async ({
   };
   await page.getByRole("tab", { name: "Historia zmian", exact: true }).click();
   const history = page.getByRole("tabpanel", { name: "Historia zmian", exact: true });
-  await expect(history.getByRole("gridcell", { name: s.email, exact: true })).toBeVisible();
+  await test.step('Sprawdzenie: widoczność elementu — history.getByRole("gridcell", { name: s.email, exact: true })', async () =>
+    expect(history.getByRole("gridcell", { name: s.email, exact: true })).toBeVisible());
   const beforeHistory = await history.getByRole("row").allTextContents();
   await page.getByRole("button", { name: "Edycja danych", exact: true }).click();
   const form = s.app.dialog("Edycja danych podstawowych");
   await typeValue(form.locator('input[id="firstName"]'), "Adam");
   await typeValue(form.locator('input[id="lastName"]'), "Anulowany");
   await form.getByRole("button", { name: "Anuluj", exact: true }).click();
-  await expect(form).toHaveCount(0);
+  await test.step("Sprawdzenie: liczba elementów w widoku — form; oczekiwane: 0", async () =>
+    expect(form).toHaveCount(0));
   await s.app.openPanel("teacher", teacherId);
   for (const [field, value] of Object.entries(before))
-    await expect(s.app.detail(field)).toHaveValue(value);
-  await expect(page.getByRole("row").filter({ hasText: school.name })).toHaveCount(1);
-  await expect(page.getByRole("checkbox", { name: "Testowy", exact: true })).toBeChecked();
+    await test.step("Sprawdzenie: wartość pola w widoku — s.app.detail(field); oczekiwane: value", async () =>
+      expect(s.app.detail(field)).toHaveValue(value));
+  await test.step('Sprawdzenie: liczba elementów w widoku — page.getByRole("row").filter({ hasText: school.name }); oczekiwane: 1', async () =>
+    expect(page.getByRole("row").filter({ hasText: school.name })).toHaveCount(1));
+  await test.step('Sprawdzenie: zaznaczenie opcji — page.getByRole("checkbox", { name: "Testowy", exact: true })', async () =>
+    expect(page.getByRole("checkbox", { name: "Testowy", exact: true })).toBeChecked());
   await page.getByRole("tab", { name: "Historia zmian", exact: true }).click();
-  await expect(history.getByRole("row")).toHaveText(beforeHistory);
+  await test.step('Sprawdzenie: tekst w widoku — history.getByRole("row"); oczekiwane: beforeHistory', async () =>
+    expect(history.getByRole("row")).toHaveText(beforeHistory));
 });
 
 for (const kind of ["teacher", "school"] as const) {
@@ -110,18 +125,23 @@ for (const kind of ["teacher", "school"] as const) {
     school,
   }) => {
     if (kind === "teacher") {
-      const teacherId = await s.createTeacher(school.id, school.name);
+      const teacherId =
+        await test.step("Przygotowanie: utworzenie nauczyciela testowego", async () =>
+          s.createTeacher(school.id, school.name));
       await s.app.searchTeacher(teacherId);
     } else {
       await s.app.searchSchool(school.name, school.id);
     }
-    await expect(s.app.results(kind).getByRole("gridcell")).not.toHaveCount(0);
-    await expect(page.getByRole("heading", { name: "Rekordów: 1", exact: true })).toBeVisible();
+    await test.step('Sprawdzenie: negacja — liczba elementów w widoku — s.app.results(kind).getByRole("gridcell"); oczekiwane: 0', async () =>
+      expect(s.app.results(kind).getByRole("gridcell")).not.toHaveCount(0));
+    await test.step('Sprawdzenie: widoczność elementu — page.getByRole("heading", { name: "Rekordów: 1", exact: true })', async () =>
+      expect(page.getByRole("heading", { name: "Rekordów: 1", exact: true })).toBeVisible());
     await s.app.searchMissing(
       kind,
       kind === "teacher" ? "Email" : "Nazwa szkoły",
       kind === "teacher" ? `absent_${s.email}` : `ABSENT_${s.id}`,
     );
-    await expect(page.getByRole("heading", { name: "Rekordów: 1", exact: true })).toHaveCount(0);
+    await test.step('Sprawdzenie: liczba elementów w widoku — page.getByRole("heading", { name: "Rekordów: 1", exact: true }); oczekiwane: 0', async () =>
+      expect(page.getByRole("heading", { name: "Rekordów: 1", exact: true })).toHaveCount(0));
   });
 }

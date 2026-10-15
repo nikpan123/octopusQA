@@ -28,12 +28,15 @@ test.describe("Rozszerzone filtry wyszukiwarki szkół", () => {
       ["si-select", ["TAK", "NIE"]],
     ] as const) {
       await form.locator(`[data-cy="${field}"]`).click();
-      await expect(page.getByRole("option")).toHaveText([...options]);
+      await test.step('Sprawdzenie: tekst w widoku — page.getByRole("option"); oczekiwane: [...options]', async () =>
+        expect(page.getByRole("option")).toHaveText([...options]));
       if (field !== "si-select")
-        await expect(page.getByRole("listbox")).toHaveAttribute("aria-multiselectable", "true");
+        await test.step('Sprawdzenie: wartość atrybutu — page.getByRole("listbox"); oczekiwane: "aria-multiselectable"', async () =>
+          expect(page.getByRole("listbox")).toHaveAttribute("aria-multiselectable", "true"));
       await page.keyboard.press("Escape");
     }
-    await expect(form.locator('[data-cy="rspo-input"]')).toBeEditable();
+    await test.step("Sprawdzenie: możliwość edycji — form.locator('[data-cy=\"rspo-input\"]')", async () =>
+      expect(form.locator('[data-cy="rspo-input"]')).toBeEditable());
   });
 
   for (const [index, categories] of [
@@ -49,15 +52,23 @@ test.describe("Rozszerzone filtry wyszukiwarki szkół", () => {
       page,
     }) => {
       const app = new Octopus(page);
-      const data = await searchDataset(app);
-      const result = await searchSchools(app, { name: data.prefix, categories });
-      expect(result.model.sizeCategory).toHaveLength(categories.length);
-      expect(result.ids).toEqual(
-        data.schools
-          .filter((school) => categories.includes(school.category))
-          .map((school) => school.id)
-          .sort(),
-      );
+      const data =
+        await test.step("Przygotowanie: pobranie współdzielonego zestawu szkół do filtrowania", async () =>
+          searchDataset(app));
+      const result =
+        await test.step("Wyszukiwanie: wykonanie filtrów i pobranie wyników do porównania", async () =>
+          searchSchools(app, { name: data.prefix, categories }));
+      await test.step("Sprawdzenie: liczba elementów — result.model.sizeCategory; oczekiwane: categories.length", async () => {
+        expect(result.model.sizeCategory).toHaveLength(categories.length);
+      });
+      await test.step("Sprawdzenie: zgodność całej struktury i wartości — result.ids; oczekiwane: data.schools .filter((school) => categories.includes(school.category)) .map((school) => school.id) .sort()", async () => {
+        expect(result.ids).toEqual(
+          data.schools
+            .filter((school) => categories.includes(school.category))
+            .map((school) => school.id)
+            .sort(),
+        );
+      });
     });
   }
 
@@ -65,7 +76,9 @@ test.describe("Rozszerzone filtry wyszukiwarki szkół", () => {
     page,
   }) => {
     const app = new Octopus(page);
-    const data = await searchDataset(app);
+    const data =
+      await test.step("Przygotowanie: pobranie współdzielonego zestawu szkół do filtrowania", async () =>
+        searchDataset(app));
     // Dwa małe zbiory zamiast założenia, że oba medale muszą wystąpić
     // na pierwszej stronie ogólnego wyszukiwania (która może zawierać same Złota).
     for (const target of [
@@ -73,22 +86,33 @@ test.describe("Rozszerzone filtry wyszukiwarki szkół", () => {
       { ...data.schools[0], city: "Poznań", medal: "Brak" as const },
     ]) {
       await app.openPanel("school", target.id);
-      await expectSchoolMedal(page, target.medal);
-      const result = await searchSchools(app, {
-        name: target.name,
-        city: target.city,
-        medals: ["Brak", "Złoto"],
+      await test.step("Sprawdzenie: expectSchoolMedal", async () =>
+        expectSchoolMedal(page, target.medal));
+      const result =
+        await test.step("Wyszukiwanie: wykonanie filtrów i pobranie wyników do porównania", async () =>
+          searchSchools(app, {
+            name: target.name,
+            city: target.city,
+            medals: ["Brak", "Złoto"],
+          }));
+      await test.step("Sprawdzenie: liczba elementów — result.model.institutionIds ?? []; oczekiwane: 0", async () => {
+        expect(result.model.institutionIds ?? []).toHaveLength(0);
       });
-      expect(result.model.institutionIds ?? []).toHaveLength(0);
-      expect(result.model.medal).toHaveLength(2);
-      expect(
-        result.ids,
-        `OR Brak/Złoto powinno obejmować szkołę ${target.id} z medalem ${target.medal}`,
-      ).toContain(target.id);
+      await test.step("Sprawdzenie: liczba elementów — result.model.medal; oczekiwane: 2", async () => {
+        expect(result.model.medal).toHaveLength(2);
+      });
+      await test.step("Sprawdzenie: obecność oczekiwanego elementu — result.ids; oczekiwane: target.id", async () => {
+        expect(
+          result.ids,
+          `OR Brak/Złoto powinno obejmować szkołę ${target.id} z medalem ${target.medal}`,
+        ).toContain(target.id);
+      });
       for (const school of result.schools)
-        expect(["Brak", "Złoto"]).toContain(
-          school.informationAboutMedalCategory?.medalCategoryName,
-        );
+        await test.step('Sprawdzenie: obecność oczekiwanego elementu — ["Brak", "Złoto"]; oczekiwane: school.informationAboutMedalCategory?.medalCategoryName', async () => {
+          expect(["Brak", "Złoto"]).toContain(
+            school.informationAboutMedalCategory?.medalCategoryName,
+          );
+        });
     }
   });
 
@@ -97,20 +121,28 @@ test.describe("Rozszerzone filtry wyszukiwarki szkół", () => {
       page,
     }) => {
       const app = new Octopus(page);
-      const data = await searchDataset(app);
-      const result = await searchSchools(app, {
-        name: data.prefix,
-        medals: ["Brak"],
-        categories: [category],
+      const data =
+        await test.step("Przygotowanie: pobranie współdzielonego zestawu szkół do filtrowania", async () =>
+          searchDataset(app));
+      const result =
+        await test.step("Wyszukiwanie: wykonanie filtrów i pobranie wyników do porównania", async () =>
+          searchSchools(app, {
+            name: data.prefix,
+            medals: ["Brak"],
+            categories: [category],
+          }));
+      await test.step("Sprawdzenie: zgodność całej struktury i wartości — result.ids; oczekiwane: data.schools .filter((school) => school.category === category) .map((school) => school.id) .sort()", async () => {
+        expect(result.ids).toEqual(
+          data.schools
+            .filter((school) => school.category === category)
+            .map((school) => school.id)
+            .sort(),
+        );
       });
-      expect(result.ids).toEqual(
-        data.schools
-          .filter((school) => school.category === category)
-          .map((school) => school.id)
-          .sort(),
-      );
       for (const school of result.schools)
-        expect(school.informationAboutMedalCategory?.medalCategoryName).toBe("Brak");
+        await test.step('Sprawdzenie: zgodność wartości — school.informationAboutMedalCategory?.medalCategoryName; oczekiwane: "Brak"', async () => {
+          expect(school.informationAboutMedalCategory?.medalCategoryName).toBe("Brak");
+        });
     });
   }
 
@@ -118,105 +150,152 @@ test.describe("Rozszerzone filtry wyszukiwarki szkół", () => {
     page,
   }) => {
     const app = new Octopus(page);
-    const data = await searchDataset(app);
-    const result = await searchSchools(app, {
-      name: data.prefix,
-      medals: ["Brak", "Złoto"],
-      categories: ["B", "C"],
+    const data =
+      await test.step("Przygotowanie: pobranie współdzielonego zestawu szkół do filtrowania", async () =>
+        searchDataset(app));
+    const result =
+      await test.step("Wyszukiwanie: wykonanie filtrów i pobranie wyników do porównania", async () =>
+        searchSchools(app, {
+          name: data.prefix,
+          medals: ["Brak", "Złoto"],
+          categories: ["B", "C"],
+        }));
+    await test.step('Sprawdzenie: zgodność całej struktury i wartości — result.ids; oczekiwane: data.schools .filter((school) => ["B", "C"].includes(school.category)) .map((school) => school.id) .sort()', async () => {
+      expect(result.ids).toEqual(
+        data.schools
+          .filter((school) => ["B", "C"].includes(school.category))
+          .map((school) => school.id)
+          .sort(),
+      );
     });
-    expect(result.ids).toEqual(
-      data.schools
-        .filter((school) => ["B", "C"].includes(school.category))
-        .map((school) => school.id)
-        .sort(),
-    );
   });
 
   test("SFLT-15: nazwa zawęża wyniki kategorii @school @school-search @and", async ({ page }) => {
     const app = new Octopus(page);
-    const data = await searchDataset(app);
-    expect(
-      (await searchSchools(app, { name: data.schools[1].name, categories: ["A", "B"] })).ids,
-    ).toEqual([data.schools[1].id]);
+    const data =
+      await test.step("Przygotowanie: pobranie współdzielonego zestawu szkół do filtrowania", async () =>
+        searchDataset(app));
+    await test.step('Sprawdzenie: zgodność całej struktury i wartości — (await searchSchools(app, { name: data.schools[1].name, categories: ["A", "B"] })).ids; oczekiwane: [data.schools[1].id]', async () => {
+      expect(
+        (await searchSchools(app, { name: data.schools[1].name, categories: ["A", "B"] })).ids,
+      ).toEqual([data.schools[1].id]);
+    });
   });
 
   test("SFLT-16: poziom ogranicza wyniki Medalu i Kategorii @school @school-search @and", async ({
     page,
   }) => {
     const app = new Octopus(page);
-    const data = await searchDataset(app);
+    const data =
+      await test.step("Przygotowanie: pobranie współdzielonego zestawu szkół do filtrowania", async () =>
+        searchDataset(app));
     const form = await schoolSearchForm(app);
     // Etykieta poziomu pochodzi ze słownika formularza, a nie z numeru typu.
     await form.locator('[data-cy="school-level-select"]').click();
     // Nazwa dostępności normalizuje spacje otaczające tekst mat-option.
     const level = page.getByRole("option", { name: /^Szkoła\s+Podstawowa$/i });
-    await expect(level).toHaveCount(1);
+    await test.step("Sprawdzenie: liczba elementów w widoku — level; oczekiwane: 1", async () =>
+      expect(level).toHaveCount(1));
     await level.click();
     await applySearchCriteria(app, form, {
       name: data.prefix,
       medals: ["Brak"],
       categories: ["A", "B", "C", "D"],
     });
-    expect((await submitSchoolSearch(app, form)).ids).toEqual(
-      data.schools
-        .filter((school) => school.category !== "D")
-        .map((school) => school.id)
-        .sort(),
-    );
+    await test.step('Sprawdzenie: zgodność całej struktury i wartości — (await submitSchoolSearch(app, form)).ids; oczekiwane: data.schools .filter((school) => school.category !== "D") .map((school) => school.id) .sort()', async () => {
+      expect((await submitSchoolSearch(app, form)).ids).toEqual(
+        data.schools
+          .filter((school) => school.category !== "D")
+          .map((school) => school.id)
+          .sort(),
+      );
+    });
   });
 
   test("SFLT-17: RSPO wymaga dokładnego numeru @school @school-search @rspo", async ({ page }) => {
     const app = new Octopus(page);
-    const data = await searchDataset(app);
+    const data =
+      await test.step("Przygotowanie: pobranie współdzielonego zestawu szkół do filtrowania", async () =>
+        searchDataset(app));
     const target = data.schools[0];
-    const result = await searchSchools(app, { name: data.prefix, rspo: target.rspo });
-    expect(String(result.model.rspoNumber)).toBe(target.rspo);
-    expect(result.ids).toEqual([target.id]);
+    const result =
+      await test.step("Wyszukiwanie: wykonanie filtrów i pobranie wyników do porównania", async () =>
+        searchSchools(app, { name: data.prefix, rspo: target.rspo }));
+    await test.step("Sprawdzenie: zgodność wartości — String(result.model.rspoNumber); oczekiwane: target.rspo", async () => {
+      expect(String(result.model.rspoNumber)).toBe(target.rspo);
+    });
+    await test.step("Sprawdzenie: zgodność całej struktury i wartości — result.ids; oczekiwane: [target.id]", async () => {
+      expect(result.ids).toEqual([target.id]);
+    });
   });
 
   test("SFLT-18: fragment RSPO nie zwraca dopasowania częściowego @school @school-search @rspo @negative", async ({
     page,
   }) => {
     const app = new Octopus(page);
-    const data = await searchDataset(app);
-    expect(
-      (await searchSchools(app, { name: data.prefix, rspo: data.schools[0].rspo.slice(0, -1) }))
-        .ids,
-    ).toEqual([]);
-    await expectEmptySchoolSearch(app);
+    const data =
+      await test.step("Przygotowanie: pobranie współdzielonego zestawu szkół do filtrowania", async () =>
+        searchDataset(app));
+    await test.step("Sprawdzenie: zgodność całej struktury i wartości — (await searchSchools(app, { name: data.prefix, rspo: data.schools[0].rspo.slice(0, -1) })) .ids; oczekiwane: []", async () => {
+      expect(
+        (await searchSchools(app, { name: data.prefix, rspo: data.schools[0].rspo.slice(0, -1) }))
+          .ids,
+      ).toEqual([]);
+    });
+    await test.step("Sprawdzenie: expectEmptySchoolSearch", async () =>
+      expectEmptySchoolSearch(app));
   });
 
   test("SFLT-19: dokładny RSPO ma pierwszeństwo nad niezgodną kategorią @school @school-search @rspo @priority", async ({
     page,
   }) => {
     const app = new Octopus(page);
-    const data = await searchDataset(app);
+    const data =
+      await test.step("Przygotowanie: pobranie współdzielonego zestawu szkół do filtrowania", async () =>
+        searchDataset(app));
     const target = data.schools[0];
-    expect(target.category).toBe("A");
-    const result = await searchSchools(app, {
-      name: data.prefix,
-      rspo: target.rspo,
-      categories: ["D"],
+    await test.step('Sprawdzenie: zgodność wartości — target.category; oczekiwane: "A"', async () => {
+      expect(target.category).toBe("A");
     });
+    const result =
+      await test.step("Wyszukiwanie: wykonanie filtrów i pobranie wyników do porównania", async () =>
+        searchSchools(app, {
+          name: data.prefix,
+          rspo: target.rspo,
+          categories: ["D"],
+        }));
     // Kategoria faktycznie trafia do API: test nie usuwa sprzecznego filtra.
-    expect(String(result.model.rspoNumber)).toBe(target.rspo);
-    expect(result.model.sizeCategory).toEqual([4]);
-    expect(
-      result.ids,
-      "Dokładny RSPO powinien zwrócić wskazaną szkołę A mimo wybranej kategorii D",
-    ).toEqual([target.id]);
+    await test.step("Sprawdzenie: zgodność wartości — String(result.model.rspoNumber); oczekiwane: target.rspo", async () => {
+      expect(String(result.model.rspoNumber)).toBe(target.rspo);
+    });
+    await test.step("Sprawdzenie: zgodność całej struktury i wartości — result.model.sizeCategory; oczekiwane: [4]", async () => {
+      expect(result.model.sizeCategory).toEqual([4]);
+    });
+    await test.step("Sprawdzenie: zgodność całej struktury i wartości — result.ids; oczekiwane: [target.id]", async () => {
+      expect(
+        result.ids,
+        "Dokładny RSPO powinien zwrócić wskazaną szkołę A mimo wybranej kategorii D",
+      ).toEqual([target.id]);
+    });
   });
 
   test("SFLT-20: brak wyników zastępuje poprzednią listę komunikatem @school @school-search @empty", async ({
     page,
   }) => {
     const app = new Octopus(page);
-    const data = await searchDataset(app);
-    expect((await searchSchools(app, { name: data.prefix })).ids).toHaveLength(4);
-    expect(
-      (await searchSchools(app, { name: `${data.prefix}_NIE_ISTNIEJE`, medals: ["Brak"] })).ids,
-    ).toEqual([]);
-    await expectEmptySchoolSearch(app);
+    const data =
+      await test.step("Przygotowanie: pobranie współdzielonego zestawu szkół do filtrowania", async () =>
+        searchDataset(app));
+    await test.step("Sprawdzenie: liczba elementów — (await searchSchools(app, { name: data.prefix })).ids; oczekiwane: 4", async () => {
+      expect((await searchSchools(app, { name: data.prefix })).ids).toHaveLength(4);
+    });
+    await test.step('Sprawdzenie: zgodność całej struktury i wartości — (await searchSchools(app, { name: `${data.prefix}_NIE_ISTNIEJE`, medals: ["Brak"] })).ids; oczekiwane: []', async () => {
+      expect(
+        (await searchSchools(app, { name: `${data.prefix}_NIE_ISTNIEJE`, medals: ["Brak"] })).ids,
+      ).toEqual([]);
+    });
+    await test.step("Sprawdzenie: expectEmptySchoolSearch", async () =>
+      expectEmptySchoolSearch(app));
   });
 
   for (const [index, label, field, clear, values] of [
@@ -227,33 +306,45 @@ test.describe("Rozszerzone filtry wyszukiwarki szkół", () => {
       page,
     }) => {
       const app = new Octopus(page);
-      const data = await searchDataset(app);
+      const data =
+        await test.step("Przygotowanie: pobranie współdzielonego zestawu szkół do filtrowania", async () =>
+          searchDataset(app));
       const form = await schoolSearchForm(app);
       await applySearchCriteria(app, form, { name: data.prefix });
       await selectSearchValues(app, form, field, [...values]);
       const select = form.locator(`[data-cy="${field}"]`);
-      for (const value of values) await expect(select).toContainText(value);
+      for (const value of values)
+        await test.step("Sprawdzenie: obecność tekstu w widoku — select; oczekiwane: value", async () =>
+          expect(select).toContainText(value));
       const clearButton = form.locator(`[data-cy="${clear}"]`);
-      await expect(clearButton).toBeVisible();
+      await test.step("Sprawdzenie: widoczność elementu — clearButton", async () =>
+        expect(clearButton).toBeVisible());
       await clearButton.click();
-      await expect(select).toHaveText("");
-      await expect(clearButton).toHaveCount(0);
+      await test.step('Sprawdzenie: tekst w widoku — select; oczekiwane: ""', async () =>
+        expect(select).toHaveText(""));
+      await test.step("Sprawdzenie: liczba elementów w widoku — clearButton; oczekiwane: 0", async () =>
+        expect(clearButton).toHaveCount(0));
       // Sprawdzamy stan opcji po czyszczeniu, nie tylko tekst zamkniętego pola.
       await select.click();
       for (const value of values)
-        await expect(page.getByRole("option", { name: value, exact: true })).toHaveAttribute(
-          "aria-selected",
-          "false",
-        );
+        await test.step('Sprawdzenie: wartość atrybutu — page.getByRole("option", { name: value, exact: true }); oczekiwane: "aria-selected"', async () =>
+          expect(page.getByRole("option", { name: value, exact: true })).toHaveAttribute(
+            "aria-selected",
+            "false",
+          ));
       await page.keyboard.press("Escape");
       const result = await submitSchoolSearch(app, form);
-      expect(result.model[field === "medal-select" ? "medal" : "sizeCategory"] ?? []).toHaveLength(
-        0,
-      );
-      expect(
-        result.ids,
-        `Po wyczyszczeniu pola ${label} ma obowiązywać tylko nazwa zestawu, bez ograniczenia ${label}`,
-      ).toEqual(data.schools.map((school) => school.id).sort());
+      await test.step('Sprawdzenie: liczba elementów — result.model[field === "medal-select" ? "medal" : "sizeCategory"] ?? []; oczekiwane: 0', async () => {
+        expect(
+          result.model[field === "medal-select" ? "medal" : "sizeCategory"] ?? [],
+        ).toHaveLength(0);
+      });
+      await test.step("Sprawdzenie: zgodność całej struktury i wartości — result.ids; oczekiwane: data.schools.map((school) => school.id).sort()", async () => {
+        expect(
+          result.ids,
+          `Po wyczyszczeniu pola ${label} ma obowiązywać tylko nazwa zestawu, bez ograniczenia ${label}`,
+        ).toEqual(data.schools.map((school) => school.id).sort());
+      });
     });
   }
 
@@ -261,38 +352,54 @@ test.describe("Rozszerzone filtry wyszukiwarki szkół", () => {
     page,
   }) => {
     const app = new Octopus(page);
-    const data = await searchDataset(app);
+    const data =
+      await test.step("Przygotowanie: pobranie współdzielonego zestawu szkół do filtrowania", async () =>
+        searchDataset(app));
     const form = await schoolSearchForm(app);
     await applySearchCriteria(app, form, { name: data.prefix, si: true });
     await form.locator('[data-cy="si-clear"]').click();
     const result = await submitSchoolSearch(app, form);
-    expect(result.model.si ?? null).toBeNull();
-    expect(result.ids).toEqual(data.schools.map((school) => school.id).sort());
+    await test.step("Sprawdzenie: toBeNull — result.model.si ?? null", async () => {
+      expect(result.model.si ?? null).toBeNull();
+    });
+    await test.step("Sprawdzenie: zgodność całej struktury i wartości — result.ids; oczekiwane: data.schools.map((school) => school.id).sort()", async () => {
+      expect(result.ids).toEqual(data.schools.map((school) => school.id).sort());
+    });
   });
 
   test("SFLT-24: kolejne wyszukanie zastępuje poprzednią kategorię @school @school-search @repeat", async ({
     page,
   }) => {
     const app = new Octopus(page);
-    const data = await searchDataset(app);
+    const data =
+      await test.step("Przygotowanie: pobranie współdzielonego zestawu szkół do filtrowania", async () =>
+        searchDataset(app));
     for (const category of ["A", "D", "B"])
-      expect((await searchSchools(app, { name: data.prefix, categories: [category] })).ids).toEqual(
-        data.schools.filter((school) => school.category === category).map((school) => school.id),
-      );
+      await test.step("Sprawdzenie: zgodność całej struktury i wartości — (await searchSchools(app, { name: data.prefix, categories: [category] })).ids; oczekiwane: data.schools.filter((school) => school.category === category).map((school) => school.id)", async () => {
+        expect(
+          (await searchSchools(app, { name: data.prefix, categories: [category] })).ids,
+        ).toEqual(
+          data.schools.filter((school) => school.category === category).map((school) => school.id),
+        );
+      });
   });
 
   test("SFLT-25: poprawienie błędnego RSPO pozwala wyszukać szkołę @school @school-search @validation", async ({
     page,
   }) => {
     const app = new Octopus(page);
-    const data = await searchDataset(app);
+    const data =
+      await test.step("Przygotowanie: pobranie współdzielonego zestawu szkół do filtrowania", async () =>
+        searchDataset(app));
     const form = await schoolSearchForm(app);
     const input = form.locator('[data-cy="rspo-input"]');
     await input.fill("abc");
     await input.blur();
     await input.fill(data.schools[0].rspo);
     await applySearchCriteria(app, form, { name: data.prefix });
-    expect((await submitSchoolSearch(app, form)).ids).toEqual([data.schools[0].id]);
+    await test.step("Sprawdzenie: zgodność całej struktury i wartości — (await submitSchoolSearch(app, form)).ids; oczekiwane: [data.schools[0].id]", async () => {
+      expect((await submitSchoolSearch(app, form)).ids).toEqual([data.schools[0].id]);
+    });
   });
 
   for (const [index, si] of [true, false].entries()) {
@@ -300,17 +407,27 @@ test.describe("Rozszerzone filtry wyszukiwarki szkół", () => {
       page,
     }) => {
       const app = new Octopus(page);
-      const data = await searchDataset(app);
-      const result = await searchSchools(app, {
-        name: data.prefix,
-        medals: ["Brak"],
-        categories: ["A", "D"],
-        si,
+      const data =
+        await test.step("Przygotowanie: pobranie współdzielonego zestawu szkół do filtrowania", async () =>
+          searchDataset(app));
+      const result =
+        await test.step("Wyszukiwanie: wykonanie filtrów i pobranie wyników do porównania", async () =>
+          searchSchools(app, {
+            name: data.prefix,
+            medals: ["Brak"],
+            categories: ["A", "D"],
+            si,
+          }));
+      await test.step("Sprawdzenie: zgodność wartości — result.model.si; oczekiwane: si", async () => {
+        expect(result.model.si).toBe(si);
       });
-      expect(result.model.si).toBe(si);
       // Nowe szkoły nie mają żadnego SI, zatem nie mogą wejść do wyniku Tak.
-      expect(result.ids).toEqual(si ? [] : [data.schools[0].id, data.schools[3].id].sort());
-      if (si) await expectEmptySchoolSearch(app);
+      await test.step("Sprawdzenie: zgodność całej struktury i wartości — result.ids; oczekiwane: si ? [] : [data.schools[0].id, data.schools[3].id].sort()", async () => {
+        expect(result.ids).toEqual(si ? [] : [data.schools[0].id, data.schools[3].id].sort());
+      });
+      if (si)
+        await test.step("Sprawdzenie: expectEmptySchoolSearch", async () =>
+          expectEmptySchoolSearch(app));
     });
   }
 
@@ -329,14 +446,27 @@ test.describe("Rozszerzone filtry wyszukiwarki szkół", () => {
         `Wymagana kontrolowana szkoła: ${variable}={"id":"...","name":"..."}; patrz dokumentacja.`,
       );
       const school = JSON.parse(raw!) as { id: string; name: string };
-      expect(school.name).toMatch(/^AUTO_/);
-      expect(school.id).toMatch(/^\d+$/);
+      await test.step("Sprawdzenie: zgodność ze wzorcem — school.name; oczekiwane: /^AUTO_/", async () => {
+        expect(school.name).toMatch(/^AUTO_/);
+      });
+      await test.step("Sprawdzenie: zgodność ze wzorcem — school.id; oczekiwane: /^\\d+$/", async () => {
+        expect(school.id).toMatch(/^\d+$/);
+      });
       const app = new Octopus(page);
-      const baseline = await searchSchools(app, { name: school.name });
-      expect(baseline.ids).toEqual([school.id]);
-      expect((await searchSchools(app, { name: school.name, si })).ids).toEqual([school.id]);
-      expect((await searchSchools(app, { name: school.name, si: !si })).ids).toEqual([]);
-      await expectEmptySchoolSearch(app);
+      const baseline =
+        await test.step("Wyszukiwanie: wykonanie filtrów i pobranie wyników do porównania", async () =>
+          searchSchools(app, { name: school.name }));
+      await test.step("Sprawdzenie: zgodność całej struktury i wartości — baseline.ids; oczekiwane: [school.id]", async () => {
+        expect(baseline.ids).toEqual([school.id]);
+      });
+      await test.step("Sprawdzenie: zgodność całej struktury i wartości — (await searchSchools(app, { name: school.name, si })).ids; oczekiwane: [school.id]", async () => {
+        expect((await searchSchools(app, { name: school.name, si })).ids).toEqual([school.id]);
+      });
+      await test.step("Sprawdzenie: zgodność całej struktury i wartości — (await searchSchools(app, { name: school.name, si: !si })).ids; oczekiwane: []", async () => {
+        expect((await searchSchools(app, { name: school.name, si: !si })).ids).toEqual([]);
+      });
+      await test.step("Sprawdzenie: expectEmptySchoolSearch", async () =>
+        expectEmptySchoolSearch(app));
     });
   }
 
@@ -345,21 +475,39 @@ test.describe("Rozszerzone filtry wyszukiwarki szkół", () => {
   }) => {
     test.fail(true, "W formularzu DEV są Tagi, ale brak pola Notatki z przekazanych wymagań.");
     const form = await schoolSearchForm(new Octopus(page));
-    await expect(form.getByText("Notatki", { exact: true })).toBeVisible();
+    await test.step('Sprawdzenie: widoczność elementu — form.getByText("Notatki", { exact: true })', async () =>
+      expect(form.getByText("Notatki", { exact: true })).toBeVisible());
   });
 
   test("SFLT-32: RSPO działa samodzielnie bez nazwy i pozostałych filtrów @school @school-search @rspo", async ({
     page,
   }) => {
     const app = new Octopus(page);
-    const data = await searchDataset(app);
-    const result = await searchSchools(app, { rspo: data.schools[0].rspo });
-    expect(result.model.nameOrFullName ?? "").toBe("");
-    expect(result.model.medal ?? []).toHaveLength(0);
-    expect(result.model.sizeCategory ?? []).toHaveLength(0);
-    expect(result.model.si ?? null).toBeNull();
+    const data =
+      await test.step("Przygotowanie: pobranie współdzielonego zestawu szkół do filtrowania", async () =>
+        searchDataset(app));
+    const result =
+      await test.step("Wyszukiwanie: wykonanie filtrów i pobranie wyników do porównania", async () =>
+        searchSchools(app, { rspo: data.schools[0].rspo }));
+    await test.step('Sprawdzenie: zgodność wartości — result.model.nameOrFullName ?? ""; oczekiwane: ""', async () => {
+      expect(result.model.nameOrFullName ?? "").toBe("");
+    });
+    await test.step("Sprawdzenie: liczba elementów — result.model.medal ?? []; oczekiwane: 0", async () => {
+      expect(result.model.medal ?? []).toHaveLength(0);
+    });
+    await test.step("Sprawdzenie: liczba elementów — result.model.sizeCategory ?? []; oczekiwane: 0", async () => {
+      expect(result.model.sizeCategory ?? []).toHaveLength(0);
+    });
+    await test.step("Sprawdzenie: toBeNull — result.model.si ?? null", async () => {
+      expect(result.model.si ?? null).toBeNull();
+    });
     // RSPO nie ma tu założonej unikalności w całej bazie DEV.
-    expect(result.ids).toContain(data.schools[0].id);
-    for (const other of data.schools.slice(1)) expect(result.ids).not.toContain(other.id);
+    await test.step("Sprawdzenie: obecność oczekiwanego elementu — result.ids; oczekiwane: data.schools[0].id", async () => {
+      expect(result.ids).toContain(data.schools[0].id);
+    });
+    for (const other of data.schools.slice(1))
+      await test.step("Sprawdzenie: negacja — obecność oczekiwanego elementu — result.ids; oczekiwane: other.id", async () => {
+        expect(result.ids).not.toContain(other.id);
+      });
   });
 });

@@ -27,14 +27,17 @@ const test = base.extend<{ categoryEditSchool: CategorySchool }>({
     async ({ page }, use, testInfo) => {
       const app = new Octopus(page);
       const definition = testInfo.title.startsWith("CAT-34:") ? EDIT_D_CASE : EDIT_CASE;
-      const school = await ensureCategorySchool(page, app, definition);
+      const school =
+        await test.step("Przygotowanie: szkoła o zadanym typie, liczbie uczniów i kategorii", async () =>
+          ensureCategorySchool(page, app, definition));
       try {
         await use(school);
       } finally {
         // Sprzątanie fixture ma własny limit, niezależny od czasu zużytego przez test.
         await setStudentCount(app, school, String(definition.count));
         await app.openPanel("school", school.id);
-        await expect(studentCountInput(page)).toHaveValue(String(definition.count));
+        await test.step("Sprawdzenie: wartość pola w widoku — studentCountInput(page); oczekiwane: String(definition.count)", async () =>
+          expect(studentCountInput(page)).toHaveValue(String(definition.count)));
       }
     },
     { timeout: 120000 },
@@ -47,42 +50,63 @@ test.describe("Kategoria szkoły", () => {
     page,
   }) => {
     const app = new Octopus(page);
-    const school = await ensureCategorySchool(page, app, CATEGORY_CASES[3]);
+    const school =
+      await test.step("Przygotowanie: szkoła o zadanym typie, liczbie uczniów i kategorii", async () =>
+        ensureCategorySchool(page, app, CATEGORY_CASES[3]));
     const results = await searchCategorySchools(app, { id: school.id });
     const { header } = await categoryColumn(results);
-    await expect(header).toBeVisible();
+    await test.step("Sprawdzenie: widoczność elementu — header", async () =>
+      expect(header).toBeVisible());
   });
 
   test("CAT-02: Kategoria znajduje się bezpośrednio po Poziom @school @category @layout", async ({
     page,
   }) => {
     const app = new Octopus(page);
-    const school = await ensureCategorySchool(page, app, CATEGORY_CASES[3]);
+    const school =
+      await test.step("Przygotowanie: szkoła o zadanym typie, liczbie uczniów i kategorii", async () =>
+        ensureCategorySchool(page, app, CATEGORY_CASES[3]));
     const results = await searchCategorySchools(app, { id: school.id });
     const { header } = await categoryColumn(results);
     const level = results.getByRole("columnheader", { name: "Poziom", exact: true });
-    await expect(level).toHaveCount(1);
+    await test.step("Sprawdzenie: liczba elementów w widoku — level; oczekiwane: 1", async () =>
+      expect(level).toHaveCount(1));
     const categoryIndex = Number(await header.getAttribute("aria-colindex"));
     const levelIndex = Number(await level.getAttribute("aria-colindex"));
-    expect(levelIndex).toBeGreaterThan(0);
-    expect(categoryIndex).toBe(levelIndex + 1);
+    await test.step("Sprawdzenie: wartość powyżej granicy — levelIndex; granica: 0", async () => {
+      expect(levelIndex).toBeGreaterThan(0);
+    });
+    await test.step("Sprawdzenie: zgodność wartości — categoryIndex; oczekiwane: levelIndex + 1", async () => {
+      expect(categoryIndex).toBe(levelIndex + 1);
+    });
   });
 
   test("CAT-03: kategoria na profilu jest pod poziomem szkoły i tylko do odczytu @school @category @readonly @layout", async ({
     page,
   }) => {
     const app = new Octopus(page);
-    await ensureCategorySchool(page, app, CATEGORY_CASES[3]);
-    await expect(categoryInput(page)).toBeVisible();
-    await expect(categoryInput(page)).toBeDisabled();
-    await expect(categoryInput(page)).toHaveValue("C");
+    await test.step("Przygotowanie: szkoła o zadanym typie, liczbie uczniów i kategorii", async () =>
+      ensureCategorySchool(page, app, CATEGORY_CASES[3]));
+    await test.step("Sprawdzenie: widoczność elementu — categoryInput(page)", async () =>
+      expect(categoryInput(page)).toBeVisible());
+    await test.step("Sprawdzenie: zablokowanie działania — categoryInput(page)", async () =>
+      expect(categoryInput(page)).toBeDisabled());
+    await test.step('Sprawdzenie: wartość pola w widoku — categoryInput(page); oczekiwane: "C"', async () =>
+      expect(categoryInput(page)).toHaveValue("C"));
     const level = app.detail("level");
-    await expect(level).toBeVisible();
+    await test.step("Sprawdzenie: widoczność elementu — level", async () =>
+      expect(level).toBeVisible());
     const levelBox = await level.boundingBox();
     const categoryBox = await categoryInput(page).boundingBox();
-    expect(levelBox).not.toBeNull();
-    expect(categoryBox).not.toBeNull();
-    expect(categoryBox!.y).toBeGreaterThanOrEqual(levelBox!.y + levelBox!.height);
+    await test.step("Sprawdzenie: negacja — toBeNull — levelBox", async () => {
+      expect(levelBox).not.toBeNull();
+    });
+    await test.step("Sprawdzenie: negacja — toBeNull — categoryBox", async () => {
+      expect(categoryBox).not.toBeNull();
+    });
+    await test.step("Sprawdzenie: wartość nie mniejsza od granicy — categoryBox!.y; granica: levelBox!.y + levelBox!.height", async () => {
+      expect(categoryBox!.y).toBeGreaterThanOrEqual(levelBox!.y + levelBox!.height);
+    });
   });
 
   for (const sample of CATEGORY_CASES) {
@@ -90,12 +114,19 @@ test.describe("Kategoria szkoły", () => {
       page,
     }) => {
       const app = new Octopus(page);
-      const school = await ensureCategorySchool(page, app, sample);
-      await expect(categoryInput(page)).toHaveValue(sample.category);
-      if (sample.type === "Szkoła NPC") await expectNpcSchoolIdentity(app);
-      await expectCategoryInSearch(app, school, sample.category);
+      const school =
+        await test.step("Przygotowanie: szkoła o zadanym typie, liczbie uczniów i kategorii", async () =>
+          ensureCategorySchool(page, app, sample));
+      await test.step("Sprawdzenie: wartość pola w widoku — categoryInput(page); oczekiwane: sample.category", async () =>
+        expect(categoryInput(page)).toHaveValue(sample.category));
+      if (sample.type === "Szkoła NPC")
+        await test.step("Sprawdzenie: expectNpcSchoolIdentity", async () =>
+          expectNpcSchoolIdentity(app));
+      await test.step("Sprawdzenie: expectCategoryInSearch", async () =>
+        expectCategoryInSearch(app, school, sample.category));
       await app.openPanel("school", school.id);
-      await expect(categoryInput(page)).toHaveValue(sample.category);
+      await test.step("Sprawdzenie: wartość pola w widoku — categoryInput(page); oczekiwane: sample.category", async () =>
+        expect(categoryInput(page)).toHaveValue(sample.category));
     });
   }
 
@@ -110,7 +141,10 @@ test.describe("Kategoria szkoły", () => {
       const app = new Octopus(page);
       const schools = [];
       for (const definition of SORT_CASES)
-        schools.push(await ensureCategorySchool(page, app, definition));
+        schools.push(
+          await test.step("Przygotowanie: szkoła o zadanym typie, liczbie uczniów i kategorii", async () =>
+            ensureCategorySchool(page, app, definition)),
+        );
       const results = await searchCategorySchools(app, { name: categorySortPrefix });
       const { header, column } = await categoryColumn(results);
       for (
@@ -119,13 +153,17 @@ test.describe("Kategoria szkoły", () => {
         attempt++
       )
         await header.click();
-      await expect(header).toHaveAttribute("aria-sort", sorting.direction);
-      await expect
-        .poll(async () => (await categorySortRows(results, column)).map((row) => row.category))
-        .toEqual(sorting.expected);
-      expect((await categorySortRows(results, column)).map((row) => row.id).sort()).toEqual(
-        schools.map((school) => school.id).sort(),
-      );
+      await test.step('Sprawdzenie: wartość atrybutu — header; oczekiwane: "aria-sort"', async () =>
+        expect(header).toHaveAttribute("aria-sort", sorting.direction));
+      await test.step("Sprawdzenie: zgodność całej struktury i wartości — async () => (await categorySortRows(results, column)).map((row) => row.category); oczekiwane: sorting.expected", async () =>
+        expect
+          .poll(async () => (await categorySortRows(results, column)).map((row) => row.category))
+          .toEqual(sorting.expected));
+      await test.step("Sprawdzenie: zgodność całej struktury i wartości — (await categorySortRows(results, column)).map((row) => row.id).sort(); oczekiwane: schools.map((school) => school.id).sort()", async () => {
+        expect((await categorySortRows(results, column)).map((row) => row.id).sort()).toEqual(
+          schools.map((school) => school.id).sort(),
+        );
+      });
     });
   }
 
@@ -136,7 +174,10 @@ test.describe("Kategoria szkoły", () => {
     const app = new Octopus(page);
     const schools = [];
     for (const definition of SORT_CASES)
-      schools.push(await ensureCategorySchool(page, app, definition));
+      schools.push(
+        await test.step("Przygotowanie: szkoła o zadanym typie, liczbie uczniów i kategorii", async () =>
+          ensureCategorySchool(page, app, definition)),
+      );
     const results = await searchCategorySchools(app, { name: categorySortPrefix });
     const { header, column } = await categoryColumn(results);
     const expected = schools
@@ -149,14 +190,16 @@ test.describe("Kategoria szkoły", () => {
         attempt++
       )
         await header.click();
-      await expect(header).toHaveAttribute("aria-sort", direction);
-      await expect
-        .poll(async () =>
-          (await categorySortRows(results, column))
-            .map(({ id, category }) => ({ id, category }))
-            .sort((a, b) => a.id.localeCompare(b.id)),
-        )
-        .toEqual(expected);
+      await test.step('Sprawdzenie: wartość atrybutu — header; oczekiwane: "aria-sort"', async () =>
+        expect(header).toHaveAttribute("aria-sort", direction));
+      await test.step("Sprawdzenie: zgodność całej struktury i wartości — async () => (await categorySortRows(results, column)) .map(({ id, category }) => ({ id, category })) .sort((a, b) …; oczekiwane: expected", async () =>
+        expect
+          .poll(async () =>
+            (await categorySortRows(results, column))
+              .map(({ id, category }) => ({ id, category }))
+              .sort((a, b) => a.id.localeCompare(b.id)),
+          )
+          .toEqual(expected));
     }
   });
 
@@ -176,11 +219,15 @@ test.describe("Kategoria szkoły", () => {
       const app = new Octopus(page);
       await setStudentCount(app, school, change.before);
       await setStudentCount(app, school, change.after);
-      await expect(categoryInput(page)).toHaveValue(change.category);
-      await expectCategoryInSearch(app, school, change.category as SchoolCategory);
+      await test.step("Sprawdzenie: wartość pola w widoku — categoryInput(page); oczekiwane: change.category", async () =>
+        expect(categoryInput(page)).toHaveValue(change.category));
+      await test.step("Sprawdzenie: expectCategoryInSearch", async () =>
+        expectCategoryInSearch(app, school, change.category as SchoolCategory));
       await app.openPanel("school", school.id);
-      await expect(studentCountInput(page)).toHaveValue(change.after);
-      await expect(categoryInput(page)).toHaveValue(change.category);
+      await test.step("Sprawdzenie: wartość pola w widoku — studentCountInput(page); oczekiwane: change.after", async () =>
+        expect(studentCountInput(page)).toHaveValue(change.after));
+      await test.step("Sprawdzenie: wartość pola w widoku — categoryInput(page); oczekiwane: change.category", async () =>
+        expect(categoryInput(page)).toHaveValue(change.category));
     });
   }
 
@@ -193,9 +240,12 @@ test.describe("Kategoria szkoły", () => {
     await schoolSioInput(form, "quantityOfStudents").fill("101");
     await cancelSchoolEdit(form);
     await app.openPanel("school", school.id);
-    await expect(studentCountInput(page)).toHaveValue("100");
-    await expect(categoryInput(page)).toHaveValue("C");
-    await expectCategoryInSearch(app, school, "C");
+    await test.step('Sprawdzenie: wartość pola w widoku — studentCountInput(page); oczekiwane: "100"', async () =>
+      expect(studentCountInput(page)).toHaveValue("100"));
+    await test.step('Sprawdzenie: wartość pola w widoku — categoryInput(page); oczekiwane: "C"', async () =>
+      expect(categoryInput(page)).toHaveValue("C"));
+    await test.step("Sprawdzenie: expectCategoryInSearch", async () =>
+      expectCategoryInSearch(app, school, "C"));
   });
 
   test("CAT-34: zmiana liczby uczniów innej placówki zachowuje D @school @category @edit", async ({
@@ -204,10 +254,14 @@ test.describe("Kategoria szkoły", () => {
   }) => {
     const app = new Octopus(page);
     await setStudentCount(app, school, "1");
-    await expect(categoryInput(page)).toHaveValue("D");
-    await expectCategoryInSearch(app, school, "D");
+    await test.step('Sprawdzenie: wartość pola w widoku — categoryInput(page); oczekiwane: "D"', async () =>
+      expect(categoryInput(page)).toHaveValue("D"));
+    await test.step("Sprawdzenie: expectCategoryInSearch", async () =>
+      expectCategoryInSearch(app, school, "D"));
     await app.openPanel("school", school.id);
-    await expect(studentCountInput(page)).toHaveValue("1");
-    await expect(categoryInput(page)).toHaveValue("D");
+    await test.step('Sprawdzenie: wartość pola w widoku — studentCountInput(page); oczekiwane: "1"', async () =>
+      expect(studentCountInput(page)).toHaveValue("1"));
+    await test.step('Sprawdzenie: wartość pola w widoku — categoryInput(page); oczekiwane: "D"', async () =>
+      expect(categoryInput(page)).toHaveValue("D"));
   });
 });

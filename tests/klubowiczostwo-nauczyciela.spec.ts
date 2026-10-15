@@ -27,8 +27,10 @@ test("CLUB-01: przedmiotopoziom i formularz klubowy nauczyciela są trwałe @tea
   page,
   scenario: s,
 }) => {
-  const schoolId = await s.createSchool();
-  const teacherId = await s.createTeacher(schoolId, undefined, { subjectLevels: [] });
+  const schoolId = await test.step("Przygotowanie: utworzenie szkoły testowej", async () =>
+    s.createSchool());
+  const teacherId = await test.step("Przygotowanie: utworzenie nauczyciela testowego", async () =>
+    s.createTeacher(schoolId, undefined, { subjectLevels: [] }));
   const subjects = page.locator("app-teacher-subjects");
   const subjectRow = subjects.getByRole("row").filter({
     has: page.getByRole("cell", { name: "Matematyka", exact: true }),
@@ -125,8 +127,10 @@ test("CLUB-02: edycja klasy 4 na 5 dla Matematyka/SP jest trwała @teacher @club
   page,
   scenario: s,
 }) => {
-  const schoolId = await s.createSchool();
-  const teacherId = await s.createTeacher(schoolId);
+  const schoolId = await test.step("Przygotowanie: utworzenie szkoły testowej", async () =>
+    s.createSchool());
+  const teacherId = await test.step("Przygotowanie: utworzenie nauczyciela testowego", async () =>
+    s.createTeacher(schoolId));
 
   const { form, schoolYear } = await openNewClubForm(page);
 
@@ -195,8 +199,10 @@ test("CLUB-03: Matematyka/SP udostępnia wyłącznie klasy 4-8 @teacher @club", 
   page,
   scenario: s,
 }) => {
-  const schoolId = await s.createSchool();
-  await s.createTeacher(schoolId);
+  const schoolId = await test.step("Przygotowanie: utworzenie szkoły testowej", async () =>
+    s.createSchool());
+  await test.step("Przygotowanie: utworzenie nauczyciela testowego", async () =>
+    s.createTeacher(schoolId));
 
   const { form } = await openNewClubForm(page);
 
@@ -205,7 +211,8 @@ test("CLUB-03: Matematyka/SP udostępnia wyłącznie klasy 4-8 @teacher @club", 
    */
   await selectSchool(form, s.schoolName);
 
-  await expect(form.locator(".green-box")).toBeVisible();
+  await test.step('Sprawdzenie: widoczność elementu — form.locator(".green-box")', async () =>
+    expect(form.locator(".green-box")).toBeVisible());
 
   await test.step("Sprawdź klasy 4-8", async () => {
     for (const classNumber of MATH_SP_CLASSES) {
@@ -226,8 +233,10 @@ test("CLUB-04: formularz klubowy zachowuje kilka klas 4,5,6 @teacher @club", asy
   page,
   scenario: s,
 }) => {
-  const schoolId = await s.createSchool();
-  const teacherId = await s.createTeacher(schoolId);
+  const schoolId = await test.step("Przygotowanie: utworzenie szkoły testowej", async () =>
+    s.createSchool());
+  const teacherId = await test.step("Przygotowanie: utworzenie nauczyciela testowego", async () =>
+    s.createTeacher(schoolId));
 
   const { form } = await openNewClubForm(page);
 
@@ -249,11 +258,13 @@ test("CLUB-04: formularz klubowy zachowuje kilka klas 4,5,6 @teacher @club", asy
   const editForm = await openClubEdit(page, confirmationId);
 
   for (const classNumber of ["4", "5", "6"]) {
-    await expect(ownClass(editForm, classNumber)).toBeChecked();
+    await test.step("Sprawdzenie: zaznaczenie opcji — ownClass(editForm, classNumber)", async () =>
+      expect(ownClass(editForm, classNumber)).toBeChecked());
   }
 
   for (const classNumber of ["7", "8"]) {
-    await expect(ownClass(editForm, classNumber)).not.toBeChecked();
+    await test.step("Sprawdzenie: negacja — zaznaczenie opcji — ownClass(editForm, classNumber)", async () =>
+      expect(ownClass(editForm, classNumber)).not.toBeChecked());
   }
 
   await cancelClubForm(editForm);
@@ -263,8 +274,10 @@ test("CLUB-05: zaznaczenie wszystkich klas Matematyka/SP wybiera 4-8 @teacher @c
   page,
   scenario: s,
 }) => {
-  const schoolId = await s.createSchool();
-  const teacherId = await s.createTeacher(schoolId);
+  const schoolId = await test.step("Przygotowanie: utworzenie szkoły testowej", async () =>
+    s.createSchool());
+  const teacherId = await test.step("Przygotowanie: utworzenie nauczyciela testowego", async () =>
+    s.createTeacher(schoolId));
 
   const { form } = await openNewClubForm(page);
 
@@ -278,7 +291,8 @@ test("CLUB-05: zaznaczenie wszystkich klas Matematyka/SP wybiera 4-8 @teacher @c
   await selectAll.check();
 
   for (const classNumber of MATH_SP_CLASSES) {
-    await expect(ownClass(form, classNumber)).toBeChecked();
+    await test.step("Sprawdzenie: zaznaczenie opcji — ownClass(form, classNumber)", async () =>
+      expect(ownClass(form, classNumber)).toBeChecked());
   }
 
   await disableTeacherEmail(form);
@@ -293,7 +307,8 @@ test("CLUB-05: zaznaczenie wszystkich klas Matematyka/SP wybiera 4-8 @teacher @c
   const editForm = await openClubEdit(page, confirmationId);
 
   for (const classNumber of MATH_SP_CLASSES) {
-    await expect(ownClass(editForm, classNumber)).toBeChecked();
+    await test.step("Sprawdzenie: zaznaczenie opcji — ownClass(editForm, classNumber)", async () =>
+      expect(ownClass(editForm, classNumber)).toBeChecked());
   }
 
   await cancelClubForm(editForm);
@@ -303,8 +318,10 @@ test("CLUB-06: edycja usuwa tylko wskazaną klasę 5 z zestawu 4,5,6 @teacher @c
   page,
   scenario: s,
 }) => {
-  const schoolId = await s.createSchool();
-  const teacherId = await s.createTeacher(schoolId);
+  const schoolId = await test.step("Przygotowanie: utworzenie szkoły testowej", async () =>
+    s.createSchool());
+  const teacherId = await test.step("Przygotowanie: utworzenie nauczyciela testowego", async () =>
+    s.createTeacher(schoolId));
 
   const { form } = await openNewClubForm(page);
 
@@ -330,9 +347,12 @@ test("CLUB-06: edycja usuwa tylko wskazaną klasę 5 z zestawu 4,5,6 @teacher @c
 
   const verifyForm = await openClubEdit(page, confirmationId);
 
-  await expect(ownClass(verifyForm, "4")).toBeChecked();
-  await expect(ownClass(verifyForm, "5")).not.toBeChecked();
-  await expect(ownClass(verifyForm, "6")).toBeChecked();
+  await test.step('Sprawdzenie: zaznaczenie opcji — ownClass(verifyForm, "4")', async () =>
+    expect(ownClass(verifyForm, "4")).toBeChecked());
+  await test.step('Sprawdzenie: negacja — zaznaczenie opcji — ownClass(verifyForm, "5")', async () =>
+    expect(ownClass(verifyForm, "5")).not.toBeChecked());
+  await test.step('Sprawdzenie: zaznaczenie opcji — ownClass(verifyForm, "6")', async () =>
+    expect(ownClass(verifyForm, "6")).toBeChecked());
 
   await cancelClubForm(verifyForm);
 });
@@ -342,15 +362,17 @@ test("CLUB-07: formularz klubowy dotyczy tylko wybranej szkoły nauczyciela @tea
   page,
   scenario: s,
 }) => {
-  const firstSchoolId = await s.createSchool();
+  const firstSchoolId = await test.step("Przygotowanie: utworzenie szkoły testowej", async () =>
+    s.createSchool());
   const { id: secondSchoolId, name: secondSchoolName } = clubSchools.spB;
 
   await s.record("secondSchoolId", secondSchoolId);
   await s.record("secondSchoolName", secondSchoolName);
 
-  const teacherId = await s.createTeacher(firstSchoolId, undefined, {
-    additionalSchoolIds: [secondSchoolId],
-  });
+  const teacherId = await test.step("Przygotowanie: utworzenie nauczyciela testowego", async () =>
+    s.createTeacher(firstSchoolId, undefined, {
+      additionalSchoolIds: [secondSchoolId],
+    }));
 
   const { form } = await openNewClubForm(page);
 
@@ -362,12 +384,15 @@ test("CLUB-07: formularz klubowy dotyczy tylko wybranej szkoły nauczyciela @tea
     hasText: secondSchoolName,
   });
 
-  await expect(firstSchool).toBeVisible();
-  await expect(secondSchool).toBeVisible();
+  await test.step("Sprawdzenie: widoczność elementu — firstSchool", async () =>
+    expect(firstSchool).toBeVisible());
+  await test.step("Sprawdzenie: widoczność elementu — secondSchool", async () =>
+    expect(secondSchool).toBeVisible());
 
   await firstSchool.getByRole("checkbox").check();
 
-  await expect(secondSchool.getByRole("checkbox")).not.toBeChecked();
+  await test.step('Sprawdzenie: negacja — zaznaczenie opcji — secondSchool.getByRole("checkbox")', async () =>
+    expect(secondSchool.getByRole("checkbox")).not.toBeChecked());
 
   await ownClass(form, "4").check();
 
@@ -379,9 +404,11 @@ test("CLUB-07: formularz klubowy dotyczy tylko wybranej szkoły nauczyciela @tea
 
   const detail = await confirmationDetails(page, confirmationId);
 
-  await expect(detail).toContainText(s.schoolName);
+  await test.step("Sprawdzenie: obecność tekstu w widoku — detail; oczekiwane: s.schoolName", async () =>
+    expect(detail).toContainText(s.schoolName));
 
-  await expect(detail).not.toContainText(secondSchoolName);
+  await test.step("Sprawdzenie: negacja — obecność tekstu w widoku — detail; oczekiwane: secondSchoolName", async () =>
+    expect(detail).not.toContainText(secondSchoolName));
 });
 
 test("CLUB-08: formularz klubowy obsługuje dwie szkoły nauczyciela @teacher @club", async ({
@@ -395,7 +422,8 @@ test("CLUB-08: formularz klubowy obsługuje dwie szkoły nauczyciela @teacher @c
    * =====================================================
    */
 
-  const firstSchoolId = await s.createSchool();
+  const firstSchoolId = await test.step("Przygotowanie: utworzenie szkoły testowej", async () =>
+    s.createSchool());
   const firstSchoolName = s.schoolName;
 
   const { id: secondSchoolId, name: secondSchoolName } = clubSchools.spB;
@@ -411,9 +439,10 @@ test("CLUB-08: formularz klubowy obsługuje dwie szkoły nauczyciela @teacher @c
    * =====================================================
    */
 
-  const teacherId = await s.createTeacher(firstSchoolId, firstSchoolName, {
-    additionalSchoolIds: [secondSchoolId],
-  });
+  const teacherId = await test.step("Przygotowanie: utworzenie nauczyciela testowego", async () =>
+    s.createTeacher(firstSchoolId, firstSchoolName, {
+      additionalSchoolIds: [secondSchoolId],
+    }));
 
   /*
    * =====================================================
@@ -444,8 +473,10 @@ test("CLUB-08: formularz klubowy obsługuje dwie szkoły nauczyciela @teacher @c
     hasText: secondSchoolName,
   });
 
-  await expect(firstSchoolRow).toBeVisible();
-  await expect(secondSchoolRow).toBeVisible();
+  await test.step("Sprawdzenie: widoczność elementu — firstSchoolRow", async () =>
+    expect(firstSchoolRow).toBeVisible());
+  await test.step("Sprawdzenie: widoczność elementu — secondSchoolRow", async () =>
+    expect(secondSchoolRow).toBeVisible());
 
   const firstSchoolCheckbox = firstSchoolRow.getByRole("checkbox");
 
@@ -460,24 +491,29 @@ test("CLUB-08: formularz klubowy obsługuje dwie szkoły nauczyciela @teacher @c
    * dlatego klasy ustawiamy dopiero później.
    */
 
-  await expect(firstSchoolCheckbox).not.toBeChecked();
+  await test.step("Sprawdzenie: negacja — zaznaczenie opcji — firstSchoolCheckbox", async () =>
+    expect(firstSchoolCheckbox).not.toBeChecked());
 
   await firstSchoolCheckbox.check();
 
-  await expect(firstSchoolCheckbox).toBeChecked();
+  await test.step("Sprawdzenie: zaznaczenie opcji — firstSchoolCheckbox", async () =>
+    expect(firstSchoolCheckbox).toBeChecked());
 
-  await expect(secondSchoolCheckbox).not.toBeChecked();
+  await test.step("Sprawdzenie: negacja — zaznaczenie opcji — secondSchoolCheckbox", async () =>
+    expect(secondSchoolCheckbox).not.toBeChecked());
 
   await secondSchoolCheckbox.check();
 
-  await expect(secondSchoolCheckbox).toBeChecked();
+  await test.step("Sprawdzenie: zaznaczenie opcji — secondSchoolCheckbox", async () =>
+    expect(secondSchoolCheckbox).toBeChecked());
 
   /*
    * Powinny istnieć dwa osobne zestawy klas.
    */
   const classBoxes = form.locator(".green-box");
 
-  await expect(classBoxes).toHaveCount(2);
+  await test.step("Sprawdzenie: liczba elementów w widoku — classBoxes; oczekiwane: 2", async () =>
+    expect(classBoxes).toHaveCount(2));
 
   const firstSchoolClasses = classBoxes.nth(0);
   const secondSchoolClasses = classBoxes.nth(1);
@@ -489,19 +525,21 @@ test("CLUB-08: formularz klubowy obsługuje dwie szkoły nauczyciela @teacher @c
    */
 
   for (const classNumber of ["4", "5", "6", "7", "8"]) {
-    await expect(
-      firstSchoolClasses.getByRole("checkbox", {
-        name: classNumber,
-        exact: true,
-      }),
-    ).toBeVisible();
+    await test.step('Sprawdzenie: widoczność elementu — firstSchoolClasses.getByRole("checkbox", { name: classNumber, exact: true, })', async () =>
+      expect(
+        firstSchoolClasses.getByRole("checkbox", {
+          name: classNumber,
+          exact: true,
+        }),
+      ).toBeVisible());
 
-    await expect(
-      secondSchoolClasses.getByRole("checkbox", {
-        name: classNumber,
-        exact: true,
-      }),
-    ).toBeVisible();
+    await test.step('Sprawdzenie: widoczność elementu — secondSchoolClasses.getByRole("checkbox", { name: classNumber, exact: true, })', async () =>
+      expect(
+        secondSchoolClasses.getByRole("checkbox", {
+          name: classNumber,
+          exact: true,
+        }),
+      ).toBeVisible());
   }
 
   /*
@@ -515,11 +553,13 @@ test("CLUB-08: formularz klubowy obsługuje dwie szkoły nauczyciela @teacher @c
     exact: true,
   });
 
-  await expect(firstSchoolClass4).not.toBeChecked();
+  await test.step("Sprawdzenie: negacja — zaznaczenie opcji — firstSchoolClass4", async () =>
+    expect(firstSchoolClass4).not.toBeChecked());
 
   await firstSchoolClass4.check();
 
-  await expect(firstSchoolClass4).toBeChecked();
+  await test.step("Sprawdzenie: zaznaczenie opcji — firstSchoolClass4", async () =>
+    expect(firstSchoolClass4).toBeChecked());
 
   /*
    * =====================================================
@@ -532,11 +572,13 @@ test("CLUB-08: formularz klubowy obsługuje dwie szkoły nauczyciela @teacher @c
     exact: true,
   });
 
-  await expect(secondSchoolClass5).not.toBeChecked();
+  await test.step("Sprawdzenie: negacja — zaznaczenie opcji — secondSchoolClass5", async () =>
+    expect(secondSchoolClass5).not.toBeChecked());
 
   await secondSchoolClass5.check();
 
-  await expect(secondSchoolClass5).toBeChecked();
+  await test.step("Sprawdzenie: zaznaczenie opcji — secondSchoolClass5", async () =>
+    expect(secondSchoolClass5).toBeChecked());
 
   /*
    * =====================================================
@@ -544,32 +586,36 @@ test("CLUB-08: formularz klubowy obsługuje dwie szkoły nauczyciela @teacher @c
    * =====================================================
    */
 
-  await expect(firstSchoolClass4).toBeChecked();
-  await expect(secondSchoolClass5).toBeChecked();
+  await test.step("Sprawdzenie: zaznaczenie opcji — firstSchoolClass4", async () =>
+    expect(firstSchoolClass4).toBeChecked());
+  await test.step("Sprawdzenie: zaznaczenie opcji — secondSchoolClass5", async () =>
+    expect(secondSchoolClass5).toBeChecked());
 
   /*
    * Szkoła 1:
    * 4 = TAK
    * 5 = NIE
    */
-  await expect(
-    firstSchoolClasses.getByRole("checkbox", {
-      name: "5",
-      exact: true,
-    }),
-  ).not.toBeChecked();
+  await test.step('Sprawdzenie: negacja — zaznaczenie opcji — firstSchoolClasses.getByRole("checkbox", { name: "5", exact: true, })', async () =>
+    expect(
+      firstSchoolClasses.getByRole("checkbox", {
+        name: "5",
+        exact: true,
+      }),
+    ).not.toBeChecked());
 
   /*
    * Szkoła 2:
    * 4 = NIE
    * 5 = TAK
    */
-  await expect(
-    secondSchoolClasses.getByRole("checkbox", {
-      name: "4",
-      exact: true,
-    }),
-  ).not.toBeChecked();
+  await test.step('Sprawdzenie: negacja — zaznaczenie opcji — secondSchoolClasses.getByRole("checkbox", { name: "4", exact: true, })', async () =>
+    expect(
+      secondSchoolClasses.getByRole("checkbox", {
+        name: "4",
+        exact: true,
+      }),
+    ).not.toBeChecked());
 
   /*
    * Nie wysyłamy maila.
@@ -592,7 +638,8 @@ test("CLUB-08: formularz klubowy obsługuje dwie szkoły nauczyciela @teacher @c
     })
     .click();
 
-  await expect(form).toHaveCount(0);
+  await test.step("Sprawdzenie: liczba elementów w widoku — form; oczekiwane: 0", async () =>
+    expect(form).toHaveCount(0));
 
   /*
    * Szukamy wszystkich zapisanych potwierdzeń
@@ -610,7 +657,8 @@ test("CLUB-08: formularz klubowy obsługuje dwie szkoły nauczyciela @teacher @c
   /*
    * Dwie szkoły = dwa osobne potwierdzenia.
    */
-  await expect(confirmationRows).toHaveCount(2);
+  await test.step("Sprawdzenie: liczba elementów w widoku — confirmationRows; oczekiwane: 2", async () =>
+    expect(confirmationRows).toHaveCount(2));
 
   const confirmationIds: string[] = [];
 
@@ -619,17 +667,23 @@ test("CLUB-08: formularz klubowy obsługuje dwie szkoły nauczyciela @teacher @c
       await confirmationRows.nth(i).getByRole("cell").nth(1).innerText()
     ).trim();
 
-    expect(confirmationId).toMatch(/^\d+$/);
+    await test.step("Sprawdzenie: zgodność ze wzorcem — confirmationId; oczekiwane: /^\\d+$/", async () => {
+      expect(confirmationId).toMatch(/^\d+$/);
+    });
 
     confirmationIds.push(confirmationId);
   }
 
-  expect(confirmationIds).toHaveLength(2);
+  await test.step("Sprawdzenie: liczba elementów — confirmationIds; oczekiwane: 2", async () => {
+    expect(confirmationIds).toHaveLength(2);
+  });
 
   /*
    * ID muszą być różne.
    */
-  expect(confirmationIds[0]).not.toBe(confirmationIds[1]);
+  await test.step("Sprawdzenie: negacja — zgodność wartości — confirmationIds[0]; oczekiwane: confirmationIds[1]", async () => {
+    expect(confirmationIds[0]).not.toBe(confirmationIds[1]);
+  });
 
   await s.record("confirmationIds", confirmationIds.join(","));
 
@@ -649,7 +703,8 @@ test("CLUB-08: formularz klubowy obsługuje dwie szkoły nauczyciela @teacher @c
    * Oba potwierdzenia nadal istnieją.
    */
   for (const confirmationId of confirmationIds) {
-    await expect(confirmationRow(page, confirmationId)).toHaveCount(1);
+    await test.step("Sprawdzenie: liczba elementów w widoku — confirmationRow(page, confirmationId); oczekiwane: 1", async () =>
+      expect(confirmationRow(page, confirmationId)).toHaveCount(1));
   }
 
   /*
@@ -671,45 +726,51 @@ test("CLUB-08: formularz klubowy obsługuje dwie szkoły nauczyciela @teacher @c
   for (const confirmationId of confirmationIds) {
     const row = confirmationRow(page, confirmationId);
 
-    await expect(row).toHaveCount(1);
+    await test.step("Sprawdzenie: liczba elementów w widoku — row; oczekiwane: 1", async () =>
+      expect(row).toHaveCount(1));
 
     /*
      * Główne dane potwierdzenia.
      */
-    await expect(
-      row.getByRole("cell", {
-        name: confirmationId,
-        exact: true,
-      }),
-    ).toBeVisible();
+    await test.step('Sprawdzenie: widoczność elementu — row.getByRole("cell", { name: confirmationId, exact: true, })', async () =>
+      expect(
+        row.getByRole("cell", {
+          name: confirmationId,
+          exact: true,
+        }),
+      ).toBeVisible());
 
-    await expect(
-      row.getByRole("cell", {
-        name: "Matematyka",
-        exact: true,
-      }),
-    ).toBeVisible();
+    await test.step('Sprawdzenie: widoczność elementu — row.getByRole("cell", { name: "Matematyka", exact: true, })', async () =>
+      expect(
+        row.getByRole("cell", {
+          name: "Matematyka",
+          exact: true,
+        }),
+      ).toBeVisible());
 
-    await expect(
-      row.getByRole("cell", {
-        name: "SP",
-        exact: true,
-      }),
-    ).toBeVisible();
+    await test.step('Sprawdzenie: widoczność elementu — row.getByRole("cell", { name: "SP", exact: true, })', async () =>
+      expect(
+        row.getByRole("cell", {
+          name: "SP",
+          exact: true,
+        }),
+      ).toBeVisible());
 
-    await expect(
-      row.getByRole("cell", {
-        name: schoolYear,
-        exact: true,
-      }),
-    ).toBeVisible();
+    await test.step('Sprawdzenie: widoczność elementu — row.getByRole("cell", { name: schoolYear, exact: true, })', async () =>
+      expect(
+        row.getByRole("cell", {
+          name: schoolYear,
+          exact: true,
+        }),
+      ).toBeVisible());
 
     /*
      * Rozwijamy szczegóły konkretnego potwierdzenia.
      */
     const details = await confirmationDetails(page, confirmationId);
 
-    await expect(details).toHaveCount(1);
+    await test.step("Sprawdzenie: liczba elementów w widoku — details; oczekiwane: 1", async () =>
+      expect(details).toHaveCount(1));
 
     const detailsText = await details.innerText();
 
@@ -722,34 +783,38 @@ test("CLUB-08: formularz klubowy obsługuje dwie szkoły nauczyciela @teacher @c
     if (detailsText.includes(firstSchoolName)) {
       firstSchoolConfirmationId = confirmationId;
 
-      await expect(details).toContainText(firstSchoolName);
+      await test.step("Sprawdzenie: obecność tekstu w widoku — details; oczekiwane: firstSchoolName", async () =>
+        expect(details).toContainText(firstSchoolName));
 
-      await expect(
-        details.getByRole("cell", {
-          name: "SP",
-          exact: true,
-        }),
-      ).toBeVisible();
+      await test.step('Sprawdzenie: widoczność elementu — details.getByRole("cell", { name: "SP", exact: true, })', async () =>
+        expect(
+          details.getByRole("cell", {
+            name: "SP",
+            exact: true,
+          }),
+        ).toBeVisible());
 
       /*
        * Powinna mieć klasę 4.
        */
-      await expect(
-        details.getByRole("cell", {
-          name: "4",
-          exact: true,
-        }),
-      ).toBeVisible();
+      await test.step('Sprawdzenie: widoczność elementu — details.getByRole("cell", { name: "4", exact: true, })', async () =>
+        expect(
+          details.getByRole("cell", {
+            name: "4",
+            exact: true,
+          }),
+        ).toBeVisible());
 
       /*
        * Nie powinna mieć klasy 5.
        */
-      await expect(
-        details.getByRole("cell", {
-          name: "5",
-          exact: true,
-        }),
-      ).toHaveCount(0);
+      await test.step('Sprawdzenie: liczba elementów w widoku — details.getByRole("cell", { name: "5", exact: true, }); oczekiwane: 0', async () =>
+        expect(
+          details.getByRole("cell", {
+            name: "5",
+            exact: true,
+          }),
+        ).toHaveCount(0));
     }
 
     /*
@@ -761,34 +826,38 @@ test("CLUB-08: formularz klubowy obsługuje dwie szkoły nauczyciela @teacher @c
     if (detailsText.includes(secondSchoolName)) {
       secondSchoolConfirmationId = confirmationId;
 
-      await expect(details).toContainText(secondSchoolName);
+      await test.step("Sprawdzenie: obecność tekstu w widoku — details; oczekiwane: secondSchoolName", async () =>
+        expect(details).toContainText(secondSchoolName));
 
-      await expect(
-        details.getByRole("cell", {
-          name: "SP",
-          exact: true,
-        }),
-      ).toBeVisible();
+      await test.step('Sprawdzenie: widoczność elementu — details.getByRole("cell", { name: "SP", exact: true, })', async () =>
+        expect(
+          details.getByRole("cell", {
+            name: "SP",
+            exact: true,
+          }),
+        ).toBeVisible());
 
       /*
        * Powinna mieć klasę 5.
        */
-      await expect(
-        details.getByRole("cell", {
-          name: "5",
-          exact: true,
-        }),
-      ).toBeVisible();
+      await test.step('Sprawdzenie: widoczność elementu — details.getByRole("cell", { name: "5", exact: true, })', async () =>
+        expect(
+          details.getByRole("cell", {
+            name: "5",
+            exact: true,
+          }),
+        ).toBeVisible());
 
       /*
        * Nie powinna mieć klasy 4.
        */
-      await expect(
-        details.getByRole("cell", {
-          name: "4",
-          exact: true,
-        }),
-      ).toHaveCount(0);
+      await test.step('Sprawdzenie: liczba elementów w widoku — details.getByRole("cell", { name: "4", exact: true, }); oczekiwane: 0', async () =>
+        expect(
+          details.getByRole("cell", {
+            name: "4",
+            exact: true,
+          }),
+        ).toHaveCount(0));
     }
 
     /*
@@ -809,18 +878,24 @@ test("CLUB-08: formularz klubowy obsługuje dwie szkoły nauczyciela @teacher @c
    * =====================================================
    */
 
-  expect(firstSchoolConfirmationId, "Nie znaleziono potwierdzenia dla pierwszej szkoły").not.toBe(
-    "",
-  );
+  await test.step('Sprawdzenie: negacja — zgodność wartości — firstSchoolConfirmationId; oczekiwane: ""', async () => {
+    expect(firstSchoolConfirmationId, "Nie znaleziono potwierdzenia dla pierwszej szkoły").not.toBe(
+      "",
+    );
+  });
 
-  expect(secondSchoolConfirmationId, "Nie znaleziono potwierdzenia dla drugiej szkoły").not.toBe(
-    "",
-  );
+  await test.step('Sprawdzenie: negacja — zgodność wartości — secondSchoolConfirmationId; oczekiwane: ""', async () => {
+    expect(secondSchoolConfirmationId, "Nie znaleziono potwierdzenia dla drugiej szkoły").not.toBe(
+      "",
+    );
+  });
 
   /*
    * Każda szkoła ma własne potwierdzenie.
    */
-  expect(firstSchoolConfirmationId).not.toBe(secondSchoolConfirmationId);
+  await test.step("Sprawdzenie: negacja — zgodność wartości — firstSchoolConfirmationId; oczekiwane: secondSchoolConfirmationId", async () => {
+    expect(firstSchoolConfirmationId).not.toBe(secondSchoolConfirmationId);
+  });
 
   await s.record("firstSchoolConfirmationId", firstSchoolConfirmationId);
 

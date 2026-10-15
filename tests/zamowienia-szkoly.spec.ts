@@ -44,7 +44,8 @@ test("ORD-01: zamówienie szkoły zachowuje produkt i ilość po ponownym otwarc
   page,
   scenario: s,
 }) => {
-  const school = await prepareOrderSchool(page, s);
+  const school = await test.step("Przygotowanie: dedykowana szkoła do zamówień", async () =>
+    prepareOrderSchool(page, s));
 
   await withOrderCleanup(page, s, school, async (track) => {
     const code = ORDER_PRODUCTS.physics7.products[1].code;
@@ -59,13 +60,14 @@ test("ORD-01: zamówienie szkoły zachowuje produkt i ilość po ponownym otwarc
 
     const items = await expandOrderItems(orders, orderId);
 
-    await expectOrderItems(items, [
-      {
-        code,
-        title,
-        quantity: "1",
-      },
-    ]);
+    await test.step("Sprawdzenie: expectOrderItems", async () =>
+      expectOrderItems(items, [
+        {
+          code,
+          title,
+          quantity: "1",
+        },
+      ]));
   });
 });
 
@@ -73,7 +75,8 @@ test("ORD-02: zamówienie z dwoma produktami zachowuje produkty i ilości @schoo
   page,
   scenario: s,
 }) => {
-  const school = await prepareOrderSchool(page, s);
+  const school = await test.step("Przygotowanie: dedykowana szkoła do zamówień", async () =>
+    prepareOrderSchool(page, s));
 
   await withOrderCleanup(page, s, school, async (track) => {
     const code1 = ORDER_PRODUCTS.physics7.products[1].code;
@@ -99,18 +102,19 @@ test("ORD-02: zamówienie z dwoma produktami zachowuje produkty i ilości @schoo
 
     const items = await expandOrderItems(orders, orderId);
 
-    await expectOrderItems(items, [
-      {
-        code: code1,
-        title: title1,
-        quantity: "2",
-      },
-      {
-        code: code2,
-        title: title2,
-        quantity: "5",
-      },
-    ]);
+    await test.step("Sprawdzenie: expectOrderItems", async () =>
+      expectOrderItems(items, [
+        {
+          code: code1,
+          title: title1,
+          quantity: "2",
+        },
+        {
+          code: code2,
+          title: title2,
+          quantity: "5",
+        },
+      ]));
   });
 });
 
@@ -118,7 +122,8 @@ test("ORD-03: edycja ilości dwóch produktów i usunięcie zamówienia @school 
   page,
   scenario: s,
 }) => {
-  const school = await prepareOrderSchool(page, s);
+  const school = await test.step("Przygotowanie: dedykowana szkoła do zamówień", async () =>
+    prepareOrderSchool(page, s));
 
   await withOrderCleanup(page, s, school, async (track) => {
     const code1 = ORDER_PRODUCTS.physics7.products[1].code;
@@ -152,20 +157,23 @@ test("ORD-03: edycja ilości dwóch produktów i usunięcie zamówienia @school 
 
     const items = await expandOrderItems(orders, orderId);
 
-    await expectOrderItems(items, [
-      {
-        code: code1,
-        title: title1,
-        quantity: "3",
-      },
-      {
-        code: code2,
-        title: title2,
-        quantity: "5",
-      },
-    ]);
+    await test.step("Sprawdzenie: expectOrderItems", async () =>
+      expectOrderItems(items, [
+        {
+          code: code1,
+          title: title1,
+          quantity: "3",
+        },
+        {
+          code: code2,
+          title: title2,
+          quantity: "5",
+        },
+      ]));
 
-    expect(await deleteOrder(page, orderId)).toBe("DELETED");
+    await test.step('Sprawdzenie: zgodność wartości — await deleteOrder(page, orderId); oczekiwane: "DELETED"', async () => {
+      expect(await deleteOrder(page, orderId)).toBe("DELETED");
+    });
   });
 });
 
@@ -177,7 +185,8 @@ test("ORD-04: formularz Dodaj zamówienie zawiera komplet podstawowych kontrolek
   page,
   scenario: s,
 }) => {
-  await prepareOrderSchool(page, s);
+  await test.step("Przygotowanie: dedykowana szkoła do zamówień", async () =>
+    prepareOrderSchool(page, s));
 
   const form = await openNewOrderForm(page);
 
@@ -195,20 +204,26 @@ test("ORD-04: formularz Dodaj zamówienie zawiera komplet podstawowych kontrolek
 
   const classes = orderFilterCombobox(form, "classes");
 
-  await expect(subject, "Filtr Przedmiot powinien być widoczny").toBeVisible();
+  await test.step("Sprawdzenie: widoczność elementu — subject", async () =>
+    expect(subject, "Filtr Przedmiot powinien być widoczny").toBeVisible());
 
-  await expect(level, "Filtr Poziom powinien być widoczny").toBeVisible();
+  await test.step("Sprawdzenie: widoczność elementu — level", async () =>
+    expect(level, "Filtr Poziom powinien być widoczny").toBeVisible());
 
-  await expect(classes, "Filtr Klasy powinien być widoczny").toBeVisible();
+  await test.step("Sprawdzenie: widoczność elementu — classes", async () =>
+    expect(classes, "Filtr Klasy powinien być widoczny").toBeVisible());
 
   /*
    * Każdy select powinien mieć stan początkowy.
    */
-  await expect(subject).toContainText("Wybierz z listy");
+  await test.step('Sprawdzenie: obecność tekstu w widoku — subject; oczekiwane: "Wybierz z listy"', async () =>
+    expect(subject).toContainText("Wybierz z listy"));
 
-  await expect(level).toContainText("Wybierz z listy");
+  await test.step('Sprawdzenie: obecność tekstu w widoku — level; oczekiwane: "Wybierz z listy"', async () =>
+    expect(level).toContainText("Wybierz z listy"));
 
-  await expect(classes).toContainText("Wybierz z listy");
+  await test.step('Sprawdzenie: obecność tekstu w widoku — classes; oczekiwane: "Wybierz z listy"', async () =>
+    expect(classes).toContainText("Wybierz z listy"));
 
   /*
    * Tytuł/Kod reprezentuje pole tekstowe.
@@ -217,67 +232,80 @@ test("ORD-04: formularz Dodaj zamówienie zawiera komplet podstawowych kontrolek
     exact: true,
   });
 
-  await expect(titleOrCode, "Pole Tytuł/Kod powinno być widoczne").toBeVisible();
+  await test.step("Sprawdzenie: widoczność elementu — titleOrCode", async () =>
+    expect(titleOrCode, "Pole Tytuł/Kod powinno być widoczne").toBeVisible());
 
-  await expect(titleOrCode).toBeEnabled();
-  await expect(titleOrCode).toHaveValue("");
+  await test.step("Sprawdzenie: dostępność działania — titleOrCode", async () =>
+    expect(titleOrCode).toBeEnabled());
+  await test.step('Sprawdzenie: wartość pola w widoku — titleOrCode; oczekiwane: ""', async () =>
+    expect(titleOrCode).toHaveValue(""));
 
-  await expect(
-    form.getByRole("button", {
-      name: "Wyczyść filtry",
-      exact: true,
-    }),
-  ).toBeVisible();
+  await test.step('Sprawdzenie: widoczność elementu — form.getByRole("button", { name: "Wyczyść filtry", exact: true, })', async () =>
+    expect(
+      form.getByRole("button", {
+        name: "Wyczyść filtry",
+        exact: true,
+      }),
+    ).toBeVisible());
 
-  await expect(
-    form.getByRole("button", {
-      name: "Szukaj",
-      exact: true,
-    }),
-  ).toBeVisible();
+  await test.step('Sprawdzenie: widoczność elementu — form.getByRole("button", { name: "Szukaj", exact: true, })', async () =>
+    expect(
+      form.getByRole("button", {
+        name: "Szukaj",
+        exact: true,
+      }),
+    ).toBeVisible());
 
-  await expect(
-    form.getByText("Gratisy", {
-      exact: true,
-    }),
-  ).toBeVisible();
+  await test.step('Sprawdzenie: widoczność elementu — form.getByText("Gratisy", { exact: true, })', async () =>
+    expect(
+      form.getByText("Gratisy", {
+        exact: true,
+      }),
+    ).toBeVisible());
 
-  await expect(
-    form.getByText("Zamówienie", {
-      exact: true,
-    }),
-  ).toBeVisible();
+  await test.step('Sprawdzenie: widoczność elementu — form.getByText("Zamówienie", { exact: true, })', async () =>
+    expect(
+      form.getByText("Zamówienie", {
+        exact: true,
+      }),
+    ).toBeVisible());
 
-  await expect(
-    form.getByText("Załączniki", {
-      exact: true,
-    }),
-  ).toBeVisible();
+  await test.step('Sprawdzenie: widoczność elementu — form.getByText("Załączniki", { exact: true, })', async () =>
+    expect(
+      form.getByText("Załączniki", {
+        exact: true,
+      }),
+    ).toBeVisible());
 
-  await expect(
-    form.getByRole("button", {
-      name: "Dodaj plik",
-      exact: true,
-    }),
-  ).toBeVisible();
+  await test.step('Sprawdzenie: widoczność elementu — form.getByRole("button", { name: "Dodaj plik", exact: true, })', async () =>
+    expect(
+      form.getByRole("button", {
+        name: "Dodaj plik",
+        exact: true,
+      }),
+    ).toBeVisible());
 
-  await expect(form).toContainText("Dozwolone formaty: PDF, JPG, PNG");
+  await test.step('Sprawdzenie: obecność tekstu w widoku — form; oczekiwane: "Dozwolone formaty: PDF, JPG, PNG"', async () =>
+    expect(form).toContainText("Dozwolone formaty: PDF, JPG, PNG"));
 
-  await expect(form).toContainText("Maksymalny rozmiar pliku: 10 MB");
+  await test.step('Sprawdzenie: obecność tekstu w widoku — form; oczekiwane: "Maksymalny rozmiar pliku: 10 MB"', async () =>
+    expect(form).toContainText("Maksymalny rozmiar pliku: 10 MB"));
 
-  await expect(
-    form.getByRole("button", {
-      name: "Anuluj",
-      exact: true,
-    }),
-  ).toBeVisible();
+  await test.step('Sprawdzenie: widoczność elementu — form.getByRole("button", { name: "Anuluj", exact: true, })', async () =>
+    expect(
+      form.getByRole("button", {
+        name: "Anuluj",
+        exact: true,
+      }),
+    ).toBeVisible());
 
-  await expect(
-    form.getByRole("button", {
-      name: "Zapisz",
-      exact: true,
-    }),
-  ).toBeVisible();
+  await test.step('Sprawdzenie: widoczność elementu — form.getByRole("button", { name: "Zapisz", exact: true, })', async () =>
+    expect(
+      form.getByRole("button", {
+        name: "Zapisz",
+        exact: true,
+      }),
+    ).toBeVisible());
 
   await cancelOrderForm(form);
 });
@@ -286,7 +314,8 @@ test("ORD-05: anulowanie pustego formularza nie tworzy zamówienia @school @orde
   page,
   scenario: s,
 }) => {
-  await prepareOrderSchool(page, s);
+  await test.step("Przygotowanie: dedykowana szkoła do zamówień", async () =>
+    prepareOrderSchool(page, s));
 
   await openOrders(page);
 
@@ -296,14 +325,16 @@ test("ORD-05: anulowanie pustego formularza nie tworzy zamówienia @school @orde
 
   await cancelOrderForm(form);
 
-  await expect.poll(() => getOrderIds(page)).toEqual(before);
+  await test.step("Sprawdzenie: zgodność całej struktury i wartości — () => getOrderIds(page); oczekiwane: before", async () =>
+    expect.poll(() => getOrderIds(page)).toEqual(before));
 });
 
 test("ORD-06: anulowanie po wyszukaniu nie tworzy zamówienia @school @order @cancel", async ({
   page,
   scenario: s,
 }) => {
-  await prepareOrderSchool(page, s);
+  await test.step("Przygotowanie: dedykowana szkoła do zamówień", async () =>
+    prepareOrderSchool(page, s));
 
   await openOrders(page);
 
@@ -313,18 +344,21 @@ test("ORD-06: anulowanie po wyszukaniu nie tworzy zamówienia @school @order @ca
 
   await searchOrderProducts(form, ORDER_PRODUCTS.physics7.search);
 
-  await expect(availableProductRow(form, ORDER_PRODUCTS.physics7.products[1].code)).toHaveCount(1);
+  await test.step("Sprawdzenie: liczba elementów w widoku — availableProductRow(form, ORDER_PRODUCTS.physics7.products[1].code); oczekiwane: 1", async () =>
+    expect(availableProductRow(form, ORDER_PRODUCTS.physics7.products[1].code)).toHaveCount(1));
 
   await cancelOrderForm(form);
 
-  await expect.poll(() => getOrderIds(page)).toEqual(before);
+  await test.step("Sprawdzenie: zgodność całej struktury i wartości — () => getOrderIds(page); oczekiwane: before", async () =>
+    expect.poll(() => getOrderIds(page)).toEqual(before));
 });
 
 test("ORD-07: anulowanie po dodaniu produktu i ilości nie tworzy zamówienia @school @order @cancel", async ({
   page,
   scenario: s,
 }) => {
-  await prepareOrderSchool(page, s);
+  await test.step("Przygotowanie: dedykowana szkoła do zamówień", async () =>
+    prepareOrderSchool(page, s));
 
   await openOrders(page);
 
@@ -340,14 +374,16 @@ test("ORD-07: anulowanie po dodaniu produktu i ilości nie tworzy zamówienia @s
 
   await cancelOrderForm(form);
 
-  await expect.poll(() => getOrderIds(page)).toEqual(before);
+  await test.step("Sprawdzenie: zgodność całej struktury i wartości — () => getOrderIds(page); oczekiwane: before", async () =>
+    expect.poll(() => getOrderIds(page)).toEqual(before));
 });
 
 test("ORD-08: ponowne otwarcie po anulowaniu zaczyna od czystego formularza @school @order @cancel", async ({
   page,
   scenario: s,
 }) => {
-  await prepareOrderSchool(page, s);
+  await test.step("Przygotowanie: dedykowana szkoła do zamówień", async () =>
+    prepareOrderSchool(page, s));
 
   /*
    * =====================================================
@@ -382,13 +418,14 @@ test("ORD-08: ponowne otwarcie po anulowaniu zaczyna od czystego formularza @sch
   /*
    * Kontrola stanu przed anulowaniem.
    */
-  await expect(orderFilterCombobox(first, "subject")).toContainText(
-    ORDER_PRODUCTS.physics7.subject,
-  );
+  await test.step('Sprawdzenie: obecność tekstu w widoku — orderFilterCombobox(first, "subject"); oczekiwane: ORDER_PRODUCTS.physics7.subject', async () =>
+    expect(orderFilterCombobox(first, "subject")).toContainText(ORDER_PRODUCTS.physics7.subject));
 
-  await expect(orderFilterCombobox(first, "level")).toContainText(ORDER_PRODUCTS.physics7.level);
+  await test.step('Sprawdzenie: obecność tekstu w widoku — orderFilterCombobox(first, "level"); oczekiwane: ORDER_PRODUCTS.physics7.level', async () =>
+    expect(orderFilterCombobox(first, "level")).toContainText(ORDER_PRODUCTS.physics7.level));
 
-  await expect(selectedProductRows(first)).toHaveCount(1);
+  await test.step("Sprawdzenie: liczba elementów w widoku — selectedProductRows(first); oczekiwane: 1", async () =>
+    expect(selectedProductRows(first)).toHaveCount(1));
 
   /*
    * =====================================================
@@ -416,18 +453,20 @@ test("ORD-08: ponowne otwarcie po anulowaniu zaczyna od czystego formularza @sch
    * - Klasy
    * - Tytuł/Kod
    */
-  await expectFilterReset(second);
+  await test.step("Sprawdzenie: expectFilterReset", async () => expectFilterReset(second));
 
   /*
    * Nie może zostać produkt
    * z poprzedniego formularza.
    */
-  await expect(selectedProductRows(second)).toHaveCount(0);
+  await test.step("Sprawdzenie: liczba elementów w widoku — selectedProductRows(second); oczekiwane: 0", async () =>
+    expect(selectedProductRows(second)).toHaveCount(0));
 
   /*
    * Nie mogą zostać załączniki.
    */
-  await expect(second).toContainText("Brak załączników");
+  await test.step('Sprawdzenie: obecność tekstu w widoku — second; oczekiwane: "Brak załączników"', async () =>
+    expect(second).toContainText("Brak załączników"));
 
   await cancelOrderForm(second);
 });
@@ -440,13 +479,16 @@ test("ORD-09: lista Przedmiot zawiera oczekiwane pozycje @school @order @diction
   page,
   scenario: s,
 }) => {
-  await prepareOrderSchool(page, s);
+  await test.step("Przygotowanie: dedykowana szkoła do zamówień", async () =>
+    prepareOrderSchool(page, s));
 
   const form = await openNewOrderForm(page);
 
   const options = await readOrderFilterOptions(page, form, "subject");
 
-  expect(options).toEqual(expect.arrayContaining([...ORDER_SUBJECT_OPTIONS]));
+  await test.step("Sprawdzenie: zgodność całej struktury i wartości — options; oczekiwane: expect.arrayContaining([...ORDER_SUBJECT_OPTIONS])", async () => {
+    expect(options).toEqual(expect.arrayContaining([...ORDER_SUBJECT_OPTIONS]));
+  });
 
   await cancelOrderForm(form);
 });
@@ -455,13 +497,16 @@ test("ORD-10: lista Poziom zawiera oczekiwane pozycje @school @order @dictionary
   page,
   scenario: s,
 }) => {
-  await prepareOrderSchool(page, s);
+  await test.step("Przygotowanie: dedykowana szkoła do zamówień", async () =>
+    prepareOrderSchool(page, s));
 
   const form = await openNewOrderForm(page);
 
   const options = await readOrderFilterOptions(page, form, "level");
 
-  expect(options).toEqual(expect.arrayContaining([...ORDER_LEVEL_OPTIONS]));
+  await test.step("Sprawdzenie: zgodność całej struktury i wartości — options; oczekiwane: expect.arrayContaining([...ORDER_LEVEL_OPTIONS])", async () => {
+    expect(options).toEqual(expect.arrayContaining([...ORDER_LEVEL_OPTIONS]));
+  });
 
   await cancelOrderForm(form);
 });
@@ -470,20 +515,25 @@ test("ORD-11: lista Klasy zawiera 0-8 i pozwala zaznaczyć kilka klas @school @o
   page,
   scenario: s,
 }) => {
-  await prepareOrderSchool(page, s);
+  await test.step("Przygotowanie: dedykowana szkoła do zamówień", async () =>
+    prepareOrderSchool(page, s));
 
   const form = await openNewOrderForm(page);
 
   const options = await readOrderFilterOptions(page, form, "classes");
 
-  expect(options).toEqual(expect.arrayContaining([...ORDER_CLASS_OPTIONS]));
+  await test.step("Sprawdzenie: zgodność całej struktury i wartości — options; oczekiwane: expect.arrayContaining([...ORDER_CLASS_OPTIONS])", async () => {
+    expect(options).toEqual(expect.arrayContaining([...ORDER_CLASS_OPTIONS]));
+  });
 
   await selectOrderClasses(page, form, ["5", "7"]);
 
   const classes = orderFilterCombobox(form, "classes");
 
-  await expect(classes).toContainText("5");
-  await expect(classes).toContainText("7");
+  await test.step('Sprawdzenie: obecność tekstu w widoku — classes; oczekiwane: "5"', async () =>
+    expect(classes).toContainText("5"));
+  await test.step('Sprawdzenie: obecność tekstu w widoku — classes; oczekiwane: "7"', async () =>
+    expect(classes).toContainText("7"));
 
   await cancelOrderForm(form);
 });

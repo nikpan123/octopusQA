@@ -1,5 +1,6 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
+import { apiStep } from "./api-step";
 import { expect, type Page } from "@playwright/test";
 import { OCTOPUS_ENV } from "./environment";
 import { Octopus, typeValue } from "./octopus";
@@ -10,7 +11,13 @@ import {
   type SchoolCategory,
 } from "./school-category";
 
-type Definition = { key: string; type: string; count?: number; category: SchoolCategory };
+type Definition = {
+  key: string;
+  type: string;
+  count?: number;
+  category: SchoolCategory;
+  testRecord?: boolean;
+};
 export const CATEGORY_CASES: Array<Definition & { id: string }> = [
   { id: "CAT-04", key: "SP_BRAK", type: "Szkoła podstawowa", category: "A" },
   { id: "CAT-05", key: "SP_0", type: "Szkoła podstawowa", count: 0, category: "A" },
@@ -64,72 +71,91 @@ export async function ensureCategorySchool(
   app: Octopus,
   definition: Definition,
 ): Promise<CategorySchool> {
-  const cache = await readFile(cachePath, "utf8")
-    .then((value) => JSON.parse(value) as Record<string, CategorySchool>)
-    .catch(() => ({}) as Record<string, CategorySchool>);
-  const name = prefix + definition.key;
-  let school = cache[definition.key];
-  if (!school) {
-    await app.openPanel("school");
-    const search = await app.openSearch("school");
-    for (const input of await search
-      .locator('input:not([type="checkbox"]):not([readonly]):not([disabled])')
-      .all())
-      await typeValue(input, "");
-    await typeValue(app.field(search, "Nazwa szkoły"), name);
-    const searched = page.waitForResponse((response) => {
-      const url = new URL(response.url());
-      return (
-        response.request().method() === "GET" &&
-        url.pathname === "/api/InstitutionBrowser/GetInstitutions" &&
-        decodeURIComponent(url.search).includes(name)
-      );
-    });
-    await search.getByRole("button", { name: "Szukaj", exact: true }).click();
-    const response = await searched;
-    expect(response.ok(), `Wyszukiwanie szkoły ${name} powinno się powieść`).toBe(true);
-    const body = (await response.json()) as { data: Array<{ id: number; name: string }> };
-    expect(Array.isArray(body.data), "Wyszukiwanie powinno zwrócić tablicę szkół").toBe(true);
-    const matches = body.data.filter((candidate) => candidate.name === name);
-    expect(matches.length, `Nie może istnieć kilka szkół o nazwie ${name}`).toBeLessThanOrEqual(1);
-    await expect(search).toHaveCount(0);
-    const empty = page
-      .locator("mat-dialog-container")
-      .filter({ hasText: "Brak wyników wyszukiwania" });
-    if (matches.length === 0) {
-      // Wyszukiwanie jest częściowe: SP_1 może zwrócić SP_100, ale nie samą SP_1.
-      // Decyzję o utworzeniu podejmujemy dopiero na podstawie zakończonej odpowiedzi.
-      if (body.data.length === 0) {
-        await expect(empty).toBeVisible();
-        await empty.getByRole("button", { name: "OK", exact: true }).click();
-        await expect(empty).toHaveCount(0);
+  return await apiStep(
+    "Przygotowanie: szkoła o zadanym typie, liczbie uczniów i kategorii",
+    async () => {
+      if (definition.testRecord === false)
+        expect(
+          definition.key,
+          "Szkoły bez flagi mają oddzielną przestrzeń danych Uprawnień",
+        ).toMatch(/^ENT_UNMARKED_/);
+      const cache = await readFile(cachePath, "utf8")
+        .then((value) => JSON.parse(value) as Record<string, CategorySchool>)
+        .catch(() => ({}) as Record<string, CategorySchool>);
+      const name = prefix + definition.key;
+      let school = cache[definition.key];
+      if (!school) {
+        await app.openPanel("school");
+        const search = await app.openSearch("school");
+        for (const input of await search
+          .locator('input:not([type="checkbox"]):not([readonly]):not([disabled])')
+          .all())
+          await typeValue(input, "");
+        await typeValue(app.field(search, "Nazwa szkoły"), name);
+        const searched = page.waitForResponse((response) => {
+          const url = new URL(response.url());
+          return (
+            response.request().method() === "GET" &&
+            url.pathname === "/api/InstitutionBrowser/GetInstitutions" &&
+            decodeURIComponent(url.search).includes(name)
+          );
+        });
+        await search.getByRole("button", { name: "Szukaj", exact: true }).click();
+        const response = await searched;
+        expect(response.ok(), `Wyszukiwanie szkoły ${name} powinno się powieść`).toBe(true);
+        const body = (await response.json()) as { data: Array<{ id: number; name: string }> };
+        expect(Array.isArray(body.data), "Wyszukiwanie powinno zwrócić tablicę szkół").toBe(true);
+        const matches = body.data.filter((candidate) => candidate.name === name);
+        expect(matches.length, `Nie może istnieć kilka szkół o nazwie ${name}`).toBeLessThanOrEqual(
+          1,
+        );
+        await expect(search).toHaveCount(0);
+        const empty = page
+          .locator("mat-dialog-container")
+          .filter({ hasText: "Brak wyników wyszukiwania" });
+        if (matches.length === 0) {
+          // Wyszukiwanie jest częściowe: SP_1 może zwrócić SP_100, ale nie samą SP_1.
+          // Decyzję o utworzeniu podejmujemy dopiero na podstawie zakończonej odpowiedzi.
+          if (body.data.length === 0) {
+            await expect(empty).toBeVisible();
+            await empty.getByRole("button", { name: "OK", exact: true }).click();
+            await expect(empty).toHaveCount(0);
+          }
+          const id = await app.createSchool(name, `CAT-${definition.key}`, definition.type, {
+            quantityOfStudents: definition.count,
+          });
+          school = { id, name };
+        } else {
+          school = { id: String(matches[0].id), name };
+        }
+        cache[definition.key] = school;
+        await mkdir(path.dirname(cachePath), { recursive: true });
+        await writeFile(cachePath, JSON.stringify(cache, null, 2));
       }
-      const id = await app.createSchool(name, `CAT-${definition.key}`, definition.type, {
-        quantityOfStudents: definition.count,
-      });
-      school = { id, name };
-    } else {
-      school = { id: String(matches[0].id), name };
-    }
-    cache[definition.key] = school;
-    await mkdir(path.dirname(cachePath), { recursive: true });
-    await writeFile(cachePath, JSON.stringify(cache, null, 2));
-  }
-  await app.openPanel("school", school.id);
-  await expect(app.detail("name")).toHaveValue(name);
-  await app.markTestRecord();
-  // Tylko dedykowane szkoły edycyjne mogą mieć stan pozostały po przerwanym teście.
-  // Nie naprawiamy danych przypadków granicznych, bo mogłoby to ukrywać błąd produktu.
-  if (definition.key === EDIT_CASE.key || definition.key === EDIT_D_CASE.key) {
-    const baseline = String(definition.count);
-    if ((await studentCountInput(page).inputValue()) !== baseline) {
-      await setStudentCount(app, school, baseline);
       await app.openPanel("school", school.id);
-    }
-  }
-  if (definition.count === undefined) await expect(studentCountInput(page)).toHaveValue(/^(?:0)?$/);
-  else await expect(studentCountInput(page)).toHaveValue(String(definition.count));
-  return school;
+      await expect(app.detail("name")).toHaveValue(name);
+      if (definition.testRecord === false) {
+        await expect(
+          page.getByRole("checkbox", { name: "Testowy", exact: true }),
+        ).not.toBeChecked();
+      } else {
+        await app.markTestRecord();
+      }
+      // Tylko dedykowane szkoły edycyjne mogą mieć stan pozostały po przerwanym teście.
+      // Nie naprawiamy danych przypadków granicznych, bo mogłoby to ukrywać błąd produktu.
+      if (definition.key === EDIT_CASE.key || definition.key === EDIT_D_CASE.key) {
+        const baseline = String(definition.count);
+        if ((await studentCountInput(page).inputValue()) !== baseline) {
+          await setStudentCount(app, school, baseline);
+          await app.openPanel("school", school.id);
+        }
+      }
+      if (definition.count === undefined)
+        await expect(studentCountInput(page)).toHaveValue(/^(?:0)?$/);
+      else await expect(studentCountInput(page)).toHaveValue(String(definition.count));
+      return school;
+    },
+  );
 }
 
 export const categorySortPrefix = prefix + "SORT_";

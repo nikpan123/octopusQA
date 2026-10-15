@@ -1,6 +1,8 @@
+import { apiStep } from "./api-step";
 import { expect, type APIRequestContext } from "@playwright/test";
 import type { AuthSession } from "../../scripts/auth.mjs";
 import type { PerformanceMetrics } from "./performance";
+import { OCTOPUS_ENV } from "./environment";
 
 // Rok aktywny potwierdzony przez użytkownika. Nie wybieramy przyszłego roku
 // tylko dlatego, że po dodaniu do słownika pojawi się na pierwszej pozycji.
@@ -72,12 +74,17 @@ export class ClubFormApi {
     private readonly request: APIRequestContext,
     auth: AuthSession,
     private readonly metrics: PerformanceMetrics,
+    private readonly liveHeaders?: () => Promise<{ Authorization: string }>,
   ) {
     this.headers = {
       Authorization: `Bearer ${storageValue(auth, "token").replace(/^Bearer\s+/i, "")}`,
     };
     this.userId = Number(storageValue(auth, "id"));
     expect(Number.isSafeInteger(this.userId) && this.userId > 0).toBe(true);
+  }
+
+  private async requestHeaders() {
+    return this.liveHeaders ? this.liveHeaders() : this.headers;
   }
 
   private async audit() {
@@ -110,9 +117,25 @@ export class ClubFormApi {
     this.owners.set(teacherId, new Set(schools.map((school) => school.id)));
   }
 
+  registerEntitlementTeacher(
+    teacherId: string,
+    lastName: string,
+    schools: Array<{ id: string; name: string }>,
+  ) {
+    // Osobna, wąska ścieżka dla fixture Uprawnień; nie rozszerza właścicieli TFL.
+    expect(teacherId).toMatch(/^[1-9]\d*$/);
+    expect(lastName).toMatch(/^REG_\d+_[a-f0-9]{6}$/);
+    expect(schools.length).toBeGreaterThan(0);
+    for (const school of schools) {
+      expect(school.id).toMatch(/^[1-9]\d*$/);
+      expect(school.name).toMatch(new RegExp(`^AUTO_CAT_${OCTOPUS_ENV.toUpperCase()}_ENT_`));
+    }
+    this.owners.set(teacherId, new Set(schools.map((school) => school.id)));
+  }
+
   private async get<T>(path: string): Promise<T> {
     return this.metrics.measure("setup.api.club.get", async () => {
-      const response = await this.request.get(path, { headers: this.headers });
+      const response = await this.request.get(path, { headers: await this.requestHeaders() });
       this.metrics.increment("api.requests");
       this.metrics.increment(`api.status.${response.status()}`);
       expect(response.ok(), `GET ${path.split("?")[0]}: HTTP ${response.status()}`).toBe(true);
@@ -122,7 +145,10 @@ export class ClubFormApi {
 
   private async post(path: string, data: unknown) {
     await this.metrics.measure("setup.api.club.post", async () => {
-      const response = await this.request.post(path, { headers: this.headers, data });
+      const response = await this.request.post(path, {
+        headers: await this.requestHeaders(),
+        data,
+      });
       this.metrics.increment("api.requests");
       this.metrics.increment(`api.status.${response.status()}`);
       expect(response.ok(), `POST ${path}: HTTP ${response.status()}`).toBe(true);
@@ -252,40 +278,48 @@ export class ClubFormApi {
     own: boolean,
     options: { subject?: string; year?: string; classes?: string[] } = {},
   ) {
-    expect(
-      this.owners.get(teacherId)?.has(schoolId),
-      "Formularz dotyczy własnego nauczyciela i przypisanej szkoły TFL",
-    ).toBe(true);
-    const declaration: Declaration = {
-      teacherId,
-      schoolId,
-      subjectId: await this.resolveSubject(options.subject ?? "Matematyka"),
-      classes: options.classes ?? ["4"],
-      year: await this.resolveYear(options.year),
-    };
-    const before = new Set((await this.formList(teacherId)).map((form) => form.id));
-    const data = await this.payload(declaration, own);
-    await this.post("/api/TeacherFormClub", data);
-    let saved: Form[] = [];
-    await expect
-      .poll(
-        async () => {
-          saved = (await this.formList(teacherId)).filter(
-            (form) => !before.has(form.id) && this.matches(form, declaration, data.formClubClasses),
-          );
-          return saved.length;
-        },
-        { message: "Nowe potwierdzenie powinno być zapisane raz z właściwymi klasami i rokiem" },
-      )
-      .toBe(1);
-    expect(
-      Number.isSafeInteger(saved[0].id) && saved[0].id > 0,
-      "Zapis powinien zwrócić poprawne ID formularza",
-    ).toBe(true);
-    const id = String(saved[0].id);
-    this.declarations.set(id, declaration);
-    this.expectPublishers(saved[0], own, data.formClubPublishers);
-    return { teacherId, confirmationId: id, schoolYear: declaration.year.description };
+    return await apiStep(
+      "Przygotowanie API: zapis potwierdzenia klubowego i weryfikacja zapisu",
+      async () => {
+        expect(
+          this.owners.get(teacherId)?.has(schoolId),
+          "Formularz dotyczy własnego nauczyciela i przypisanej szkoły TFL",
+        ).toBe(true);
+        const declaration: Declaration = {
+          teacherId,
+          schoolId,
+          subjectId: await this.resolveSubject(options.subject ?? "Matematyka"),
+          classes: options.classes ?? ["4"],
+          year: await this.resolveYear(options.year),
+        };
+        const before = new Set((await this.formList(teacherId)).map((form) => form.id));
+        const data = await this.payload(declaration, own);
+        await this.post("/api/TeacherFormClub", data);
+        let saved: Form[] = [];
+        await expect
+          .poll(
+            async () => {
+              saved = (await this.formList(teacherId)).filter(
+                (form) =>
+                  !before.has(form.id) && this.matches(form, declaration, data.formClubClasses),
+              );
+              return saved.length;
+            },
+            {
+              message: "Nowe potwierdzenie powinno być zapisane raz z właściwymi klasami i rokiem",
+            },
+          )
+          .toBe(1);
+        expect(
+          Number.isSafeInteger(saved[0].id) && saved[0].id > 0,
+          "Zapis powinien zwrócić poprawne ID formularza",
+        ).toBe(true);
+        const id = String(saved[0].id);
+        this.declarations.set(id, declaration);
+        this.expectPublishers(saved[0], own, data.formClubPublishers);
+        return { teacherId, confirmationId: id, schoolYear: declaration.year.description };
+      },
+    );
   }
 
   private expectPublishers(
@@ -306,46 +340,72 @@ export class ClubFormApi {
   }
 
   async change(teacherId: string, confirmationId: string, own: boolean) {
-    const declaration = this.ownedDeclaration(teacherId, confirmationId);
-    const form = (await this.formList(teacherId)).find(
-      (item) => String(item.id) === confirmationId,
-    );
-    if (!form || form.isDel) throw new Error("Brak aktywnego własnego formularza do edycji.");
-    const data = await this.payload(declaration, own, form);
-    await this.post("/api/TeacherFormClub", data);
-    let saved: Form | undefined;
-    await expect
-      .poll(
-        async () => {
-          saved = (await this.formList(teacherId)).find(
-            (item) => String(item.id) === confirmationId,
-          );
-          return saved ? this.matches(saved, declaration, data.formClubClasses) : false;
-        },
-        { message: "Edycja powinna zachować ID formularza i zapisać nową deklarację" },
-      )
-      .toBe(true);
-    if (!saved) throw new Error("Brak zapisanego formularza po edycji.");
-    this.expectPublishers(saved, own, data.formClubPublishers);
+    return await apiStep("API: zmiana wydawnictwa w potwierdzeniu", async () => {
+      const declaration = this.ownedDeclaration(teacherId, confirmationId);
+      const form = (await this.formList(teacherId)).find(
+        (item) => String(item.id) === confirmationId,
+      );
+      if (!form || form.isDel) throw new Error("Brak aktywnego własnego formularza do edycji.");
+      const data = await this.payload(declaration, own, form);
+      await this.post("/api/TeacherFormClub", data);
+      let saved: Form | undefined;
+      await expect
+        .poll(
+          async () => {
+            saved = (await this.formList(teacherId)).find(
+              (item) => String(item.id) === confirmationId,
+            );
+            return saved ? this.matches(saved, declaration, data.formClubClasses) : false;
+          },
+          { message: "Edycja powinna zachować ID formularza i zapisać nową deklarację" },
+        )
+        .toBe(true);
+      if (!saved) throw new Error("Brak zapisanego formularza po edycji.");
+      this.expectPublishers(saved, own, data.formClubPublishers);
+    });
   }
 
   async remove(teacherId: string, confirmationId: string) {
-    this.ownedDeclaration(teacherId, confirmationId);
-    await this.post("/api/TeacherFormClub/DelOrGetBackFormClub", {
-      formClubId: Number(confirmationId),
-      isDel: true,
-      createdBy: this.userId,
+    return await apiStep("API: usunięcie potwierdzenia klubowego i weryfikacja stanu", async () => {
+      this.ownedDeclaration(teacherId, confirmationId);
+      await this.post("/api/TeacherFormClub/DelOrGetBackFormClub", {
+        formClubId: Number(confirmationId),
+        isDel: true,
+        createdBy: this.userId,
+      });
+      await expect
+        .poll(
+          async () => {
+            const form = (await this.formList(teacherId)).find(
+              (item) => String(item.id) === confirmationId,
+            );
+            return form?.isDel;
+          },
+          { message: "Usunięcie formularza przez API powinno zapisać soft delete" },
+        )
+        .toBe(true);
     });
-    await expect
-      .poll(
-        async () => {
-          const form = (await this.formList(teacherId)).find(
-            (item) => String(item.id) === confirmationId,
-          );
-          return form?.isDel;
-        },
-        { message: "Usunięcie formularza przez API powinno zapisać soft delete" },
-      )
-      .toBe(true);
+  }
+
+  async restore(teacherId: string, confirmationId: string) {
+    return await apiStep("API: przywrócenie potwierdzenia i sprawdzenie stanu", async () => {
+      this.ownedDeclaration(teacherId, confirmationId);
+      const form = (await this.formList(teacherId)).find(
+        (item) => String(item.id) === confirmationId,
+      );
+      expect(form?.isDel, "Przywracamy wyłącznie własne usunięte potwierdzenie").toBe(true);
+      await this.post("/api/TeacherFormClub/DelOrGetBackFormClub", {
+        formClubId: Number(confirmationId),
+        isDel: false,
+        createdBy: this.userId,
+      });
+      await expect
+        .poll(
+          async () =>
+            (await this.formList(teacherId)).find((item) => String(item.id) === confirmationId)
+              ?.isDel,
+        )
+        .toBe(false);
+    });
   }
 }

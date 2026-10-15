@@ -1,6 +1,7 @@
 import { mkdir, open, readFile, unlink, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { setTimeout as delay } from "node:timers/promises";
+import { apiStep } from "./api-step";
 import { expect, type Locator } from "@playwright/test";
 import { Octopus } from "./octopus";
 import { OCTOPUS_ENV } from "./environment";
@@ -216,13 +217,18 @@ async function prepareSearchDataset(app: Octopus): Promise<SearchDataset> {
 }
 
 export async function searchDataset(app: Octopus): Promise<SearchDataset> {
-  // Jedno przygotowanie na worker; kolejne uruchomienia odczytują ID z rejestru.
-  sharedDataset ??= prepareSearchDataset(app).catch((error: unknown) => {
-    sharedDataset = undefined;
-    throw error;
-  });
-  const data = await sharedDataset;
-  return { prefix: data.prefix, schools: data.schools.map((school) => ({ ...school })) };
+  return await apiStep(
+    "Przygotowanie: pobranie współdzielonego zestawu szkół do filtrowania",
+    async () => {
+      // Jedno przygotowanie na worker; kolejne uruchomienia odczytują ID z rejestru.
+      sharedDataset ??= prepareSearchDataset(app).catch((error: unknown) => {
+        sharedDataset = undefined;
+        throw error;
+      });
+      const data = await sharedDataset;
+      return { prefix: data.prefix, schools: data.schools.map((school) => ({ ...school })) };
+    },
+  );
 }
 
 export async function expectEmptySchoolSearch(app: Octopus) {

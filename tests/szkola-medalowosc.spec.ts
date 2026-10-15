@@ -40,8 +40,9 @@ test.describe("Medalowość szkoły", () => {
 
     await openMedalSchool(app, GOLD_SCHOOL);
 
-    await expectSchoolMedal(page, GOLD_SCHOOL.expectedMedal);
-    await expectMedalReadOnly(page);
+    await test.step("Sprawdzenie: expectSchoolMedal", async () =>
+      expectSchoolMedal(page, GOLD_SCHOOL.expectedMedal));
+    await test.step("Sprawdzenie: expectMedalReadOnly", async () => expectMedalReadOnly(page));
   });
 
   test("MED-04: tooltip złotego medalu wyświetla przedmioty składające się na medal", async ({
@@ -51,9 +52,11 @@ test.describe("Medalowość szkoły", () => {
 
     await openMedalSchool(app, GOLD_SCHOOL);
 
-    await expectSchoolMedal(page, GOLD_SCHOOL.expectedMedal);
+    await test.step("Sprawdzenie: expectSchoolMedal", async () =>
+      expectSchoolMedal(page, GOLD_SCHOOL.expectedMedal));
 
-    await expectMedalTooltip(page, GOLD_SCHOOL.expectedSubjects);
+    await test.step("Sprawdzenie: expectMedalTooltip", async () =>
+      expectMedalTooltip(page, GOLD_SCHOOL.expectedSubjects));
   });
 
   test("MED-05: złoty medal jest widoczny w wynikach wyszukiwania szkół", async ({ page }) => {
@@ -61,8 +64,10 @@ test.describe("Medalowość szkoły", () => {
 
     const schoolRow = await searchSchoolById(app, GOLD_SCHOOL);
 
-    await expect(schoolRow).toContainText(GOLD_SCHOOL.name);
-    await expect(schoolRow).toContainText("Złoto");
+    await test.step("Sprawdzenie: obecność tekstu w widoku — schoolRow; oczekiwane: GOLD_SCHOOL.name", async () =>
+      expect(schoolRow).toContainText(GOLD_SCHOOL.name));
+    await test.step('Sprawdzenie: obecność tekstu w widoku — schoolRow; oczekiwane: "Złoto"', async () =>
+      expect(schoolRow).toContainText("Złoto"));
   });
 
   test("MED-07: pole Medal dla szkoły ze srebrnym medalem jest nieedytowalne", async ({ page }) => {
@@ -70,8 +75,9 @@ test.describe("Medalowość szkoły", () => {
 
     await openMedalSchool(app, SILVER_SCHOOL);
 
-    await expectSchoolMedal(page, SILVER_SCHOOL.expectedMedal);
-    await expectMedalReadOnly(page);
+    await test.step("Sprawdzenie: expectSchoolMedal", async () =>
+      expectSchoolMedal(page, SILVER_SCHOOL.expectedMedal));
+    await test.step("Sprawdzenie: expectMedalReadOnly", async () => expectMedalReadOnly(page));
   });
 
   test("MED-09: tooltip srebrnego medalu wyświetla przedmioty składające się na medal", async ({
@@ -81,9 +87,11 @@ test.describe("Medalowość szkoły", () => {
 
     await openMedalSchool(app, SILVER_SCHOOL);
 
-    await expectSchoolMedal(page, SILVER_SCHOOL.expectedMedal);
+    await test.step("Sprawdzenie: expectSchoolMedal", async () =>
+      expectSchoolMedal(page, SILVER_SCHOOL.expectedMedal));
 
-    await expectMedalTooltip(page, SILVER_SCHOOL.expectedSubjects);
+    await test.step("Sprawdzenie: expectMedalTooltip", async () =>
+      expectMedalTooltip(page, SILVER_SCHOOL.expectedSubjects));
   });
 
   test("MED-10: srebrny medal jest widoczny w wynikach wyszukiwania szkół", async ({ page }) => {
@@ -91,8 +99,10 @@ test.describe("Medalowość szkoły", () => {
 
     const schoolRow = await searchSchoolById(app, SILVER_SCHOOL);
 
-    await expect(schoolRow).toContainText(SILVER_SCHOOL.name);
-    await expect(schoolRow).toContainText("Srebro");
+    await test.step("Sprawdzenie: obecność tekstu w widoku — schoolRow; oczekiwane: SILVER_SCHOOL.name", async () =>
+      expect(schoolRow).toContainText(SILVER_SCHOOL.name));
+    await test.step('Sprawdzenie: obecność tekstu w widoku — schoolRow; oczekiwane: "Srebro"', async () =>
+      expect(schoolRow).toContainText("Srebro"));
   });
 
   test("MED-12: pole Medal dla szkoły z brązowym medalem jest nieedytowalne", async ({ page }) => {
@@ -100,8 +110,9 @@ test.describe("Medalowość szkoły", () => {
 
     await openMedalSchool(app, BRONZE_SCHOOL);
 
-    await expectSchoolMedal(page, BRONZE_SCHOOL.expectedMedal);
-    await expectMedalReadOnly(page);
+    await test.step("Sprawdzenie: expectSchoolMedal", async () =>
+      expectSchoolMedal(page, BRONZE_SCHOOL.expectedMedal));
+    await test.step("Sprawdzenie: expectMedalReadOnly", async () => expectMedalReadOnly(page));
   });
 
   test("MED-14: tooltip brązowego medalu wyświetla przedmiot składający się na medal", async ({
@@ -111,9 +122,11 @@ test.describe("Medalowość szkoły", () => {
 
     await openMedalSchool(app, BRONZE_SCHOOL);
 
-    await expectSchoolMedal(page, BRONZE_SCHOOL.expectedMedal);
+    await test.step("Sprawdzenie: expectSchoolMedal", async () =>
+      expectSchoolMedal(page, BRONZE_SCHOOL.expectedMedal));
 
-    await expectMedalTooltip(page, BRONZE_SCHOOL.expectedSubjects);
+    await test.step("Sprawdzenie: expectMedalTooltip", async () =>
+      expectMedalTooltip(page, BRONZE_SCHOOL.expectedSubjects));
   });
 
   test("MED-15: brązowy medal jest widoczny w wynikach wyszukiwania szkół", async ({ page }) => {
@@ -121,8 +134,10 @@ test.describe("Medalowość szkoły", () => {
 
     const schoolRow = await searchSchoolById(app, BRONZE_SCHOOL);
 
-    await expect(schoolRow).toContainText(BRONZE_SCHOOL.name);
-    await expect(schoolRow).toContainText("Brąz");
+    await test.step("Sprawdzenie: obecność tekstu w widoku — schoolRow; oczekiwane: BRONZE_SCHOOL.name", async () =>
+      expect(schoolRow).toContainText(BRONZE_SCHOOL.name));
+    await test.step('Sprawdzenie: obecność tekstu w widoku — schoolRow; oczekiwane: "Brąz"', async () =>
+      expect(schoolRow).toContainText("Brąz"));
   });
 
   test("MED-17: pole Medal dla szkoły bez medalu jest nieedytowalne", async ({ page }) => {
@@ -130,8 +145,9 @@ test.describe("Medalowość szkoły", () => {
 
     await openMedalSchool(app, NO_MEDAL_SCHOOL);
 
-    await expectSchoolMedal(page, NO_MEDAL_SCHOOL.expectedMedal);
-    await expectMedalReadOnly(page);
+    await test.step("Sprawdzenie: expectSchoolMedal", async () =>
+      expectSchoolMedal(page, NO_MEDAL_SCHOOL.expectedMedal));
+    await test.step("Sprawdzenie: expectMedalReadOnly", async () => expectMedalReadOnly(page));
   });
 
   test("MED-18: najechanie na wartość Brak nie wyświetla tooltipa z przedmiotami", async ({
@@ -141,8 +157,9 @@ test.describe("Medalowość szkoły", () => {
 
     await openMedalSchool(app, NO_MEDAL_SCHOOL);
 
-    await expectSchoolMedal(page, NO_MEDAL_SCHOOL.expectedMedal);
-    await expectNoMedalTooltip(page);
+    await test.step("Sprawdzenie: expectSchoolMedal", async () =>
+      expectSchoolMedal(page, NO_MEDAL_SCHOOL.expectedMedal));
+    await test.step("Sprawdzenie: expectNoMedalTooltip", async () => expectNoMedalTooltip(page));
   });
 
   test("MED-19: wartość Brak jest widoczna w wynikach wyszukiwania szkół", async ({ page }) => {
@@ -150,8 +167,10 @@ test.describe("Medalowość szkoły", () => {
 
     const schoolRow = await searchSchoolById(app, NO_MEDAL_SCHOOL);
 
-    await expect(schoolRow).toContainText(NO_MEDAL_SCHOOL.name);
-    await expect(schoolRow).toContainText("Brak");
+    await test.step("Sprawdzenie: obecność tekstu w widoku — schoolRow; oczekiwane: NO_MEDAL_SCHOOL.name", async () =>
+      expect(schoolRow).toContainText(NO_MEDAL_SCHOOL.name));
+    await test.step('Sprawdzenie: obecność tekstu w widoku — schoolRow; oczekiwane: "Brak"', async () =>
+      expect(schoolRow).toContainText("Brak"));
   });
 
   test("MED-20: historia zmian szkoły zawiera wpis dotyczący złotego medalu", async ({ page }) => {
@@ -163,30 +182,42 @@ test.describe("Medalowość szkoły", () => {
 
     const entries = await collectMedalHistoryEntries(page, history);
 
-    expect(
-      GOLD_SCHOOL.expectedHistoryValue,
-      "Dla szkoły referencyjnej powinien być zdefiniowany oczekiwany wpis historii",
-    ).toBeDefined();
+    await test.step("Sprawdzenie: toBeDefined — GOLD_SCHOOL.expectedHistoryValue", async () => {
+      expect(
+        GOLD_SCHOOL.expectedHistoryValue,
+        "Dla szkoły referencyjnej powinien być zdefiniowany oczekiwany wpis historii",
+      ).toBeDefined();
+    });
 
-    expect(
-      GOLD_SCHOOL.expectedHistoryDate,
-      "Dla szkoły referencyjnej powinna być zdefiniowana oczekiwana data historii",
-    ).toBeDefined();
+    await test.step("Sprawdzenie: toBeDefined — GOLD_SCHOOL.expectedHistoryDate", async () => {
+      expect(
+        GOLD_SCHOOL.expectedHistoryDate,
+        "Dla szkoły referencyjnej powinna być zdefiniowana oczekiwana data historii",
+      ).toBeDefined();
+    });
 
     const medalEntry = entries.find((entry) => entry.value === GOLD_SCHOOL.expectedHistoryValue);
 
     console.log(`MED-20: znaleziono wpis "${medalEntry!.value}" ` + `z datą ${medalEntry!.date}.`);
 
-    expect(
-      medalEntry,
-      `Historia powinna zawierać wpis "${GOLD_SCHOOL.expectedHistoryValue}"`,
-    ).toBeDefined();
+    await test.step("Sprawdzenie: toBeDefined — medalEntry", async () => {
+      expect(
+        medalEntry,
+        `Historia powinna zawierać wpis "${GOLD_SCHOOL.expectedHistoryValue}"`,
+      ).toBeDefined();
+    });
 
-    expect(medalEntry!.author).toBe("automat");
+    await test.step('Sprawdzenie: zgodność wartości — medalEntry!.author; oczekiwane: "automat"', async () => {
+      expect(medalEntry!.author).toBe("automat");
+    });
 
-    expect(medalEntry!.source).toBe("Formularz klubowy");
+    await test.step('Sprawdzenie: zgodność wartości — medalEntry!.source; oczekiwane: "Formularz klubowy"', async () => {
+      expect(medalEntry!.source).toBe("Formularz klubowy");
+    });
 
-    expect(medalEntry!.date).toBe(GOLD_SCHOOL.expectedHistoryDate);
+    await test.step("Sprawdzenie: zgodność wartości — medalEntry!.date; oczekiwane: GOLD_SCHOOL.expectedHistoryDate", async () => {
+      expect(medalEntry!.date).toBe(GOLD_SCHOOL.expectedHistoryDate);
+    });
   });
 
   test("MED-21: historia zawiera tylko jeden wpis medalowy dla danego roku szkolnego", async ({
@@ -200,10 +231,12 @@ test.describe("Medalowość szkoły", () => {
 
     const entries = await collectMedalHistoryEntries(page, history);
 
-    expect(
-      GOLD_SCHOOL.expectedHistoryValue,
-      "Dla szkoły referencyjnej powinien być zdefiniowany oczekiwany wpis historii",
-    ).toBeDefined();
+    await test.step("Sprawdzenie: toBeDefined — GOLD_SCHOOL.expectedHistoryValue", async () => {
+      expect(
+        GOLD_SCHOOL.expectedHistoryValue,
+        "Dla szkoły referencyjnej powinien być zdefiniowany oczekiwany wpis historii",
+      ).toBeDefined();
+    });
 
     const expectedSeason = GOLD_SCHOOL.expectedHistoryValue!.split(" ")[0];
 
@@ -218,10 +251,12 @@ test.describe("Medalowość szkoły", () => {
         `${entriesForSeason.map((entry) => entry.value).join(", ")}.`,
     );
 
-    expect(
-      entriesForSeason,
-      `Historia powinna zawierać dokładnie jeden wpis medalowy dla sezonu ${expectedSeason}`,
-    ).toHaveLength(1);
+    await test.step("Sprawdzenie: liczba elementów — entriesForSeason; oczekiwane: 1", async () => {
+      expect(
+        entriesForSeason,
+        `Historia powinna zawierać dokładnie jeden wpis medalowy dla sezonu ${expectedSeason}`,
+      ).toHaveLength(1);
+    });
   });
 
   test("MED-22: wartość wpisu medalowego ma format RRRR/RRRR Medal", async ({ page }) => {
@@ -233,15 +268,19 @@ test.describe("Medalowość szkoły", () => {
 
     const entries = await collectMedalHistoryEntries(page, history);
 
-    expect(
-      entries.length,
-      "Historia powinna zawierać co najmniej jeden wpis medalowy",
-    ).toBeGreaterThan(0);
+    await test.step("Sprawdzenie: wartość powyżej granicy — entries.length; granica: 0", async () => {
+      expect(
+        entries.length,
+        "Historia powinna zawierać co najmniej jeden wpis medalowy",
+      ).toBeGreaterThan(0);
+    });
 
     for (const entry of entries) {
-      expect(entry.value, `Nieprawidłowy format wpisu medalowego: "${entry.value}"`).toMatch(
-        /^\d{4}\/\d{4} (Złoto|Srebro|Brąz|Brak)$/,
-      );
+      await test.step("Sprawdzenie: zgodność ze wzorcem — entry.value; oczekiwane: /^\\d{4}\\/\\d{4} (Złoto|Srebro|Brąz|Brak)$/", async () => {
+        expect(entry.value, `Nieprawidłowy format wpisu medalowego: "${entry.value}"`).toMatch(
+          /^\d{4}\/\d{4} (Złoto|Srebro|Brąz|Brak)$/,
+        );
+      });
     }
 
     console.log(`MED-22: sprawdzono format ${entries.length} wpisów medalowych.`);
@@ -256,15 +295,19 @@ test.describe("Medalowość szkoły", () => {
 
     const entries = await collectMedalHistoryEntries(page, history);
 
-    expect(
-      entries.length,
-      "Historia powinna zawierać co najmniej jeden wpis medalowy",
-    ).toBeGreaterThan(0);
+    await test.step("Sprawdzenie: wartość powyżej granicy — entries.length; granica: 0", async () => {
+      expect(
+        entries.length,
+        "Historia powinna zawierać co najmniej jeden wpis medalowy",
+      ).toBeGreaterThan(0);
+    });
 
     for (const entry of entries) {
-      expect(entry.source, `Wpis "${entry.value}" powinien mieć źródło Formularz klubowy`).toBe(
-        "Formularz klubowy",
-      );
+      await test.step('Sprawdzenie: zgodność wartości — entry.source; oczekiwane: "Formularz klubowy"', async () => {
+        expect(entry.source, `Wpis "${entry.value}" powinien mieć źródło Formularz klubowy`).toBe(
+          "Formularz klubowy",
+        );
+      });
     }
 
     console.log(`MED-23: sprawdzono źródło ${entries.length} wpisów medalowych.`);
@@ -279,13 +322,19 @@ test.describe("Medalowość szkoły", () => {
 
     const entries = await collectMedalHistoryEntries(page, history);
 
-    expect(
-      entries.length,
-      "Historia powinna zawierać co najmniej jeden wpis medalowy",
-    ).toBeGreaterThan(0);
+    await test.step("Sprawdzenie: wartość powyżej granicy — entries.length; granica: 0", async () => {
+      expect(
+        entries.length,
+        "Historia powinna zawierać co najmniej jeden wpis medalowy",
+      ).toBeGreaterThan(0);
+    });
 
     for (const entry of entries) {
-      expect(entry.author, `Wpis "${entry.value}" powinien mieć uzupełnionego autora`).not.toBe("");
+      await test.step('Sprawdzenie: negacja — zgodność wartości — entry.author; oczekiwane: ""', async () => {
+        expect(entry.author, `Wpis "${entry.value}" powinien mieć uzupełnionego autora`).not.toBe(
+          "",
+        );
+      });
     }
 
     console.log(`MED-24: sprawdzono autora dla ${entries.length} wpisów medalowych.`);
@@ -300,16 +349,20 @@ test.describe("Medalowość szkoły", () => {
 
     const entries = await collectMedalHistoryEntries(page, history);
 
-    expect(
-      entries.length,
-      "Historia powinna zawierać co najmniej jeden wpis medalowy",
-    ).toBeGreaterThan(0);
+    await test.step("Sprawdzenie: wartość powyżej granicy — entries.length; granica: 0", async () => {
+      expect(
+        entries.length,
+        "Historia powinna zawierać co najmniej jeden wpis medalowy",
+      ).toBeGreaterThan(0);
+    });
 
     for (const entry of entries) {
-      expect(
-        entry.date,
-        `Wpis "${entry.value}" powinien mieć datę przypadającą na 1 października`,
-      ).toMatch(/^\d{4}-10-01 \d{2}:\d{2}$/);
+      await test.step("Sprawdzenie: zgodność ze wzorcem — entry.date; oczekiwane: /^\\d{4}-10-01 \\d{2}:\\d{2}$/", async () => {
+        expect(
+          entry.date,
+          `Wpis "${entry.value}" powinien mieć datę przypadającą na 1 października`,
+        ).toMatch(/^\d{4}-10-01 \d{2}:\d{2}$/);
+      });
     }
 
     console.log(`MED-25: sprawdzono datę ${entries.length} wpisów medalowych.`);
@@ -329,30 +382,36 @@ test.describe("Medalowość szkoły", () => {
 
       const entries = await collectMedalHistoryEntries(page, history);
 
-      expect(
-        entries.length,
-        `Historia szkoły ${school.id} powinna zawierać co najmniej jeden wpis medalowy`,
-      ).toBeGreaterThan(0);
+      await test.step("Sprawdzenie: wartość powyżej granicy — entries.length; granica: 0", async () => {
+        expect(
+          entries.length,
+          `Historia szkoły ${school.id} powinna zawierać co najmniej jeden wpis medalowy`,
+        ).toBeGreaterThan(0);
+      });
 
       const seasons: number[] = [];
 
       for (const entry of entries) {
         const match = entry.value.match(/^(\d{4})\/\d{4} (Złoto|Srebro|Brąz|Brak)$/);
 
-        expect(
-          match,
-          `Nie udało się odczytać roku szkolnego z wartości: "${entry.value}"`,
-        ).not.toBeNull();
+        await test.step("Sprawdzenie: negacja — toBeNull — match", async () => {
+          expect(
+            match,
+            `Nie udało się odczytać roku szkolnego z wartości: "${entry.value}"`,
+          ).not.toBeNull();
+        });
 
         seasons.push(Number(match![1]));
       }
 
       const expectedOrder = [...seasons].sort((a, b) => b - a);
 
-      expect(
-        seasons,
-        `Historia medalowości szkoły ${school.id} powinna być posortowana od najnowszego sezonu do najstarszego`,
-      ).toEqual(expectedOrder);
+      await test.step("Sprawdzenie: zgodność całej struktury i wartości — seasons; oczekiwane: expectedOrder", async () => {
+        expect(
+          seasons,
+          `Historia medalowości szkoły ${school.id} powinna być posortowana od najnowszego sezonu do najstarszego`,
+        ).toEqual(expectedOrder);
+      });
 
       console.log(
         `MED-26: szkoła ${school.id}. ` +
@@ -368,7 +427,8 @@ test.describe("Medalowość szkoły", () => {
 
     const results = await searchSchoolsByMedal(app, "Złoto");
 
-    await expectSchoolResultsMedals(results, ["Złoto"]);
+    await test.step("Sprawdzenie: expectSchoolResultsMedals", async () =>
+      expectSchoolResultsMedals(results, ["Złoto"]));
   });
 
   test("MED-28: wyszukiwanie po Medal = Srebro zwraca tylko szkoły ze srebrnym medalem", async ({
@@ -378,7 +438,8 @@ test.describe("Medalowość szkoły", () => {
 
     const results = await searchSchoolsByMedal(app, "Srebro");
 
-    await expectSchoolResultsMedals(results, ["Srebro"]);
+    await test.step("Sprawdzenie: expectSchoolResultsMedals", async () =>
+      expectSchoolResultsMedals(results, ["Srebro"]));
   });
 
   test("MED-29: wyszukiwanie po Medal = Brąz zwraca tylko szkoły z brązowym medalem", async ({
@@ -388,7 +449,8 @@ test.describe("Medalowość szkoły", () => {
 
     const results = await searchSchoolsByMedal(app, "Brąz");
 
-    await expectSchoolResultsMedals(results, ["Brąz"]);
+    await test.step("Sprawdzenie: expectSchoolResultsMedals", async () =>
+      expectSchoolResultsMedals(results, ["Brąz"]));
   });
 
   test("MED-30: wyszukiwanie po Medal = Brak zwraca tylko szkoły bez medalu", async ({ page }) => {
@@ -396,7 +458,8 @@ test.describe("Medalowość szkoły", () => {
 
     const results = await searchSchoolsByMedal(app, "Brak");
 
-    await expectSchoolResultsMedals(results, ["Brak"]);
+    await test.step("Sprawdzenie: expectSchoolResultsMedals", async () =>
+      expectSchoolResultsMedals(results, ["Brak"]));
   });
 
   test("MED-31: wyszukiwanie po Medal = Złoto i Srebro zwraca szkoły z oboma wybranymi medalami", async ({
@@ -406,13 +469,16 @@ test.describe("Medalowość szkoły", () => {
 
     const results = await searchSchoolsByMedals(app, ["Złoto", "Srebro"]);
 
-    await expectSchoolResultsMedals(results, ["Złoto", "Srebro"]);
+    await test.step("Sprawdzenie: expectSchoolResultsMedals", async () =>
+      expectSchoolResultsMedals(results, ["Złoto", "Srebro"]));
   });
 
   test("MED-33: złoty medal i jego przedmioty są zgodne między API i UI", async ({ page }) => {
     const app = new Octopus(page);
 
-    const apiMedalData = await getSchoolMedalApiData(app, GOLD_SCHOOL);
+    const apiMedalData =
+      await test.step("API: odczyt medalowości szkoły do porównania z widokiem", async () =>
+        getSchoolMedalApiData(app, GOLD_SCHOOL));
 
     const uiSubjects = await getMedalTooltipSubjects(page);
     const uiMedal = await getSchoolMedalValue(page);
@@ -423,16 +489,26 @@ test.describe("Medalowość szkoły", () => {
         `Tooltip UI pokazuje ${uiSubjects.length}: ${uiSubjects.join(", ")}.`,
     );
 
-    expect(apiMedalData.medalCategoryName).toBe(GOLD_SCHOOL.expectedMedal);
-    expect(apiMedalData.subjectNames).toEqual(GOLD_SCHOOL.expectedSubjects);
-    expect(uiMedal).toBe(apiMedalData.medalCategoryName);
-    expect([...uiSubjects].sort()).toEqual([...apiMedalData.subjectNames].sort());
+    await test.step("Sprawdzenie: zgodność wartości — apiMedalData.medalCategoryName; oczekiwane: GOLD_SCHOOL.expectedMedal", async () => {
+      expect(apiMedalData.medalCategoryName).toBe(GOLD_SCHOOL.expectedMedal);
+    });
+    await test.step("Sprawdzenie: zgodność całej struktury i wartości — apiMedalData.subjectNames; oczekiwane: GOLD_SCHOOL.expectedSubjects", async () => {
+      expect(apiMedalData.subjectNames).toEqual(GOLD_SCHOOL.expectedSubjects);
+    });
+    await test.step("Sprawdzenie: zgodność wartości — uiMedal; oczekiwane: apiMedalData.medalCategoryName", async () => {
+      expect(uiMedal).toBe(apiMedalData.medalCategoryName);
+    });
+    await test.step("Sprawdzenie: zgodność całej struktury i wartości — [...uiSubjects].sort(); oczekiwane: [...apiMedalData.subjectNames].sort()", async () => {
+      expect([...uiSubjects].sort()).toEqual([...apiMedalData.subjectNames].sort());
+    });
   });
 
   test("MED-36: srebrny medal i jego przedmioty są zgodne między API i UI", async ({ page }) => {
     const app = new Octopus(page);
 
-    const apiMedalData = await getSchoolMedalApiData(app, SILVER_SCHOOL);
+    const apiMedalData =
+      await test.step("API: odczyt medalowości szkoły do porównania z widokiem", async () =>
+        getSchoolMedalApiData(app, SILVER_SCHOOL));
 
     const uiSubjects = await getMedalTooltipSubjects(page);
     const uiMedal = await getSchoolMedalValue(page);
@@ -443,16 +519,26 @@ test.describe("Medalowość szkoły", () => {
         `Tooltip UI pokazuje ${uiSubjects.length}: ${uiSubjects.join(", ")}.`,
     );
 
-    expect(apiMedalData.medalCategoryName).toBe(SILVER_SCHOOL.expectedMedal);
-    expect(apiMedalData.subjectNames).toEqual(SILVER_SCHOOL.expectedSubjects);
-    expect(uiMedal).toBe(apiMedalData.medalCategoryName);
-    expect([...uiSubjects].sort()).toEqual([...apiMedalData.subjectNames].sort());
+    await test.step("Sprawdzenie: zgodność wartości — apiMedalData.medalCategoryName; oczekiwane: SILVER_SCHOOL.expectedMedal", async () => {
+      expect(apiMedalData.medalCategoryName).toBe(SILVER_SCHOOL.expectedMedal);
+    });
+    await test.step("Sprawdzenie: zgodność całej struktury i wartości — apiMedalData.subjectNames; oczekiwane: SILVER_SCHOOL.expectedSubjects", async () => {
+      expect(apiMedalData.subjectNames).toEqual(SILVER_SCHOOL.expectedSubjects);
+    });
+    await test.step("Sprawdzenie: zgodność wartości — uiMedal; oczekiwane: apiMedalData.medalCategoryName", async () => {
+      expect(uiMedal).toBe(apiMedalData.medalCategoryName);
+    });
+    await test.step("Sprawdzenie: zgodność całej struktury i wartości — [...uiSubjects].sort(); oczekiwane: [...apiMedalData.subjectNames].sort()", async () => {
+      expect([...uiSubjects].sort()).toEqual([...apiMedalData.subjectNames].sort());
+    });
   });
 
   test("MED-39: brązowy medal i jego przedmioty są zgodne między API i UI", async ({ page }) => {
     const app = new Octopus(page);
 
-    const apiMedalData = await getSchoolMedalApiData(app, BRONZE_SCHOOL);
+    const apiMedalData =
+      await test.step("API: odczyt medalowości szkoły do porównania z widokiem", async () =>
+        getSchoolMedalApiData(app, BRONZE_SCHOOL));
 
     const uiSubjects = await getMedalTooltipSubjects(page);
     const uiMedal = await getSchoolMedalValue(page);
@@ -463,16 +549,26 @@ test.describe("Medalowość szkoły", () => {
         `Tooltip UI pokazuje ${uiSubjects.length}: ${uiSubjects.join(", ")}.`,
     );
 
-    expect(apiMedalData.medalCategoryName).toBe(BRONZE_SCHOOL.expectedMedal);
-    expect(apiMedalData.subjectNames).toEqual(BRONZE_SCHOOL.expectedSubjects);
-    expect(uiMedal).toBe(apiMedalData.medalCategoryName);
-    expect([...uiSubjects].sort()).toEqual([...apiMedalData.subjectNames].sort());
+    await test.step("Sprawdzenie: zgodność wartości — apiMedalData.medalCategoryName; oczekiwane: BRONZE_SCHOOL.expectedMedal", async () => {
+      expect(apiMedalData.medalCategoryName).toBe(BRONZE_SCHOOL.expectedMedal);
+    });
+    await test.step("Sprawdzenie: zgodność całej struktury i wartości — apiMedalData.subjectNames; oczekiwane: BRONZE_SCHOOL.expectedSubjects", async () => {
+      expect(apiMedalData.subjectNames).toEqual(BRONZE_SCHOOL.expectedSubjects);
+    });
+    await test.step("Sprawdzenie: zgodność wartości — uiMedal; oczekiwane: apiMedalData.medalCategoryName", async () => {
+      expect(uiMedal).toBe(apiMedalData.medalCategoryName);
+    });
+    await test.step("Sprawdzenie: zgodność całej struktury i wartości — [...uiSubjects].sort(); oczekiwane: [...apiMedalData.subjectNames].sort()", async () => {
+      expect([...uiSubjects].sort()).toEqual([...apiMedalData.subjectNames].sort());
+    });
   });
 
   test("MED-43: brak medalu i przedmiotów jest zgodny między API i UI", async ({ page }) => {
     const app = new Octopus(page);
 
-    const apiMedalData = await getSchoolMedalApiData(app, NO_MEDAL_SCHOOL);
+    const apiMedalData =
+      await test.step("API: odczyt medalowości szkoły do porównania z widokiem", async () =>
+        getSchoolMedalApiData(app, NO_MEDAL_SCHOOL));
     const uiMedal = await getSchoolMedalValue(page);
 
     console.log(
@@ -481,11 +577,17 @@ test.describe("Medalowość szkoły", () => {
         `UI nie powinno wyświetlać tooltipa.`,
     );
 
-    expect(apiMedalData.medalCategoryName).toBe("Brak");
-    expect(apiMedalData.subjectNames).toEqual([]);
-    expect(uiMedal).toBe(apiMedalData.medalCategoryName);
+    await test.step('Sprawdzenie: zgodność wartości — apiMedalData.medalCategoryName; oczekiwane: "Brak"', async () => {
+      expect(apiMedalData.medalCategoryName).toBe("Brak");
+    });
+    await test.step("Sprawdzenie: zgodność całej struktury i wartości — apiMedalData.subjectNames; oczekiwane: []", async () => {
+      expect(apiMedalData.subjectNames).toEqual([]);
+    });
+    await test.step("Sprawdzenie: zgodność wartości — uiMedal; oczekiwane: apiMedalData.medalCategoryName", async () => {
+      expect(uiMedal).toBe(apiMedalData.medalCategoryName);
+    });
 
-    await expectNoMedalTooltip(page);
+    await test.step("Sprawdzenie: expectNoMedalTooltip", async () => expectNoMedalTooltip(page));
   });
 
   test("MED-44: medal szkoły jest zgodny z liczbą przedmiotów zwracanych przez API", async ({
@@ -496,7 +598,9 @@ test.describe("Medalowość szkoły", () => {
     const schools = [GOLD_SCHOOL, SILVER_SCHOOL, BRONZE_SCHOOL, NO_MEDAL_SCHOOL];
 
     for (const school of schools) {
-      const medalData = await getSchoolMedalApiData(app, school);
+      const medalData =
+        await test.step("API: odczyt medalowości szkoły do porównania z widokiem", async () =>
+          getSchoolMedalApiData(app, school));
 
       console.log(
         `MED-44: szkoła ${school.id} "${school.name}". ` +
@@ -522,7 +626,9 @@ test.describe("Medalowość szkoły", () => {
     const schools = [GOLD_SCHOOL, SILVER_SCHOOL, BRONZE_SCHOOL];
 
     for (const school of schools) {
-      const medalData = await getSchoolMedalApiData(app, school);
+      const medalData =
+        await test.step("API: odczyt medalowości szkoły do porównania z widokiem", async () =>
+          getSchoolMedalApiData(app, school));
 
       console.log(
         `MED-45: szkoła ${school.id}. ` +
@@ -540,11 +646,14 @@ test.describe("Medalowość szkoły", () => {
   }) => {
     const app = new Octopus(page);
 
-    const medalData = await getSchoolMedalApiData(app, BRONZE_SCHOOL);
+    const medalData =
+      await test.step("API: odczyt medalowości szkoły do porównania z widokiem", async () =>
+        getSchoolMedalApiData(app, BRONZE_SCHOOL));
 
     const mathTeachers = schoolTeachersBySubject(page, "MAT SP");
 
-    await expect(mathTeachers.first()).toBeVisible();
+    await test.step("Sprawdzenie: widoczność elementu — mathTeachers.first()", async () =>
+      expect(mathTeachers.first()).toBeVisible());
 
     const mathTeachersCount = await mathTeachers.count();
     const medalSubjectsCount = medalData.subjectNames.length;
@@ -555,14 +664,20 @@ test.describe("Medalowość szkoły", () => {
         `Medal szkoły: ${medalData.medalCategoryName}.`,
     );
 
-    expect(
-      mathTeachersCount,
-      "Szkoła powinna mieć co najmniej dwóch nauczycieli MAT SP",
-    ).toBeGreaterThanOrEqual(2);
+    await test.step("Sprawdzenie: wartość nie mniejsza od granicy — mathTeachersCount; granica: 2", async () => {
+      expect(
+        mathTeachersCount,
+        "Szkoła powinna mieć co najmniej dwóch nauczycieli MAT SP",
+      ).toBeGreaterThanOrEqual(2);
+    });
 
-    expect(medalData.medalCategoryName).toBe("Brąz");
+    await test.step('Sprawdzenie: zgodność wartości — medalData.medalCategoryName; oczekiwane: "Brąz"', async () => {
+      expect(medalData.medalCategoryName).toBe("Brąz");
+    });
 
-    expect(medalData.subjectNames).toEqual(BRONZE_SCHOOL.expectedSubjects);
+    await test.step("Sprawdzenie: zgodność całej struktury i wartości — medalData.subjectNames; oczekiwane: BRONZE_SCHOOL.expectedSubjects", async () => {
+      expect(medalData.subjectNames).toEqual(BRONZE_SCHOOL.expectedSubjects);
+    });
   });
 
   test("MED-47: medal w wynikach wyszukiwania szkoły jest zgodny z wartością zwracaną przez API", async ({
@@ -573,7 +688,9 @@ test.describe("Medalowość szkoły", () => {
     const schools = [GOLD_SCHOOL, SILVER_SCHOOL, BRONZE_SCHOOL, NO_MEDAL_SCHOOL];
 
     for (const school of schools) {
-      const apiMedalData = await getSchoolMedalApiData(app, school);
+      const apiMedalData =
+        await test.step("API: odczyt medalowości szkoły do porównania z widokiem", async () =>
+          getSchoolMedalApiData(app, school));
 
       const schoolRow = await searchSchoolById(app, school);
 
@@ -582,7 +699,8 @@ test.describe("Medalowość szkoły", () => {
         exact: true,
       });
 
-      await expect(medalCell).toBeVisible();
+      await test.step("Sprawdzenie: widoczność elementu — medalCell", async () =>
+        expect(medalCell).toBeVisible());
 
       console.log(
         `MED-47: szkoła ${school.id} "${school.name}". ` +
@@ -614,7 +732,9 @@ test.describe("Medalowość szkoły", () => {
     const historyCount = await historyTeachers.count();
     const physicsCount = await physicsTeachers.count();
 
-    const medalData = await getSchoolMedalApiData(app, BRONZE_SCHOOL);
+    const medalData =
+      await test.step("API: odczyt medalowości szkoły do porównania z widokiem", async () =>
+        getSchoolMedalApiData(app, BRONZE_SCHOOL));
 
     console.log(
       `MED-48: szkoła ${BRONZE_SCHOOL.id} "${BRONZE_SCHOOL.name}". ` +
@@ -627,32 +747,44 @@ test.describe("Medalowość szkoły", () => {
         `Medal: ${medalData.medalCategoryName}.`,
     );
 
-    expect(
-      mathCount,
-      "W szkole powinien istnieć co najmniej jeden nauczyciel MAT SP",
-    ).toBeGreaterThan(0);
+    await test.step("Sprawdzenie: wartość powyżej granicy — mathCount; granica: 0", async () => {
+      expect(
+        mathCount,
+        "W szkole powinien istnieć co najmniej jeden nauczyciel MAT SP",
+      ).toBeGreaterThan(0);
+    });
 
-    expect(
-      polishCount,
-      "W szkole powinien istnieć co najmniej jeden nauczyciel JPL SP",
-    ).toBeGreaterThan(0);
+    await test.step("Sprawdzenie: wartość powyżej granicy — polishCount; granica: 0", async () => {
+      expect(
+        polishCount,
+        "W szkole powinien istnieć co najmniej jeden nauczyciel JPL SP",
+      ).toBeGreaterThan(0);
+    });
 
-    expect(
-      historyCount,
-      "W szkole powinien istnieć co najmniej jeden nauczyciel HIS SP",
-    ).toBeGreaterThan(0);
+    await test.step("Sprawdzenie: wartość powyżej granicy — historyCount; granica: 0", async () => {
+      expect(
+        historyCount,
+        "W szkole powinien istnieć co najmniej jeden nauczyciel HIS SP",
+      ).toBeGreaterThan(0);
+    });
 
-    expect(
-      physicsCount,
-      "W szkole powinien istnieć co najmniej jeden nauczyciel FIZ SP",
-    ).toBeGreaterThan(0);
+    await test.step("Sprawdzenie: wartość powyżej granicy — physicsCount; granica: 0", async () => {
+      expect(
+        physicsCount,
+        "W szkole powinien istnieć co najmniej jeden nauczyciel FIZ SP",
+      ).toBeGreaterThan(0);
+    });
 
-    expect(medalData.medalCategoryName, "Szkoła powinna mieć medal Brąz").toBe("Brąz");
+    await test.step('Sprawdzenie: zgodność wartości — medalData.medalCategoryName; oczekiwane: "Brąz"', async () => {
+      expect(medalData.medalCategoryName, "Szkoła powinna mieć medal Brąz").toBe("Brąz");
+    });
 
-    expect(
-      medalData.subjectNames,
-      "Do medalowości powinien być zaliczony tylko kwalifikowany przedmiot",
-    ).toEqual(BRONZE_SCHOOL.expectedSubjects);
+    await test.step("Sprawdzenie: zgodność całej struktury i wartości — medalData.subjectNames; oczekiwane: BRONZE_SCHOOL.expectedSubjects", async () => {
+      expect(
+        medalData.subjectNames,
+        "Do medalowości powinien być zaliczony tylko kwalifikowany przedmiot",
+      ).toEqual(BRONZE_SCHOOL.expectedSubjects);
+    });
   });
 
   test("MED-49: najnowszy wpis historii medalu jest zgodny z aktualną wartością zwracaną przez API", async ({
@@ -663,7 +795,9 @@ test.describe("Medalowość szkoły", () => {
     const schools = [GOLD_SCHOOL, SILVER_SCHOOL, BRONZE_SCHOOL, NO_MEDAL_SCHOOL];
 
     for (const school of schools) {
-      const apiMedalData = await getSchoolMedalApiData(app, school);
+      const apiMedalData =
+        await test.step("API: odczyt medalowości szkoły do porównania z widokiem", async () =>
+          getSchoolMedalApiData(app, school));
 
       const history = await openSchoolHistory(page);
 
@@ -676,10 +810,12 @@ test.describe("Medalowość szkoły", () => {
             `Aktualny medal API: ${apiMedalData.medalCategoryName}.`,
         );
 
-        expect(
-          apiMedalData.medalCategoryName,
-          `Szkoła ${school.id} bez historii medalowości powinna mieć aktualnie wartość Brak`,
-        ).toBe("Brak");
+        await test.step('Sprawdzenie: zgodność wartości — apiMedalData.medalCategoryName; oczekiwane: "Brak"', async () => {
+          expect(
+            apiMedalData.medalCategoryName,
+            `Szkoła ${school.id} bez historii medalowości powinna mieć aktualnie wartość Brak`,
+          ).toBe("Brak");
+        });
 
         continue;
       }
@@ -710,10 +846,12 @@ test.describe("Medalowość szkoły", () => {
           `Medal API: ${apiMedalData.medalCategoryName}.`,
       );
 
-      expect(
-        historyMedal,
-        `Najnowszy wpis historii szkoły ${school.id} powinien być zgodny z API`,
-      ).toBe(apiMedalData.medalCategoryName);
+      await test.step("Sprawdzenie: zgodność wartości — historyMedal; oczekiwane: apiMedalData.medalCategoryName", async () => {
+        expect(
+          historyMedal,
+          `Najnowszy wpis historii szkoły ${school.id} powinien być zgodny z API`,
+        ).toBe(apiMedalData.medalCategoryName);
+      });
     }
   });
 
@@ -730,19 +868,22 @@ test.describe("Medalowość szkoły", () => {
       const history = await openSchoolHistory(page);
 
       if (school.expectedMedal !== "Brak") {
-        await expect(
-          medalHistoryRows(history).first(),
-          `Historia szkoły ${school.id} powinna zawierać wpis medalowości`,
-        ).toBeVisible();
+        await test.step("Sprawdzenie: widoczność elementu — medalHistoryRows(history).first()", async () =>
+          expect(
+            medalHistoryRows(history).first(),
+            `Historia szkoły ${school.id} powinna zawierać wpis medalowości`,
+          ).toBeVisible());
       }
 
       const entries = await collectMedalHistoryEntries(page, history);
 
       if (entries.length === 0) {
-        expect(
-          school.expectedMedal,
-          `Szkoła ${school.id} bez historii medalowości powinna mieć wartość Brak`,
-        ).toBe("Brak");
+        await test.step('Sprawdzenie: zgodność wartości — school.expectedMedal; oczekiwane: "Brak"', async () => {
+          expect(
+            school.expectedMedal,
+            `Szkoła ${school.id} bez historii medalowości powinna mieć wartość Brak`,
+          ).toBe("Brak");
+        });
 
         console.log(`MED-50: szkoła ${school.id}. ` + `Brak wpisów historii medalowości.`);
 
@@ -754,7 +895,9 @@ test.describe("Medalowość szkoły", () => {
       for (const entry of entries) {
         const match = entry.value.match(/^(\d{4}\/\d{4}) (Złoto|Srebro|Brąz|Brak)$/);
 
-        expect(match, `Nieprawidłowy wpis historii medalowości: "${entry.value}"`).not.toBeNull();
+        await test.step("Sprawdzenie: negacja — toBeNull — match", async () => {
+          expect(match, `Nieprawidłowy wpis historii medalowości: "${entry.value}"`).not.toBeNull();
+        });
 
         seasons.push(match![1]);
       }
@@ -767,10 +910,12 @@ test.describe("Medalowość szkoły", () => {
           `unikalnych sezonów: ${uniqueSeasons.size}.`,
       );
 
-      expect(
-        uniqueSeasons.size,
-        `Szkoła ${school.id} posiada więcej niż jeden wpis medalowości dla tego samego roku szkolnego`,
-      ).toBe(seasons.length);
+      await test.step("Sprawdzenie: zgodność wartości — uniqueSeasons.size; oczekiwane: seasons.length", async () => {
+        expect(
+          uniqueSeasons.size,
+          `Szkoła ${school.id} posiada więcej niż jeden wpis medalowości dla tego samego roku szkolnego`,
+        ).toBe(seasons.length);
+      });
     }
   });
 
@@ -789,10 +934,12 @@ test.describe("Medalowość szkoły", () => {
       const entries = await collectMedalHistoryEntries(page, history);
 
       if (entries.length === 0) {
-        expect(
-          school.expectedMedal,
-          `Szkoła ${school.id} bez historii medalowości powinna mieć wartość Brak`,
-        ).toBe("Brak");
+        await test.step('Sprawdzenie: zgodność wartości — school.expectedMedal; oczekiwane: "Brak"', async () => {
+          expect(
+            school.expectedMedal,
+            `Szkoła ${school.id} bez historii medalowości powinna mieć wartość Brak`,
+          ).toBe("Brak");
+        });
 
         console.log(`MED-51: szkoła ${school.id}. ` + `Brak wpisów medalowości do sprawdzenia.`);
 
@@ -800,10 +947,12 @@ test.describe("Medalowość szkoły", () => {
       }
 
       for (const entry of entries) {
-        expect(
-          entry.source,
-          `Wpis "${entry.value}" szkoły ${school.id} powinien mieć źródło Formularz klubowy`,
-        ).toBe("Formularz klubowy");
+        await test.step('Sprawdzenie: zgodność wartości — entry.source; oczekiwane: "Formularz klubowy"', async () => {
+          expect(
+            entry.source,
+            `Wpis "${entry.value}" szkoły ${school.id} powinien mieć źródło Formularz klubowy`,
+          ).toBe("Formularz klubowy");
+        });
       }
 
       console.log(`MED-51: szkoła ${school.id}. ` + `Sprawdzono źródło ${entries.length} wpisów.`);
@@ -825,10 +974,12 @@ test.describe("Medalowość szkoły", () => {
       const entries = await collectMedalHistoryEntries(page, history);
 
       if (entries.length === 0) {
-        expect(
-          school.expectedMedal,
-          `Szkoła ${school.id} bez historii medalowości powinna mieć wartość Brak`,
-        ).toBe("Brak");
+        await test.step('Sprawdzenie: zgodność wartości — school.expectedMedal; oczekiwane: "Brak"', async () => {
+          expect(
+            school.expectedMedal,
+            `Szkoła ${school.id} bez historii medalowości powinna mieć wartość Brak`,
+          ).toBe("Brak");
+        });
 
         console.log(`MED-52: szkoła ${school.id}. ` + `Brak wpisów medalowości do sprawdzenia.`);
 
@@ -838,16 +989,20 @@ test.describe("Medalowość szkoły", () => {
       for (const entry of entries) {
         const match = entry.value.match(/^(\d{4})\/(\d{4}) (Złoto|Srebro|Brąz|Brak)$/);
 
-        expect(match, `Nieprawidłowy wpis historii medalowości: "${entry.value}"`).not.toBeNull();
+        await test.step("Sprawdzenie: negacja — toBeNull — match", async () => {
+          expect(match, `Nieprawidłowy wpis historii medalowości: "${entry.value}"`).not.toBeNull();
+        });
 
         const seasonEndYear = match![2];
 
         const expectedDate = `${seasonEndYear}-10-01`;
 
-        expect(
-          entry.date,
-          `Wpis "${entry.value}" szkoły ${school.id} powinien być zapisany 1 października ${seasonEndYear}`,
-        ).toMatch(new RegExp(`^${expectedDate} \\d{2}:\\d{2}$`));
+        await test.step("Sprawdzenie: zgodność ze wzorcem — entry.date; oczekiwane: new RegExp(`^${expectedDate} \\\\d{2}:\\\\d{2}$`)", async () => {
+          expect(
+            entry.date,
+            `Wpis "${entry.value}" szkoły ${school.id} powinien być zapisany 1 października ${seasonEndYear}`,
+          ).toMatch(new RegExp(`^${expectedDate} \\d{2}:\\d{2}$`));
+        });
       }
 
       console.log(`MED-52: szkoła ${school.id}. ` + `Sprawdzono datę ${entries.length} wpisów.`);
@@ -869,10 +1024,12 @@ test.describe("Medalowość szkoły", () => {
       const entries = await collectMedalHistoryEntries(page, history);
 
       if (entries.length === 0) {
-        expect(
-          school.expectedMedal,
-          `Szkoła ${school.id} bez historii medalowości powinna mieć wartość Brak`,
-        ).toBe("Brak");
+        await test.step('Sprawdzenie: zgodność wartości — school.expectedMedal; oczekiwane: "Brak"', async () => {
+          expect(
+            school.expectedMedal,
+            `Szkoła ${school.id} bez historii medalowości powinna mieć wartość Brak`,
+          ).toBe("Brak");
+        });
 
         console.log(`MED-53: szkoła ${school.id}. ` + `Brak wpisów medalowości do sprawdzenia.`);
 
@@ -880,10 +1037,12 @@ test.describe("Medalowość szkoły", () => {
       }
 
       for (const entry of entries) {
-        expect(
-          entry.author,
-          `Wpis "${entry.value}" szkoły ${school.id} powinien zostać zapisany przez automat`,
-        ).toBe("automat");
+        await test.step('Sprawdzenie: zgodność wartości — entry.author; oczekiwane: "automat"', async () => {
+          expect(
+            entry.author,
+            `Wpis "${entry.value}" szkoły ${school.id} powinien zostać zapisany przez automat`,
+          ).toBe("automat");
+        });
       }
 
       console.log(`MED-53: szkoła ${school.id}. ` + `Sprawdzono autora ${entries.length} wpisów.`);
@@ -913,10 +1072,12 @@ test.describe("Medalowość szkoły", () => {
 
     const response = await responsePromise;
 
-    expect(
-      response.ok(),
-      "Wyszukiwanie szkoły powinno zakończyć się poprawną odpowiedzią API",
-    ).toBeTruthy();
+    await test.step("Sprawdzenie: spełnienie warunku — response.ok()", async () => {
+      expect(
+        response.ok(),
+        "Wyszukiwanie szkoły powinno zakończyć się poprawną odpowiedzią API",
+      ).toBeTruthy();
+    });
 
     const url = new URL(response.url());
 
@@ -931,28 +1092,38 @@ test.describe("Medalowość szkoły", () => {
         `API zwróciło ${body.data?.length ?? 0} rekordów.`,
     );
 
-    expect(
-      filterModel.institutionIds.map(String),
-      "Do API powinno zostać wysłane ID szkoły 66109",
-    ).toContain(BRONZE_SCHOOL.id);
+    await test.step("Sprawdzenie: obecność oczekiwanego elementu — filterModel.institutionIds.map(String); oczekiwane: BRONZE_SCHOOL.id", async () => {
+      expect(
+        filterModel.institutionIds.map(String),
+        "Do API powinno zostać wysłane ID szkoły 66109",
+      ).toContain(BRONZE_SCHOOL.id);
+    });
 
-    expect(filterModel.medal, "Do API powinien zostać wysłany również filtr Złoto").toEqual([3]);
+    await test.step("Sprawdzenie: zgodność całej struktury i wartości — filterModel.medal; oczekiwane: [3]", async () => {
+      expect(filterModel.medal, "Do API powinien zostać wysłany również filtr Złoto").toEqual([3]);
+    });
 
-    expect(
-      body.data,
-      "Pomimo niezgodnego filtra medalu wyszukiwanie po ID powinno zwrócić dokładnie jedną szkołę",
-    ).toHaveLength(1);
+    await test.step("Sprawdzenie: liczba elementów — body.data; oczekiwane: 1", async () => {
+      expect(
+        body.data,
+        "Pomimo niezgodnego filtra medalu wyszukiwanie po ID powinno zwrócić dokładnie jedną szkołę",
+      ).toHaveLength(1);
+    });
 
     const returnedSchool = body.data[0];
 
-    expect(String(returnedSchool.id), "Powinna zostać zwrócona szkoła wskazana przez ID").toBe(
-      BRONZE_SCHOOL.id,
-    );
+    await test.step("Sprawdzenie: zgodność wartości — String(returnedSchool.id); oczekiwane: BRONZE_SCHOOL.id", async () => {
+      expect(String(returnedSchool.id), "Powinna zostać zwrócona szkoła wskazana przez ID").toBe(
+        BRONZE_SCHOOL.id,
+      );
+    });
 
-    expect(
-      returnedSchool.informationAboutMedalCategory?.medalCategoryName,
-      "Zwrócona szkoła powinna zachować swój rzeczywisty medal",
-    ).toBe("Brąz");
+    await test.step('Sprawdzenie: zgodność wartości — returnedSchool.informationAboutMedalCategory?.medalCategoryName; oczekiwane: "Brąz"', async () => {
+      expect(
+        returnedSchool.informationAboutMedalCategory?.medalCategoryName,
+        "Zwrócona szkoła powinna zachować swój rzeczywisty medal",
+      ).toBe("Brąz");
+    });
 
     console.log(
       `MED-54: ID ma priorytet nad pozostałymi filtrami. ` +
@@ -964,30 +1135,41 @@ test.describe("Medalowość szkoły", () => {
   test("MED-55: filtrowanie bez ID zwraca tylko szkoły z wybranym medalem", async ({ page }) => {
     const app = new Octopus(page);
 
-    const { results, filterModel, schools } = await searchSchoolsByMedalsWithApi(app, ["Brąz"]);
+    const { results, filterModel, schools } =
+      await test.step("API: wyszukiwanie szkół według medali", async () =>
+        searchSchoolsByMedalsWithApi(app, ["Brąz"]));
 
-    expect(
-      filterModel.institutionIds ?? [],
-      "Przy wyszukiwaniu wyłącznie po medalu nie powinno być filtra ID szkoły",
-    ).toHaveLength(0);
+    await test.step("Sprawdzenie: liczba elementów — filterModel.institutionIds ?? []; oczekiwane: 0", async () => {
+      expect(
+        filterModel.institutionIds ?? [],
+        "Przy wyszukiwaniu wyłącznie po medalu nie powinno być filtra ID szkoły",
+      ).toHaveLength(0);
+    });
 
-    expect(
-      filterModel.medal,
-      "Do API powinien zostać przekazany dokładnie jeden filtr medalu",
-    ).toHaveLength(1);
+    await test.step("Sprawdzenie: liczba elementów — filterModel.medal; oczekiwane: 1", async () => {
+      expect(
+        filterModel.medal,
+        "Do API powinien zostać przekazany dokładnie jeden filtr medalu",
+      ).toHaveLength(1);
+    });
 
-    expect(
-      schools.length,
-      "API powinno zwrócić co najmniej jedną szkołę z medalem Brąz",
-    ).toBeGreaterThan(0);
+    await test.step("Sprawdzenie: wartość powyżej granicy — schools.length; granica: 0", async () => {
+      expect(
+        schools.length,
+        "API powinno zwrócić co najmniej jedną szkołę z medalem Brąz",
+      ).toBeGreaterThan(0);
+    });
 
     for (const school of schools) {
       const medal = school.informationAboutMedalCategory?.medalCategoryName;
 
-      expect(medal, `Szkoła ${school.id} została zwrócona mimo innego medalu`).toBe("Brąz");
+      await test.step('Sprawdzenie: zgodność wartości — medal; oczekiwane: "Brąz"', async () => {
+        expect(medal, `Szkoła ${school.id} została zwrócona mimo innego medalu`).toBe("Brąz");
+      });
     }
 
-    await expectSchoolResultsMedals(results, ["Brąz"]);
+    await test.step("Sprawdzenie: expectSchoolResultsMedals", async () =>
+      expectSchoolResultsMedals(results, ["Brąz"]));
 
     console.log(
       `MED-55: wyszukiwanie bez ID. ` +
@@ -1005,46 +1187,59 @@ test.describe("Medalowość szkoły", () => {
 
     const selectedMedals: SchoolMedal[] = ["Złoto", "Srebro"];
 
-    const { results, filterModel, schools } = await searchSchoolsByMedalsWithApi(
-      app,
-      selectedMedals,
-    );
+    const { results, filterModel, schools } =
+      await test.step("API: wyszukiwanie szkół według medali", async () =>
+        searchSchoolsByMedalsWithApi(app, selectedMedals));
 
-    expect(
-      filterModel.institutionIds ?? [],
-      "Przy filtrowaniu wyłącznie po medalach nie powinno być filtra ID szkoły",
-    ).toHaveLength(0);
+    await test.step("Sprawdzenie: liczba elementów — filterModel.institutionIds ?? []; oczekiwane: 0", async () => {
+      expect(
+        filterModel.institutionIds ?? [],
+        "Przy filtrowaniu wyłącznie po medalach nie powinno być filtra ID szkoły",
+      ).toHaveLength(0);
+    });
 
-    expect(filterModel.medal, "Do API powinny zostać przekazane dokładnie dwa medale").toHaveLength(
-      2,
-    );
+    await test.step("Sprawdzenie: liczba elementów — filterModel.medal; oczekiwane: 2", async () => {
+      expect(
+        filterModel.medal,
+        "Do API powinny zostać przekazane dokładnie dwa medale",
+      ).toHaveLength(2);
+    });
 
-    expect(schools.length, "API powinno zwrócić co najmniej jedną szkołę").toBeGreaterThan(0);
+    await test.step("Sprawdzenie: wartość powyżej granicy — schools.length; granica: 0", async () => {
+      expect(schools.length, "API powinno zwrócić co najmniej jedną szkołę").toBeGreaterThan(0);
+    });
 
     const apiMedals = new Set<SchoolMedal>();
 
     for (const school of schools) {
       const medal = school.informationAboutMedalCategory?.medalCategoryName as SchoolMedal;
 
-      expect(
-        selectedMedals,
-        `API zwróciło szkołę ${school.id} z niedozwolonym medalem "${medal}"`,
-      ).toContain(medal);
+      await test.step("Sprawdzenie: obecność oczekiwanego elementu — selectedMedals; oczekiwane: medal", async () => {
+        expect(
+          selectedMedals,
+          `API zwróciło szkołę ${school.id} z niedozwolonym medalem "${medal}"`,
+        ).toContain(medal);
+      });
 
       apiMedals.add(medal);
     }
 
-    expect(
-      apiMedals.has("Złoto"),
-      "API powinno zwrócić co najmniej jedną szkołę ze złotym medalem",
-    ).toBeTruthy();
+    await test.step('Sprawdzenie: spełnienie warunku — apiMedals.has("Złoto")', async () => {
+      expect(
+        apiMedals.has("Złoto"),
+        "API powinno zwrócić co najmniej jedną szkołę ze złotym medalem",
+      ).toBeTruthy();
+    });
 
-    expect(
-      apiMedals.has("Srebro"),
-      "API powinno zwrócić co najmniej jedną szkołę ze srebrnym medalem",
-    ).toBeTruthy();
+    await test.step('Sprawdzenie: spełnienie warunku — apiMedals.has("Srebro")', async () => {
+      expect(
+        apiMedals.has("Srebro"),
+        "API powinno zwrócić co najmniej jedną szkołę ze srebrnym medalem",
+      ).toBeTruthy();
+    });
 
-    await expectSchoolResultsMedals(results, selectedMedals);
+    await test.step("Sprawdzenie: expectSchoolResultsMedals", async () =>
+      expectSchoolResultsMedals(results, selectedMedals));
 
     console.log(
       `MED-56: wybrano ${selectedMedals.join(" + ")}. ` +
@@ -1173,13 +1368,17 @@ test.describe("Medalowość szkoły", () => {
   test("MED-60: każda szkoła z medalem Brak nie ma przedmiotów medalowych", async ({ page }) => {
     const app = new Octopus(page);
 
-    const { filterModel, schools } = await searchSchoolsByMedalsWithApi(app, ["Brak"]);
+    const { filterModel, schools } =
+      await test.step("API: wyszukiwanie szkół według medali", async () =>
+        searchSchoolsByMedalsWithApi(app, ["Brak"]));
 
-    expect(
-      schools.length,
-      "API powinno zwrócić co najmniej jedną szkołę z medalem Brak. " +
-        `Przesłany filtr: ${JSON.stringify(filterModel.medal)}`,
-    ).toBeGreaterThan(0);
+    await test.step("Sprawdzenie: wartość powyżej granicy — schools.length; granica: 0", async () => {
+      expect(
+        schools.length,
+        "API powinno zwrócić co najmniej jedną szkołę z medalem Brak. " +
+          `Przesłany filtr: ${JSON.stringify(filterModel.medal)}`,
+      ).toBeGreaterThan(0);
+    });
 
     console.log(`MED-60: API zwróciło ${schools.length} szkół dla filtra Brak.`);
 
@@ -1194,7 +1393,9 @@ test.describe("Medalowość szkoły", () => {
           `Przedmioty: ${JSON.stringify(subjectNames)}.`,
       );
 
-      expect(medal, `Szkoła ${school.id} powinna mieć medal Brak`).toBe("Brak");
+      await test.step('Sprawdzenie: zgodność wartości — medal; oczekiwane: "Brak"', async () => {
+        expect(medal, `Szkoła ${school.id} powinna mieć medal Brak`).toBe("Brak");
+      });
 
       expectMedalMatchesSubjectCount(medal, subjectNames);
     }

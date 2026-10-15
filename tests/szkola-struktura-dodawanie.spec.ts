@@ -53,13 +53,13 @@ async function withNewSchool(
   }) => Promise<void>,
 ) {
   const app = new Octopus(page);
-  const schools = (await ensureStructureTestSchools(page, app, keys)) as Record<
-    AnchorKey,
-    StructureSchool
-  >;
+  const schools =
+    (await test.step("Przygotowanie: szkoły testowe do sprawdzania struktury", async () =>
+      ensureStructureTestSchools(page, app, keys))) as Record<AnchorKey, StructureSchool>;
   const owned = keys.map((key) => schools[key]);
   const api = new StructureApi(page.context().request, auth);
-  await api.resolve(owned);
+  await test.step("Przygotowanie API: odczyt identyfikatorów szkół", async () =>
+    api.resolve(owned));
   await api.cleanup(owned);
   const name = freshName();
   const form = await prepareCompleteSchoolAdd(page, app, name, `STRADD-${Date.now()}`, schoolType);
@@ -88,17 +88,22 @@ async function withNewSchool(
     created = { id: result.schoolId, name };
     await retainRecord("PENDING");
     await app.markTestRecord();
-    await api.resolve([created]);
-    expect(result.saveRequestCount).toBe(1);
+    await test.step("Przygotowanie API: odczyt identyfikatorów szkół", async () =>
+      api.resolve([created!]));
+    await test.step("Sprawdzenie: zgodność wartości — result.saveRequestCount; oczekiwane: 1", async () => {
+      expect(result.saveRequestCount).toBe(1);
+    });
     return created;
   };
   await action({ app, api, form, name, schools, save }).finally(async () => {
     if (!created && /\/school\/school-panel\/\d+$/.test(page.url())) {
-      await expect(app.detail("name")).toHaveValue(name);
+      await test.step('Sprawdzenie: wartość pola w widoku — app.detail("name"); oczekiwane: name', async () =>
+        expect(app.detail("name")).toHaveValue(name));
       created = { id: page.url().split("/").pop()!, name };
       await retainRecord("PENDING");
       await app.markTestRecord();
-      await api.resolve([created]);
+      await test.step("Przygotowanie API: odczyt identyfikatorów szkół", async () =>
+        api.resolve([created!]));
     }
     await api.cleanup(created ? [...owned, created] : owned);
     await retainRecord("CLEAN");
@@ -113,7 +118,8 @@ async function withNewSchool(
 async function openPendingStructure(app: Octopus, schoolForm: Locator) {
   await schoolForm.getByRole("button", { name: "Dodaj powiązanie", exact: true }).click();
   const dialog = app.dialog("Dodaj powiązanie - szkoły w strukturze");
-  await expect(dialog).toBeVisible();
+  await test.step("Sprawdzenie: widoczność elementu — dialog", async () =>
+    expect(dialog).toBeVisible());
   return dialog;
 }
 
@@ -134,8 +140,10 @@ async function choosePending(
 
 async function acceptPending(dialog: Locator, schoolForm: Locator) {
   await dialog.getByRole("button", { name: "Zapisz", exact: true }).click();
-  await expect(dialog).toHaveCount(0);
-  await expect(schoolForm).toBeVisible();
+  await test.step("Sprawdzenie: liczba elementów w widoku — dialog; oczekiwane: 0", async () =>
+    expect(dialog).toHaveCount(0));
+  await test.step("Sprawdzenie: widoczność elementu — schoolForm", async () =>
+    expect(schoolForm).toBeVisible());
 }
 
 async function guardWrites(page: Page) {
@@ -162,10 +170,13 @@ test.describe("Struktura podczas dodawania szkoły", () => {
     await fillSchoolName(app, form, freshName());
     const dialog = await openPendingStructure(app, form);
     for (const label of ["ID szkoły", "Nazwa szkoły", "Kod pocztowy", "Miejscowość", "Ulica"])
-      await expect(structureSearchField(dialog, label)).toBeVisible();
-    await expect(structureRelatedSchools(dialog).getByRole("gridcell")).toHaveCount(0);
+      await test.step("Sprawdzenie: widoczność elementu — structureSearchField(dialog, label)", async () =>
+        expect(structureSearchField(dialog, label)).toBeVisible());
+    await test.step('Sprawdzenie: liczba elementów w widoku — structureRelatedSchools(dialog).getByRole("gridcell"); oczekiwane: 0', async () =>
+      expect(structureRelatedSchools(dialog).getByRole("gridcell")).toHaveCount(0));
     await dialog.getByRole("button", { name: "Anuluj", exact: true }).click();
-    await expect(form).toBeVisible();
+    await test.step("Sprawdzenie: widoczność elementu — form", async () =>
+      expect(form).toBeVisible());
     await cancelSchoolAdd(form);
   });
 
@@ -173,15 +184,19 @@ test.describe("Struktura podczas dodawania szkoły", () => {
     page,
   }, testInfo) => {
     const app = new Octopus(page);
-    const s = await ensureStructureTestSchools(page, app, ["addBranch"]);
+    const s = await test.step("Przygotowanie: szkoły testowe do sprawdzania struktury", async () =>
+      ensureStructureTestSchools(page, app, ["addBranch"]));
     const form = await prepareCompleteSchoolAdd(page, app, freshName(), `STRADD-${Date.now()}`);
     const attempts = await guardWrites(page);
     const dialog = await openPendingStructure(app, form);
     await choosePending(app, dialog, s.addBranch!);
     await acceptPending(dialog, form);
-    expect(attempts).toHaveLength(0);
+    await test.step("Sprawdzenie: liczba elementów — attempts; oczekiwane: 0", async () => {
+      expect(attempts).toHaveLength(0);
+    });
     const reopened = await openPendingStructure(app, form);
-    await expect(structureRelatedSchoolRow(reopened, s.addBranch!.id)).toHaveCount(1);
+    await test.step("Sprawdzenie: liczba elementów w widoku — structureRelatedSchoolRow(reopened, s.addBranch!.id); oczekiwane: 1", async () =>
+      expect(structureRelatedSchoolRow(reopened, s.addBranch!.id)).toHaveCount(1));
     await reopened.getByRole("button", { name: "Anuluj", exact: true }).click();
     const response = page.waitForResponse(
       (r) =>
@@ -193,7 +208,9 @@ test.describe("Struktura podczas dodawania szkoły", () => {
       body: JSON.stringify(attempts, null, 2),
       contentType: "application/json",
     });
-    expect(attempts).toHaveLength(1);
+    await test.step("Sprawdzenie: liczba elementów — attempts; oczekiwane: 1", async () => {
+      expect(attempts).toHaveLength(1);
+    });
   });
 
   for (const relation of [
@@ -267,12 +284,21 @@ test.describe("Struktura podczas dodawania szkoły", () => {
             child: api.unit(relation.hierarchy === "Nadrzędna" ? created : linked),
             type: relation.apiId,
           };
-          const edges = api.edges(await api.tree(created));
-          expect(edges).toHaveLength(1);
-          expect(edges[0]).toMatchObject(expected);
-          expect(api.edges(await api.tree(linked))).toEqual(edges);
+          const edges = api.edges(
+            await test.step("API: odczyt struktury szkoły", async () => api.tree(created)),
+          );
+          await test.step("Sprawdzenie: liczba elementów — edges; oczekiwane: 1", async () => {
+            expect(edges).toHaveLength(1);
+          });
+          await test.step("Sprawdzenie: toMatchObject — edges[0]; oczekiwane: expected", async () => {
+            expect(edges[0]).toMatchObject(expected);
+          });
+          await test.step("Sprawdzenie: zgodność całej struktury i wartości — api.edges(await api.tree(linked)); oczekiwane: edges", async () => {
+            expect(api.edges(await api.tree(linked))).toEqual(edges);
+          });
           const panel = await openSchoolStructure(app, created);
-          await expect(structurePanelSchoolRow(panel, linked)).toHaveCount(1);
+          await test.step("Sprawdzenie: liczba elementów w widoku — structurePanelSchoolRow(panel, linked); oczekiwane: 1", async () =>
+            expect(structurePanelSchoolRow(panel, linked)).toHaveCount(1));
         },
       );
     });
@@ -294,24 +320,29 @@ test.describe("Struktura podczas dodawania szkoły", () => {
           await choosePending(app, dialog, linked);
         await acceptPending(dialog, form);
         const created = await save();
-        expect(api.edges(await api.tree(created))).toEqual(
-          expect.arrayContaining([
-            expect.objectContaining({
-              parent: api.unit(created),
-              child: api.unit(schools.addBranch),
-              type: 2,
-            }),
-            expect.objectContaining({
-              parent: api.unit(created),
-              child: api.unit(schools.addMain),
-              type: 2,
-            }),
-          ]),
-        );
-        expect(api.edges(await api.tree(created))).toHaveLength(2);
+        await test.step("Sprawdzenie: zgodność całej struktury i wartości — api.edges(await api.tree(created)); oczekiwane: expect.arrayContaining([ expect.objectContaining({ parent: api.unit(created), child: api.unit(schools.addBranch), …", async () => {
+          expect(api.edges(await api.tree(created))).toEqual(
+            expect.arrayContaining([
+              expect.objectContaining({
+                parent: api.unit(created),
+                child: api.unit(schools.addBranch),
+                type: 2,
+              }),
+              expect.objectContaining({
+                parent: api.unit(created),
+                child: api.unit(schools.addMain),
+                type: 2,
+              }),
+            ]),
+          );
+        });
+        await test.step("Sprawdzenie: liczba elementów — api.edges(await api.tree(created)); oczekiwane: 2", async () => {
+          expect(api.edges(await api.tree(created))).toHaveLength(2);
+        });
         const panel = await openSchoolStructure(app, created);
         for (const linked of [schools.addBranch, schools.addMain])
-          await expect(structurePanelSchoolRow(panel, linked)).toHaveCount(1);
+          await test.step("Sprawdzenie: liczba elementów w widoku — structurePanelSchoolRow(panel, linked); oczekiwane: 1", async () =>
+            expect(structurePanelSchoolRow(panel, linked)).toHaveCount(1));
       },
     );
   });
@@ -330,10 +361,13 @@ test.describe("Struktura podczas dodawania szkoły", () => {
         const dialog = await openPendingStructure(app, form);
         await choosePending(app, dialog, schools.addBranch);
         await dialog.getByRole("button", { name: "Anuluj", exact: true }).click();
-        await expect(form).toBeVisible();
-        await expect(app.field(form, "* Nazwa")).toHaveValue(name);
+        await test.step("Sprawdzenie: widoczność elementu — form", async () =>
+          expect(form).toBeVisible());
+        await test.step('Sprawdzenie: wartość pola w widoku — app.field(form, "* Nazwa"); oczekiwane: name', async () =>
+          expect(app.field(form, "* Nazwa")).toHaveValue(name));
         const reopened = await openPendingStructure(app, form);
-        await expect(structureRelatedSchools(reopened).getByRole("gridcell")).toHaveCount(0);
+        await test.step('Sprawdzenie: liczba elementów w widoku — structureRelatedSchools(reopened).getByRole("gridcell"); oczekiwane: 0', async () =>
+          expect(structureRelatedSchools(reopened).getByRole("gridcell")).toHaveCount(0));
         await reopened.getByRole("button", { name: "Anuluj", exact: true }).click();
         await cancelSchoolAdd(form);
       },
@@ -356,8 +390,12 @@ test.describe("Struktura podczas dodawania szkoły", () => {
         await choosePending(app, dialog, schools.addBranch);
         await acceptPending(dialog, form);
         await cancelSchoolAdd(form);
-        expect(attempts).toHaveLength(0);
-        expect(api.edges(await api.tree(schools.addBranch))).toHaveLength(0);
+        await test.step("Sprawdzenie: liczba elementów — attempts; oczekiwane: 0", async () => {
+          expect(attempts).toHaveLength(0);
+        });
+        await test.step("Sprawdzenie: liczba elementów — api.edges(await api.tree(schools.addBranch)); oczekiwane: 0", async () => {
+          expect(api.edges(await api.tree(schools.addBranch))).toHaveLength(0);
+        });
         await app.searchMissing("school", "Nazwa szkoły", name);
       },
     );
@@ -381,7 +419,8 @@ test.describe("Struktura podczas dodawania szkoły", () => {
         await removeStructureSchoolCandidate(dialog, schools.addBranch);
         await acceptPending(dialog, form);
         dialog = await openPendingStructure(app, form);
-        await expect(structureRelatedSchoolRow(dialog, schools.addBranch.id)).toHaveCount(0);
+        await test.step("Sprawdzenie: liczba elementów w widoku — structureRelatedSchoolRow(dialog, schools.addBranch.id); oczekiwane: 0", async () =>
+          expect(structureRelatedSchoolRow(dialog, schools.addBranch.id)).toHaveCount(0));
         await dialog.getByRole("button", { name: "Anuluj", exact: true }).click();
         await cancelSchoolAdd(form);
       },
@@ -409,10 +448,12 @@ test.describe("Struktura podczas dodawania szkoły", () => {
           .getByRole("row")
           .filter({ has: page.getByRole("gridcell", { name: schools.addBranch.id, exact: true }) });
         if (await candidate.count()) await candidate.getByRole("gridcell").first().click();
-        await expect(structureRelatedSchoolRow(dialog, schools.addBranch.id)).toHaveCount(1);
+        await test.step("Sprawdzenie: liczba elementów w widoku — structureRelatedSchoolRow(dialog, schools.addBranch.id); oczekiwane: 1", async () =>
+          expect(structureRelatedSchoolRow(dialog, schools.addBranch.id)).toHaveCount(1));
         await acceptPending(dialog, form);
         const reopened = await openPendingStructure(app, form);
-        await expect(structureRelatedSchoolRow(reopened, schools.addBranch.id)).toHaveCount(1);
+        await test.step("Sprawdzenie: liczba elementów w widoku — structureRelatedSchoolRow(reopened, schools.addBranch.id); oczekiwane: 1", async () =>
+          expect(structureRelatedSchoolRow(reopened, schools.addBranch.id)).toHaveCount(1));
         await reopened.getByRole("button", { name: "Anuluj", exact: true }).click();
         await cancelSchoolAdd(form);
       },
@@ -427,9 +468,11 @@ test.describe("Struktura podczas dodawania szkoły", () => {
     const dialog = await openPendingStructure(app, form);
     await submitStructureSearch(dialog);
     await dismissWarning(page, "Wyszukiwanie nie może być puste");
-    await expect(dialog).toBeVisible();
+    await test.step("Sprawdzenie: widoczność elementu — dialog", async () =>
+      expect(dialog).toBeVisible());
     await dialog.getByRole("button", { name: "Anuluj", exact: true }).click();
-    await expect(form).toBeVisible();
+    await test.step("Sprawdzenie: widoczność elementu — form", async () =>
+      expect(form).toBeVisible());
     await cancelSchoolAdd(form);
   });
 
@@ -453,12 +496,14 @@ test.describe("Struktura podczas dodawania szkoły", () => {
         await selectStructureRelationCell(page, row, "hierarchy", "Nadrzędna");
         await acceptPending(dialog, form);
         dialog = await openPendingStructure(app, form);
-        await expect(
-          structureRelatedSchoolRow(dialog, schools.addBranch.id).getByRole("gridcell").nth(5),
-        ).toContainText("Wielobudynkowość");
-        await expect(
-          structureRelatedSchoolRow(dialog, schools.addBranch.id).getByRole("gridcell").nth(6),
-        ).toContainText("Nadrzędna");
+        await test.step('Sprawdzenie: obecność tekstu w widoku — structureRelatedSchoolRow(dialog, schools.addBranch.id).getByRole("gridcell").nth(5); oczekiwane: "Wielobudynkowość"', async () =>
+          expect(
+            structureRelatedSchoolRow(dialog, schools.addBranch.id).getByRole("gridcell").nth(5),
+          ).toContainText("Wielobudynkowość"));
+        await test.step('Sprawdzenie: obecność tekstu w widoku — structureRelatedSchoolRow(dialog, schools.addBranch.id).getByRole("gridcell").nth(6); oczekiwane: "Nadrzędna"', async () =>
+          expect(
+            structureRelatedSchoolRow(dialog, schools.addBranch.id).getByRole("gridcell").nth(6),
+          ).toContainText("Nadrzędna"));
         await dialog.getByRole("button", { name: "Anuluj", exact: true }).click();
         await cancelSchoolAdd(form);
       },
@@ -483,8 +528,11 @@ test.describe("Struktura podczas dodawania szkoły", () => {
         await fillSchoolName(app, form, "");
         const save = form.getByRole("button", { name: "Zapisz", exact: true });
         if (await save.isEnabled()) await save.click();
-        await expect(form).toBeVisible();
-        expect(attempts).toHaveLength(0);
+        await test.step("Sprawdzenie: widoczność elementu — form", async () =>
+          expect(form).toBeVisible());
+        await test.step("Sprawdzenie: liczba elementów — attempts; oczekiwane: 0", async () => {
+          expect(attempts).toHaveLength(0);
+        });
         await cancelSchoolAdd(form);
       },
     );
@@ -535,10 +583,16 @@ test.describe("Struktura podczas dodawania szkoły", () => {
                 );
           await form.getByRole("button", { name: "Zapisz", exact: true }).click();
           await finished;
-          await expect(page).toHaveURL(/\/school\/school-panel$/);
-          await expect(form).toHaveCount(0);
-          expect(relationWrites).toBe(0);
-          expect(api.edges(await api.tree(schools.addBranch))).toHaveLength(0);
+          await test.step("Sprawdzenie: toHaveURL — page; oczekiwane: /\\/school\\/school-panel$/", async () =>
+            expect(page).toHaveURL(/\/school\/school-panel$/));
+          await test.step("Sprawdzenie: liczba elementów w widoku — form; oczekiwane: 0", async () =>
+            expect(form).toHaveCount(0));
+          await test.step("Sprawdzenie: zgodność wartości — relationWrites; oczekiwane: 0", async () => {
+            expect(relationWrites).toBe(0);
+          });
+          await test.step("Sprawdzenie: liczba elementów — api.edges(await api.tree(schools.addBranch)); oczekiwane: 0", async () => {
+            expect(api.edges(await api.tree(schools.addBranch))).toHaveLength(0);
+          });
           await app.searchMissing("school", "Nazwa szkoły", name);
         },
       );

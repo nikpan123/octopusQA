@@ -28,25 +28,33 @@ async function loadAnnualMedalSnapshotForCurrentEnvironment() {
 
   const snapshot = JSON.parse(raw);
 
-  expect(
-    snapshot.schemaVersion,
-    `Snapshot ${ANNUAL_MEDAL_SNAPSHOT_PATH} powinien mieć schemaVersion = 1`,
-  ).toBe(1);
+  await test.step("Sprawdzenie: zgodność wartości — snapshot.schemaVersion; oczekiwane: 1", async () => {
+    expect(
+      snapshot.schemaVersion,
+      `Snapshot ${ANNUAL_MEDAL_SNAPSHOT_PATH} powinien mieć schemaVersion = 1`,
+    ).toBe(1);
+  });
 
-  expect(
-    snapshot.targetProcessDate,
-    `Snapshot ${ANNUAL_MEDAL_SNAPSHOT_PATH} powinien mieć targetProcessDate`,
-  ).toBeTruthy();
+  await test.step("Sprawdzenie: spełnienie warunku — snapshot.targetProcessDate", async () => {
+    expect(
+      snapshot.targetProcessDate,
+      `Snapshot ${ANNUAL_MEDAL_SNAPSHOT_PATH} powinien mieć targetProcessDate`,
+    ).toBeTruthy();
+  });
 
-  expect(
-    Array.isArray(snapshot.schools),
-    `Snapshot ${ANNUAL_MEDAL_SNAPSHOT_PATH} powinien zawierać tablicę schools`,
-  ).toBeTruthy();
+  await test.step("Sprawdzenie: spełnienie warunku — Array.isArray(snapshot.schools)", async () => {
+    expect(
+      Array.isArray(snapshot.schools),
+      `Snapshot ${ANNUAL_MEDAL_SNAPSHOT_PATH} powinien zawierać tablicę schools`,
+    ).toBeTruthy();
+  });
 
-  expect(
-    snapshot.schools.length,
-    `Snapshot ${ANNUAL_MEDAL_SNAPSHOT_PATH} nie może być pusty`,
-  ).toBeGreaterThan(0);
+  await test.step("Sprawdzenie: wartość powyżej granicy — snapshot.schools.length; granica: 0", async () => {
+    expect(
+      snapshot.schools.length,
+      `Snapshot ${ANNUAL_MEDAL_SNAPSHOT_PATH} nie może być pusty`,
+    ).toBeGreaterThan(0);
+  });
 
   console.log(
     `Snapshot dla środowiska ${OCTOPUS_ENV.toUpperCase()}: ` + ANNUAL_MEDAL_SNAPSHOT_PATH,
@@ -67,30 +75,35 @@ test.describe("Roczne przeliczenie medalowości @annual-medal", () => {
 
     console.log("MED-YEAR-PREP: przygotowuję 4 szkoły referencyjne...");
 
-    const referenceSnapshot = await buildAnnualMedalSnapshot(
-      app,
-      referenceSchools,
-      ANNUAL_MEDAL_TARGET_PROCESS_DATE,
-    );
+    const referenceSnapshot =
+      await test.step("API: zebranie rocznych danych do wyliczenia oczekiwanej medalowości", async () =>
+        buildAnnualMedalSnapshot(app, referenceSchools, ANNUAL_MEDAL_TARGET_PROCESS_DATE));
 
     console.log("MED-YEAR-PREP: losuję 50 dodatkowych szkół...");
 
-    const randomSnapshot = await buildRandomAnnualMedalSnapshot(
-      app,
-      50,
-      referenceSchools.map((school) => school.id),
-      ANNUAL_MEDAL_TARGET_PROCESS_DATE,
-    );
+    const randomSnapshot =
+      await test.step("API: zebranie próby rocznych danych do porównania medalowości", async () =>
+        buildRandomAnnualMedalSnapshot(
+          app,
+          50,
+          referenceSchools.map((school) => school.id),
+          ANNUAL_MEDAL_TARGET_PROCESS_DATE,
+        ));
 
     const schools = [...referenceSnapshot, ...randomSnapshot];
 
-    expect(schools, "Snapshot powinien zawierać 4 szkoły referencyjne i 50 losowych").toHaveLength(
-      54,
-    );
+    await test.step("Sprawdzenie: liczba elementów — schools; oczekiwane: 54", async () => {
+      expect(
+        schools,
+        "Snapshot powinien zawierać 4 szkoły referencyjne i 50 losowych",
+      ).toHaveLength(54);
+    });
 
     const ids = schools.map((entry) => entry.school.id);
 
-    expect(new Set(ids).size, "W snapshotcie nie powinno być duplikatów szkół").toBe(ids.length);
+    await test.step("Sprawdzenie: zgodność wartości — new Set(ids).size; oczekiwane: ids.length", async () => {
+      expect(new Set(ids).size, "W snapshotcie nie powinno być duplikatów szkół").toBe(ids.length);
+    });
 
     const medalCounts = {
       Złoto: 0,
@@ -201,7 +214,9 @@ test("MED-YEAR-01: roczne przeliczenie ustawia oczekiwany medal na podstawie sna
   for (let i = 0; i < snapshot.schools.length; i++) {
     const entry = snapshot.schools[i];
 
-    const medalData = await getSchoolMedalApiData(app, entry.school);
+    const medalData =
+      await test.step("API: odczyt medalowości szkoły do porównania z widokiem", async () =>
+        getSchoolMedalApiData(app, entry.school));
 
     console.log(
       `MED-YEAR-01: ${i + 1}/${snapshot.schools.length} ` +
@@ -211,13 +226,15 @@ test("MED-YEAR-01: roczne przeliczenie ustawia oczekiwany medal na podstawie sna
         `faktyczny ${medalData.medalCategoryName}`,
     );
 
-    expect(
-      medalData.medalCategoryName,
+    await test.step("Sprawdzenie: zgodność wartości — medalData.medalCategoryName; oczekiwane: entry.expectedMedal", async () => {
+      expect(
+        medalData.medalCategoryName,
 
-      `Szkoła ${entry.school.id} "${entry.school.name}" ` +
-        `powinna po rocznym przeliczeniu mieć medal ${entry.expectedMedal}. ` +
-        `Przed przeliczeniem miała ${entry.currentMedal}.`,
-    ).toBe(entry.expectedMedal);
+        `Szkoła ${entry.school.id} "${entry.school.name}" ` +
+          `powinna po rocznym przeliczeniu mieć medal ${entry.expectedMedal}. ` +
+          `Przed przeliczeniem miała ${entry.currentMedal}.`,
+      ).toBe(entry.expectedMedal);
+    });
 
     passed++;
   }

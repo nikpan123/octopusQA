@@ -4,12 +4,14 @@ Ten katalog opisuje aktualne obszary testowe. Źródłem prawdy dla nazw, lokali
 
 ## Aktualny stan
 
+Progi i Uprawnienia mają 74 implementacje: THR-01–THR-22, PERM-01–PERM-25, ACC-01–ACC-10 i ACL-01–ACL-17. Ostatnie 17 dodanych scenariuszy nie zostało uruchomionych podczas przygotowania; wcześniejsze przypadki użytkownik uruchamia pojedynczo. PERM-23–PERM-25 sprawdzają nauczyciela i szkoły bez flag Testowy (`@unmarked`). [Zakres, przygotowanie danych i pozostałe luki](uprawnienia-i-progi.md).
+
 Dokumenty i edycja zamówień mają 30 nowych scenariuszy ORD-DOC-01–ORD-DOC-30, jeszcze nieuruchomionych. Nie dublują podstawowego zakresu ORD-48–ORD-66. ORD-DOC-28 wymaga istniejącego testowego zamówienia z integracji. [Macierz wymagań i kroki](dokumenty-zamowien.md).
 
 Kolumna Klasa w zamówieniach ma 22 nowe scenariusze ORD-CLASS-01–ORD-CLASS-22, jeszcze nieuruchomione. Przypadek LS jest warunkowo pomijany ze względu na potwierdzony brak produktu. [Opis każdego sprawdzenia](klasa-w-zamowieniach.md).
 
-- **638** scenariuszy we wszystkich 30 plikach;
-- **636** scenariuszy w zwykłej regresji (w tym warunkowe pominięcia i oczekiwane błędy);
+- **712** scenariuszy we wszystkich 34 plikach;
+- **710** scenariuszy w zwykłej regresji (w tym warunkowe pominięcia i oczekiwane błędy);
 - **2** scenariusze rocznej medalowości uruchamiane osobno;
 - domyślnie 2 workery, maksymalnie 4;
 - ORD w panelu: maksymalnie 2 workery;
@@ -34,7 +36,11 @@ Kolumna Klasa w zamówieniach ma 22 nowe scenariusze ORD-CLASS-01–ORD-CLASS-22
 | `zamowienia-*.spec.ts`               |       118 | [Zamówienia szkoły](zamowienia-szkoly.md), [kolumna Klasa](klasa-w-zamowieniach.md), [dokumenty i Oświadczenia](dokumenty-zamowien.md) |
 | `szkola-nauczyciele-filtry.spec.ts`  |        30 | [Filtry nauczycieli krok po kroku](filtry-nauczycieli-w-szkole.md)                                                                     |
 | `szkola-wyszukiwanie-filtry.spec.ts` |        32 | [Wyszukiwarka szkół krok po kroku](wyszukiwarka-szkol-filtry.md)                                                                       |
-| **Razem**                            |   **638** |                                                                                                                                        |
+| `szkola-prog.spec.ts`                |        22 | [Progi i Uprawnienia](uprawnienia-i-progi.md)                                                                                          |
+| `nauczyciel-uprawnienia.spec.ts`     |        25 | [Progi i Uprawnienia](uprawnienia-i-progi.md)                                                                                          |
+| `uprawnienia-api.spec.ts`            |        10 | [Progi i Uprawnienia](uprawnienia-i-progi.md)                                                                                          |
+| `uprawnienia-cykl-zycia.spec.ts`     |        17 | [Progi i Uprawnienia](uprawnienia-i-progi.md)                                                                                          |
+| **Razem**                            |   **712** |                                                                                                                                        |
 
 Nowy zestaw TFL-01–TFL-30 jest napisany, ale nie został uruchomiony ani zweryfikowany na DEV, zgodnie z prośbą użytkownika. Obejmuje UI, licznik unikalnych nauczycieli, liczniki szkolnych pozycji przedmiotowych Nasi/Obcy, klasyfikację, kontekst szkoły i regresję przyszłego roku. Licznik grupy nie musi być równy liczbie jej wierszy. Pozostały zakres jest wskazany w jego dokumentacji.
 
@@ -63,6 +69,12 @@ Nieoczekiwany błąd otrzymuje kategorię, polskie podsumowanie i — jeśli da 
 Oczekiwany błąd oznaczony `test.fail()` nie jest traktowany jako rzeczywisty failure.
 
 ### Raportowanie
+
+Scenariusze korzystające z API mają nazwane kroki `test.step()`. W raporcie HTML wybierz test i rozwiń jego kroki; są one dostępne również w widoku kroków Playwright UI i trace. Przygotowanie danych, operacje API, kontrola widoku, porównania i sprzątanie są opisane oddzielnie. Część operacji odbywa się w przygotowaniu lub zakończeniu testu, więc należy rozwinąć również te sekcje.
+
+Opis porównania wskazuje sprawdzaną wartość lub pole, rodzaj sprawdzenia i oczekiwany warunek. Zielony krok oznacza zakończenie bez błędu, czerwony wskazuje miejsce niepowodzenia. Przy błędzie asercji dostępne są oczekiwana i otrzymana wartość. Puste miejsce w przeglądarce nie oznacza pominięcia operacji API.
+
+Kroki wykorzystują dotychczasowe operacje i odpowiedzi, bez dodatkowych zapytań ani sztucznych opóźnień. Oczekiwanie na stan końcowy jest jednym krokiem porównania, a nie osobnym opisem każdej ponowionej próby. Opisy nie zawierają tokenów, nagłówków autoryzacji ani treści załączonych dokumentów.
 
 - `runs/REG_*.json` — dane scenariusza;
 - `runs/performance-*.json` — czasy i liczniki HTTP;

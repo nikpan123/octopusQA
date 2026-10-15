@@ -1,6 +1,7 @@
+import { apiStep } from "./api-step";
 import { expect, type APIRequestContext, type Locator, type Page } from "@playwright/test";
 import { test as base, type Scenario } from "./scenario";
-import { OCTOPUS_BASE_URL } from "./environment";
+import { OCTOPUS_BASE_URL, OCTOPUS_ENV } from "./environment";
 import { prepareOrderSchool } from "./order-scenario";
 import { expandOrderItems, openOrders, orderRow, ordersPanel } from "./order";
 
@@ -23,17 +24,24 @@ export class OrderClassApi {
     private readonly userId: number,
     readonly school: { id: string; name: string },
     private readonly scenario: Scenario,
+    private readonly liveHeaders?: () => Promise<Record<string, string>>,
   ) {
-    expect(school.name).toMatch(/^AUTO_ORD_REFERENCE_/);
+    expect(school.name).toMatch(
+      new RegExp(`^AUTO_(?:ORD_REFERENCE_|CAT_${OCTOPUS_ENV.toUpperCase()}_ENT_)`),
+    );
   }
 
   private url(endpoint: string) {
     return `${OCTOPUS_BASE_URL}/api/${endpoint}`;
   }
 
+  private async requestHeaders() {
+    return this.liveHeaders ? this.liveHeaders() : this.headers;
+  }
+
   async catalog(filter: Record<string, unknown>): Promise<ClassProduct[]> {
     const response = await this.request.get(this.url("Order/GetItemOrders"), {
-      headers: this.headers,
+      headers: await this.requestHeaders(),
       params: { filterModel: JSON.stringify({ page: 1, limit: 500, ...filter }) },
     });
     expect(response.ok(), "Odczyt katalogu produktów").toBe(true);
@@ -57,7 +65,7 @@ export class OrderClassApi {
   async classless(): Promise<ClassProduct> {
     const code = process.env.OCTOPUS_ORDER_CLASSLESS_CODE ?? "testhurtC";
     const response = await this.request.get(this.url("Order/GetItemOrdersForOrderPanel"), {
-      headers: this.headers,
+      headers: await this.requestHeaders(),
       params: { filterModel: JSON.stringify({ title: code, page: 1, limit: 500 }) },
     });
     expect(
@@ -89,7 +97,7 @@ export class OrderClassApi {
 
   async orders(): Promise<SavedOrder[]> {
     const response = await this.request.get(this.url("SchoolOrder/GetSchoolOrders"), {
-      headers: this.headers,
+      headers: await this.requestHeaders(),
       params: {
         model: JSON.stringify({ institutionId: Number(this.school.id), page: 1, pageSize: 500 }),
       },
@@ -101,70 +109,81 @@ export class OrderClassApi {
   }
 
   async save(lines: ClassLine[], orderId?: string): Promise<string> {
-    if (orderId)
-      expect(this.owned.has(orderId), "Edycja tylko zamówienia utworzonego przez ten test").toBe(
-        true,
-      );
-    expect(lines.length).toBeGreaterThan(0);
-    for (const { product } of lines)
-      expect(
-        product.businessCode.trim(),
-        "Testy Klasy wymagają pojedynczego produktu, nie kolekcji Zestaw rozwijanej przy zapisie",
-      ).not.toMatch(/^zestaw$/i);
-    const payload = {
-      institutionId: Number(this.school.id),
-      createdBy: this.userId,
-      createdAt: new Date().toISOString(),
-      ...(orderId ? { institutionOrderId: Number(orderId) } : {}),
-      orderItems: lines.map(({ product, quantity }) => ({
-        dictOrderItemId: product.id,
-        businessCode: product.businessCode,
-        quantity,
-      })),
-    };
-    const response = await this.request.post(
-      this.url(`SchoolOrder/${orderId ? "UpdateSchoolOrder" : "AddSchoolOrder"}`),
-      {
-        headers: this.headers,
-        data: payload,
+    return await apiStep(
+      "API: zapis zamówienia i sprawdzenie zapisanych pozycji oraz ilości",
+      async () => {
+        if (orderId)
+          expect(
+            this.owned.has(orderId),
+            "Edycja tylko zamówienia utworzonego przez ten test",
+          ).toBe(true);
+        expect(lines.length).toBeGreaterThan(0);
+        for (const { product } of lines)
+          expect(
+            product.businessCode.trim(),
+            "Testy Klasy wymagają pojedynczego produktu, nie kolekcji Zestaw rozwijanej przy zapisie",
+          ).not.toMatch(/^zestaw$/i);
+        const payload = {
+          institutionId: Number(this.school.id),
+          createdBy: this.userId,
+          createdAt: new Date().toISOString(),
+          ...(orderId ? { institutionOrderId: Number(orderId) } : {}),
+          orderItems: lines.map(({ product, quantity }) => ({
+            dictOrderItemId: product.id,
+            businessCode: product.businessCode,
+            quantity,
+          })),
+        };
+        const response = await this.request.post(
+          this.url(`SchoolOrder/${orderId ? "UpdateSchoolOrder" : "AddSchoolOrder"}`),
+          {
+            headers: await this.requestHeaders(),
+            data: payload,
+          },
+        );
+        expect(response.ok(), "Zapis przygotowania zamówienia przez API").toBe(true);
+        // UI korzysta z liczbowego ID zwracanego przez AddSchoolOrder. Bez ponawiania POST.
+        const id = orderId ?? String(await response.json());
+        expect(id).toMatch(/^\d+$/);
+        this.owned.add(id);
+        await this.scenario.record(
+          `orderClass_${id}`,
+          JSON.stringify({ schoolId: this.school.id, payload }),
+        );
+        await expect
+          .poll(async () => {
+            const saved = (await this.orders()).find((order) => String(order.id) === id);
+            return saved?.orderItems
+              .map((item) => ({ id: item.dictOrderItemId, quantity: item.quantity }))
+              .sort((a, b) => a.id - b.id);
+          })
+          .toEqual(
+            lines
+              .map(({ product, quantity }) => ({ id: product.id, quantity }))
+              .sort((a, b) => a.id - b.id),
+          );
+        return id;
       },
     );
-    expect(response.ok(), "Zapis przygotowania zamówienia przez API").toBe(true);
-    // UI korzysta z liczbowego ID zwracanego przez AddSchoolOrder. Bez ponawiania POST.
-    const id = orderId ?? String(await response.json());
-    expect(id).toMatch(/^\d+$/);
-    this.owned.add(id);
-    await this.scenario.record(
-      `orderClass_${id}`,
-      JSON.stringify({ schoolId: this.school.id, payload }),
-    );
-    await expect
-      .poll(async () => {
-        const saved = (await this.orders()).find((order) => String(order.id) === id);
-        return saved?.orderItems
-          .map((item) => ({ id: item.dictOrderItemId, quantity: item.quantity }))
-          .sort((a, b) => a.id - b.id);
-      })
-      .toEqual(
-        lines
-          .map(({ product, quantity }) => ({ id: product.id, quantity }))
-          .sort((a, b) => a.id - b.id),
-      );
-    return id;
   }
 
   async remove(orderId: string) {
-    expect(this.owned.has(orderId), "Usuwanie tylko zamówień bieżącego testu").toBe(true);
-    const response = await this.request.delete(this.url("SchoolOrder/DeleteOrder"), {
-      headers: this.headers,
-      params: { orderId, userId: this.userId },
-    });
-    expect(response.ok(), `Usunięcie własnego zamówienia ${orderId}`).toBe(true);
-    await expect
-      .poll(async () => (await this.orders()).some((order) => String(order.id) === orderId))
-      .toBe(false);
-    this.owned.delete(orderId);
-    await this.scenario.record(`orderClassCleanup_${orderId}`, "DELETED");
+    return await apiStep(
+      "Sprzątanie API: usunięcie własnego zamówienia i sprawdzenie braku zamówienia",
+      async () => {
+        expect(this.owned.has(orderId), "Usuwanie tylko zamówień bieżącego testu").toBe(true);
+        const response = await this.request.delete(this.url("SchoolOrder/DeleteOrder"), {
+          headers: await this.requestHeaders(),
+          params: { orderId, userId: this.userId },
+        });
+        expect(response.ok(), `Usunięcie własnego zamówienia ${orderId}`).toBe(true);
+        await expect
+          .poll(async () => (await this.orders()).some((order) => String(order.id) === orderId))
+          .toBe(false);
+        this.owned.delete(orderId);
+        await this.scenario.record(`orderClassCleanup_${orderId}`, "DELETED");
+      },
+    );
   }
 }
 

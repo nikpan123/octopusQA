@@ -1,6 +1,6 @@
 # Pokrycie projektu testami
 
-Dokument przedstawia funkcjonalności objęte automatyzacją oraz obszary, które nadal wymagają testów. Stan został ustalony na podstawie aktualnego kodu, [indeksu 638 scenariuszy](tests/scenario-index.md) i dokumentacji domenowej.
+Dokument przedstawia funkcjonalności objęte automatyzacją oraz obszary, które nadal wymagają testów. Stan został ustalony na podstawie aktualnego kodu, [indeksu 712 scenariuszy](tests/scenario-index.md) i dokumentacji domenowej.
 
 ## Jak interpretować ocenę
 
@@ -17,6 +17,8 @@ Stosowane poziomy:
 
 ## Podsumowanie
 
+Pakiet progów i Uprawnień obejmuje 74 implementacje: THR 22, PERM 25, ACC 10 i ACL 17. Ostatnie rozszerzenie dodaje 17 nieuruchomionych scenariuszy: zakresy F+/TNŚ, częściowe BOK, izolację szkół i przedmiotów, korekty zamówień oraz trzy przypadki bez flag Testowy. PERM-17 nadal wymaga odtworzenia automatycznego dostępu, nie tylko zmiany źródła. [Macierz pokrycia i plan nowych reguł](tests/uprawnienia-i-progi.md) rozdziela te testy od nadal niezaimplementowanych warstw, dat, historii i klasyfikacji klientów. Poziom obszaru pozostaje **Częściowe**.
+
 | Obszar                      |                  Liczba wykonań | Ocena                                   | Najważniejsze pokrycie                                                                                                                                                              | Najważniejsza luka                                                                                          |
 | --------------------------- | ------------------------------: | --------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
 | Nauczyciele                 |        83 + scenariusze wspólne | Szerokie                                | dodawanie, edycja, kontakty, adres, notatki, RODO, historia                                                                                                                         | uprawnienia, awarie API i równoczesna edycja                                                                |
@@ -32,7 +34,7 @@ Stosowane poziomy:
 | Medalowość roczna           |                               2 | Operacyjne                              | snapshot przed jobem i porównanie po jobie na DEV/TEST                                                                                                                              | automat nie uruchamia joba ani nie kontroluje daty systemowej                                               |
 | Infrastruktura testowa      |   testy jednostkowe i reportery | Częściowe                               | sesja, cleanup, diagnostyka błędów, performance                                                                                                                                     | brak testów panelu jako osobnej aplikacji i brak progów wydajności                                          |
 
-Łączna liczba **638** obejmuje 636 scenariusze zwykłej regresji i dwa testy rocznego workflow. Zestaw SFLT ma 32 implementacje, nieuruchomione na prośbę użytkownika: trzy przypadki sezonu SI są pomijane bez konfiguracji danych, a jeden `test.fail` dokumentuje brak pola Notatki. Szczegóły zawiera [dokumentacja wyszukiwarki](tests/wyszukiwarka-szkol-filtry.md). Wszystkie 53 testy Kategorii mają potwierdzone przejście na DEV w pełnym przebiegu i kontrolnych powtórkach z 13.10.2026; nie jest to jeden pełny przebieg po korekcie NPC. W Strukturze nie ma pomijanych scenariuszy: `test.fail` wykonuje test niezgodności i zgłasza nieoczekiwane przejście po jej naprawie. Takiego wyniku nie należy utożsamiać z poprawnością całej aplikacji.
+Łączna liczba **712** obejmuje 710 scenariusze zwykłej regresji i dwa testy rocznego workflow. Zestaw SFLT ma 32 implementacje, nieuruchomione na prośbę użytkownika: trzy przypadki sezonu SI są pomijane bez konfiguracji danych, a jeden `test.fail` dokumentuje brak pola Notatki. Szczegóły zawiera [dokumentacja wyszukiwarki](tests/wyszukiwarka-szkol-filtry.md). Wszystkie 53 testy Kategorii mają potwierdzone przejście na DEV w pełnym przebiegu i kontrolnych powtórkach z 13.10.2026; nie jest to jeden pełny przebieg po korekcie NPC. W Strukturze nie ma pomijanych scenariuszy: `test.fail` wykonuje test niezgodności i zgłasza nieoczekiwane przejście po jej naprawie. Takiego wyniku nie należy utożsamiać z poprawnością całej aplikacji.
 
 Zaimplementowane oraz planowane scenariusze zakładki `Struktura` są opisane w [dokumencie obszaru](tests/struktura-szkoly.md).
 

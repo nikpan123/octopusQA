@@ -1,4 +1,5 @@
 import { deflateSync } from "node:zlib";
+import { apiStep } from "./api-step";
 import { expect, type APIRequestContext, type Locator, type Page } from "@playwright/test";
 import { test as base, type OrderClassApi } from "./order-class";
 import type { Scenario } from "./scenario";
@@ -181,35 +182,42 @@ export class OrderDocuments {
     );
   }
   async upload(target: DocumentTarget, file: DocumentFile) {
-    const before = new Set((await this.files(target)).map((item) => item.id));
-    const response = await this.attemptUpload(target, file);
-    expect(response.ok(), "Zapis dokumentu przez API").toBe(true);
-    await expect
-      .poll(async () => (await this.files(target)).filter((item) => !before.has(item.id)).length)
-      .toBe(1);
-    const stored = (await this.files(target)).find((item) => !before.has(item.id))!;
-    this.fileOwners.set(stored.id, target);
-    expect(Buffer.from(stored.fileData, "base64")).toEqual(file.buffer);
-    expect(stored.contentType).toBe(file.mimeType);
-    await this.scenario.record(
-      `document_${stored.id}`,
-      JSON.stringify({ target, name: stored.fileName, original: file.name }),
-    );
-    return stored;
+    return await apiStep("API: dodanie dokumentu i potwierdzenie zapisu pliku", async () => {
+      const before = new Set((await this.files(target)).map((item) => item.id));
+      const response = await this.attemptUpload(target, file);
+      expect(response.ok(), "Zapis dokumentu przez API").toBe(true);
+      await expect
+        .poll(async () => (await this.files(target)).filter((item) => !before.has(item.id)).length)
+        .toBe(1);
+      const stored = (await this.files(target)).find((item) => !before.has(item.id))!;
+      this.fileOwners.set(stored.id, target);
+      expect(Buffer.from(stored.fileData, "base64")).toEqual(file.buffer);
+      expect(stored.contentType).toBe(file.mimeType);
+      await this.scenario.record(
+        `document_${stored.id}`,
+        JSON.stringify({ target, name: stored.fileName, original: file.name }),
+      );
+      return stored;
+    });
   }
   async removeFile(id: number) {
-    const target = this.fileOwners.get(id);
-    expect(target, "Usuwamy tylko plik przesłany przez ten test").toBeDefined();
-    this.owns(target!);
-    const response = await this.request.delete(
-      this.url("FileStorage/DeleteFileForSchoolOrSchoolComplexOrTeacherOrder"),
-      { headers: this.headers, params: { fileStorageIds: String(id) } },
+    return await apiStep(
+      "API: usunięcie pojedynczego dokumentu i sprawdzenie listy plików",
+      async () => {
+        const target = this.fileOwners.get(id);
+        expect(target, "Usuwamy tylko plik przesłany przez ten test").toBeDefined();
+        this.owns(target!);
+        const response = await this.request.delete(
+          this.url("FileStorage/DeleteFileForSchoolOrSchoolComplexOrTeacherOrder"),
+          { headers: this.headers, params: { fileStorageIds: String(id) } },
+        );
+        expect(response.ok()).toBe(true);
+        await expect
+          .poll(async () => (await this.files(target!)).some((file) => file.id === id))
+          .toBe(false);
+        this.fileOwners.delete(id);
+      },
     );
-    expect(response.ok()).toBe(true);
-    await expect
-      .poll(async () => (await this.files(target!)).some((file) => file.id === id))
-      .toBe(false);
-    this.fileOwners.delete(id);
   }
   async teacher() {
     this.teacherId ??= await this.scenario.createTeacher(
@@ -219,117 +227,136 @@ export class OrderDocuments {
     return this.teacherId;
   }
   async statement(withSchool = true): Promise<DocumentTarget> {
-    const teacherId = await this.teacher();
-    const contacts = await this.get<
-      Array<{ id: number; name: string; dictCategoryContactId: number; isDel: boolean }>
-    >("TeacherContacts/GetTeacherContactsToOrders");
-    const contact = contacts.find((item) => !item.isDel && item.name === "Gratis od promotora");
-    expect(contact, "Wymagany istniejący kontakt Gratis od promotora").toBeDefined();
-    const types = await this.get<Array<{ id: number; name: string }>>(
-      "TeacherOrder/GetDictTeacherOrderType",
-    );
-    const type = types.find((item) => item.name === "Normalna");
-    expect(type).toBeDefined();
-    const product = await this.schoolOrders.product("F7P", [7]);
-    const response = await this.request.post(this.url("TeacherOrder/AddTeacherOrder"), {
-      headers: this.headers,
-      data: {
-        teacherId: Number(teacherId),
-        cityId: 6,
-        street: "",
-        number: "AUTO-DOC-TEST",
-        zipCode: "61-534",
-        createdBy: this.userId,
-        email: this.scenario.email,
-        createdAt: new Date().toISOString(),
-        statusChangedAt: new Date().toISOString(),
-        ...(withSchool ? { schoolId: Number(this.schoolOrders.school.id) } : {}),
-        typeId: type!.id,
-        statusId: 1,
-        contactId: contact!.id,
-        dictTeacherContactCategoryId: contact!.dictCategoryContactId,
-        orderItems: [
-          {
-            orderItemId: product.id,
-            businessCode: product.businessCode,
-            quantity: 1,
-            reason: "Oświadczenie",
+    return await apiStep(
+      "Przygotowanie: utworzenie zamówienia nauczycielskiego typu Oświadczenie",
+      async () => {
+        const teacherId = await this.teacher();
+        const contacts = await this.get<
+          Array<{ id: number; name: string; dictCategoryContactId: number; isDel: boolean }>
+        >("TeacherContacts/GetTeacherContactsToOrders");
+        const contact = contacts.find((item) => !item.isDel && item.name === "Gratis od promotora");
+        expect(contact, "Wymagany istniejący kontakt Gratis od promotora").toBeDefined();
+        const types = await this.get<Array<{ id: number; name: string }>>(
+          "TeacherOrder/GetDictTeacherOrderType",
+        );
+        const type = types.find((item) => item.name === "Normalna");
+        expect(type).toBeDefined();
+        const product = await this.schoolOrders.product("F7P", [7]);
+        const response = await this.request.post(this.url("TeacherOrder/AddTeacherOrder"), {
+          headers: this.headers,
+          data: {
+            teacherId: Number(teacherId),
+            cityId: 6,
+            street: "",
+            number: "AUTO-DOC-TEST",
+            zipCode: "61-534",
+            createdBy: this.userId,
+            email: this.scenario.email,
+            createdAt: new Date().toISOString(),
+            statusChangedAt: new Date().toISOString(),
+            ...(withSchool ? { schoolId: Number(this.schoolOrders.school.id) } : {}),
+            typeId: type!.id,
+            statusId: 1,
+            contactId: contact!.id,
+            dictTeacherContactCategoryId: contact!.dictCategoryContactId,
+            orderItems: [
+              {
+                orderItemId: product.id,
+                businessCode: product.businessCode,
+                quantity: 1,
+                reason: "Oświadczenie",
+              },
+            ],
           },
-        ],
+        });
+        expect(response.ok(), "Przygotowanie zablokowanego gratisu z powodem Oświadczenie").toBe(
+          true,
+        );
+        const id = String(await response.json());
+        expect(id).toMatch(/^\d+$/);
+        this.teacherOrders.add(id);
+        await this.scenario.record(
+          `teacherStatement_${id}`,
+          JSON.stringify({ teacherId, schoolId: withSchool ? this.schoolOrders.school.id : null }),
+        );
+        await expect
+          .poll(async () => (await this.teacherRecords()).some((order) => String(order.id) === id))
+          .toBe(true);
+        return { kind: "teacher", id, teacherId };
       },
-    });
-    expect(response.ok(), "Przygotowanie zablokowanego gratisu z powodem Oświadczenie").toBe(true);
-    const id = String(await response.json());
-    expect(id).toMatch(/^\d+$/);
-    this.teacherOrders.add(id);
-    await this.scenario.record(
-      `teacherStatement_${id}`,
-      JSON.stringify({ teacherId, schoolId: withSchool ? this.schoolOrders.school.id : null }),
     );
-    await expect
-      .poll(async () => (await this.teacherRecords()).some((order) => String(order.id) === id))
-      .toBe(true);
-    return { kind: "teacher", id, teacherId };
   }
   async removeStatement(target: DocumentTarget) {
-    this.owns(target);
-    expect(target.kind).toBe("teacher");
-    const response = await this.request.delete(this.url("TeacherOrder/Delete"), {
-      headers: this.headers,
-      params: { teacherOrderId: target.id },
-    });
-    expect(response.ok()).toBe(true);
-    await expect
-      .poll(async () =>
-        (await this.teacherRecords()).some((order) => String(order.id) === target.id),
-      )
-      .toBe(false);
-    this.teacherOrders.delete(target.id);
+    return await apiStep(
+      "API: usunięcie oświadczenia i sprawdzenie usunięcia powiązanych danych",
+      async () => {
+        this.owns(target);
+        expect(target.kind).toBe("teacher");
+        const response = await this.request.delete(this.url("TeacherOrder/Delete"), {
+          headers: this.headers,
+          params: { teacherOrderId: target.id },
+        });
+        expect(response.ok()).toBe(true);
+        await expect
+          .poll(async () =>
+            (await this.teacherRecords()).some((order) => String(order.id) === target.id),
+          )
+          .toBe(false);
+        this.teacherOrders.delete(target.id);
+      },
+    );
   }
   async moveTeacher(school: { id: string; name: string }) {
-    expect(school.name).toMatch(/^AUTO_ORD_REFERENCE_/);
-    expect(this.teacherId).toBeDefined();
-    const relation = {
-      teacherId: Number(this.teacherId),
-      schoolId: Number(school.id),
-      reasonId: 84,
-      createdBy: String(this.userId),
-    };
-    const add = await this.request.post(this.url("TeacherSchools/AddTeacherSchool"), {
-      headers: this.headers,
-      data: relation,
-    });
-    expect(add.ok()).toBe(true);
-    const remove = await this.request.delete(this.url("TeacherSchools/RemoveTeacherSchool"), {
-      headers: this.headers,
-      params: { ...relation, schoolId: this.schoolOrders.school.id },
-    });
-    expect(remove.ok()).toBe(true);
-    await expect
-      .poll(async () =>
-        (
-          await this.get<Array<{ id: number }>>("TeacherSchools/GetTeacherSchools", {
-            teacherid: this.teacherId!,
-          })
+    return await apiStep("API: zmiana powiązania nauczyciela ze szkołą", async () => {
+      expect(school.name).toMatch(/^AUTO_ORD_REFERENCE_/);
+      expect(this.teacherId).toBeDefined();
+      const relation = {
+        teacherId: Number(this.teacherId),
+        schoolId: Number(school.id),
+        reasonId: 84,
+        createdBy: String(this.userId),
+      };
+      const add = await this.request.post(this.url("TeacherSchools/AddTeacherSchool"), {
+        headers: this.headers,
+        data: relation,
+      });
+      expect(add.ok()).toBe(true);
+      const remove = await this.request.delete(this.url("TeacherSchools/RemoveTeacherSchool"), {
+        headers: this.headers,
+        params: { ...relation, schoolId: this.schoolOrders.school.id },
+      });
+      expect(remove.ok()).toBe(true);
+      await expect
+        .poll(async () =>
+          (
+            await this.get<Array<{ id: number }>>("TeacherSchools/GetTeacherSchools", {
+              teacherid: this.teacherId!,
+            })
+          )
+            .map((item) => String(item.id))
+            .sort(),
         )
-          .map((item) => String(item.id))
-          .sort(),
-      )
-      .toEqual([school.id]);
-    await this.scenario.record("schoolId", school.id);
-    await this.scenario.record("relatedSchoolName", school.name);
+        .toEqual([school.id]);
+      await this.scenario.record("schoolId", school.id);
+      await this.scenario.record("relatedSchoolName", school.name);
+    });
   }
   async finish() {
-    const errors: unknown[] = [];
-    for (const id of [...this.teacherOrders]) {
-      try {
-        await this.removeStatement({ kind: "teacher", id, teacherId: this.teacherId });
-      } catch (error) {
-        errors.push(error);
-        await this.scenario.record(`statementCleanup_${id}`, "FAILED");
-      }
-    }
-    if (errors.length) throw errors[0];
+    return await apiStep(
+      "Sprzątanie: usunięcie zamówień i dokumentów utworzonych przez test",
+      async () => {
+        const errors: unknown[] = [];
+        for (const id of [...this.teacherOrders]) {
+          try {
+            await this.removeStatement({ kind: "teacher", id, teacherId: this.teacherId });
+          } catch (error) {
+            errors.push(error);
+            await this.scenario.record(`statementCleanup_${id}`, "FAILED");
+          }
+        }
+        if (errors.length) throw errors[0];
+      },
+    );
   }
 }
 
