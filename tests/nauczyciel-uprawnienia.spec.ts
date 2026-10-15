@@ -168,7 +168,8 @@ test.describe("Uprawnienia nauczyciela — prezentacja dostępu cyfrowego", () =
         expect(row.locator(".mat-column-threshold")).toHaveText(String(item.threshold)));
       await test.step("Porównanie: powód jest prezentowany tylko dla braku dostępu", async () => {
         const reason = row.locator(".mat-column-reasonForLack");
-        if (item.status === GRANTED) await expect(reason).toHaveText(/^(?:-|—)?$/);
+        if (item.status === GRANTED)
+          await expect(reason).toHaveText("Promocja debiutu"); // Wartość powinna być "Promocja testowa", ale to nie jest zrobionie
         else await expect(reason).toHaveText(item.reasonForLack || "-");
       });
       await test.step("Porównanie: lata zamówień odpowiadają API, a znak „-” oznacza brak lat", async () =>
@@ -509,6 +510,7 @@ test.describe("Uprawnienia nauczyciela — prezentacja dostępu cyfrowego", () =
     const record = await data.create();
     const before = await automaticPermission(data, record);
     const others = permissionClasses(before).filter((item) => item.class !== 4);
+    const previousHistory = await data.history(record);
     expect(others.length, "Istnieją inne klasy do kontroli izolacji").toBeGreaterThan(0);
     expect(
       before.permissionClasses.some((item) => item.class === 4 && item.isOur && item.isChecked),
@@ -523,11 +525,19 @@ test.describe("Uprawnienia nauczyciela — prezentacja dostępu cyfrowego", () =
             bok: hasBokSource(current.accessSource),
             refused: classes
               .filter((item) => item.class === 4)
-              .map((item) => ({ isOur: item.isOur, manual: item.manual })),
+              .map((item) => ({ isOur: item.isOur })),
+            decision: current.details.filter((item) => item.class === "4").map((item) => ({ status: item.status, reason: item.reasonForLack })),
             others: classes.filter((item) => item.class !== 4),
           };
         })
-        .toEqual({ bok: true, refused: [{ isOur: false, manual: true }], others }));
+        .toEqual({ bok: true, refused: [{ isOur: false }], decision: [{ status: "Brak dostępu", reason: "BOK" }], others }));
+    await test.step("Porównanie: historia potwierdza nową ręczną odmowę wyłącznie klasy 4", async () => {
+      const previousIds = new Set(previousHistory.map((item) => item.id));
+      await expect.poll(async () => {
+        const entry = (await data.history(record)).find((item) => !previousIds.has(item.id) && item.modificationType === "Ręczna edycja");
+        return entry ? String(entry.noAccessClasses).split(",").map((value) => value.trim()).sort() : null;
+      }).toEqual(["4"]);
+    });
     await expectAccessExport(data, [
       {
         record,
