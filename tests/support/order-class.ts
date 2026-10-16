@@ -14,7 +14,11 @@ export type ClassProduct = {
   isDel: boolean;
 };
 export type ClassLine = { product: ClassProduct; quantity: number };
-type SavedOrder = { id: number; orderItems: Array<{ dictOrderItemId: number; quantity: number }> };
+type SavedOrder = {
+  id: number;
+  createdAt?: string;
+  orderItems: Array<{ dictOrderItemId: number; quantity: number }>;
+};
 
 export class OrderClassApi {
   readonly owned = new Set<string>();

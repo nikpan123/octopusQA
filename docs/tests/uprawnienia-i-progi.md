@@ -2,7 +2,7 @@
 
 Testy rozdzielają trzy zagadnienia: próg szkoły, prezentację dostępu nauczyciela oraz eksport klas do systemu materiałów cyfrowych. Wynik „Przyznano” nie jest dowodem spełnienia progu zamówień: dostęp może wynikać ze szkoły testowej, promocji albo decyzji BOK.
 
-Zestaw obejmuje 74 scenariusze: THR 22, PERM 25, ACC 10 i ACL 17. Ostatnie rozszerzenie dodaje 17 scenariuszy i wzmacnia PERM-17; nie zostało uruchomione podczas przygotowania. Użytkownik uruchamia wcześniejsze przypadki pojedynczo. Liczba implementacji nie oznacza pełnego pokrycia wszystkich dostarczonych wymagań. Lista brakujących sprawdzeń znajduje się na końcu.
+Zestaw obejmuje 90 scenariuszy: THR 22, PERM 25, ACC 10, ACL 17, NCL 8 i DEB 8. Nowe testy promocji nie zostały uruchomione podczas przygotowania. Użytkownik uruchamia wcześniejsze przypadki pojedynczo. Liczba implementacji nie oznacza pełnego pokrycia wszystkich dostarczonych wymagań. Lista brakujących sprawdzeń znajduje się na końcu.
 
 ## Reguły i pierwszeństwo decyzji
 
@@ -131,9 +131,37 @@ ACL-06 i ACL-07 sprawdzają ponowne pojawienie się rekordu, nie pełną ponown�
 
 ACL-15–ACL-16 kontrolują aktualizację ilości i pierwszeństwo BOK, a nie odrębny zapis kwalifikacji bazowej. Zamówienia są sprzątane w istniejącym fixture także po nieudanym teście. Przygotowanie odmowy zakresu TNŚ obsługuje słownik, w którym istnieje tylko zielony wariant danego zakresu: zapis decyzji używa tej samej klasy i scope z jawnym `isOur=false`.
 
-## Macierz nowych reguł biznesowych
+## Promocje nowego klienta i debiutu
 
-Poniższe przypadki stanowią plan rozszerzenia, nie dodatkowe testy Playwright. Nie są wliczone do 74 implementacji. Dostępny odczyt uprawnień zawiera końcowy status, przypisania i szczegóły ilościowe, ale nie udostępnia kontraktu wszystkich warstw ani kontrolowanego `processDate`. Publiczny Swagger v1 pokazuje interfejsy integracyjne, w tym eksport, bez kontraktu tych przeliczeń. Brak takiego opisu nie dowodzi, że wewnętrzny endpoint nie istnieje. Użytkownik nie dysponuje obecnie dodatkowym opisem API; plan pozostaje jawnie niezaimplementowany.
+Pliki `tests/uprawnienia-promocja-nowy-klient.spec.ts` i `tests/uprawnienia-promocja-debiutu.spec.ts` sprawdzają rzeczywiste przypisania klas oraz dokładny eksport klas, poziomów i zakresów. Wszystkie używają nauczyciela i szkół bez flagi Testowy, z osobnymi szkołami per przypadek. Zamówienia są sprzątane także po błędzie; szkoły pozostają do ponownego użycia. Pozostałe po wcześniejszym przebiegu zamówienia powodują błąd warunku przygotowania, a nie automatyczne usuwanie nieznanych danych.
+
+| ID            | Sprawdzenie                                                                                                |
+| ------------- | ---------------------------------------------------------------------------------------------------------- |
+| NCL-01–NCL-03 | Zakup klasy 4: próg−1 nie daje promocji; próg i próg+1 dają dokładnie 4–6                                  |
+| NCL-04        | Zablokowany `fixme`: wymaga rzeczywistych zamówień z 2024 i 2025; obecny zapis API nie pozwala cofnąć daty |
+| NCL-05        | Zakup klasy 7 daje tylko 7–8                                                                               |
+| NCL-06        | Zakup klas 4 i 7 daje sumę 4–8                                                                             |
+| NCL-07–NCL-08 | Korekta poniżej progu albo usunięcie zakupu wycofuje przyznany wcześniej zakres promocyjny                 |
+| DEB-01–DEB-03 | Pierwsza deklaracja Matematyki 4 lub Fizyki 7 rozszerza zakres bez zamówień; Fizyka rozdziela scope 4 i 18 |
+| DEB-04        | Poprzedni rok obcy, obecnie nasz: zakres debiutu 4–8                                                       |
+| DEB-05        | Poprzedni rok nasz wyklucza ponowny debiut z tego samego przedmiotu                                        |
+| DEB-06        | Od 1 października pierwsze potwierdzenie bez zakupów nie przyznaje debiutu                                 |
+| DEB-07        | Wcześniejsze nasze potwierdzenie Matematyki nie wyklucza pierwszego debiutu z Fizyki                       |
+| DEB-08        | Po 30 września zakup klasy 4 daje 4–6, nie zakres debiutu 4–8                                              |
+
+W NCL wcześniejsze nasze potwierdzenie eliminuje ścieżkę pierwszego potwierdzenia nauczyciela, lecz szkoła nie ma kwalifikujących zakupów historycznych. Potwierdzenie dotyczy poprzedniego roku szkolnego, ale jest wprowadzane z bieżącą datą serwera. Próg jest odczytywany z zapisanego wyniku kwalifikacji; wzór progu kontrolują niezależnie testy THR.
+
+NCL-04 jest pomijany jako `fixme` przed przygotowaniem danych i nie stanowi gotowego pokrycia reguły historycznej. `AddSchoolOrder` ignoruje historyczne `createdAt`, więc zamówienie zapisane obecnie nie jest zakupem z 2024 lub 2025. Odblokowanie wymaga obsługiwanego zapisu roku zamówienia albo dedykowanych danych historycznych. Test nie zastępuje ich zamówieniami bieżącymi i nie korzysta z atrap odpowiedzi.
+
+DEB-01–DEB-05 i DEB-07 działają wyłącznie w rzeczywistym oknie sezonowym. Przed kolekcją testów należy ustawić zmienną środowiskową `OCTOPUS_CLUB_FORMS_OPEN_DATE=YYYY-MM-DD` na faktyczną datę otwarcia formularzy. Brak daty albo dzień poza okresem otwarcia–30 września oznacza jawne pominięcie przed przygotowaniem danych. DEB-06 i DEB-08 działają od 1 października do końca roku. Data pochodzi z zegara urządzenia w strefie Europe/Warsaw; urządzenie i serwer muszą mieć zgodną datę. Testy nie przestawiają zegara backendu.
+
+Odczyt API nie ujawnia osobnych warstw `baseAccess` i `promotionAccess`, kodu `new_client` ani `validTo`. Nowe testy potwierdzają skutki kwalifikacji i eksport, nie zapis tych pól. Nadal brakuje sprawdzeń klas 0–3, NPC i przedszkoli, szczegółowych serii języka polskiego, granic dat z kontrolowanym procesem oraz trwałego wygaśnięcia wcześniej nadanego debiutu. DEB-06 sprawdza nowe potwierdzenie po terminie, nie przejście istniejącego rekordu przez datę wygaśnięcia.
+
+PERM-18 potwierdza manualną odmowę przez powód BOK i nowy wpis Ręczna edycja w historii. Nie wymaga `modifiedManualy=true`: obecny zapis UI pozostawia tę flagę false mimo ręcznej decyzji. Pozostałe klasy oraz ich eksport nadal muszą pozostać niezmienione.
+
+## Macierz dalszych sprawdzeń reguł biznesowych
+
+Poniższa macierz opisuje pełne wymagania, także ich część sprawdzaną już przez NCL i DEB. Nie stanowi dodatkowych testów Playwright. Dostępny odczyt uprawnień zawiera końcowy status, przypisania i szczegóły ilościowe, ale nie udostępnia kontraktu wszystkich warstw ani kontrolowanego `processDate`. Publiczny Swagger v1 pokazuje interfejsy integracyjne, w tym eksport, bez kontraktu tych przeliczeń. Brak takiego opisu nie dowodzi, że wewnętrzny endpoint nie istnieje. Użytkownik nie dysponuje obecnie dodatkowym opisem API; pełne sprawdzenie zapisanych warstw pozostaje poza gotowymi scenariuszami.
 
 ### Nowy klient i zwykły klient
 
@@ -230,4 +258,4 @@ Ta macierz jest zakresem do zaimplementowania, a nie listą wykonanych lub gotow
 | Izolacja innych nauczycieli       | Cofnięcie dostępu jednemu nauczycielowi bez zmiany innych osób i szkolnej kwalifikacji zamówień; ACL-04 sprawdza inne potwierdzenie tej samej osoby, ACL-11 zachowanie zamówienia, nie całą kwalifikację szkoły.                                                                 |
 | Prezentacja i role                | Pełna kolorystyka, wybór roku w UI, zakres tylko przyznanych klas dla częściowego wyniku, pełny audyt autora i daty oraz konta bez prawa edycji.                                                                                                                                 |
 
-Żaden z tych braków nie jest maskowany przez `test.skip` ani lokalny test wzoru udający test systemu. Aktualny zakres jest częściowy i powinien być rozszerzany po udostępnieniu brakujących kontraktów i danych.
+Aktualny zakres jest częściowy i powinien być rozszerzany po udostępnieniu brakujących kontraktów i danych. Sezonowe pominięcia DEB wynikają z rzeczywistej daty obowiązywania reguły, nie zastępują sprawdzenia brakujących warstw.

@@ -4,43 +4,45 @@ Ten katalog opisuje aktualne obszary testowe. Źródłem prawdy dla nazw, lokali
 
 ## Aktualny stan
 
-Progi i Uprawnienia mają 74 implementacje: THR-01–THR-22, PERM-01–PERM-25, ACC-01–ACC-10 i ACL-01–ACL-17. Ostatnie 17 dodanych scenariuszy nie zostało uruchomionych podczas przygotowania; wcześniejsze przypadki użytkownik uruchamia pojedynczo. PERM-23–PERM-25 sprawdzają nauczyciela i szkoły bez flag Testowy (`@unmarked`). [Zakres, przygotowanie danych i pozostałe luki](uprawnienia-i-progi.md).
+Progi i Uprawnienia mają 90 pozycji scenariuszy: THR-01–THR-22, PERM-01–PERM-25, ACC-01–ACC-10, ACL-01–ACL-17, NCL-01–NCL-08 i DEB-01–DEB-08. Nowe testy promocji nie zostały uruchomione; używają nauczycieli i szkół bez flag Testowy. Testy DEB mają rzeczywiste warunki sezonowe. [Zakres, przygotowanie danych i pozostałe luki](uprawnienia-i-progi.md). NCL-04 jest zablokowany (`fixme`) do czasu udostępnienia rzeczywistych zamówień historycznych i nie jest gotowym pokryciem tej reguły.
 
 Dokumenty i edycja zamówień mają 30 nowych scenariuszy ORD-DOC-01–ORD-DOC-30, jeszcze nieuruchomionych. Nie dublują podstawowego zakresu ORD-48–ORD-66. ORD-DOC-28 wymaga istniejącego testowego zamówienia z integracji. [Macierz wymagań i kroki](dokumenty-zamowien.md).
 
 Kolumna Klasa w zamówieniach ma 22 nowe scenariusze ORD-CLASS-01–ORD-CLASS-22, jeszcze nieuruchomione. Przypadek LS jest warunkowo pomijany ze względu na potwierdzony brak produktu. [Opis każdego sprawdzenia](klasa-w-zamowieniach.md).
 
-- **712** scenariuszy we wszystkich 34 plikach;
-- **710** scenariuszy w zwykłej regresji (w tym warunkowe pominięcia i oczekiwane błędy);
+- **728** scenariuszy we wszystkich 36 plikach;
+- **726** scenariuszy w zwykłej regresji (w tym warunkowe pominięcia i oczekiwane błędy);
 - **2** scenariusze rocznej medalowości uruchamiane osobno;
 - domyślnie 2 workery, maksymalnie 4;
 - ORD w panelu: maksymalnie 2 workery;
 - roczna medalowość: zawsze 1 worker.
 
-| Plik testowy                         | Wykonania | Dokumentacja                                                                                                                           |
-| ------------------------------------ | --------: | -------------------------------------------------------------------------------------------------------------------------------------- |
-| `klubowiczostwo-*.spec.ts`           |        72 | [Klubowiczostwo](klubowiczostwo-nauczyciela.md)                                                                                        |
-| `nauczyciel-dodawanie.spec.ts`       |        33 | [Nauczyciele](nauczyciele.md)                                                                                                          |
-| `nauczyciel-edycja*.spec.ts`         |        44 | [Nauczyciele](nauczyciele.md)                                                                                                          |
-| `nauczyciel-rozszerzenie.spec.ts`    |         6 | [Nauczyciele](nauczyciele.md), [relacje](relacje-szkola-nauczyciel.md)                                                                 |
-| `szkola-dodawanie.spec.ts`           |        57 | [Dodawanie szkoły](dodawanie-szkoly.md)                                                                                                |
-| `szkola-edycja.spec.ts`              |        33 | [Edycja szkoły](edycja-szkoly.md)                                                                                                      |
-| `szkola-medalowosc-annual.spec.ts`   |         2 | [Roczna medalowość](medalowosc-roczna.md)                                                                                              |
-| `szkola-medalowosc.spec.ts`          |        42 | [Medalowość szkoły](medalowosc-szkoly.md)                                                                                              |
-| `szkola-nauczyciel.spec.ts`          |         1 | [Relacje](relacje-szkola-nauczyciel.md)                                                                                                |
-| `szkola-struktura.spec.ts`           |        87 | [Struktura szkoły](struktura-szkoly.md)                                                                                                |
-| `szkola-struktura-dodawanie.spec.ts` |        19 | [Struktura krok po kroku](struktura-szkoly-krok-po-kroku.md)                                                                           |
-| `szkola-kategoria.spec.ts`           |        34 | [Kategoria szkoły krok po kroku](kategoria-szkoly.md)                                                                                  |
-| `szkola-kategoria-dodawanie.spec.ts` |        19 | [Kategoria przy tworzeniu szkoły](kategoria-szkoly.md#kategoria-przy-tworzeniu-nowej-szkoły-cat-35cat-53)                              |
-| `walidacja-anulowanie.spec.ts`       |         9 | [Nauczyciele](nauczyciele.md), [relacje](relacje-szkola-nauczyciel.md)                                                                 |
-| `zamowienia-*.spec.ts`               |       118 | [Zamówienia szkoły](zamowienia-szkoly.md), [kolumna Klasa](klasa-w-zamowieniach.md), [dokumenty i Oświadczenia](dokumenty-zamowien.md) |
-| `szkola-nauczyciele-filtry.spec.ts`  |        30 | [Filtry nauczycieli krok po kroku](filtry-nauczycieli-w-szkole.md)                                                                     |
-| `szkola-wyszukiwanie-filtry.spec.ts` |        32 | [Wyszukiwarka szkół krok po kroku](wyszukiwarka-szkol-filtry.md)                                                                       |
-| `szkola-prog.spec.ts`                |        22 | [Progi i Uprawnienia](uprawnienia-i-progi.md)                                                                                          |
-| `nauczyciel-uprawnienia.spec.ts`     |        25 | [Progi i Uprawnienia](uprawnienia-i-progi.md)                                                                                          |
-| `uprawnienia-api.spec.ts`            |        10 | [Progi i Uprawnienia](uprawnienia-i-progi.md)                                                                                          |
-| `uprawnienia-cykl-zycia.spec.ts`     |        17 | [Progi i Uprawnienia](uprawnienia-i-progi.md)                                                                                          |
-| **Razem**                            |   **712** |                                                                                                                                        |
+| Plik testowy                               | Wykonania | Dokumentacja                                                                                                                           |
+| ------------------------------------------ | --------: | -------------------------------------------------------------------------------------------------------------------------------------- |
+| `klubowiczostwo-*.spec.ts`                 |        72 | [Klubowiczostwo](klubowiczostwo-nauczyciela.md)                                                                                        |
+| `nauczyciel-dodawanie.spec.ts`             |        33 | [Nauczyciele](nauczyciele.md)                                                                                                          |
+| `nauczyciel-edycja*.spec.ts`               |        44 | [Nauczyciele](nauczyciele.md)                                                                                                          |
+| `nauczyciel-rozszerzenie.spec.ts`          |         6 | [Nauczyciele](nauczyciele.md), [relacje](relacje-szkola-nauczyciel.md)                                                                 |
+| `szkola-dodawanie.spec.ts`                 |        57 | [Dodawanie szkoły](dodawanie-szkoly.md)                                                                                                |
+| `szkola-edycja.spec.ts`                    |        33 | [Edycja szkoły](edycja-szkoly.md)                                                                                                      |
+| `szkola-medalowosc-annual.spec.ts`         |         2 | [Roczna medalowość](medalowosc-roczna.md)                                                                                              |
+| `szkola-medalowosc.spec.ts`                |        42 | [Medalowość szkoły](medalowosc-szkoly.md)                                                                                              |
+| `szkola-nauczyciel.spec.ts`                |         1 | [Relacje](relacje-szkola-nauczyciel.md)                                                                                                |
+| `szkola-struktura.spec.ts`                 |        87 | [Struktura szkoły](struktura-szkoly.md)                                                                                                |
+| `szkola-struktura-dodawanie.spec.ts`       |        19 | [Struktura krok po kroku](struktura-szkoly-krok-po-kroku.md)                                                                           |
+| `szkola-kategoria.spec.ts`                 |        34 | [Kategoria szkoły krok po kroku](kategoria-szkoly.md)                                                                                  |
+| `szkola-kategoria-dodawanie.spec.ts`       |        19 | [Kategoria przy tworzeniu szkoły](kategoria-szkoly.md#kategoria-przy-tworzeniu-nowej-szkoły-cat-35cat-53)                              |
+| `walidacja-anulowanie.spec.ts`             |         9 | [Nauczyciele](nauczyciele.md), [relacje](relacje-szkola-nauczyciel.md)                                                                 |
+| `zamowienia-*.spec.ts`                     |       118 | [Zamówienia szkoły](zamowienia-szkoly.md), [kolumna Klasa](klasa-w-zamowieniach.md), [dokumenty i Oświadczenia](dokumenty-zamowien.md) |
+| `szkola-nauczyciele-filtry.spec.ts`        |        30 | [Filtry nauczycieli krok po kroku](filtry-nauczycieli-w-szkole.md)                                                                     |
+| `szkola-wyszukiwanie-filtry.spec.ts`       |        32 | [Wyszukiwarka szkół krok po kroku](wyszukiwarka-szkol-filtry.md)                                                                       |
+| `szkola-prog.spec.ts`                      |        22 | [Progi i Uprawnienia](uprawnienia-i-progi.md)                                                                                          |
+| `nauczyciel-uprawnienia.spec.ts`           |        25 | [Progi i Uprawnienia](uprawnienia-i-progi.md)                                                                                          |
+| `uprawnienia-api.spec.ts`                  |        10 | [Progi i Uprawnienia](uprawnienia-i-progi.md)                                                                                          |
+| `uprawnienia-cykl-zycia.spec.ts`           |        17 | [Progi i Uprawnienia](uprawnienia-i-progi.md)                                                                                          |
+| `uprawnienia-promocja-nowy-klient.spec.ts` |         8 | [Promocje i zakres pokrycia](uprawnienia-i-progi.md#promocje-nowego-klienta-i-debiutu)                                                 |
+| `uprawnienia-promocja-debiutu.spec.ts`     |         8 | [Promocje i warunki sezonowe](uprawnienia-i-progi.md#promocje-nowego-klienta-i-debiutu)                                                |
+| **Razem**                                  |   **728** |                                                                                                                                        |
 
 Nowy zestaw TFL-01–TFL-30 jest napisany, ale nie został uruchomiony ani zweryfikowany na DEV, zgodnie z prośbą użytkownika. Obejmuje UI, licznik unikalnych nauczycieli, liczniki szkolnych pozycji przedmiotowych Nasi/Obcy, klasyfikację, kontekst szkoły i regresję przyszłego roku. Licznik grupy nie musi być równy liczbie jej wierszy. Pozostały zakres jest wskazany w jego dokumentacji.
 
@@ -58,7 +60,7 @@ Dokładne działania i sprawdzenia każdego ze 106 testów opisuje [Struktura sz
 
 - UI służy do przygotowania danych tylko wtedy, gdy dana operacja jest przedmiotem testu.
 - W pozostałych przypadkach używane są API factory lub stabilne rekordy referencyjne.
-- Każdy tworzony rekord ma unikalny identyfikator `REG_*` i jest oznaczany jako testowy.
+- Każdy tworzony nauczyciel ma unikalny identyfikator `REG_*`. Domyślnie jest oznaczany jako testowy; warianty sprawdzające brak flag otrzymują oznaczenie dopiero po udanych asercjach na potrzeby bezpiecznego sprzątania.
 - Szkoły pozostają w bazie z powodu braku obsługiwanego endpointu usuwania.
 - Nauczyciele z poprawnego przebiegu są sprzątani globalnie; dane nieudanego testu pozostają do analizy.
 

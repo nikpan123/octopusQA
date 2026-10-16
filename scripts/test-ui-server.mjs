@@ -31,6 +31,8 @@ export const SUITES = {
       "tests/nauczyciel-uprawnienia.spec.ts",
       "tests/uprawnienia-api.spec.ts",
       "tests/uprawnienia-cykl-zycia.spec.ts",
+      "tests/uprawnienia-promocja-nowy-klient.spec.ts",
+      "tests/uprawnienia-promocja-debiutu.spec.ts",
     ],
   },
   schools: {
@@ -306,7 +308,7 @@ function finalizeRunCounts(exitCode) {
 export function extractTestId(text) {
   return (
     text.match(
-      /\b(?:ORD|CLUB|SCH(?:-EDIT)?|MED(?:-YEAR)?|ADD|EDIT|TEA|FIND|REL|STR|CAT|TFL|SFLT|THR|PERM|ACC|ACL)-[A-Z0-9-]+\b/,
+      /\b(?:ORD|CLUB|SCH(?:-EDIT)?|MED(?:-YEAR)?|ADD|EDIT|TEA|FIND|REL|STR|CAT|TFL|SFLT|THR|PERM|ACC|ACL|NCL|DEB)-[A-Z0-9-]+\b/,
     )?.[0] || null
   );
 }

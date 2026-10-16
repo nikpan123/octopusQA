@@ -32,9 +32,13 @@ test("parser rozpoznaje krótkie ID STR, także trzycyfrowe", () => {
   assert.equal(extractTestId("Uprawnienia › PERM-15: dane"), "PERM-15");
   assert.equal(extractTestId("Eksport › ACC-06: duplikaty"), "ACC-06");
   assert.equal(extractTestId("Aktywność › ACL-12: zawieszenie"), "ACL-12");
+  assert.equal(extractTestId("Promocja › NCL-01: nowy klient"), "NCL-01");
+  assert.equal(extractTestId("Promocja › DEB-01: debiut"), "DEB-01");
 });
 
 test("pakiety obejmują progi i uprawnienia", () => {
+  assert.ok(SUITES.teachers.files.includes("tests/uprawnienia-promocja-nowy-klient.spec.ts"));
+  assert.ok(SUITES.teachers.files.includes("tests/uprawnienia-promocja-debiutu.spec.ts"));
   assert.ok(SUITES.schools.files.includes("tests/szkola-prog.spec.ts"));
   for (const file of [
     "tests/nauczyciel-uprawnienia.spec.ts",

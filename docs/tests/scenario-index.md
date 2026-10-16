@@ -2,7 +2,7 @@
 
 > Plik generowany automatycznie przez `npm run docs:scenarios`. Nie edytuj tabeli ręcznie.
 
-Łącznie: **712 scenariuszy**.
+Łącznie: **728 scenariuszy**.
 
 | ID | Scenariusz | Plik | Tagi |
 |---|---|---|---|
@@ -167,25 +167,25 @@
 | PERM-04 | PERM-04: tabela ma aktualny zestaw i kolejność kolumn | [nauczyciel-uprawnienia.spec.ts](../../tests/nauczyciel-uprawnienia.spec.ts#L73) | `teacher`, `entitlement`, `columns` |
 | PERM-05 | PERM-05: szczegół zawiera wszystkie klasy przedmiotu również nieprzyznane | [nauczyciel-uprawnienia.spec.ts](../../tests/nauczyciel-uprawnienia.spec.ts#L101) | `teacher`, `entitlement`, `classes` |
 | PERM-06 | PERM-06: szczegół pokazuje zapisane ilości progi powody lata i daty | [nauczyciel-uprawnienia.spec.ts](../../tests/nauczyciel-uprawnienia.spec.ts#L141) | `teacher`, `entitlement`, `details` |
-| PERM-07 | PERM-07: Przyznano w nagłówku oznacza co najmniej jedną przyznaną klasę | [nauczyciel-uprawnienia.spec.ts](../../tests/nauczyciel-uprawnienia.spec.ts#L187) | `teacher`, `entitlement`, `status` |
-| PERM-08 | PERM-08: bez zaznaczenia rekordu akcje są zablokowane | [nauczyciel-uprawnienia.spec.ts](../../tests/nauczyciel-uprawnienia.spec.ts#L208) | `teacher`, `entitlement`, `selection` |
-| PERM-09 | PERM-09: rekord automatyczny nie pozwala przywracać automatu | [nauczyciel-uprawnienia.spec.ts](../../tests/nauczyciel-uprawnienia.spec.ts#L219) | `teacher`, `entitlement`, `restore` |
-| PERM-10 | PERM-10: anulowanie edycji nie zapisuje decyzji ani historii | [nauczyciel-uprawnienia.spec.ts](../../tests/nauczyciel-uprawnienia.spec.ts#L236) | `teacher`, `entitlement`, `cancel` |
-| PERM-11 | PERM-11: historia dotyczy zaznaczonego przedmiotu i roku | [nauczyciel-uprawnienia.spec.ts](../../tests/nauczyciel-uprawnienia.spec.ts#L265) | `teacher`, `entitlement`, `history` |
-| PERM-12 | PERM-12: ponowne otwarcie zakładki nie zmienia kwalifikacji | [nauczyciel-uprawnienia.spec.ts](../../tests/nauczyciel-uprawnienia.spec.ts#L297) | `teacher`, `entitlement`, `persistence` |
-| PERM-13 | PERM-13: dwa przedmioty tworzą osobne rekordy uprawnień | [nauczyciel-uprawnienia.spec.ts](../../tests/nauczyciel-uprawnienia.spec.ts#L315) | `teacher`, `entitlement`, `isolation` |
-| PERM-14 | PERM-14: ten sam przedmiot w dwóch szkołach ma oddzielne rekordy | [nauczyciel-uprawnienia.spec.ts](../../tests/nauczyciel-uprawnienia.spec.ts#L338) | `teacher`, `entitlement`, `isolation` |
-| PERM-15 | PERM-15: dane ilościowe w szczególe nie są edytowalne | [nauczyciel-uprawnienia.spec.ts](../../tests/nauczyciel-uprawnienia.spec.ts#L358) | `teacher`, `entitlement`, `readonly` |
-| PERM-16 | PERM-16: nadanie jednej klasy przez UI zapisuje decyzję BOK i historię | [nauczyciel-uprawnienia.spec.ts](../../tests/nauczyciel-uprawnienia.spec.ts#L374) | `teacher`, `entitlement`, `manual` |
-| PERM-17 | PERM-17: Przywróć wyłącza decyzję ręczną i pokazuje wynik automatu | [nauczyciel-uprawnienia.spec.ts](../../tests/nauczyciel-uprawnienia.spec.ts#L438) | `teacher`, `entitlement`, `restore`, `manual` |
-| PERM-18 | PERM-18: odmowa klasy 4 przez UI nie zmienia automatu dla pozostałych klas | [nauczyciel-uprawnienia.spec.ts](../../tests/nauczyciel-uprawnienia.spec.ts#L506) | `teacher`, `entitlement`, `manual`, `isolation` |
-| PERM-19 | PERM-19: anulowanie Przywróć zachowuje decyzję BOK eksport i historię | [nauczyciel-uprawnienia.spec.ts](../../tests/nauczyciel-uprawnienia.spec.ts#L544) | `teacher`, `entitlement`, `restore`, `cancel` |
-| PERM-20 | PERM-20: edycja BOK jednej szkoły nie zmienia tego samego przedmiotu w drugiej szkole | [nauczyciel-uprawnienia.spec.ts](../../tests/nauczyciel-uprawnienia.spec.ts#L560) | `teacher`, `entitlement`, `manual`, `isolation` |
-| PERM-21 | PERM-21: szkoła testowa bez zamówień rozszerza deklarację Matematyki 4 do 4–8 | [nauczyciel-uprawnienia.spec.ts](../../tests/nauczyciel-uprawnienia.spec.ts#L583) | `teacher`, `entitlement`, `test-school`, `no-orders` |
-| PERM-22 | PERM-22: szkoła testowa bez zamówień rozszerza deklarację Matematyki 7 do 4–8 | [nauczyciel-uprawnienia.spec.ts](../../tests/nauczyciel-uprawnienia.spec.ts#L583) | `teacher`, `entitlement`, `test-school`, `no-orders` |
-| PERM-23 | PERM-23: bez flag Testowy ręczne nadanie jednej klasy przez UI działa i trafia do eksportu | [nauczyciel-uprawnienia.spec.ts](../../tests/nauczyciel-uprawnienia.spec.ts#L620) | `teacher`, `entitlement`, `manual`, `unmarked` |
-| PERM-24 | PERM-24: bez flag Testowy przywrócenie automatu odtwarza dostęp 7–8 z kwalifikującego zamówienia | [nauczyciel-uprawnienia.spec.ts](../../tests/nauczyciel-uprawnienia.spec.ts#L635) | `teacher`, `entitlement`, `restore`, `orders`, `unmarked` |
-| PERM-25 | PERM-25: bez flag Testowy anulowanie przywrócenia zachowuje BOK historię i eksport | [nauczyciel-uprawnienia.spec.ts](../../tests/nauczyciel-uprawnienia.spec.ts#L669) | `teacher`, `entitlement`, `restore`, `cancel`, `unmarked` |
+| PERM-07 | PERM-07: Przyznano w nagłówku oznacza co najmniej jedną przyznaną klasę | [nauczyciel-uprawnienia.spec.ts](../../tests/nauczyciel-uprawnienia.spec.ts#L188) | `teacher`, `entitlement`, `status` |
+| PERM-08 | PERM-08: bez zaznaczenia rekordu akcje są zablokowane | [nauczyciel-uprawnienia.spec.ts](../../tests/nauczyciel-uprawnienia.spec.ts#L209) | `teacher`, `entitlement`, `selection` |
+| PERM-09 | PERM-09: rekord automatyczny nie pozwala przywracać automatu | [nauczyciel-uprawnienia.spec.ts](../../tests/nauczyciel-uprawnienia.spec.ts#L220) | `teacher`, `entitlement`, `restore` |
+| PERM-10 | PERM-10: anulowanie edycji nie zapisuje decyzji ani historii | [nauczyciel-uprawnienia.spec.ts](../../tests/nauczyciel-uprawnienia.spec.ts#L237) | `teacher`, `entitlement`, `cancel` |
+| PERM-11 | PERM-11: historia dotyczy zaznaczonego przedmiotu i roku | [nauczyciel-uprawnienia.spec.ts](../../tests/nauczyciel-uprawnienia.spec.ts#L266) | `teacher`, `entitlement`, `history` |
+| PERM-12 | PERM-12: ponowne otwarcie zakładki nie zmienia kwalifikacji | [nauczyciel-uprawnienia.spec.ts](../../tests/nauczyciel-uprawnienia.spec.ts#L298) | `teacher`, `entitlement`, `persistence` |
+| PERM-13 | PERM-13: dwa przedmioty tworzą osobne rekordy uprawnień | [nauczyciel-uprawnienia.spec.ts](../../tests/nauczyciel-uprawnienia.spec.ts#L316) | `teacher`, `entitlement`, `isolation` |
+| PERM-14 | PERM-14: ten sam przedmiot w dwóch szkołach ma oddzielne rekordy | [nauczyciel-uprawnienia.spec.ts](../../tests/nauczyciel-uprawnienia.spec.ts#L339) | `teacher`, `entitlement`, `isolation` |
+| PERM-15 | PERM-15: dane ilościowe w szczególe nie są edytowalne | [nauczyciel-uprawnienia.spec.ts](../../tests/nauczyciel-uprawnienia.spec.ts#L359) | `teacher`, `entitlement`, `readonly` |
+| PERM-16 | PERM-16: nadanie jednej klasy przez UI zapisuje decyzję BOK i historię | [nauczyciel-uprawnienia.spec.ts](../../tests/nauczyciel-uprawnienia.spec.ts#L375) | `teacher`, `entitlement`, `manual` |
+| PERM-17 | PERM-17: Przywróć wyłącza decyzję ręczną i pokazuje wynik automatu | [nauczyciel-uprawnienia.spec.ts](../../tests/nauczyciel-uprawnienia.spec.ts#L439) | `teacher`, `entitlement`, `restore`, `manual` |
+| PERM-18 | PERM-18: odmowa klasy 4 przez UI nie zmienia automatu dla pozostałych klas | [nauczyciel-uprawnienia.spec.ts](../../tests/nauczyciel-uprawnienia.spec.ts#L507) | `teacher`, `entitlement`, `manual`, `isolation` |
+| PERM-19 | PERM-19: anulowanie Przywróć zachowuje decyzję BOK eksport i historię | [nauczyciel-uprawnienia.spec.ts](../../tests/nauczyciel-uprawnienia.spec.ts#L570) | `teacher`, `entitlement`, `restore`, `cancel` |
+| PERM-20 | PERM-20: edycja BOK jednej szkoły nie zmienia tego samego przedmiotu w drugiej szkole | [nauczyciel-uprawnienia.spec.ts](../../tests/nauczyciel-uprawnienia.spec.ts#L586) | `teacher`, `entitlement`, `manual`, `isolation` |
+| PERM-21 | PERM-21: szkoła testowa bez zamówień rozszerza deklarację Matematyki 4 do 4–8 | [nauczyciel-uprawnienia.spec.ts](../../tests/nauczyciel-uprawnienia.spec.ts#L609) | `teacher`, `entitlement`, `test-school`, `no-orders` |
+| PERM-22 | PERM-22: szkoła testowa bez zamówień rozszerza deklarację Matematyki 7 do 4–8 | [nauczyciel-uprawnienia.spec.ts](../../tests/nauczyciel-uprawnienia.spec.ts#L609) | `teacher`, `entitlement`, `test-school`, `no-orders` |
+| PERM-23 | PERM-23: bez flag Testowy ręczne nadanie jednej klasy przez UI działa i trafia do eksportu | [nauczyciel-uprawnienia.spec.ts](../../tests/nauczyciel-uprawnienia.spec.ts#L646) | `teacher`, `entitlement`, `manual`, `unmarked` |
+| PERM-24 | PERM-24: bez flag Testowy przywrócenie automatu odtwarza dostęp 7–8 z kwalifikującego zamówienia | [nauczyciel-uprawnienia.spec.ts](../../tests/nauczyciel-uprawnienia.spec.ts#L661) | `teacher`, `entitlement`, `restore`, `orders`, `unmarked` |
+| PERM-25 | PERM-25: bez flag Testowy anulowanie przywrócenia zachowuje BOK historię i eksport | [nauczyciel-uprawnienia.spec.ts](../../tests/nauczyciel-uprawnienia.spec.ts#L695) | `teacher`, `entitlement`, `restore`, `cancel`, `unmarked` |
 | SCH-03 | SCH-03: minimalny poprawny formularz tworzy szkołę | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L79) | `school`, `school-add`, `positive` |
 | SCH-04 | SCH-04: brak nazwy blokuje zapis szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L104) | `school`, `school-add`, `validation` |
 | SCH-05 | SCH-05: brak typu blokuje zapis szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L119) | `school`, `school-add`, `validation` |
@@ -591,6 +591,22 @@
 | ACL-15 | ACL-15: usunięcie zamówienia przelicza ilość ale zachowuje ręczne nadanie dostępu | [uprawnienia-cykl-zycia.spec.ts](../../tests/uprawnienia-cykl-zycia.spec.ts#L414) | `teacher`, `entitlement`, `access-lifecycle`, `orders`, `manual` |
 | ACL-16 | ACL-16: korekta zamówienia poniżej progu nie nadpisuje ręcznego nadania BOK | [uprawnienia-cykl-zycia.spec.ts](../../tests/uprawnienia-cykl-zycia.spec.ts#L449) | `teacher`, `entitlement`, `access-lifecycle`, `orders`, `manual` |
 | ACL-17 | ACL-17: przywrócenie potwierdzenia wykorzystuje pozostawione zamówienie i zachowuje historię | [uprawnienia-cykl-zycia.spec.ts](../../tests/uprawnienia-cykl-zycia.spec.ts#L488) | `teacher`, `entitlement`, `access-lifecycle`, `restore`, `orders` |
+| DEB-01 | DEB-01: pierwsze potwierdzenie Matematyka 4 daje pełny zakres właściwej serii bez zamówień | [uprawnienia-promocja-debiutu.spec.ts](../../tests/uprawnienia-promocja-debiutu.spec.ts#L26) | `teacher`, `entitlement`, `promotion`, `debut`, `seasonal` |
+| DEB-02 | DEB-02: pierwsze potwierdzenie Fizyka 7 daje pełny zakres właściwej serii bez zamówień | [uprawnienia-promocja-debiutu.spec.ts](../../tests/uprawnienia-promocja-debiutu.spec.ts#L26) | `teacher`, `entitlement`, `promotion`, `debut`, `seasonal` |
+| DEB-03 | DEB-03: pierwsze potwierdzenie Fizyka 7 TNŚ daje pełny zakres właściwej serii bez zamówień | [uprawnienia-promocja-debiutu.spec.ts](../../tests/uprawnienia-promocja-debiutu.spec.ts#L26) | `teacher`, `entitlement`, `promotion`, `debut`, `seasonal` |
+| DEB-04 | DEB-04: poprzedni rok obcy i obecny nasz uruchamiają debiut bez zakupów | [uprawnienia-promocja-debiutu.spec.ts](../../tests/uprawnienia-promocja-debiutu.spec.ts#L45) | `teacher`, `entitlement`, `promotion`, `debut`, `seasonal` |
+| DEB-07 | DEB-07: znany nauczyciel matematyki może debiutować z fizyki | [uprawnienia-promocja-debiutu.spec.ts](../../tests/uprawnienia-promocja-debiutu.spec.ts#L62) | `teacher`, `entitlement`, `promotion`, `debut`, `isolation`, `seasonal` |
+| DEB-08 | DEB-08: po 30 września zakup klasy 4 daje zakres zamówieniowy 4–6 zamiast debiutu 4–8 | [uprawnienia-promocja-debiutu.spec.ts](../../tests/uprawnienia-promocja-debiutu.spec.ts#L81) | `teacher`, `entitlement`, `promotion`, `debut`, `seasonal` |
+| DEB-05 | DEB-05: wcześniejsze nasze potwierdzenie matematyki wyklucza debiut z matematyki | [uprawnienia-promocja-debiutu.spec.ts](../../tests/uprawnienia-promocja-debiutu.spec.ts#L103) | `teacher`, `entitlement`, `promotion`, `debut`, `negative`, `seasonal` |
+| DEB-06 | DEB-06: od 1 października pierwsze potwierdzenie bez zamówień nie daje promocji debiutu | [uprawnienia-promocja-debiutu.spec.ts](../../tests/uprawnienia-promocja-debiutu.spec.ts#L123) | `teacher`, `entitlement`, `promotion`, `debut`, `negative`, `seasonal` |
+| NCL-01 | NCL-01: zamówienie klasy 4 na progu rozszerza dostęp do 4–6 | [uprawnienia-promocja-nowy-klient.spec.ts](../../tests/uprawnienia-promocja-nowy-klient.spec.ts#L49) | `teacher`, `entitlement`, `promotion`, `new-client` |
+| NCL-02 | NCL-02: zamówienie poniżej progu nie uruchamia promocji | [uprawnienia-promocja-nowy-klient.spec.ts](../../tests/uprawnienia-promocja-nowy-klient.spec.ts#L49) | `teacher`, `entitlement`, `promotion`, `new-client` |
+| NCL-03 | NCL-03: zamówienie powyżej progu rozszerza dostęp do 4–6 | [uprawnienia-promocja-nowy-klient.spec.ts](../../tests/uprawnienia-promocja-nowy-klient.spec.ts#L49) | `teacher`, `entitlement`, `promotion`, `new-client` |
+| NCL-04 | NCL-04: zamówienia poniżej progu w obu poprzednich latach nie wykluczają nowego klienta | [uprawnienia-promocja-nowy-klient.spec.ts](../../tests/uprawnienia-promocja-nowy-klient.spec.ts#L49) | `teacher`, `entitlement`, `promotion`, `new-client` |
+| NCL-05 | NCL-05: klasa 7 rozszerza dostęp tylko do 7–8 | [uprawnienia-promocja-nowy-klient.spec.ts](../../tests/uprawnienia-promocja-nowy-klient.spec.ts#L82) | `teacher`, `entitlement`, `promotion`, `new-client`, `ranges` |
+| NCL-06 | NCL-06: zakup w obu zakresach daje sumę 4–8 | [uprawnienia-promocja-nowy-klient.spec.ts](../../tests/uprawnienia-promocja-nowy-klient.spec.ts#L82) | `teacher`, `entitlement`, `promotion`, `new-client`, `ranges` |
+| NCL-07 | NCL-07: korekta zakupu odbiera promocję bez pozostawienia klas 5–6 | [uprawnienia-promocja-nowy-klient.spec.ts](../../tests/uprawnienia-promocja-nowy-klient.spec.ts#L111) | `teacher`, `entitlement`, `promotion`, `new-client`, `recalculation` |
+| NCL-08 | NCL-08: usunięcie zakupu odbiera promocję bez pozostawienia klas 5–6 | [uprawnienia-promocja-nowy-klient.spec.ts](../../tests/uprawnienia-promocja-nowy-klient.spec.ts#L111) | `teacher`, `entitlement`, `promotion`, `new-client`, `recalculation` |
 | TEA-02 | TEA-02: brak pola imię blokuje zapis nauczyciela | [walidacja-anulowanie.spec.ts](../../tests/walidacja-anulowanie.spec.ts#L5) | `validation` |
 | TEA-02 | TEA-02: brak pola nazwisko blokuje zapis nauczyciela | [walidacja-anulowanie.spec.ts](../../tests/walidacja-anulowanie.spec.ts#L5) | `validation` |
 | TEA-02 | TEA-02: brak pola szkoła blokuje zapis nauczyciela | [walidacja-anulowanie.spec.ts](../../tests/walidacja-anulowanie.spec.ts#L5) | `validation` |
