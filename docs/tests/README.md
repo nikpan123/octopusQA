@@ -2,7 +2,11 @@
 
 Ten katalog opisuje aktualne obszary testowe. Źródłem prawdy dla nazw, lokalizacji i liczby wykonywanych scenariuszy jest generowany [indeks scenariuszy](scenario-index.md).
 
+Regresja [Redmine #37176](redmine-37176.md) ma dwa nowe scenariusze: ORD-BUG-37176-01 i ORD-BUG-37176-02. Sprawdzają ilości -1 i -10, próbę zapisu oraz brak nowego zamówienia. Zostały napisane, ale nie uruchomione na DEV/TEST.
+
 ## Aktualny stan
+
+[Redmine #37203 — sortowanie Kategorii](redmine-37203.md) jest powiązany z istniejącymi CAT-23, CAT-24 i CAT-25. Dodano dowody JSON/zrzuty oraz kontrolę rzeczywistej kolejności przy czterech zmianach kierunku. Ta wersja tych trzech testów nie została jeszcze uruchomiona na DEV/TEST.
 
 Progi i Uprawnienia mają 90 pozycji scenariuszy: THR-01–THR-22, PERM-01–PERM-25, ACC-01–ACC-10, ACL-01–ACL-17, NCL-01–NCL-08 i DEB-01–DEB-08. Nowe testy promocji nie zostały uruchomione; używają nauczycieli i szkół bez flag Testowy. Testy DEB mają rzeczywiste warunki sezonowe. [Zakres, przygotowanie danych i pozostałe luki](uprawnienia-i-progi.md). NCL-04 jest zablokowany (`fixme`) do czasu udostępnienia rzeczywistych zamówień historycznych i nie jest gotowym pokryciem tej reguły.
 
@@ -10,8 +14,8 @@ Dokumenty i edycja zamówień mają 30 nowych scenariuszy ORD-DOC-01–ORD-DOC-3
 
 Kolumna Klasa w zamówieniach ma 22 nowe scenariusze ORD-CLASS-01–ORD-CLASS-22, jeszcze nieuruchomione. Przypadek LS jest warunkowo pomijany ze względu na potwierdzony brak produktu. [Opis każdego sprawdzenia](klasa-w-zamowieniach.md).
 
-- **728** scenariuszy we wszystkich 36 plikach;
-- **726** scenariuszy w zwykłej regresji (w tym warunkowe pominięcia i oczekiwane błędy);
+- **730** scenariuszy we wszystkich 37 plikach;
+- **728** scenariuszy w zwykłej regresji (w tym warunkowe pominięcia i oczekiwane błędy);
 - **2** scenariusze rocznej medalowości uruchamiane osobno;
 - domyślnie 2 workery, maksymalnie 4;
 - ORD w panelu: maksymalnie 2 workery;
@@ -33,7 +37,7 @@ Kolumna Klasa w zamówieniach ma 22 nowe scenariusze ORD-CLASS-01–ORD-CLASS-22
 | `szkola-kategoria.spec.ts`                 |        34 | [Kategoria szkoły krok po kroku](kategoria-szkoly.md)                                                                                  |
 | `szkola-kategoria-dodawanie.spec.ts`       |        19 | [Kategoria przy tworzeniu szkoły](kategoria-szkoly.md#kategoria-przy-tworzeniu-nowej-szkoły-cat-35cat-53)                              |
 | `walidacja-anulowanie.spec.ts`             |         9 | [Nauczyciele](nauczyciele.md), [relacje](relacje-szkola-nauczyciel.md)                                                                 |
-| `zamowienia-*.spec.ts`                     |       118 | [Zamówienia szkoły](zamowienia-szkoly.md), [kolumna Klasa](klasa-w-zamowieniach.md), [dokumenty i Oświadczenia](dokumenty-zamowien.md) |
+| `zamowienia-*.spec.ts`                     |       120 | [Zamówienia szkoły](zamowienia-szkoly.md), [kolumna Klasa](klasa-w-zamowieniach.md), [dokumenty i Oświadczenia](dokumenty-zamowien.md) |
 | `szkola-nauczyciele-filtry.spec.ts`        |        30 | [Filtry nauczycieli krok po kroku](filtry-nauczycieli-w-szkole.md)                                                                     |
 | `szkola-wyszukiwanie-filtry.spec.ts`       |        32 | [Wyszukiwarka szkół krok po kroku](wyszukiwarka-szkol-filtry.md)                                                                       |
 | `szkola-prog.spec.ts`                      |        22 | [Progi i Uprawnienia](uprawnienia-i-progi.md)                                                                                          |
@@ -42,7 +46,7 @@ Kolumna Klasa w zamówieniach ma 22 nowe scenariusze ORD-CLASS-01–ORD-CLASS-22
 | `uprawnienia-cykl-zycia.spec.ts`           |        17 | [Progi i Uprawnienia](uprawnienia-i-progi.md)                                                                                          |
 | `uprawnienia-promocja-nowy-klient.spec.ts` |         8 | [Promocje i zakres pokrycia](uprawnienia-i-progi.md#promocje-nowego-klienta-i-debiutu)                                                 |
 | `uprawnienia-promocja-debiutu.spec.ts`     |         8 | [Promocje i warunki sezonowe](uprawnienia-i-progi.md#promocje-nowego-klienta-i-debiutu)                                                |
-| **Razem**                                  |   **728** |                                                                                                                                        |
+| **Razem**                                  |   **730** |                                                                                                                                        |
 
 Nowy zestaw TFL-01–TFL-30 jest napisany, ale nie został uruchomiony ani zweryfikowany na DEV, zgodnie z prośbą użytkownika. Obejmuje UI, licznik unikalnych nauczycieli, liczniki szkolnych pozycji przedmiotowych Nasi/Obcy, klasyfikację, kontekst szkoły i regresję przyszłego roku. Licznik grupy nie musi być równy liczbie jej wierszy. Pozostały zakres jest wskazany w jego dokumentacji.
 

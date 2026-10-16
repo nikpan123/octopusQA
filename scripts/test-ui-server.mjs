@@ -57,6 +57,7 @@ export const SUITES = {
       "tests/zamowienia-szkoly.spec.ts",
       "tests/zamowienia-produkty.spec.ts",
       "tests/zamowienia-walidacja.spec.ts",
+      "tests/zamowienia-redmine-37176.spec.ts",
       "tests/zamowienia-zalaczniki.spec.ts",
       "tests/zamowienia-klasa.spec.ts",
       "tests/zamowienia-dokumenty.spec.ts",

@@ -16,11 +16,11 @@ import {
   searchCategorySchools,
   expectCategoryInSearch,
   setStudentCount,
-  categorySortRows,
   type SchoolCategory,
   type CategorySchool,
 } from "./support/school-category";
 import { openSchoolSioForm, schoolSioInput, cancelSchoolEdit } from "./support/school-edit";
+import { verifyCategorySort, type ExpectedCategoryRow } from "./support/category-sort-evidence";
 
 const test = base.extend<{ categoryEditSchool: CategorySchool }>({
   categoryEditSchool: [
@@ -131,15 +131,19 @@ test.describe("Kategoria szkoły", () => {
   }
 
   for (const sorting of [
-    { id: "CAT-23", direction: "ascending", expected: ["A", "B", "C", "D"] },
-    { id: "CAT-24", direction: "descending", expected: ["D", "C", "B", "A"] },
-  ]) {
-    test(`${sorting.id}: Kategoria sortuje alfabetycznie ${sorting.direction} @school @category @sort`, async ({
+    { id: "CAT-23", direction: "ascending" },
+    { id: "CAT-24", direction: "descending" },
+  ] as const) {
+    test(`${sorting.id}: Kategoria sortuje alfabetycznie ${sorting.direction} @school @category @sort @redmine-37203`, async ({
       page,
-    }) => {
+    }, info) => {
+      info.annotations.push({
+        type: "redmine",
+        description: "https://redmine.gwo.pl/issues/37203",
+      });
       test.setTimeout(360000);
       const app = new Octopus(page);
-      const schools = [];
+      const schools: CategorySchool[] = [];
       for (const definition of SORT_CASES)
         schools.push(
           await test.step("Przygotowanie: szkoła o zadanym typie, liczbie uczniów i kategorii", async () =>
@@ -147,32 +151,33 @@ test.describe("Kategoria szkoły", () => {
         );
       const results = await searchCategorySchools(app, { name: categorySortPrefix });
       const { header, column } = await categoryColumn(results);
-      for (
-        let attempt = 0;
-        attempt < 3 && (await header.getAttribute("aria-sort")) !== sorting.direction;
-        attempt++
-      )
-        await header.click();
-      await test.step('Sprawdzenie: wartość atrybutu — header; oczekiwane: "aria-sort"', async () =>
-        expect(header).toHaveAttribute("aria-sort", sorting.direction));
-      await test.step("Sprawdzenie: zgodność całej struktury i wartości — async () => (await categorySortRows(results, column)).map((row) => row.category); oczekiwane: sorting.expected", async () =>
-        expect
-          .poll(async () => (await categorySortRows(results, column)).map((row) => row.category))
-          .toEqual(sorting.expected));
-      await test.step("Sprawdzenie: zgodność całej struktury i wartości — (await categorySortRows(results, column)).map((row) => row.id).sort(); oczekiwane: schools.map((school) => school.id).sort()", async () => {
-        expect((await categorySortRows(results, column)).map((row) => row.id).sort()).toEqual(
-          schools.map((school) => school.id).sort(),
-        );
-      });
+      const expected: ExpectedCategoryRow[] = schools.map((school, index) => ({
+        id: school.id,
+        category: SORT_CASES[index].category,
+      }));
+      expected.sort((a, b) => a.category.localeCompare(b.category));
+      if (sorting.direction === "descending") expected.reverse();
+      await test.step("Sprawdzenie kolejności kategorii i odpowiadających im ID; zapis dowodów", () =>
+        verifyCategorySort(
+          page,
+          results,
+          header,
+          column,
+          sorting.direction,
+          expected,
+          info,
+          sorting.id,
+        ));
     });
   }
 
-  test("CAT-25: zmiany sortowania nie zmieniają szkół i ich kategorii @school @category @sort", async ({
+  test("CAT-25: przełączanie sortowania zmienia kolejność bez zmiany szkół i kategorii @school @category @sort @redmine-37203", async ({
     page,
-  }) => {
+  }, info) => {
+    info.annotations.push({ type: "redmine", description: "https://redmine.gwo.pl/issues/37203" });
     test.setTimeout(360000);
     const app = new Octopus(page);
-    const schools = [];
+    const schools: CategorySchool[] = [];
     for (const definition of SORT_CASES)
       schools.push(
         await test.step("Przygotowanie: szkoła o zadanym typie, liczbie uczniów i kategorii", async () =>
@@ -180,26 +185,23 @@ test.describe("Kategoria szkoły", () => {
       );
     const results = await searchCategorySchools(app, { name: categorySortPrefix });
     const { header, column } = await categoryColumn(results);
-    const expected = schools
+    const ascending: ExpectedCategoryRow[] = schools
       .map((school, index) => ({ id: school.id, category: SORT_CASES[index].category }))
-      .sort((a, b) => a.id.localeCompare(b.id));
-    for (const direction of ["ascending", "descending"]) {
-      for (
-        let attempt = 0;
-        attempt < 3 && (await header.getAttribute("aria-sort")) !== direction;
-        attempt++
-      )
-        await header.click();
-      await test.step('Sprawdzenie: wartość atrybutu — header; oczekiwane: "aria-sort"', async () =>
-        expect(header).toHaveAttribute("aria-sort", direction));
-      await test.step("Sprawdzenie: zgodność całej struktury i wartości — async () => (await categorySortRows(results, column)) .map(({ id, category }) => ({ id, category })) .sort((a, b) …; oczekiwane: expected", async () =>
-        expect
-          .poll(async () =>
-            (await categorySortRows(results, column))
-              .map(({ id, category }) => ({ id, category }))
-              .sort((a, b) => a.id.localeCompare(b.id)),
-          )
-          .toEqual(expected));
+      .sort((a, b) => a.category.localeCompare(b.category));
+    const directions = ["ascending", "descending", "ascending", "descending"] as const;
+    for (const [index, direction] of directions.entries()) {
+      const expected = direction === "ascending" ? ascending : [...ascending].reverse();
+      await test.step(`Przełączenie ${index + 1}: ${direction}, kontrola pełnych wierszy i dowody`, () =>
+        verifyCategorySort(
+          page,
+          results,
+          header,
+          column,
+          direction,
+          expected,
+          info,
+          `CAT-25-${index + 1}`,
+        ));
     }
   });
 

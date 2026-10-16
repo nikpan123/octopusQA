@@ -417,7 +417,7 @@ button,
 }
 .test-row {
   display: grid;
-  grid-template-columns: 24px 130px minmax(0, 1fr) 250px;
+  grid-template-columns: 24px fit-content(240px) minmax(0, 1fr) 250px;
   align-items: center;
   gap: 8px;
   padding: 9px 11px;
@@ -434,7 +434,9 @@ button,
   width: auto;
 }
 .test-id {
-  white-space: nowrap;
+  min-width: 0;
+  white-space: normal;
+  overflow-wrap: anywhere;
   font-weight: 800;
   color: #244c59;
 }
@@ -576,7 +578,7 @@ dialog::backdrop {
     grid-template-columns: repeat(2, 1fr);
   }
   .test-row {
-    grid-template-columns: 24px 110px 1fr;
+    grid-template-columns: 24px fit-content(210px) minmax(0, 1fr);
   }
   .test-file {
     display: none;
@@ -590,6 +592,16 @@ dialog::backdrop {
 }
 
 @media (max-width: 650px) {
+  .test-row {
+    grid-template-columns: 24px minmax(0, 1fr);
+    align-items: start;
+  }
+  .test-row input {
+    grid-row: 1 / span 2;
+  }
+  .test-title {
+    grid-column: 2;
+  }
   .topbar {
     padding: 18px;
   }

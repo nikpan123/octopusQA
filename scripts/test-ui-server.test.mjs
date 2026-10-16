@@ -114,6 +114,13 @@ test("panel pokazuje krótkie ID i wysyła zaznaczony nowy test", async () => {
         body = {
           tests: [
             {
+              id: "ORD-BUG-37176-01",
+              title:
+                "ORD-BUG-37176-01: ujemna ilość -1 nie pozwala utworzyć zamówienia @school @order @redmine-37176",
+              file: "zamowienia-redmine-37176.spec.ts",
+              annual: false,
+            },
+            {
               id: "STR-106",
               title:
                 "Struktura podczas dodawania szkoły › STR-106: timeout zapisu szkoły nie zapisuje osieroconej struktury @school @structure @school-add",
@@ -149,6 +156,25 @@ test("panel pokazuje krótkie ID i wysyła zaznaczony nowy test", async () => {
     await expect
       .poll(() => submitted)
       .toMatchObject({ suite: "schools", selectedTestIds: ["STR-106"] });
+    await page.locator("#testSearch").fill("@redmine-37176");
+    await expect(page.locator(".test-id")).toHaveText("ORD-BUG-37176-01");
+    for (const width of [1600, 900, 390]) {
+      await page.setViewportSize({ width, height: 1000 });
+      const layout = await page.locator(".test-row").evaluate((row) => {
+        const id = row.querySelector(".test-id").getBoundingClientRect();
+        const title = row.querySelector(".test-title").getBoundingClientRect();
+        return {
+          separated: id.right <= title.left || id.bottom <= title.top,
+          fits: row.scrollWidth <= row.clientWidth,
+          idFits: row.querySelector(".test-id").scrollWidth <= id.width + 1,
+        };
+      });
+      assert.deepEqual(
+        layout,
+        { separated: true, fits: true, idFits: true },
+        `Układ przy ${width}px`,
+      );
+    }
     // Cała sieć jest przechwycona; test panelu nie uruchamia regresji na DEV.
   } finally {
     await browser.close();

@@ -2,7 +2,7 @@
 
 > Plik generowany automatycznie przez `npm run docs:scenarios`. Nie edytuj tabeli ręcznie.
 
-Łącznie: **728 scenariuszy**.
+Łącznie: **730 scenariuszy**.
 
 | ID | Scenariusz | Plik | Tagi |
 |---|---|---|---|
@@ -317,18 +317,18 @@
 | CAT-20 | CAT-20: Szkoła NPC, 0 uczniów daje kategorię A | [szkola-kategoria.spec.ts](../../tests/szkola-kategoria.spec.ts#L113) | `school`, `category`, `boundaries` |
 | CAT-21 | CAT-21: Szkoła NPC, 1 uczniów daje kategorię C | [szkola-kategoria.spec.ts](../../tests/szkola-kategoria.spec.ts#L113) | `school`, `category`, `boundaries` |
 | CAT-22 | CAT-22: Szkoła NPC, 401 uczniów daje kategorię A | [szkola-kategoria.spec.ts](../../tests/szkola-kategoria.spec.ts#L113) | `school`, `category`, `boundaries` |
-| CAT-23 | CAT-23: Kategoria sortuje alfabetycznie ascending | [szkola-kategoria.spec.ts](../../tests/szkola-kategoria.spec.ts#L137) | `school`, `category`, `sort` |
-| CAT-24 | CAT-24: Kategoria sortuje alfabetycznie descending | [szkola-kategoria.spec.ts](../../tests/szkola-kategoria.spec.ts#L137) | `school`, `category`, `sort` |
-| CAT-25 | CAT-25: zmiany sortowania nie zmieniają szkół i ich kategorii | [szkola-kategoria.spec.ts](../../tests/szkola-kategoria.spec.ts#L170) | `school`, `category`, `sort` |
-| CAT-26 | CAT-26: zmiana liczby uczniów 100 → 101 aktualizuje kategorię | [szkola-kategoria.spec.ts](../../tests/szkola-kategoria.spec.ts#L215) | `school`, `category`, `edit` |
-| CAT-27 | CAT-27: zmiana liczby uczniów 400 → 401 aktualizuje kategorię | [szkola-kategoria.spec.ts](../../tests/szkola-kategoria.spec.ts#L215) | `school`, `category`, `edit` |
-| CAT-28 | CAT-28: zmiana liczby uczniów 101 → 100 aktualizuje kategorię | [szkola-kategoria.spec.ts](../../tests/szkola-kategoria.spec.ts#L215) | `school`, `category`, `edit` |
-| CAT-29 | CAT-29: zmiana liczby uczniów 401 → 0 aktualizuje kategorię | [szkola-kategoria.spec.ts](../../tests/szkola-kategoria.spec.ts#L215) | `school`, `category`, `edit` |
-| CAT-30 | CAT-30: zmiana liczby uczniów 100 → brak danych aktualizuje kategorię | [szkola-kategoria.spec.ts](../../tests/szkola-kategoria.spec.ts#L215) | `school`, `category`, `edit` |
-| CAT-31 | CAT-31: zmiana liczby uczniów 0 → 1 aktualizuje kategorię | [szkola-kategoria.spec.ts](../../tests/szkola-kategoria.spec.ts#L215) | `school`, `category`, `edit` |
-| CAT-32 | CAT-32: zmiana liczby uczniów 401 → 400 aktualizuje kategorię | [szkola-kategoria.spec.ts](../../tests/szkola-kategoria.spec.ts#L215) | `school`, `category`, `edit` |
-| CAT-33 | CAT-33: anulowanie liczby uczniów nie zmienia kategorii | [szkola-kategoria.spec.ts](../../tests/szkola-kategoria.spec.ts#L234) | `school`, `category`, `cancel` |
-| CAT-34 | CAT-34: zmiana liczby uczniów innej placówki zachowuje D | [szkola-kategoria.spec.ts](../../tests/szkola-kategoria.spec.ts#L251) | `school`, `category`, `edit` |
+| CAT-23 | CAT-23: Kategoria sortuje alfabetycznie ascending | [szkola-kategoria.spec.ts](../../tests/szkola-kategoria.spec.ts#L137) | `school`, `category`, `sort`, `redmine-37203` |
+| CAT-24 | CAT-24: Kategoria sortuje alfabetycznie descending | [szkola-kategoria.spec.ts](../../tests/szkola-kategoria.spec.ts#L137) | `school`, `category`, `sort`, `redmine-37203` |
+| CAT-25 | CAT-25: przełączanie sortowania zmienia kolejność bez zmiany szkół i kategorii | [szkola-kategoria.spec.ts](../../tests/szkola-kategoria.spec.ts#L174) | `school`, `category`, `sort`, `redmine-37203` |
+| CAT-26 | CAT-26: zmiana liczby uczniów 100 → 101 aktualizuje kategorię | [szkola-kategoria.spec.ts](../../tests/szkola-kategoria.spec.ts#L217) | `school`, `category`, `edit` |
+| CAT-27 | CAT-27: zmiana liczby uczniów 400 → 401 aktualizuje kategorię | [szkola-kategoria.spec.ts](../../tests/szkola-kategoria.spec.ts#L217) | `school`, `category`, `edit` |
+| CAT-28 | CAT-28: zmiana liczby uczniów 101 → 100 aktualizuje kategorię | [szkola-kategoria.spec.ts](../../tests/szkola-kategoria.spec.ts#L217) | `school`, `category`, `edit` |
+| CAT-29 | CAT-29: zmiana liczby uczniów 401 → 0 aktualizuje kategorię | [szkola-kategoria.spec.ts](../../tests/szkola-kategoria.spec.ts#L217) | `school`, `category`, `edit` |
+| CAT-30 | CAT-30: zmiana liczby uczniów 100 → brak danych aktualizuje kategorię | [szkola-kategoria.spec.ts](../../tests/szkola-kategoria.spec.ts#L217) | `school`, `category`, `edit` |
+| CAT-31 | CAT-31: zmiana liczby uczniów 0 → 1 aktualizuje kategorię | [szkola-kategoria.spec.ts](../../tests/szkola-kategoria.spec.ts#L217) | `school`, `category`, `edit` |
+| CAT-32 | CAT-32: zmiana liczby uczniów 401 → 400 aktualizuje kategorię | [szkola-kategoria.spec.ts](../../tests/szkola-kategoria.spec.ts#L217) | `school`, `category`, `edit` |
+| CAT-33 | CAT-33: anulowanie liczby uczniów nie zmienia kategorii | [szkola-kategoria.spec.ts](../../tests/szkola-kategoria.spec.ts#L236) | `school`, `category`, `cancel` |
+| CAT-34 | CAT-34: zmiana liczby uczniów innej placówki zachowuje D | [szkola-kategoria.spec.ts](../../tests/szkola-kategoria.spec.ts#L253) | `school`, `category`, `edit` |
 | MED-YEAR-PREP | MED-YEAR-PREP: przygotuj snapshot 4 szkół referencyjnych i 50 losowych szkół | [szkola-medalowosc-annual.spec.ts](../../tests/szkola-medalowosc-annual.spec.ts#L67) | `annual-medal` |
 | MED-YEAR-01 | MED-YEAR-01: roczne przeliczenie ustawia oczekiwany medal na podstawie snapshotu | [szkola-medalowosc-annual.spec.ts](../../tests/szkola-medalowosc-annual.spec.ts#L186) | `annual-medal` |
 | MED-02 | MED-02: pole Medal dla szkoły ze złotym medalem jest nieedytowalne | [szkola-medalowosc.spec.ts](../../tests/szkola-medalowosc.spec.ts#L38) | — |
@@ -689,6 +689,8 @@
 | ORD-30 | ORD-30: wyszukanie kolejnego produktu nie usuwa wcześniej wybranego | [zamowienia-produkty.spec.ts](../../tests/zamowienia-produkty.spec.ts#L491) | `school`, `order`, `product` |
 | ORD-31 | ORD-31: zmiana filtrów nie usuwa produktów z Zamówienia | [zamowienia-produkty.spec.ts](../../tests/zamowienia-produkty.spec.ts#L512) | `school`, `order`, `product`, `filter` |
 | ORD-32 | ORD-32: dane produktu są spójne po przeniesieniu do Zamówienia | [zamowienia-produkty.spec.ts](../../tests/zamowienia-produkty.spec.ts#L535) | `school`, `order`, `product` |
+| ORD-BUG-37176-01 | ORD-BUG-37176-01: ujemna ilość -1 nie pozwala utworzyć zamówienia | [zamowienia-redmine-37176.spec.ts](../../tests/zamowienia-redmine-37176.spec.ts#L19) | `school`, `order`, `quantity`, `regression`, `redmine-37176` |
+| ORD-BUG-37176-02 | ORD-BUG-37176-02: ujemna ilość -10 nie pozwala utworzyć zamówienia | [zamowienia-redmine-37176.spec.ts](../../tests/zamowienia-redmine-37176.spec.ts#L19) | `school`, `order`, `quantity`, `regression`, `redmine-37176` |
 | ORD-01 | ORD-01: zamówienie szkoły zachowuje produkt i ilość po ponownym otwarciu | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L43) | `school`, `order`, `smoke` |
 | ORD-02 | ORD-02: zamówienie z dwoma produktami zachowuje produkty i ilości | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L74) | `school`, `order`, `positive` |
 | ORD-03 | ORD-03: edycja ilości dwóch produktów i usunięcie zamówienia | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L121) | `school`, `order`, `edit` |
