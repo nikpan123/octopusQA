@@ -17,6 +17,7 @@ const reportsDir = path.join(runsDir, "html-reports");
 const PORT = Number(process.env.OCTOPUS_TEST_UI_PORT || 4173);
 
 export const SUITES = {
+  database: { label: "Baza danych — soft delete", files: ["tests/zamowienia-soft-delete.spec.ts", "tests/zamowienia-kopie-baza.spec.ts"] },
   all: { label: "Cała regresja", files: [] },
   teachers: {
     label: "Nauczyciele",
@@ -708,8 +709,9 @@ export function buildRunArguments(options) {
     const ids = options.selectedTestIds;
     if (options.annualMode || !Array.isArray(ids) || ids.length !== 1 || !validPreviewId(ids[0]))
       throw new Error("Tryb krok po kroku wymaga zaznaczenia dokładnie jednego testu z katalogu.");
+    if (environment !== "dev" && ids[0].startsWith("ORD-DB-")) throw new Error("Test bazy danych jest dostępny tylko dla DEV.");
     args.push("--grep", `(?:${escapeRegex(ids[0])})(?![A-Z0-9-])`, "--debug", "--workers=1", "--retries=0", "--trace=on");
-    return { args, environment, suite: "debug", suiteLabel: `Krok po kroku · ${ids[0]}`, workers: 1 };
+    return { args, environment, suite: "debug", suiteLabel: `Krok po kroku · ${ids[0]}`, workers: 1, includeDatabase: ids[0].startsWith("ORD-DB-") };
   }
 
   if (options.annualMode) {
@@ -746,18 +748,22 @@ export function buildRunArguments(options) {
     : [];
   const ordersOnlySelection =
     selectedIds.length > 0 && selectedIds.every((id) => id.startsWith("ORD-"));
+  const includeDatabase = suite === "database" || selectedIds.some(id => id.startsWith("ORD-DB-")) || /ORD-DB-|@database/.test(String(options.grep ?? ""));
+  if (includeDatabase && environment !== "dev") throw new Error("Test bazy danych jest dostępny tylko dla DEV.");
 
   // ORD-y są skonfigurowane do pracy równoległej, ale dla tego pakietu
   // świadomie ograniczamy wykonanie do maksymalnie 2 workerów. Każdy worker
   // korzysta z osobnej szkoły referencyjnej (TEST_PARALLEL_INDEX), więc nie
   // powinien kolidować z zamówieniami tworzonymi przez drugi worker.
   const workers =
-    suite === "orders" || ordersOnlySelection ? Math.min(requestedWorkers, 2) : requestedWorkers;
+    includeDatabase ? 1 : suite === "orders" || ordersOnlySelection ? Math.min(requestedWorkers, 2) : requestedWorkers;
 
   args.push(`--workers=${workers}`);
   if (options.headed) args.push("--headed");
 
-  return { args, environment, suite, suiteLabel: suiteDef.label, workers };
+  return { args, environment, suite, suiteLabel: suiteDef.label, workers,
+    includeDatabase,
+  };
 }
 
 async function startRun(options) {
@@ -819,6 +825,7 @@ async function startRunInternal(options) {
     OCTOPUS_ENV: built.environment,
     OCTOPUS_WORKERS: String(state.run.workers),
     OCTOPUS_UI_RUN_ID: state.run.id,
+    OCTOPUS_INCLUDE_DATABASE: built.includeDatabase ? "1" : "0",
     PLAYWRIGHT_HTML_OUTPUT_DIR: reportDir,
     ...(options.annualMode ? { OCTOPUS_INCLUDE_ANNUAL: "1" } : {}),
   };
@@ -919,7 +926,7 @@ async function listTests(environment) {
   const result = await new Promise((resolve, reject) => {
     const child = spawnPlaywright(args, {
       cwd: root,
-      env: { ...process.env, OCTOPUS_ENV: env },
+      env: { ...process.env, OCTOPUS_ENV: env, OCTOPUS_INCLUDE_DATABASE: "1" },
       stdio: ["ignore", "pipe", "pipe"],
       windowsHide: true,
     });

@@ -2,7 +2,7 @@
 
 > Plik generowany automatycznie przez `npm run docs:scenarios`. Nie edytuj tabeli ręcznie.
 
-Łącznie: **766 scenariuszy**.
+Łącznie: **773 scenariuszy**.
 
 | ID | Scenariusz | Plik | Tagi |
 |---|---|---|---|
@@ -676,6 +676,8 @@
 | ORD-CLASS-20 | ORD-CLASS-20: usunięcie jednego zamówienia nie usuwa klasy produktu z drugiego | [zamowienia-klasa.spec.ts](../../tests/zamowienia-klasa.spec.ts#L303) | `school`, `order`, `order-class`, `delete` |
 | ORD-CLASS-21 | ORD-CLASS-21: zamówienie i jego klasa nie pojawiają się w innej szkole | [zamowienia-klasa.spec.ts](../../tests/zamowienia-klasa.spec.ts#L317) | `school`, `order`, `order-class`, `isolation` |
 | ORD-CLASS-22 | ORD-CLASS-22: zwijanie i rozwijanie zachowuje klasę pozycji | [zamowienia-klasa.spec.ts](../../tests/zamowienia-klasa.spec.ts#L335) | `school`, `order`, `order-class`, `expand` |
+| ORD-DB-02 | ORD-DB-02: kopia zamówienia ma w bazie IsCopied=1, a oryginał IsCopied=0 | [zamowienia-kopie-baza.spec.ts](../../tests/zamowienia-kopie-baza.spec.ts#L62) | `school`, `order`, `copy`, `database` |
+| ORD-DB-03 | ORD-DB-03: usunięcie kopii zachowuje IsDel=1 i IsCopied=1, bez usuwania oryginału | [zamowienia-kopie-baza.spec.ts](../../tests/zamowienia-kopie-baza.spec.ts#L95) | `school`, `order`, `copy`, `database`, `soft-delete` |
 | ORD-COPY-01 | ORD-COPY-01: A → SP, kopia w tej samej strukturze | [zamowienia-kopiowanie-struktura.spec.ts](../../tests/zamowienia-kopiowanie-struktura.spec.ts#L44) | `school`, `order`, `copy`, `redmine-37160` |
 | ORD-COPY-02 | ORD-COPY-02: A → LO, kopia w tej samej strukturze | [zamowienia-kopiowanie-struktura.spec.ts](../../tests/zamowienia-kopiowanie-struktura.spec.ts#L44) | `school`, `order`, `copy`, `redmine-37160` |
 | ORD-COPY-03 | ORD-COPY-03: A → TECH, kopia w tej samej strukturze | [zamowienia-kopiowanie-struktura.spec.ts](../../tests/zamowienia-kopiowanie-struktura.spec.ts#L44) | `school`, `order`, `copy`, `redmine-37160` |
@@ -725,8 +727,13 @@
 | ORD-BUG-36290-02 | ORD-BUG-36290-02: kopia A → SP jest nieedytowalna i odzwierciedla pozycje oraz ilości oryginału | [zamowienia-redmine-36290.spec.ts](../../tests/zamowienia-redmine-36290.spec.ts#L142) | `school`, `order`, `copy`, `redmine-36290` |
 | ORD-BUG-36290-03 | ORD-BUG-36290-03: bezpośrednie API nie pozwala edytować kopii w LO ani zmieniać oryginału | [zamowienia-redmine-36290.spec.ts](../../tests/zamowienia-redmine-36290.spec.ts#L198) | `school`, `order`, `copy`, `negative`, `redmine-36290` |
 | ORD-BUG-36290-04 | ORD-BUG-36290-04: bezpośrednie API nie pozwala edytować kopii w A ani zmieniać oryginału | [zamowienia-redmine-36290.spec.ts](../../tests/zamowienia-redmine-36290.spec.ts#L198) | `school`, `order`, `copy`, `negative`, `redmine-36290` |
+| ORD-BUG-36302-01 | ORD-BUG-36302-01: rozwijanie i zwijanie podręcznika w Pozycjach nie zmienia pozostałych wierszy | [zamowienia-redmine-36302.spec.ts](../../tests/zamowienia-redmine-36302.spec.ts#L22) | `school`, `order`, `positions`, `isolation`, `redmine-36302` |
+| ORD-BUG-36304-01 | ORD-BUG-36304-01: usunięcie kopii pokazuje komunikat zgodny z makietą; Nie anuluje, Tak usuwa tylko kopię | [zamowienia-redmine-36304.spec.ts](../../tests/zamowienia-redmine-36304.spec.ts#L7) | `school`, `order`, `copy`, `confirmation`, `redmine-36304` |
+| ORD-BUG-36305-01 | ORD-BUG-36305-01: historia produktu bez roku w tytule nie dopisuje roku zamówienia | [zamowienia-redmine-36305.spec.ts](../../tests/zamowienia-redmine-36305.spec.ts#L21) | `school`, `order`, `history`, `readonly`, `redmine-36305` |
+| ORD-BUG-36305-02 | ORD-BUG-36305-02: historia produktu zachowuje rok należący do tytułu, bez dodatkowego roku zamówienia | [zamowienia-redmine-36305.spec.ts](../../tests/zamowienia-redmine-36305.spec.ts#L21) | `school`, `order`, `history`, `readonly`, `redmine-36305` |
 | ORD-BUG-37176-01 | ORD-BUG-37176-01: ujemna ilość -1 nie pozwala utworzyć zamówienia | [zamowienia-redmine-37176.spec.ts](../../tests/zamowienia-redmine-37176.spec.ts#L19) | `school`, `order`, `quantity`, `regression`, `redmine-37176` |
 | ORD-BUG-37176-02 | ORD-BUG-37176-02: ujemna ilość -10 nie pozwala utworzyć zamówienia | [zamowienia-redmine-37176.spec.ts](../../tests/zamowienia-redmine-37176.spec.ts#L19) | `school`, `order`, `quantity`, `regression`, `redmine-37176` |
+| ORD-DB-01 | ORD-DB-01: Usuń ukrywa zamówienie w UI i zachowuje rekord SchoolOrder z IsDel=1 | [zamowienia-soft-delete.spec.ts](../../tests/zamowienia-soft-delete.spec.ts#L10) | `school`, `order`, `database`, `soft-delete` |
 | ORD-01 | ORD-01: zamówienie szkoły zachowuje produkt i ilość po ponownym otwarciu | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L43) | `school`, `order`, `smoke` |
 | ORD-02 | ORD-02: zamówienie z dwoma produktami zachowuje produkty i ilości | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L74) | `school`, `order`, `positive` |
 | ORD-03 | ORD-03: edycja ilości dwóch produktów i usunięcie zamówienia | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L121) | `school`, `order`, `edit` |
