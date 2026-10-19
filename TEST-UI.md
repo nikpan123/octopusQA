@@ -33,6 +33,12 @@ Wtedy otwórz `http://127.0.0.1:4174`. Nie uruchamiaj równoczesnych testów na 
 
 ## Funkcje
 
+### Scenariusze testowe
+
+Menu **Scenariusze** prowadzi do opisów funkcjonalności: warunków wstępnych, kroków, oczekiwanych wyników i powiązanych ID testów. Pierwszy zestaw obejmuje kopiowanie zamówień w strukturze placówek, Redmine 37160. Wyszukiwanie działa po ID, nazwie i numerze zgłoszenia. Przycisk wyboru zaznacza wyłącznie powiązany test w katalogu, ale go nie uruchamia. Szczegóły: [kopiowanie zamówień](docs/tests/kopiowanie-zamowien-struktura.md).
+
+Opisy są zapisane lokalnie w `test-ui/scenarios.json`. Brak powiązanego testu lub brak danych wymaganych do automatyzacji jest widoczny i blokuje przycisk wyboru. Po zmianach serwera panel wymaga restartu; samo odświeżenie karty nie dodaje nowych endpointów do już działającego procesu.
+
 - wybór środowiska DEV lub TEST;
 - pakiety: cała regresja, nauczyciele, szkoły, zamówienia, klubowiczostwo i medalowość;
 - 1, 2 lub 4 workery, z ograniczeniem ORD do maksymalnie 2;
@@ -188,6 +194,12 @@ test-ui/styles.css
 Panel nie wymaga osobnych bibliotek frontendowych.
 
 ## Rozwiązywanie problemów
+
+### Otwieranie ze zgłoszenia w Centrum testów
+
+Przycisk „Otwórz panel testów” na karcie zgłoszenia otwiera nową kartę z zaznaczonymi automatycznymi scenariuszami przypiętymi do tego zgłoszenia. Lista pokazuje ten wybór; przycisk „Przejdź do pełnego katalogu” odsłania pozostałe scenariusze. Samo otwarcie karty nie uruchamia testów. Zaznaczone ID mają pierwszeństwo przed pakietem i filtrem grep.
+
+Jeśli przypiętego ID nie ma w aktualnym katalogu lub dotyczy osobnego workflow rocznego, panel pokazuje ostrzeżenie i blokuje uruchomienie z tego wyboru. Wyczyść nieaktualne powiązania w Centrum albo świadomie przejdź do pełnego katalogu. Testy ręczne nie są wysyłane do automatycznego wykonania.
 
 - Po zmianie plików panelu zatrzymaj serwer przez `Ctrl+C`, uruchom go ponownie i odśwież stronę przez `Ctrl+F5`.
 - Jeżeli brakuje Playwrighta, wykonaj `npm install`.

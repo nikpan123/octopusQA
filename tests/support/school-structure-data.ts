@@ -8,6 +8,13 @@ import type { StructureSchool } from "./school-structure";
 import type { StructureApi } from "./school-structure-api";
 
 export type StructureSchoolKey =
+  | "copyGroup"
+  | "copyPrimary"
+  | "copySecondary"
+  | "copyTechnical"
+  | "copyOtherGroup"
+  | "copyOtherPrimary"
+  | "copyStandalone"
   | "addBranch"
   | "addMain"
   | "addGroup"
@@ -32,6 +39,13 @@ type StructureSchoolDefinition = {
 const environment = OCTOPUS_ENV.toUpperCase();
 
 const definitions: Record<StructureSchoolKey, StructureSchoolDefinition> = {
+  copyGroup: { name: `AUTO_STR_${environment}_COPY_ZESPOL_A`, type: "Zespół szkół" },
+  copyPrimary: { name: `AUTO_STR_${environment}_COPY_SP_A`, type: "Szkoła podstawowa" },
+  copySecondary: { name: `AUTO_STR_${environment}_COPY_LO_A`, type: "Liceum" },
+  copyTechnical: { name: `AUTO_STR_${environment}_COPY_TECH_A`, type: "Technikum" },
+  copyOtherGroup: { name: `AUTO_STR_${environment}_COPY_ZESPOL_B`, type: "Zespół szkół" },
+  copyOtherPrimary: { name: `AUTO_STR_${environment}_COPY_SP_B`, type: "Szkoła podstawowa" },
+  copyStandalone: { name: `AUTO_STR_${environment}_COPY_SAMODZIELNA`, type: "Szkoła podstawowa" },
   addBranch: { name: `AUTO_STR_${environment}_DODAWANIE_FILIA`, type: "Szkoła podstawowa" },
   addMain: { name: `AUTO_STR_${environment}_DODAWANIE_GLOWNA`, type: "Szkoła podstawowa" },
   addGroup: { name: `AUTO_STR_${environment}_DODAWANIE_ZESPOL`, type: "Zespół szkół" },

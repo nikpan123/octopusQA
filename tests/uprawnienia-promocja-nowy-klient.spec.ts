@@ -1,4 +1,5 @@
 import { test } from "./support/entitlements";
+import type { ClassLine } from "./support/order-class";
 import {
   preparePromotion,
   previousConfirmation,
@@ -88,7 +89,7 @@ for (const [id, title, codes, expected] of [
       const record = await data.create();
       const threshold = await promotionThreshold(data, record);
       const api = data.orders();
-      const lines = [];
+      const lines: ClassLine[] = [];
       for (const code of codes)
         lines.push({
           product: await api.product(code, [code === "7Pv" ? 7 : 4]),

@@ -6,17 +6,35 @@
     <title>Octopus Test Runner</title>
     <link rel="stylesheet" href="/styles.css" />
   </head>
-  <body>
+  <body class="qa-app qa-octopus">
+<aside class="qa-sidebar"><a class="brand" href="#dashboard"><span class="brand-icon"><svg class="qa-menu-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M7 12V8a5 5 0 0 1 10 0v4M7 12c0 5-5 6-5 2M9 13c0 8-5 9-5 5M11 14v5c0 4-3 4-3 1M13 14v5c0 4 3 4 3 1M15 13c0 8 5 9 5 5M17 12c0 5 5 6 5 2"/><circle cx="10" cy="8" r=".65" fill="currentColor"/><circle cx="14" cy="8" r=".65" fill="currentColor"/></svg></span><span>Octopus<small>PANEL TESTÓW UI</small></span></a><div class="nav-label">PRZESTRZEŃ ROBOCZA</div><nav aria-label="Nawigacja"><a class="active" href="#dashboard"><svg class="qa-menu-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m3 10 9-7 9 7M5 9v11h5v-6h4v6h5V9"/></svg><span class="qa-nav-text">Pulpit</span></a><a href="#business-scenarios"><svg class="qa-menu-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="m7 8 1 1 2-2M13 8h4M7 13h3M13 13h4M7 17h3M13 17h4"/></svg><span class="qa-nav-text">Scenariusze</span></a><a href="#run-tests"><svg class="qa-menu-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9"/><path d="m10 8 6 4-6 4Z"/></svg><span class="qa-nav-text">Uruchom testy</span></a><a href="#run-status"><svg class="qa-menu-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 8h20M6 12l3 2-3 2M12 16h5"/></svg><span class="qa-nav-text">Przebieg i logi</span></a><a href="#run-history"><svg class="qa-menu-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M3 10a9 9 0 1 1 1 7M3 4v6h6M12 7v5l4 2"/></svg><span class="qa-nav-text">Historia i raporty</span></a><a href="#test-data"><svg class="qa-menu-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 4 16 4 16 0V5M4 12c0 4 16 4 16 0"/></svg><span class="qa-nav-text">Dane testowe</span></a></nav><div class="qa-switcher" aria-label="Pozostałe panele"><small>APLIKACJE QA</small><a href="http://127.0.0.1:4180" target="_blank" rel="noopener"><i class="qa-dot-center"></i>Centrum testów ↗</a><a href="http://127.0.0.1:4173" target="_blank" rel="noopener"><i class="qa-dot-octopus"></i>Octopus ↗</a><a href="http://127.0.0.1:18767" target="_blank" rel="noopener"><i class="qa-dot-warehouse"></i>Hurtownia ↗</a><a href="http://127.0.0.1:4181" target="_blank" rel="noopener"><i class="qa-dot-cms"></i>Księgarnia CMS ↗</a></div><div class="sidebar-foot"><span class="dot"></span>Na Twoim komputerze<p>Testy interfejsu · Playwright<br>Raporty i historia lokalnie</p></div></aside>
     <header class="topbar">
       <div>
-        <div class="eyebrow">GWO · Playwright</div>
-        <h1>Octopus Test Runner</h1>
+        <div class="eyebrow">OCTOPUS · PRZESTRZEŃ QA</div>
+        <h1 id="pageTitle" tabindex="-1">Pulpit</h1><p id="pageDescription">Podsumowanie testów i szybki dostęp do najważniejszych działań.</p>
       </div>
       <div id="runBadge" class="badge idle">IDLE</div>
     </header>
 
     <main class="layout">
-      <section class="card controls">
+      <section class="card dashboard-card" id="dashboard" data-page="dashboard">
+        <div class="section-head"><div><h2>Przestrzeń testowa Octopusa</h2><p>Wybierz zadanie. Uruchomienia i logi działają także po przejściu na inną stronę.</p></div></div>
+        <div class="dashboard-stats">
+          <a class="dashboard-stat" href="#run-tests"><span>Testy w katalogu</span><strong id="dashboardTests">—</strong><small>Przeglądaj i wybieraj testy</small></a>
+          <a class="dashboard-stat" href="#business-scenarios"><span>Scenariusze</span><strong id="dashboardScenarios">—</strong><small>Wymagania, kroki i powiązania</small></a>
+          <a class="dashboard-stat" href="#run-tests"><span>Zaznaczone testy</span><strong id="dashboardSelected">0</strong><small id="dashboardEnvironment">Środowisko DEV</small></a>
+        </div>
+        <div class="dashboard-run"><h3>Bieżący lub ostatni przebieg</h3><p id="dashboardRun">Odczytywanie stanu…</p><a class="button-link secondary" href="#run-status">Przejdź do przebiegu i logów</a></div>
+        <div class="dashboard-links">
+          <a href="#business-scenarios"><strong>Sprawdź funkcjonalność</strong><span>Opis scenariusza i powiązany test</span></a>
+          <a href="#run-tests"><strong>Przygotuj uruchomienie</strong><span>Środowisko, pakiet i wybór testów</span></a>
+          <a href="#run-history"><strong>Przejrzyj wyniki</strong><span>Historia, raporty i wcześniejsze błędy</span></a>
+          <a href="#test-data"><strong>Sprawdź dane testowe</strong><span>Rejestr szkół, nauczycieli i sprzątanie</span></a>
+        </div>
+        <p id="dashboardHistory" class="metric-note">Odczytywanie historii…</p>
+      </section>
+
+      <section class="card controls" id="run-tests" data-page="run-tests" hidden>
         <div class="section-head">
           <div>
             <h2>Uruchom testy</h2>
@@ -66,14 +84,16 @@
           </label>
         </div>
 
+        <p id="runSelectionSummary" class="metric-note" aria-live="polite"></p>
         <div class="actions">
           <button id="startBtn" class="primary">▶ Uruchom testy</button>
-          <button id="stopBtn" class="danger" disabled>■ Stop</button>
-          <button id="rerunFailedBtn" class="secondary" disabled>↻ Ponów failed</button>
+          <button id="debugSelectedBtn" class="secondary" disabled>Krok po kroku — 1 test</button>
+          <a class="button-link secondary" href="#run-status">Otwórz przebieg i logi</a>
         </div>
+        <p class="metric-note">Podgląd zapisanego wykonania znajdziesz przy każdym teście w katalogu. Tryb krok po kroku uruchamia test ponownie w widocznej przeglądarce z Inspektorem Playwrighta.</p>
       </section>
 
-      <section class="card status-card">
+      <section class="card status-card" id="run-status" data-page="run-status" hidden>
         <div class="section-head">
           <div>
             <h2>Status</h2>
@@ -94,6 +114,8 @@
           i są już zawarte w liczbie Passed Playwrighta.
         </p>
         <div class="actions compact">
+          <button id="stopBtn" class="danger" disabled>■ Stop</button>
+          <button id="rerunFailedBtn" class="secondary" disabled>↻ Ponów failed</button>
           <a
             id="reportBtn"
             class="button-link secondary disabled"
@@ -107,7 +129,14 @@
         <div id="failureSummary" class="failure-summary" hidden></div>
       </section>
 
-      <section class="card tests-card">
+      <section class="card scenarios-card" id="business-scenarios" data-page="business-scenarios" hidden>
+        <div class="section-head"><div><h2>Scenariusze testowe</h2><p>Warunki, kroki i oczekiwane wyniki powiązane z testami automatycznymi. Wybranie testu nie uruchamia go automatycznie.</p></div></div>
+        <label class="field"><span>Szukaj scenariusza</span><input id="scenarioSearch" placeholder="ID, zgłoszenie lub nazwa funkcjonalności" /></label>
+        <p id="scenarioMessage" role="status"></p>
+        <div id="scenarioList"><p>Pobieranie scenariuszy…</p></div>
+      </section>
+
+      <section class="card tests-card" id="test-catalog" data-page="run-tests" hidden>
         <div class="section-head">
           <div>
             <h2>Lista testów</h2>
@@ -116,6 +145,7 @@
           <div class="test-toolbar">
             <button id="refreshTestsBtn" class="ghost">Odśwież</button>
             <button id="clearSelectionBtn" class="ghost">Wyczyść zaznaczenie</button>
+            <a class="button-link secondary" href="#run-tests">Ustawienia i start</a>
           </div>
         </div>
         <input
@@ -131,7 +161,7 @@
         </div>
       </section>
 
-      <section class="card annual-card">
+      <section class="card annual-card" data-page="run-tests" hidden>
         <div class="section-head">
           <div>
             <h2>⚠ Roczna medalowość</h2>
@@ -144,7 +174,7 @@
         </div>
       </section>
 
-      <section class="card test-data-card">
+      <section class="card test-data-card" id="test-data" data-page="test-data" hidden>
         <div class="section-head">
           <div>
             <h2>Dane testowe</h2>
@@ -183,7 +213,7 @@
         </div>
       </section>
 
-      <section class="card log-card">
+      <section class="card log-card" id="run-log" data-page="run-status" hidden>
         <div class="section-head">
           <div>
             <h2>Log na żywo</h2>
@@ -194,7 +224,7 @@
         <pre id="log"></pre>
       </section>
 
-      <section class="card history-card">
+      <section class="card history-card" id="run-history" data-page="run-history" hidden>
         <div class="section-head">
           <div>
             <h2>Historia</h2>
@@ -217,6 +247,19 @@
       <pre id="performanceJson"></pre>
     </dialog>
 
+    <dialog id="testPreviewDialog" aria-labelledby="testPreviewTitle">
+      <div class="dialog-head">
+        <div><h3 id="testPreviewTitle">Podgląd testu</h3><p id="testPreviewMeta"></p></div>
+        <button id="closeTestPreviewBtn" class="ghost">Zamknij</button>
+      </div>
+      <p class="metric-note">To zapis wcześniejszego wykonania — przeglądanie kroków nie uruchamia testu i nie zmienia danych. Kod i oczekiwania mogły się od tego czasu zmienić.</p>
+      <div id="testPreviewContent" aria-live="polite"></div>
+      <div class="actions">
+        <button id="previewDebugBtn" class="secondary">Uruchom ten test krok po kroku</button>
+        <a id="previewReportLink" class="button-link secondary" target="_blank" rel="noopener" hidden>Pełny raport i trace</a>
+      </div>
+      <p class="metric-note">Krok po kroku otwiera osobne okna przeglądarki i Playwright Inspector: Step over — następna akcja, Resume — kontynuuj. Nie zatrzymuje każdej instrukcji TypeScript ani każdego porównania API. Ich dane i różnice sprawdzisz w zapisanych krokach, załącznikach i trace. Przerwanie testu może pozostawić dane testowe.</p>
+    </dialog>
     <script type="module" src="/app.js"></script>
   </body>
 </html>

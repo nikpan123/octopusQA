@@ -5,6 +5,7 @@ import { mkdir, readFile, readdir, stat, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { randomUUID } from "node:crypto";
+import { latestTestPreview, validPreviewId } from "./test-preview.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(__dirname, "..");
@@ -21,6 +22,7 @@ export const SUITES = {
     label: "Nauczyciele",
     files: [
       "tests/nauczyciel-dodawanie.spec.ts",
+      "tests/nauczyciel-redmine-37164.spec.ts",
       "tests/nauczyciel-edycja.spec.ts",
       "tests/nauczyciel-edycja-adres.spec.ts",
       "tests/nauczyciel-edycja-integralnosc.spec.ts",
@@ -43,6 +45,7 @@ export const SUITES = {
       "tests/szkola-nauczyciel.spec.ts",
       "tests/szkola-nauczyciele-filtry.spec.ts",
       "tests/szkola-wyszukiwanie-filtry.spec.ts",
+      "tests/szkola-redmine-37204.spec.ts",
       "tests/szkola-struktura.spec.ts",
       "tests/szkola-struktura-dodawanie.spec.ts",
       "tests/szkola-kategoria.spec.ts",
@@ -61,6 +64,9 @@ export const SUITES = {
       "tests/zamowienia-zalaczniki.spec.ts",
       "tests/zamowienia-klasa.spec.ts",
       "tests/zamowienia-dokumenty.spec.ts",
+      "tests/zamowienia-kopiowanie-struktura.spec.ts",
+      "tests/zamowienia-redmine-36289.spec.ts",
+      "tests/zamowienia-redmine-36290.spec.ts",
     ],
   },
   clubs: {
@@ -74,7 +80,7 @@ export const SUITES = {
   },
   medals: {
     label: "Medalowość",
-    files: ["tests/szkola-medalowosc.spec.ts"],
+    files: ["tests/szkola-medalowosc.spec.ts", "tests/szkola-redmine-37204.spec.ts"],
   },
 };
 
@@ -329,6 +335,7 @@ function publicStatus() {
           suiteLabel: run.suiteLabel,
           workers: run.workers,
           headed: run.headed,
+          debug: Boolean(run.debug),
           grep: run.grep,
           selectedTestIds: run.selectedTestIds,
           counts: run.counts,
@@ -697,6 +704,14 @@ export function buildRunArguments(options) {
   const config = configForEnvironment(environment);
   const args = ["test", `--config=${config}`];
 
+  if (options.debug) {
+    const ids = options.selectedTestIds;
+    if (options.annualMode || !Array.isArray(ids) || ids.length !== 1 || !validPreviewId(ids[0]))
+      throw new Error("Tryb krok po kroku wymaga zaznaczenia dokładnie jednego testu z katalogu.");
+    args.push("--grep", `(?:${escapeRegex(ids[0])})(?![A-Z0-9-])`, "--debug", "--workers=1", "--retries=0", "--trace=on");
+    return { args, environment, suite: "debug", suiteLabel: `Krok po kroku · ${ids[0]}`, workers: 1 };
+  }
+
   if (options.annualMode) {
     args.push("tests/szkola-medalowosc-annual.spec.ts");
     args.push("--workers=1");
@@ -746,9 +761,25 @@ export function buildRunArguments(options) {
 }
 
 async function startRun(options) {
-  if (state.child) throw new Error("Test run is already in progress");
+  if (state.child || state.starting) throw new Error("Test run is already in progress");
+  state.starting = true;
+  try { return await startRunInternal(options); }
+  finally { state.starting = false; }
+}
+
+async function startRunInternal(options) {
 
   const built = buildRunArguments(options);
+  if (options.debug) {
+    const matches = (await listTests(built.environment)).filter((test) => test.id === options.selectedTestIds[0]);
+    if (matches.length !== 1 || matches[0].annual)
+      throw new Error("Wybierz jeden jednoznaczny, zwykły test z aktualnego katalogu.");
+    const file = path.resolve(root, "tests", matches[0].file.replace(/^tests\//, ""));
+    if (!file.startsWith(path.join(root, "tests") + path.sep)) throw new Error("Niepoprawna lokalizacja testu.");
+    built.args.splice(2, 0, `${path.relative(root, file).split(path.sep).join("/")}:${matches[0].line}`);
+    // Listowanie jest asynchroniczne: drugi start nie może wejść pomiędzy walidację a uruchomienie.
+    if (state.child) throw new Error("Test run is already in progress");
+  }
   const runId = randomUUID();
   const startedAt = new Date().toISOString();
   const reportDir = path.join(reportsDir, runId);
@@ -771,7 +802,8 @@ async function startRun(options) {
     suite: built.suite,
     suiteLabel: built.suiteLabel,
     workers: built.workers || 1,
-    headed: Boolean(options.headed),
+    headed: Boolean(options.headed || options.debug),
+    debug: Boolean(options.debug),
     grep: options.grep ? String(options.grep) : "",
     selectedTestIds: Array.isArray(options.selectedTestIds) ? options.selectedTestIds : [],
     counts: { passed: 0, failed: 0, expectedFailed: 0, skipped: 0 },
@@ -800,6 +832,7 @@ async function startRun(options) {
 
   state.child = child;
   pushLog(`UI: ${state.run.command}`);
+  if (options.debug) pushLog("KROK PO KROKU: w oknie Playwright Inspector użyj Step over, aby przejść do następnej akcji, lub Resume, aby kontynuować. Żądania i porównania API sprawdzisz w raporcie/trace; Inspektor nie jest debuggerem kodu TypeScript. Przerwanie może pozostawić dane testowe.");
   emit("status", publicStatus());
 
   child.stdout.on("data", (data) => pushLog(data.toString("utf8"), "stdout"));
@@ -962,6 +995,20 @@ const server = http.createServer(async (req, res) => {
       return;
     }
 
+    if (url.pathname === "/api/test-preview" && req.method === "GET") {
+      const id = url.searchParams.get("id");
+      if (!validPreviewId(id)) { sendJson(res, 400, { error: "Niepoprawne ID testu." }); return; }
+      const environment = url.searchParams.get("environment") === "test" ? "test" : "dev";
+      const preview = await latestTestPreview(root, id, environment, await loadHistory());
+      sendJson(res, 200, { preview });
+      return;
+    }
+
+    if (url.pathname === "/api/scenarios" && req.method === "GET") {
+      sendJson(res, 200, JSON.parse(await readFile(path.join(uiDir, "scenarios.json"), "utf8")));
+      return;
+    }
+
     if (url.pathname === "/api/run" && req.method === "POST") {
       const body = await readJsonBody(req);
       sendJson(res, 200, await startRun(body));
@@ -1019,6 +1066,11 @@ const server = http.createServer(async (req, res) => {
           selectedTestIds: source.failedTestIds,
         }),
       );
+      return;
+    }
+
+    if (url.pathname.startsWith("/latest-report/")) {
+      await serveFile(res, path.join(root, "playwright-report"), decodeURIComponent(url.pathname.slice("/latest-report/".length)));
       return;
     }
 
