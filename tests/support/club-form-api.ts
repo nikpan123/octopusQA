@@ -26,6 +26,7 @@ type ClubClass = {
 type Publisher = { id: number; symbol: string; name: string; levelId: number };
 type Form = {
   id: number;
+  createdAt?: string;
   teacherId: number;
   subjectId: number;
   year: number;

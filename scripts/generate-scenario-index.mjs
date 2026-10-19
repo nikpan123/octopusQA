@@ -13,7 +13,7 @@ const result = spawnSync(process.execPath, [playwrightCli, "test", "--list", "--
   encoding: "utf8",
   // Dokumentujemy również jawnie uruchamiany workflow roczny, mimo że jest
   // wyłączony z domyślnej regresji.
-  env: { ...process.env, OCTOPUS_INCLUDE_ANNUAL: "1" },
+  env: { ...process.env, OCTOPUS_INCLUDE_ANNUAL: "1", OCTOPUS_INCLUDE_DATABASE: "1" },
   maxBuffer: 10 * 1024 * 1024,
 });
 

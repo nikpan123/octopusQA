@@ -7,38 +7,46 @@ Repozytorium zawiera testy end-to-end aplikacji Octopus napisane w Playwright i 
 | DEV        | `https://octopus.gwodev.pl`  | `playwright.config.ts`      |
 | TEST       | `https://octopus.gwotest.pl` | `playwright.test.config.ts` |
 
-Aktualny zestaw zawiera **712 scenariuszy** w 34 plikach. Zwykła regresja obejmuje **710 scenariusze** (także przypadki warunkowo pomijane); dwa testy `MED-YEAR-*` należą do osobnego, ciężkiego procesu rocznej medalowości. Struktura ma 106 wykonywanych scenariuszy bez `fixme`: 87 na profilu istniejącej szkoły i 19 podczas tworzenia nowej szkoły. Kategoria ma 53 scenariusze: 34 dla istniejących szkół i 19 dla tworzenia przez formularz. Wszystkie 53 mają potwierdzone przejście na DEV w pełnym przebiegu i kontrolnych powtórkach z 13.10.2026, po korekcie reguły NPC; nie jest to jeden pełny przebieg po tej korekcie. Nowe 30 scenariuszy filtrowania nauczycieli TFL-01–TFL-30 oraz 32 scenariusze wyszukiwarki SFLT-01–SFLT-32 nie zostały uruchomione, zgodnie z prośbą użytkownika. Trzy SFLT wymagają danych SI, a jeden dokumentuje brak pola Notatki. Liczba implementacji nie jest wynikiem regresji. Znane niezgodności są oznaczone `test.fail` i pozostają wykonywane.
+Aktualny zestaw zawiera **757 scenariuszy** w 40 plikach. Zwykła regresja obejmuje **755 scenariuszy** (także przypadki warunkowo pomijane); dwa testy `MED-YEAR-*` należą do osobnego, ciężkiego procesu rocznej medalowości. Struktura ma 106 wykonywanych scenariuszy bez `fixme`: 87 na profilu istniejącej szkoły i 19 podczas tworzenia nowej szkoły. Kategoria ma 53 scenariusze: 34 dla istniejących szkół i 19 dla tworzenia przez formularz. Wszystkie 53 mają potwierdzone przejście na DEV w pełnym przebiegu i kontrolnych powtórkach z 13.10.2026, po korekcie reguły NPC; nie jest to jeden pełny przebieg po tej korekcie. Nowe 30 scenariuszy filtrowania nauczycieli TFL-01–TFL-30 oraz 32 scenariusze wyszukiwarki SFLT-01–SFLT-32 nie zostały uruchomione, zgodnie z prośbą użytkownika. Trzy SFLT wymagają danych SI, a jeden dokumentuje brak pola Notatki. Liczba implementacji nie jest wynikiem regresji. Znane niezgodności są oznaczone `test.fail` i pozostają wykonywane.
 
-Pakiet progów i Uprawnień obejmuje 74 implementacje: THR 22, PERM 25, ACC 10 i ACL 17. Ostatnie rozszerzenie dodaje 17 nieuruchomionych scenariuszy, w tym trzy bez flag Testowy u nauczyciela i szkół. [Dokumentacja](docs/tests/uprawnienia-i-progi.md) rozdziela gotowe sprawdzenia od planu reguł klienta, nauczyciela, ochrony rocznej i migracji progów. Przygotowanie danych korzysta z API, a działania użytkownika są sprawdzane w UI.
+Pakiet progów i Uprawnień obejmuje 90 pozycji scenariuszy: THR 22, PERM 25, ACC 10, ACL 17, NCL 8 i DEB 8. Nowe testy promocji korzystają z nauczycieli i szkół bez flag Testowy; przypadki debiutu zależne od daty mają jawne warunki sezonowe. Nie zostały uruchomione. [Dokumentacja](docs/tests/uprawnienia-i-progi.md) rozdziela sprawdzenie końcowych przypisań i eksportu od nadal brakującej kontroli zapisanych warstw. NCL-04 jest zablokowany (`fixme`) do czasu udostępnienia rzeczywistych zamówień historycznych i nie jest gotowym pokryciem tej reguły.
 
 Pełna lista jest generowana z kodu i znajduje się w [indeksie scenariuszy](docs/tests/scenario-index.md).
 
+[Redmine #37203 — sortowanie Kategorii](docs/tests/redmine-37203.md): istniejące CAT-23–CAT-25 mają teraz tag `@redmine-37203`, kontrolę rzeczywistej kolejności i dowody JSON/zrzuty. Bieżąca wersja tych trzech testów nie została wykonana na DEV/TEST; wcześniejsze wyniki kategorii dotyczą wersji sprzed tej zmiany.
+
+Regresja [Redmine #37176](docs/tests/redmine-37176.md) ma dwa nowe scenariusze: ORD-BUG-37176-01 i ORD-BUG-37176-02. Sprawdzają ilości -1 i -10, próbę zapisu oraz brak nowego zamówienia. Zostały napisane, ale nie uruchomione na DEV/TEST.
+
 ## Zakres projektu
 
-| Obszar                               | Plik                                 | Liczba wykonań |
-| ------------------------------------ | ------------------------------------ | -------------: |
-| Klubowiczostwo nauczyciela           | `klubowiczostwo-*.spec.ts`           |             72 |
-| Dodawanie nauczyciela                | `nauczyciel-dodawanie.spec.ts`       |             33 |
-| Edycja nauczyciela                   | `nauczyciel-edycja*.spec.ts`         |             44 |
-| Rozszerzenia i relacje nauczyciela   | `nauczyciel-rozszerzenie.spec.ts`    |              6 |
-| Dodawanie szkoły                     | `szkola-dodawanie.spec.ts`           |             57 |
-| Edycja szkoły                        | `szkola-edycja.spec.ts`              |             33 |
-| Medalowość szkoły                    | `szkola-medalowosc.spec.ts`          |             42 |
-| Roczna medalowość                    | `szkola-medalowosc-annual.spec.ts`   |              2 |
-| Relacja szkoła–nauczyciel            | `szkola-nauczyciel.spec.ts`          |              1 |
-| Struktura szkoły                     | `szkola-struktura.spec.ts`           |             87 |
-| Struktura przy dodawaniu szkoły      | `szkola-struktura-dodawanie.spec.ts` |             19 |
-| Kategoria szkoły                     | `szkola-kategoria.spec.ts`           |             34 |
-| Kategoria przy dodawaniu szkoły      | `szkola-kategoria-dodawanie.spec.ts` |             19 |
-| Walidacja, anulowanie i wyszukiwanie | `walidacja-anulowanie.spec.ts`       |              9 |
-| Zamówienia szkoły                    | `zamowienia-*.spec.ts`               |            118 |
-| Filtrowanie nauczycieli w szkole     | `szkola-nauczyciele-filtry.spec.ts`  |             30 |
-| Wyszukiwarka szkół                   | `szkola-wyszukiwanie-filtry.spec.ts` |             32 |
-| Próg szkoły                          | `szkola-prog.spec.ts`                |             22 |
-| Widok i decyzje Uprawnień            | `nauczyciel-uprawnienia.spec.ts`     |             25 |
-| Eksport uprawnień                    | `uprawnienia-api.spec.ts`            |             10 |
-| Cykl życia uprawnień                 | `uprawnienia-cykl-zycia.spec.ts`     |             17 |
-| **Razem**                            |                                      |        **712** |
+| Obszar                               | Plik                                       | Liczba wykonań |
+| ------------------------------------ | ------------------------------------------ | -------------: |
+| Klubowiczostwo nauczyciela           | `klubowiczostwo-*.spec.ts`                 |             72 |
+| Dodawanie nauczyciela                | `nauczyciel-dodawanie.spec.ts`             |             33 |
+| Edycja nauczyciela                   | `nauczyciel-edycja*.spec.ts`               |             44 |
+| Rozszerzenia i relacje nauczyciela   | `nauczyciel-rozszerzenie.spec.ts`          |              6 |
+| Dodawanie szkoły                     | `szkola-dodawanie.spec.ts`                 |             57 |
+| Edycja szkoły                        | `szkola-edycja.spec.ts`                    |             33 |
+| Medalowość szkoły                    | `szkola-medalowosc.spec.ts`                |             42 |
+| Roczna medalowość                    | `szkola-medalowosc-annual.spec.ts`         |              2 |
+| Relacja szkoła–nauczyciel            | `szkola-nauczyciel.spec.ts`                |              1 |
+| Struktura szkoły                     | `szkola-struktura.spec.ts`                 |             87 |
+| Struktura przy dodawaniu szkoły      | `szkola-struktura-dodawanie.spec.ts`       |             19 |
+| Kategoria szkoły                     | `szkola-kategoria.spec.ts`                 |             34 |
+| Kategoria przy dodawaniu szkoły      | `szkola-kategoria-dodawanie.spec.ts`       |             19 |
+| Walidacja, anulowanie i wyszukiwanie | `walidacja-anulowanie.spec.ts`             |              9 |
+| Zamówienia szkoły                    | `zamowienia-*.spec.ts`                     |            139 |
+| Filtrowanie nauczycieli w szkole     | `szkola-nauczyciele-filtry.spec.ts`        |             30 |
+| Wyszukiwarka szkół                   | `szkola-wyszukiwanie-filtry.spec.ts`       |             32 |
+| Próg szkoły                          | `szkola-prog.spec.ts`                      |             22 |
+| Widok i decyzje Uprawnień            | `nauczyciel-uprawnienia.spec.ts`           |             25 |
+| Eksport uprawnień                    | `uprawnienia-api.spec.ts`                  |             10 |
+| Cykl życia uprawnień                 | `uprawnienia-cykl-zycia.spec.ts`           |             17 |
+| Promocja nowego klienta              | `uprawnienia-promocja-nowy-klient.spec.ts` |              8 |
+| Promocja debiutu                     | `uprawnienia-promocja-debiutu.spec.ts`     |              8 |
+| Regresja dodawania nauczyciela 37164 | `nauczyciel-redmine-37164.spec.ts` | 4 |
+| Regresja medalowości 37204 | `szkola-redmine-37204.spec.ts` | 4 |
+| **Razem**                            |                                            |        **757** |
 
 Szczegółowe opisy domen znajdują się w [dokumentacji testów](docs/tests/README.md).
 

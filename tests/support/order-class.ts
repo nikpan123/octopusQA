@@ -14,7 +14,13 @@ export type ClassProduct = {
   isDel: boolean;
 };
 export type ClassLine = { product: ClassProduct; quantity: number };
-type SavedOrder = { id: number; orderItems: Array<{ dictOrderItemId: number; quantity: number }> };
+type SavedOrder = {
+  id: number;
+  isCopied?: boolean;
+  schoolAdressToOrder?: string;
+  createdAt?: string;
+  orderItems: Array<{ dictOrderItemId: number; quantity: number }>;
+};
 
 export class OrderClassApi {
   readonly owned = new Set<string>();
@@ -25,9 +31,12 @@ export class OrderClassApi {
     readonly school: { id: string; name: string },
     private readonly scenario: Scenario,
     private readonly liveHeaders?: () => Promise<Record<string, string>>,
+    private readonly complex = false,
   ) {
     expect(school.name).toMatch(
-      new RegExp(`^AUTO_(?:ORD_REFERENCE_|CAT_${OCTOPUS_ENV.toUpperCase()}_ENT_)`),
+      new RegExp(
+        `^AUTO_(?:ORD_REFERENCE_|CAT_${OCTOPUS_ENV.toUpperCase()}_ENT_|STR_${OCTOPUS_ENV.toUpperCase()}_COPY_)`,
+      ),
     );
   }
 
@@ -96,12 +105,17 @@ export class OrderClassApi {
   }
 
   async orders(): Promise<SavedOrder[]> {
-    const response = await this.request.get(this.url("SchoolOrder/GetSchoolOrders"), {
-      headers: await this.requestHeaders(),
-      params: {
-        model: JSON.stringify({ institutionId: Number(this.school.id), page: 1, pageSize: 500 }),
+    const response = await this.request.get(
+      this.url(
+        this.complex ? "SchoolComplexOrder/GetSchoolComplexOrders" : "SchoolOrder/GetSchoolOrders",
+      ),
+      {
+        headers: await this.requestHeaders(),
+        params: {
+          model: JSON.stringify({ institutionId: Number(this.school.id), page: 1, pageSize: 500 }),
+        },
       },
-    });
+    );
     expect(response.ok()).toBe(true);
     const body = await response.json();
     expect(Array.isArray(body.data)).toBe(true);
@@ -135,7 +149,11 @@ export class OrderClassApi {
           })),
         };
         const response = await this.request.post(
-          this.url(`SchoolOrder/${orderId ? "UpdateSchoolOrder" : "AddSchoolOrder"}`),
+          this.url(
+            this.complex
+              ? `SchoolComplexOrder/${orderId ? "UpdateSchoolComplexOrder" : "AddSchoolComplexOrder"}`
+              : `SchoolOrder/${orderId ? "UpdateSchoolOrder" : "AddSchoolOrder"}`,
+          ),
           {
             headers: await this.requestHeaders(),
             data: payload,
@@ -172,10 +190,19 @@ export class OrderClassApi {
       "Sprzątanie API: usunięcie własnego zamówienia i sprawdzenie braku zamówienia",
       async () => {
         expect(this.owned.has(orderId), "Usuwanie tylko zamówień bieżącego testu").toBe(true);
-        const response = await this.request.delete(this.url("SchoolOrder/DeleteOrder"), {
-          headers: await this.requestHeaders(),
-          params: { orderId, userId: this.userId },
-        });
+        const response = await this.request.delete(
+          this.url(
+            this.complex
+              ? "SchoolComplexOrder/DeleteSchoolComplexOrder"
+              : "SchoolOrder/DeleteOrder",
+          ),
+          {
+            headers: await this.requestHeaders(),
+            params: this.complex
+              ? { schoolComplexOrderId: orderId, userId: this.userId }
+              : { orderId, userId: this.userId },
+          },
+        );
         expect(response.ok(), `Usunięcie własnego zamówienia ${orderId}`).toBe(true);
         await expect
           .poll(async () => (await this.orders()).some((order) => String(order.id) === orderId))
@@ -219,16 +246,19 @@ export const test = base.extend<{ classOrders: OrderClassApi }>({
       try {
         await use(api);
       } finally {
-        const errors: unknown[] = [];
-        for (const id of [...api.owned].reverse()) {
-          try {
-            await api.remove(id);
-          } catch (error) {
-            errors.push(error);
-            await scenario.record(`orderClassCleanup_${id}`, "FAILED");
+        const cleanup = async () => {
+          const errors: unknown[] = [];
+          for (const id of [...api.owned].reverse()) {
+            try {
+              await api.remove(id);
+            } catch (error) {
+              errors.push(error);
+              await scenario.record(`orderClassCleanup_${id}`, "FAILED");
+            }
           }
-        }
-        if (errors.length) throw errors[0];
+          if (errors.length) throw errors[0];
+        };
+        await cleanup();
       }
     },
     { timeout: 180000 },

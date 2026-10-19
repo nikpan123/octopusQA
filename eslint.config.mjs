@@ -83,4 +83,16 @@ export default tseslint.config(
     },
   },
   prettier,
+  {
+    files: [
+      "tests/zamowienia-kopiowanie-struktura.spec.ts",
+      "tests/zamowienia-redmine-36289.spec.ts",
+      "tests/zamowienia-redmine-36290.spec.ts",
+    ],
+    settings: {
+      playwright: {
+        globalAliases: { test: ["caseTest", "pairTest", "isolationTest", "standaloneTest"] },
+      },
+    },
+  },
 );

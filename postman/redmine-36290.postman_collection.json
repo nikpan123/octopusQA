@@ -1,0 +1,313 @@
+{
+  "info": {
+    "_postman_id": "e4d8ff90-1373-47a3-b9e1-6db6a90b3629",
+    "name": "Octopus DEV — #36290 — niezależna edycja kopii",
+    "description": "WYŁĄCZNIE DEV, szkoła → szkoła i własne dokumenty testowe. Przygotuj oryginał i jego świeżą kopię w UI. Uzupełnij zmienne kolekcji, wpisz aktualny bearerToken BEZ prefiksu Bearer. Uruchom wszystkie 5 żądań przez Run collection, w podanej kolejności, 1 iteracja. Kroki 01–02 odczytują dane, 03 próbuje zmienić JEDNĄ ilość w kopii, zachowując pozostałe pozycje, a 04–05 porównują stan. Domyślnie zapis zablokowany: allowWrite=NO. Aby świadomie wykonać próbę na własnej kopii, ustaw allowWrite=YES. Kolekcja nie tworzy ani nie usuwa dokumentów i nie cofa zmiany. FAIL asercji niezmienności kopii w 05 oznacza odtworzenie błędu, jeżeli źródło w 04 pozostaje bez zmian. Nie eksportuj ani nie udostępniaj kolekcji po wpisaniu tokenu. Historia khsynchro nie jest badana.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [{ "key": "token", "value": "{{bearerToken}}", "type": "string" }]
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "https://octopus.gwodev.pl", "type": "string" },
+    {
+      "key": "bearerToken",
+      "value": "",
+      "type": "string",
+      "description": "Aktualny token sesji Octopusa, bez prefiksu Bearer. Nie udostępniaj."
+    },
+    {
+      "key": "sourceSchoolId",
+      "value": "",
+      "type": "string",
+      "description": "ID szkoły źródłowej, nie institutionUnitId."
+    },
+    {
+      "key": "targetSchoolId",
+      "value": "",
+      "type": "string",
+      "description": "ID szkoły docelowej, nie institutionUnitId. Nie zespół szkół."
+    },
+    {
+      "key": "sourceOrderId",
+      "value": "",
+      "type": "string",
+      "description": "ID oryginalnego zamówienia."
+    },
+    {
+      "key": "copyOrderId",
+      "value": "",
+      "type": "string",
+      "description": "ID kopii w szkole docelowej. Odczyt 02 sprawdza isCopied=true."
+    },
+    {
+      "key": "currentUserId",
+      "value": "",
+      "type": "string",
+      "description": "ID zalogowanego użytkownika, np. z localStorage id. Bez danych innego użytkownika."
+    },
+    {
+      "key": "productCode",
+      "value": "F7P",
+      "type": "string",
+      "description": "Kod handlowy jednej pozycji obecnej w oryginale i kopii. Zmień, jeśli używasz innego produktu."
+    },
+    {
+      "key": "newQuantity",
+      "value": "99",
+      "type": "string",
+      "description": "Nowa ilość, inna niż obecna w kopii."
+    },
+    {
+      "key": "allowWrite",
+      "value": "NO",
+      "type": "string",
+      "description": "Ustaw YES tylko dla własnych dokumentów testowych na DEV. Pozostaw NO, aby nie wykonać zapisu."
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "(() => {",
+          "  const stop = message => { console.error(message); pm.execution.skipRequest(); throw new Error(message); };",
+          "  const get = key => String(pm.variables.get(key) ?? '').trim();",
+          "  if (get('baseUrl') !== 'https://octopus.gwodev.pl') return stop('Blokada: kolekcja działa wyłącznie na DEV Octopusa.');",
+          "  if (!get('bearerToken') || /^Bearer\\s/i.test(get('bearerToken'))) return stop('Uzupełnij aktualny bearerToken bez prefiksu Bearer.');",
+          "  const ids = ['sourceSchoolId', 'targetSchoolId', 'sourceOrderId', 'copyOrderId', 'currentUserId'];",
+          "  for (const key of ids) if (!/^[1-9]\\d*$/.test(get(key)) || !Number.isSafeInteger(Number(get(key)))) return stop('Uzupełnij dodatnie liczbowe ID: ' + key);",
+          "  if (get('sourceSchoolId') === get('targetSchoolId') || get('sourceOrderId') === get('copyOrderId')) return stop('Źródło i cel muszą być różnymi szkołami i dokumentami.');",
+          "  if (!get('productCode') || !/^[1-9]\\d*$/.test(get('newQuantity')) || !Number.isSafeInteger(Number(get('newQuantity')))) return stop('Uzupełnij productCode i dodatnią całkowitą newQuantity.');",
+          "  const config = JSON.stringify([...ids, 'baseUrl', 'productCode', 'newQuantity'].map(key => [key, get(key)]));",
+          "  if (pm.info.requestName.startsWith('01')) {",
+          "    ['_originalBefore', '_copyBefore', '_updateBody', '_writeAttempted', '_writeStatus', '_sourceUnchanged', '_readyAt'].forEach(key => pm.variables.unset(key));",
+          "    pm.variables.set('_config', config);",
+          "  } else if (pm.variables.get('_config') !== config) return stop('Uruchom całą kolekcję od 01 przez Run collection. Nie zmieniaj zmiennych w trakcie.');",
+          "  pm.variables.set('_sourceModel', JSON.stringify({ institutionId: Number(get('sourceSchoolId')), page: 1, pageSize: 500 }));",
+          "  pm.variables.set('_targetModel', JSON.stringify({ institutionId: Number(get('targetSchoolId')), page: 1, pageSize: 500 }));",
+          "})();"
+        ]
+      }
+    }
+  ],
+  "item": [
+    {
+      "name": "01 — odczyt oryginału PRZED próbą",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/SchoolOrder/GetSchoolOrders?model={{_sourceModel}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "SchoolOrder", "GetSchoolOrders"],
+          "query": [{ "key": "model", "value": "{{_sourceModel}}" }]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Odczyt źródła: HTTP 200', () => pm.expect(pm.response.code).to.equal(200));",
+              "if (pm.response.code !== 200) throw new Error('Nie odczytano oryginału; zapis nie zostanie przygotowany.');",
+              "const rows = pm.response.json().data;",
+              "if (!Array.isArray(rows)) throw new Error('Niepoprawna lista zamówień źródła.');",
+              "const matches = rows.filter(row => String(row.id) === String(pm.variables.get('sourceOrderId')).trim());",
+              "if (matches.length !== 1 || matches[0].isCopied === true) throw new Error('Wskaż jeden oryginał, nie kopię, we właściwej szkole.');",
+              "const original = matches[0];",
+              "if (!Array.isArray(original.orderItems) || !original.orderItems.length) throw new Error('Oryginał nie ma pozycji.');",
+              "pm.variables.set('_originalBefore', JSON.stringify(original));",
+              "pm.test('Oryginał znaleziony i nie jest kopią', () => pm.expect(original.isCopied).not.to.equal(true));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "02 — odczyt kopii PRZED próbą i przygotowanie Body",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/SchoolOrder/GetSchoolOrders?model={{_targetModel}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "SchoolOrder", "GetSchoolOrders"],
+          "query": [{ "key": "model", "value": "{{_targetModel}}" }]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Odczyt kopii: HTTP 200', () => pm.expect(pm.response.code).to.equal(200));",
+              "if (pm.response.code !== 200 || !pm.variables.get('_originalBefore')) throw new Error('Najpierw poprawny odczyt 01 i 02; zapis zablokowany.');",
+              "const rows = pm.response.json().data;",
+              "if (!Array.isArray(rows)) throw new Error('Niepoprawna lista zamówień celu.');",
+              "const matches = rows.filter(row => String(row.id) === String(pm.variables.get('copyOrderId')).trim());",
+              "if (matches.length !== 1 || matches[0].isCopied !== true) throw new Error('Wskazany dokument nie jest jednoznaczną kopią. Zapis zablokowany.');",
+              "const copied = matches[0];",
+              "const original = JSON.parse(pm.variables.get('_originalBefore'));",
+              "const code = String(pm.variables.get('productCode')).trim();",
+              "const products = copied.orderItems.filter(item => item.businessCode === code);",
+              "const sourceProducts = original.orderItems.filter(item => item.businessCode === code);",
+              "if (products.length !== 1 || sourceProducts.length !== 1 || products[0].dictOrderItemId !== sourceProducts[0].dictOrderItemId) throw new Error('Kod produktu nie wskazuje jednej wspólnej pozycji źródła i kopii.');",
+              "const canonical = items => items.map(item => ({ id: item.dictOrderItemId, quantity: item.quantity })).sort((a,b) => a.id-b.id);",
+              "if (JSON.stringify(canonical(copied.orderItems)) !== JSON.stringify(canonical(original.orderItems))) throw new Error('Przed próbą źródło i kopia muszą mieć identyczne produkty i ilości. Przygotuj świeżą kopię.');",
+              "const quantity = Number(pm.variables.get('newQuantity'));",
+              "if (quantity === products[0].quantity) throw new Error('newQuantity musi różnić się od ilości początkowej.');",
+              "const orderItems = copied.orderItems.map(item => {",
+              "  if (!Number.isSafeInteger(item.dictOrderItemId) || typeof item.businessCode !== 'string') throw new Error('Niepełne dane produktu; zapis zablokowany.');",
+              "  return { dictOrderItemId: item.dictOrderItemId, businessCode: item.businessCode, quantity: item.businessCode === code ? quantity : item.quantity };",
+              "});",
+              "pm.variables.set('_copyBefore', JSON.stringify(copied));",
+              "pm.variables.set('_updateBody', JSON.stringify({ institutionId: Number(pm.variables.get('targetSchoolId')), institutionOrderId: copied.id, createdBy: Number(pm.variables.get('currentUserId')), createdAt: new Date().toISOString(), orderItems }));",
+              "pm.variables.set('_readyAt', String(Date.now()));",
+              "pm.test('Potwierdzona kopia; Body zachowuje wszystkie pozostałe pozycje', () => pm.expect(orderItems.length).to.equal(copied.orderItems.length));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "03 — PRÓBA ZAPISU: nadpisanie ilości w KOPII",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{{_updateBody}}",
+          "options": { "raw": { "language": "json" } }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/SchoolOrder/UpdateSchoolOrder",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "SchoolOrder", "UpdateSchoolOrder"]
+        },
+        "description": "TEN KROK PRÓBUJE ZMIENIĆ ILOŚĆ W KOPII. Zapis tylko po ustawieniu allowWrite=YES i poprawnym odczycie 01–02 w tym samym uruchomieniu. Pozostałe pozycje zostają zachowane."
+      },
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "(() => {",
+              "  const stop = message => { console.error(message); pm.execution.skipRequest(); throw new Error(message); };",
+              "  if (String(pm.variables.get('allowWrite')).trim() !== 'YES') return stop('Zapis wyłączony. Ustaw allowWrite=YES wyłącznie dla własnych dokumentów testowych.');",
+              "  if (!pm.variables.get('_copyBefore') || !pm.variables.get('_originalBefore') || !pm.variables.get('_updateBody')) return stop('Brak poprawnych odczytów 01–02 w tej iteracji.');",
+              "  if (pm.variables.get('_writeAttempted')) return stop('Nie ponawiamy zapisu automatycznie. Uruchom nowy przebieg od 01 na świeżej kopii.');",
+              "  const age = Date.now() - Number(pm.variables.get('_readyAt'));",
+              "  if (!Number.isFinite(age) || age < 0 || age > 300000) return stop('Dane przygotowania wygasły. Uruchom ponownie od 01.');",
+              "  const body = JSON.parse(pm.variables.get('_updateBody'));",
+              "  if (body.institutionOrderId !== Number(pm.variables.get('copyOrderId')) || body.institutionId !== Number(pm.variables.get('targetSchoolId'))) return stop('Body nie wskazuje potwierdzonej kopii i jej szkoły.');",
+              "  pm.variables.set('_writeAttempted', 'YES');",
+              "})();"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.variables.set('_writeStatus', String(pm.response.code));",
+              "pm.test('Odpowiedź próby zapisu nie jest błędem 5xx', () => pm.expect(pm.response.code).to.be.below(500));",
+              "console.info('Próba edycji kopii — HTTP', pm.response.code, 'ID kopii', pm.variables.get('copyOrderId'), 'nowa ilość', pm.variables.get('newQuantity'));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "04 — oryginał PO próbie: powinien pozostać bez zmian",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/SchoolOrder/GetSchoolOrders?model={{_sourceModel}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "SchoolOrder", "GetSchoolOrders"],
+          "query": [{ "key": "model", "value": "{{_sourceModel}}" }]
+        }
+      },
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "if (!pm.variables.get('_writeStatus')) { pm.execution.skipRequest(); throw new Error('Nie wykonano próby zapisu 03 — brak wyniku do porównania.'); }"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Odczyt źródła po próbie: HTTP 200', () => pm.expect(pm.response.code).to.equal(200));",
+              "if (pm.response.code !== 200) throw new Error('Nie można porównać źródła.');",
+              "const before = JSON.parse(pm.variables.get('_originalBefore'));",
+              "const after = pm.response.json().data.find(row => String(row.id) === String(pm.variables.get('sourceOrderId')).trim());",
+              "if (!after) throw new Error('Brak oryginału po próbie.');",
+              "const canonical = items => items.map(item => ({ id: item.dictOrderItemId, quantity: item.quantity })).sort((a,b) => a.id-b.id);",
+              "const unchanged = JSON.stringify(canonical(before.orderItems)) === JSON.stringify(canonical(after.orderItems));",
+              "pm.variables.set('_sourceUnchanged', String(unchanged));",
+              "pm.test('Oryginał: te same produkty i ilości PRZED i PO', () => pm.expect(canonical(after.orderItems)).to.deep.equal(canonical(before.orderItems)));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "05 — kopia PO próbie: FAIL pokazuje błąd #36290",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/SchoolOrder/GetSchoolOrders?model={{_targetModel}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "SchoolOrder", "GetSchoolOrders"],
+          "query": [{ "key": "model", "value": "{{_targetModel}}" }]
+        }
+      },
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "if (!pm.variables.get('_writeStatus')) { pm.execution.skipRequest(); throw new Error('Nie wykonano próby zapisu 03 — brak wyniku do porównania.'); }"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Odczyt kopii po próbie: HTTP 200', () => pm.expect(pm.response.code).to.equal(200));",
+              "if (pm.response.code !== 200) throw new Error('Nie można porównać kopii.');",
+              "const before = JSON.parse(pm.variables.get('_copyBefore'));",
+              "const after = pm.response.json().data.find(row => String(row.id) === String(pm.variables.get('copyOrderId')).trim());",
+              "if (!after) throw new Error('Brak kopii po próbie.');",
+              "const canonical = items => items.map(item => ({ id: item.dictOrderItemId, quantity: item.quantity })).sort((a,b) => a.id-b.id);",
+              "const code = String(pm.variables.get('productCode')).trim();",
+              "const beforeItem = before.orderItems.find(item => item.businessCode === code);",
+              "const afterItem = after.orderItems.find(item => item.businessCode === code);",
+              "console.info('DOWÓD #36290:', { copyOrderId: after.id, productCode: code, before: beforeItem.quantity, after: afterItem && afterItem.quantity, writeHttpStatus: pm.variables.get('_writeStatus'), sourceUnchanged: pm.variables.get('_sourceUnchanged') });",
+              "pm.test('Potwierdzono porównanie niezmienionego źródła w 04', () => pm.expect(pm.variables.get('_sourceUnchanged')).to.equal('true'));",
+              "pm.test('Kopia nie pozwala na niezależną zmianę — FAIL oznacza odtworzenie błędu', () => pm.expect(canonical(after.orderItems)).to.deep.equal(canonical(before.orderItems)));"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

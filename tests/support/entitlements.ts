@@ -331,13 +331,19 @@ export class EntitlementData {
 export const test = base.extend<{
   access: EntitlementData;
   accessTestFlags: { teacher: boolean; school: boolean };
+  accessSchoolKey: string;
 }>({
   accessTestFlags: [{ teacher: true, school: true }, { option: true }],
+  accessSchoolKey: ["", { option: true }],
   access: [
-    async ({ page, scenario, authSession, performanceMetrics, accessTestFlags }, use, testInfo) => {
+    async (
+      { page, scenario, authSession, performanceMetrics, accessTestFlags, accessSchoolKey },
+      use,
+      testInfo,
+    ) => {
       const schools = [
-        await entitlementSchool(page, "PRIMARY", 400, accessTestFlags.school),
-        await entitlementSchool(page, "SECOND", 400, accessTestFlags.school),
+        await entitlementSchool(page, `${accessSchoolKey}PRIMARY`, 400, accessTestFlags.school),
+        await entitlementSchool(page, `${accessSchoolKey}SECOND`, 400, accessTestFlags.school),
       ];
       const teacherId = await scenario.createTeacher(schools[0].id, schools[0].name, {
         testRecord: accessTestFlags.teacher,
@@ -433,6 +439,9 @@ export function expectedAssignments(
 ) {
   const groups = new Map<number, Map<string, Assignment["classes"][number]>>();
   for (const { record, classes } of records) {
+    // Eksport obejmuje tylko przyznane przypisania. Brak klas nie tworzy
+    // pustego przedmiotu; inny rekord tego samego przedmiotu nadal może go dodać.
+    if (classes.length === 0) continue;
     const group = groups.get(record.subjectId) ?? new Map();
     groups.set(record.subjectId, group);
     for (const item of classes) {

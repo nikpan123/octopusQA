@@ -526,17 +526,33 @@ test.describe("Uprawnienia nauczyciela — prezentacja dostępu cyfrowego", () =
             refused: classes
               .filter((item) => item.class === 4)
               .map((item) => ({ isOur: item.isOur })),
-            decision: current.details.filter((item) => item.class === "4").map((item) => ({ status: item.status, reason: item.reasonForLack })),
+            decision: current.details
+              .filter((item) => item.class === "4")
+              .map((item) => ({ status: item.status, reason: item.reasonForLack })),
             others: classes.filter((item) => item.class !== 4),
           };
         })
-        .toEqual({ bok: true, refused: [{ isOur: false }], decision: [{ status: "Brak dostępu", reason: "BOK" }], others }));
+        .toEqual({
+          bok: true,
+          refused: [{ isOur: false }],
+          decision: [{ status: "Brak dostępu", reason: "BOK" }],
+          others,
+        }));
     await test.step("Porównanie: historia potwierdza nową ręczną odmowę wyłącznie klasy 4", async () => {
       const previousIds = new Set(previousHistory.map((item) => item.id));
-      await expect.poll(async () => {
-        const entry = (await data.history(record)).find((item) => !previousIds.has(item.id) && item.modificationType === "Ręczna edycja");
-        return entry ? String(entry.noAccessClasses).split(",").map((value) => value.trim()).sort() : null;
-      }).toEqual(["4"]);
+      await expect
+        .poll(async () => {
+          const entry = (await data.history(record)).find(
+            (item) => !previousIds.has(item.id) && item.modificationType === "Ręczna edycja",
+          );
+          return entry
+            ? String(entry.noAccessClasses)
+                .split(",")
+                .map((value) => value.trim())
+                .sort()
+            : null;
+        })
+        .toEqual(["4"]);
     });
     await expectAccessExport(data, [
       {

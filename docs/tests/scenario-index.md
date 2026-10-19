@@ -2,7 +2,7 @@
 
 > Plik generowany automatycznie przez `npm run docs:scenarios`. Nie edytuj tabeli ręcznie.
 
-Łącznie: **712 scenariuszy**.
+Łącznie: **773 scenariuszy**.
 
 | ID | Scenariusz | Plik | Tagi |
 |---|---|---|---|
@@ -155,6 +155,10 @@
 | EDIT-09 | EDIT-09: nazwisko z łącznikiem można zapisać | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L254) | `teacher`, `edit` |
 | EDIT-10 | EDIT-10: puste imię blokuje zapis | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L291) | `teacher`, `edit`, `validation` |
 | EDIT-11 | EDIT-11: puste nazwisko blokuje zapis | [nauczyciel-edycja.spec.ts](../../tests/nauczyciel-edycja.spec.ts#L339) | `teacher`, `edit`, `validation` |
+| REL-BUG-37164-01 | REL-BUG-37164-01: dodawanie — ponowne Szukaj nie przywraca plusa | [nauczyciel-redmine-37164.spec.ts](../../tests/nauczyciel-redmine-37164.spec.ts#L100) | `teacher`, `school`, `relation`, `regression`, `redmine-37164` |
+| REL-BUG-37164-02 | REL-BUG-37164-02: dodawanie — ponowne otwarcie okna nie umożliwia duplikatu | [nauczyciel-redmine-37164.spec.ts](../../tests/nauczyciel-redmine-37164.spec.ts#L100) | `teacher`, `school`, `relation`, `regression`, `redmine-37164` |
+| REL-BUG-37164-03 | REL-BUG-37164-03: edycja — już zapisanej szkoły nie można przypiąć ponownie | [nauczyciel-redmine-37164.spec.ts](../../tests/nauczyciel-redmine-37164.spec.ts#L100) | `teacher`, `school`, `relation`, `regression`, `redmine-37164` |
+| REL-BUG-37164-04 | REL-BUG-37164-04: edycja — inna szkoła jest dozwolona, jej duplikat zablokowany | [nauczyciel-redmine-37164.spec.ts](../../tests/nauczyciel-redmine-37164.spec.ts#L100) | `teacher`, `school`, `relation`, `regression`, `redmine-37164` |
 | EDIT-03 | EDIT-03: zapis nazwiska jest trwały i widoczny w historii | [nauczyciel-rozszerzenie.spec.ts](../../tests/nauczyciel-rozszerzenie.spec.ts#L4) | `teacher`, `edit` |
 | TEA-04 | TEA-04: niepoprawny e-mail blokuje zapis nauczyciela | [nauczyciel-rozszerzenie.spec.ts](../../tests/nauczyciel-rozszerzenie.spec.ts#L43) | `teacher`, `validation` |
 | TEA-04 | TEA-04: niepoprawny telefon blokuje zapis nauczyciela | [nauczyciel-rozszerzenie.spec.ts](../../tests/nauczyciel-rozszerzenie.spec.ts#L43) | `teacher`, `validation` |
@@ -167,25 +171,25 @@
 | PERM-04 | PERM-04: tabela ma aktualny zestaw i kolejność kolumn | [nauczyciel-uprawnienia.spec.ts](../../tests/nauczyciel-uprawnienia.spec.ts#L73) | `teacher`, `entitlement`, `columns` |
 | PERM-05 | PERM-05: szczegół zawiera wszystkie klasy przedmiotu również nieprzyznane | [nauczyciel-uprawnienia.spec.ts](../../tests/nauczyciel-uprawnienia.spec.ts#L101) | `teacher`, `entitlement`, `classes` |
 | PERM-06 | PERM-06: szczegół pokazuje zapisane ilości progi powody lata i daty | [nauczyciel-uprawnienia.spec.ts](../../tests/nauczyciel-uprawnienia.spec.ts#L141) | `teacher`, `entitlement`, `details` |
-| PERM-07 | PERM-07: Przyznano w nagłówku oznacza co najmniej jedną przyznaną klasę | [nauczyciel-uprawnienia.spec.ts](../../tests/nauczyciel-uprawnienia.spec.ts#L187) | `teacher`, `entitlement`, `status` |
-| PERM-08 | PERM-08: bez zaznaczenia rekordu akcje są zablokowane | [nauczyciel-uprawnienia.spec.ts](../../tests/nauczyciel-uprawnienia.spec.ts#L208) | `teacher`, `entitlement`, `selection` |
-| PERM-09 | PERM-09: rekord automatyczny nie pozwala przywracać automatu | [nauczyciel-uprawnienia.spec.ts](../../tests/nauczyciel-uprawnienia.spec.ts#L219) | `teacher`, `entitlement`, `restore` |
-| PERM-10 | PERM-10: anulowanie edycji nie zapisuje decyzji ani historii | [nauczyciel-uprawnienia.spec.ts](../../tests/nauczyciel-uprawnienia.spec.ts#L236) | `teacher`, `entitlement`, `cancel` |
-| PERM-11 | PERM-11: historia dotyczy zaznaczonego przedmiotu i roku | [nauczyciel-uprawnienia.spec.ts](../../tests/nauczyciel-uprawnienia.spec.ts#L265) | `teacher`, `entitlement`, `history` |
-| PERM-12 | PERM-12: ponowne otwarcie zakładki nie zmienia kwalifikacji | [nauczyciel-uprawnienia.spec.ts](../../tests/nauczyciel-uprawnienia.spec.ts#L297) | `teacher`, `entitlement`, `persistence` |
-| PERM-13 | PERM-13: dwa przedmioty tworzą osobne rekordy uprawnień | [nauczyciel-uprawnienia.spec.ts](../../tests/nauczyciel-uprawnienia.spec.ts#L315) | `teacher`, `entitlement`, `isolation` |
-| PERM-14 | PERM-14: ten sam przedmiot w dwóch szkołach ma oddzielne rekordy | [nauczyciel-uprawnienia.spec.ts](../../tests/nauczyciel-uprawnienia.spec.ts#L338) | `teacher`, `entitlement`, `isolation` |
-| PERM-15 | PERM-15: dane ilościowe w szczególe nie są edytowalne | [nauczyciel-uprawnienia.spec.ts](../../tests/nauczyciel-uprawnienia.spec.ts#L358) | `teacher`, `entitlement`, `readonly` |
-| PERM-16 | PERM-16: nadanie jednej klasy przez UI zapisuje decyzję BOK i historię | [nauczyciel-uprawnienia.spec.ts](../../tests/nauczyciel-uprawnienia.spec.ts#L374) | `teacher`, `entitlement`, `manual` |
-| PERM-17 | PERM-17: Przywróć wyłącza decyzję ręczną i pokazuje wynik automatu | [nauczyciel-uprawnienia.spec.ts](../../tests/nauczyciel-uprawnienia.spec.ts#L438) | `teacher`, `entitlement`, `restore`, `manual` |
-| PERM-18 | PERM-18: odmowa klasy 4 przez UI nie zmienia automatu dla pozostałych klas | [nauczyciel-uprawnienia.spec.ts](../../tests/nauczyciel-uprawnienia.spec.ts#L506) | `teacher`, `entitlement`, `manual`, `isolation` |
-| PERM-19 | PERM-19: anulowanie Przywróć zachowuje decyzję BOK eksport i historię | [nauczyciel-uprawnienia.spec.ts](../../tests/nauczyciel-uprawnienia.spec.ts#L544) | `teacher`, `entitlement`, `restore`, `cancel` |
-| PERM-20 | PERM-20: edycja BOK jednej szkoły nie zmienia tego samego przedmiotu w drugiej szkole | [nauczyciel-uprawnienia.spec.ts](../../tests/nauczyciel-uprawnienia.spec.ts#L560) | `teacher`, `entitlement`, `manual`, `isolation` |
-| PERM-21 | PERM-21: szkoła testowa bez zamówień rozszerza deklarację Matematyki 4 do 4–8 | [nauczyciel-uprawnienia.spec.ts](../../tests/nauczyciel-uprawnienia.spec.ts#L583) | `teacher`, `entitlement`, `test-school`, `no-orders` |
-| PERM-22 | PERM-22: szkoła testowa bez zamówień rozszerza deklarację Matematyki 7 do 4–8 | [nauczyciel-uprawnienia.spec.ts](../../tests/nauczyciel-uprawnienia.spec.ts#L583) | `teacher`, `entitlement`, `test-school`, `no-orders` |
-| PERM-23 | PERM-23: bez flag Testowy ręczne nadanie jednej klasy przez UI działa i trafia do eksportu | [nauczyciel-uprawnienia.spec.ts](../../tests/nauczyciel-uprawnienia.spec.ts#L620) | `teacher`, `entitlement`, `manual`, `unmarked` |
-| PERM-24 | PERM-24: bez flag Testowy przywrócenie automatu odtwarza dostęp 7–8 z kwalifikującego zamówienia | [nauczyciel-uprawnienia.spec.ts](../../tests/nauczyciel-uprawnienia.spec.ts#L635) | `teacher`, `entitlement`, `restore`, `orders`, `unmarked` |
-| PERM-25 | PERM-25: bez flag Testowy anulowanie przywrócenia zachowuje BOK historię i eksport | [nauczyciel-uprawnienia.spec.ts](../../tests/nauczyciel-uprawnienia.spec.ts#L669) | `teacher`, `entitlement`, `restore`, `cancel`, `unmarked` |
+| PERM-07 | PERM-07: Przyznano w nagłówku oznacza co najmniej jedną przyznaną klasę | [nauczyciel-uprawnienia.spec.ts](../../tests/nauczyciel-uprawnienia.spec.ts#L188) | `teacher`, `entitlement`, `status` |
+| PERM-08 | PERM-08: bez zaznaczenia rekordu akcje są zablokowane | [nauczyciel-uprawnienia.spec.ts](../../tests/nauczyciel-uprawnienia.spec.ts#L209) | `teacher`, `entitlement`, `selection` |
+| PERM-09 | PERM-09: rekord automatyczny nie pozwala przywracać automatu | [nauczyciel-uprawnienia.spec.ts](../../tests/nauczyciel-uprawnienia.spec.ts#L220) | `teacher`, `entitlement`, `restore` |
+| PERM-10 | PERM-10: anulowanie edycji nie zapisuje decyzji ani historii | [nauczyciel-uprawnienia.spec.ts](../../tests/nauczyciel-uprawnienia.spec.ts#L237) | `teacher`, `entitlement`, `cancel` |
+| PERM-11 | PERM-11: historia dotyczy zaznaczonego przedmiotu i roku | [nauczyciel-uprawnienia.spec.ts](../../tests/nauczyciel-uprawnienia.spec.ts#L266) | `teacher`, `entitlement`, `history` |
+| PERM-12 | PERM-12: ponowne otwarcie zakładki nie zmienia kwalifikacji | [nauczyciel-uprawnienia.spec.ts](../../tests/nauczyciel-uprawnienia.spec.ts#L298) | `teacher`, `entitlement`, `persistence` |
+| PERM-13 | PERM-13: dwa przedmioty tworzą osobne rekordy uprawnień | [nauczyciel-uprawnienia.spec.ts](../../tests/nauczyciel-uprawnienia.spec.ts#L316) | `teacher`, `entitlement`, `isolation` |
+| PERM-14 | PERM-14: ten sam przedmiot w dwóch szkołach ma oddzielne rekordy | [nauczyciel-uprawnienia.spec.ts](../../tests/nauczyciel-uprawnienia.spec.ts#L339) | `teacher`, `entitlement`, `isolation` |
+| PERM-15 | PERM-15: dane ilościowe w szczególe nie są edytowalne | [nauczyciel-uprawnienia.spec.ts](../../tests/nauczyciel-uprawnienia.spec.ts#L359) | `teacher`, `entitlement`, `readonly` |
+| PERM-16 | PERM-16: nadanie jednej klasy przez UI zapisuje decyzję BOK i historię | [nauczyciel-uprawnienia.spec.ts](../../tests/nauczyciel-uprawnienia.spec.ts#L375) | `teacher`, `entitlement`, `manual` |
+| PERM-17 | PERM-17: Przywróć wyłącza decyzję ręczną i pokazuje wynik automatu | [nauczyciel-uprawnienia.spec.ts](../../tests/nauczyciel-uprawnienia.spec.ts#L439) | `teacher`, `entitlement`, `restore`, `manual` |
+| PERM-18 | PERM-18: odmowa klasy 4 przez UI nie zmienia automatu dla pozostałych klas | [nauczyciel-uprawnienia.spec.ts](../../tests/nauczyciel-uprawnienia.spec.ts#L507) | `teacher`, `entitlement`, `manual`, `isolation` |
+| PERM-19 | PERM-19: anulowanie Przywróć zachowuje decyzję BOK eksport i historię | [nauczyciel-uprawnienia.spec.ts](../../tests/nauczyciel-uprawnienia.spec.ts#L570) | `teacher`, `entitlement`, `restore`, `cancel` |
+| PERM-20 | PERM-20: edycja BOK jednej szkoły nie zmienia tego samego przedmiotu w drugiej szkole | [nauczyciel-uprawnienia.spec.ts](../../tests/nauczyciel-uprawnienia.spec.ts#L586) | `teacher`, `entitlement`, `manual`, `isolation` |
+| PERM-21 | PERM-21: szkoła testowa bez zamówień rozszerza deklarację Matematyki 4 do 4–8 | [nauczyciel-uprawnienia.spec.ts](../../tests/nauczyciel-uprawnienia.spec.ts#L609) | `teacher`, `entitlement`, `test-school`, `no-orders` |
+| PERM-22 | PERM-22: szkoła testowa bez zamówień rozszerza deklarację Matematyki 7 do 4–8 | [nauczyciel-uprawnienia.spec.ts](../../tests/nauczyciel-uprawnienia.spec.ts#L609) | `teacher`, `entitlement`, `test-school`, `no-orders` |
+| PERM-23 | PERM-23: bez flag Testowy ręczne nadanie jednej klasy przez UI działa i trafia do eksportu | [nauczyciel-uprawnienia.spec.ts](../../tests/nauczyciel-uprawnienia.spec.ts#L646) | `teacher`, `entitlement`, `manual`, `unmarked` |
+| PERM-24 | PERM-24: bez flag Testowy przywrócenie automatu odtwarza dostęp 7–8 z kwalifikującego zamówienia | [nauczyciel-uprawnienia.spec.ts](../../tests/nauczyciel-uprawnienia.spec.ts#L661) | `teacher`, `entitlement`, `restore`, `orders`, `unmarked` |
+| PERM-25 | PERM-25: bez flag Testowy anulowanie przywrócenia zachowuje BOK historię i eksport | [nauczyciel-uprawnienia.spec.ts](../../tests/nauczyciel-uprawnienia.spec.ts#L695) | `teacher`, `entitlement`, `restore`, `cancel`, `unmarked` |
 | SCH-03 | SCH-03: minimalny poprawny formularz tworzy szkołę | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L79) | `school`, `school-add`, `positive` |
 | SCH-04 | SCH-04: brak nazwy blokuje zapis szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L104) | `school`, `school-add`, `validation` |
 | SCH-05 | SCH-05: brak typu blokuje zapis szkoły | [szkola-dodawanie.spec.ts](../../tests/szkola-dodawanie.spec.ts#L119) | `school`, `school-add`, `validation` |
@@ -317,18 +321,18 @@
 | CAT-20 | CAT-20: Szkoła NPC, 0 uczniów daje kategorię A | [szkola-kategoria.spec.ts](../../tests/szkola-kategoria.spec.ts#L113) | `school`, `category`, `boundaries` |
 | CAT-21 | CAT-21: Szkoła NPC, 1 uczniów daje kategorię C | [szkola-kategoria.spec.ts](../../tests/szkola-kategoria.spec.ts#L113) | `school`, `category`, `boundaries` |
 | CAT-22 | CAT-22: Szkoła NPC, 401 uczniów daje kategorię A | [szkola-kategoria.spec.ts](../../tests/szkola-kategoria.spec.ts#L113) | `school`, `category`, `boundaries` |
-| CAT-23 | CAT-23: Kategoria sortuje alfabetycznie ascending | [szkola-kategoria.spec.ts](../../tests/szkola-kategoria.spec.ts#L137) | `school`, `category`, `sort` |
-| CAT-24 | CAT-24: Kategoria sortuje alfabetycznie descending | [szkola-kategoria.spec.ts](../../tests/szkola-kategoria.spec.ts#L137) | `school`, `category`, `sort` |
-| CAT-25 | CAT-25: zmiany sortowania nie zmieniają szkół i ich kategorii | [szkola-kategoria.spec.ts](../../tests/szkola-kategoria.spec.ts#L170) | `school`, `category`, `sort` |
-| CAT-26 | CAT-26: zmiana liczby uczniów 100 → 101 aktualizuje kategorię | [szkola-kategoria.spec.ts](../../tests/szkola-kategoria.spec.ts#L215) | `school`, `category`, `edit` |
-| CAT-27 | CAT-27: zmiana liczby uczniów 400 → 401 aktualizuje kategorię | [szkola-kategoria.spec.ts](../../tests/szkola-kategoria.spec.ts#L215) | `school`, `category`, `edit` |
-| CAT-28 | CAT-28: zmiana liczby uczniów 101 → 100 aktualizuje kategorię | [szkola-kategoria.spec.ts](../../tests/szkola-kategoria.spec.ts#L215) | `school`, `category`, `edit` |
-| CAT-29 | CAT-29: zmiana liczby uczniów 401 → 0 aktualizuje kategorię | [szkola-kategoria.spec.ts](../../tests/szkola-kategoria.spec.ts#L215) | `school`, `category`, `edit` |
-| CAT-30 | CAT-30: zmiana liczby uczniów 100 → brak danych aktualizuje kategorię | [szkola-kategoria.spec.ts](../../tests/szkola-kategoria.spec.ts#L215) | `school`, `category`, `edit` |
-| CAT-31 | CAT-31: zmiana liczby uczniów 0 → 1 aktualizuje kategorię | [szkola-kategoria.spec.ts](../../tests/szkola-kategoria.spec.ts#L215) | `school`, `category`, `edit` |
-| CAT-32 | CAT-32: zmiana liczby uczniów 401 → 400 aktualizuje kategorię | [szkola-kategoria.spec.ts](../../tests/szkola-kategoria.spec.ts#L215) | `school`, `category`, `edit` |
-| CAT-33 | CAT-33: anulowanie liczby uczniów nie zmienia kategorii | [szkola-kategoria.spec.ts](../../tests/szkola-kategoria.spec.ts#L234) | `school`, `category`, `cancel` |
-| CAT-34 | CAT-34: zmiana liczby uczniów innej placówki zachowuje D | [szkola-kategoria.spec.ts](../../tests/szkola-kategoria.spec.ts#L251) | `school`, `category`, `edit` |
+| CAT-23 | CAT-23: Kategoria sortuje alfabetycznie ascending | [szkola-kategoria.spec.ts](../../tests/szkola-kategoria.spec.ts#L137) | `school`, `category`, `sort`, `redmine-37203` |
+| CAT-24 | CAT-24: Kategoria sortuje alfabetycznie descending | [szkola-kategoria.spec.ts](../../tests/szkola-kategoria.spec.ts#L137) | `school`, `category`, `sort`, `redmine-37203` |
+| CAT-25 | CAT-25: przełączanie sortowania zmienia kolejność bez zmiany szkół i kategorii | [szkola-kategoria.spec.ts](../../tests/szkola-kategoria.spec.ts#L174) | `school`, `category`, `sort`, `redmine-37203` |
+| CAT-26 | CAT-26: zmiana liczby uczniów 100 → 101 aktualizuje kategorię | [szkola-kategoria.spec.ts](../../tests/szkola-kategoria.spec.ts#L217) | `school`, `category`, `edit` |
+| CAT-27 | CAT-27: zmiana liczby uczniów 400 → 401 aktualizuje kategorię | [szkola-kategoria.spec.ts](../../tests/szkola-kategoria.spec.ts#L217) | `school`, `category`, `edit` |
+| CAT-28 | CAT-28: zmiana liczby uczniów 101 → 100 aktualizuje kategorię | [szkola-kategoria.spec.ts](../../tests/szkola-kategoria.spec.ts#L217) | `school`, `category`, `edit` |
+| CAT-29 | CAT-29: zmiana liczby uczniów 401 → 0 aktualizuje kategorię | [szkola-kategoria.spec.ts](../../tests/szkola-kategoria.spec.ts#L217) | `school`, `category`, `edit` |
+| CAT-30 | CAT-30: zmiana liczby uczniów 100 → brak danych aktualizuje kategorię | [szkola-kategoria.spec.ts](../../tests/szkola-kategoria.spec.ts#L217) | `school`, `category`, `edit` |
+| CAT-31 | CAT-31: zmiana liczby uczniów 0 → 1 aktualizuje kategorię | [szkola-kategoria.spec.ts](../../tests/szkola-kategoria.spec.ts#L217) | `school`, `category`, `edit` |
+| CAT-32 | CAT-32: zmiana liczby uczniów 401 → 400 aktualizuje kategorię | [szkola-kategoria.spec.ts](../../tests/szkola-kategoria.spec.ts#L217) | `school`, `category`, `edit` |
+| CAT-33 | CAT-33: anulowanie liczby uczniów nie zmienia kategorii | [szkola-kategoria.spec.ts](../../tests/szkola-kategoria.spec.ts#L236) | `school`, `category`, `cancel` |
+| CAT-34 | CAT-34: zmiana liczby uczniów innej placówki zachowuje D | [szkola-kategoria.spec.ts](../../tests/szkola-kategoria.spec.ts#L253) | `school`, `category`, `edit` |
 | MED-YEAR-PREP | MED-YEAR-PREP: przygotuj snapshot 4 szkół referencyjnych i 50 losowych szkół | [szkola-medalowosc-annual.spec.ts](../../tests/szkola-medalowosc-annual.spec.ts#L67) | `annual-medal` |
 | MED-YEAR-01 | MED-YEAR-01: roczne przeliczenie ustawia oczekiwany medal na podstawie snapshotu | [szkola-medalowosc-annual.spec.ts](../../tests/szkola-medalowosc-annual.spec.ts#L186) | `annual-medal` |
 | MED-02 | MED-02: pole Medal dla szkoły ze złotym medalem jest nieedytowalne | [szkola-medalowosc.spec.ts](../../tests/szkola-medalowosc.spec.ts#L38) | — |
@@ -426,6 +430,10 @@
 | THR-20 | THR-20: Szkoła NPC 1200 uczniów ma stały próg 10 | [szkola-prog.spec.ts](../../tests/szkola-prog.spec.ts#L59) | `school`, `threshold` |
 | THR-21 | THR-21: zapis SIO przelicza próg cyfrowy w otwartym profilu | [szkola-prog.spec.ts](../../tests/szkola-prog.spec.ts#L76) | `school`, `threshold`, `edit` |
 | THR-22 | THR-22: anulowanie SIO nie zmienia progu | [szkola-prog.spec.ts](../../tests/szkola-prog.spec.ts#L124) | `school`, `threshold`, `cancel` |
+| MED-BUG-37204-01 | MED-BUG-37204-01: Medal Brak zwraca szkołę 94435 | [szkola-redmine-37204.spec.ts](../../tests/szkola-redmine-37204.spec.ts#L42) | `school`, `medal`, `regression`, `redmine-37204` |
+| MED-BUG-37204-02 | MED-BUG-37204-02: Brak lub Złoto działa jako OR | [szkola-redmine-37204.spec.ts](../../tests/szkola-redmine-37204.spec.ts#L42) | `school`, `medal`, `regression`, `redmine-37204` |
+| MED-BUG-37204-03 | MED-BUG-37204-03: Złoto wyklucza szkołę z medalem Brak | [szkola-redmine-37204.spec.ts](../../tests/szkola-redmine-37204.spec.ts#L42) | `school`, `medal`, `regression`, `redmine-37204` |
+| MED-BUG-37204-04 | MED-BUG-37204-04: wyczyszczenie filtra medalu przywraca szkołę | [szkola-redmine-37204.spec.ts](../../tests/szkola-redmine-37204.spec.ts#L42) | `school`, `medal`, `regression`, `redmine-37204` |
 | STR-88 | STR-88: nowa szkoła udostępnia dialog struktury bez nadanego ID | [szkola-struktura-dodawanie.spec.ts](../../tests/szkola-struktura-dodawanie.spec.ts#L165) | `school`, `structure`, `school-add` |
 | STR-89 | STR-89: Zapisz strukturę odkłada relację do zapisu nowej szkoły | [szkola-struktura-dodawanie.spec.ts](../../tests/szkola-struktura-dodawanie.spec.ts#L183) | `school`, `structure`, `school-add`, `api` |
 | STR-90 | STR-90: nowa szkoła utrwala Filia / Podrzędna | [szkola-struktura-dodawanie.spec.ts](../../tests/szkola-struktura-dodawanie.spec.ts#L266) | `school`, `structure`, `school-add`, `persistence` |
@@ -591,6 +599,22 @@
 | ACL-15 | ACL-15: usunięcie zamówienia przelicza ilość ale zachowuje ręczne nadanie dostępu | [uprawnienia-cykl-zycia.spec.ts](../../tests/uprawnienia-cykl-zycia.spec.ts#L414) | `teacher`, `entitlement`, `access-lifecycle`, `orders`, `manual` |
 | ACL-16 | ACL-16: korekta zamówienia poniżej progu nie nadpisuje ręcznego nadania BOK | [uprawnienia-cykl-zycia.spec.ts](../../tests/uprawnienia-cykl-zycia.spec.ts#L449) | `teacher`, `entitlement`, `access-lifecycle`, `orders`, `manual` |
 | ACL-17 | ACL-17: przywrócenie potwierdzenia wykorzystuje pozostawione zamówienie i zachowuje historię | [uprawnienia-cykl-zycia.spec.ts](../../tests/uprawnienia-cykl-zycia.spec.ts#L488) | `teacher`, `entitlement`, `access-lifecycle`, `restore`, `orders` |
+| DEB-01 | DEB-01: pierwsze potwierdzenie Matematyka 4 daje pełny zakres właściwej serii bez zamówień | [uprawnienia-promocja-debiutu.spec.ts](../../tests/uprawnienia-promocja-debiutu.spec.ts#L26) | `teacher`, `entitlement`, `promotion`, `debut`, `seasonal` |
+| DEB-02 | DEB-02: pierwsze potwierdzenie Fizyka 7 daje pełny zakres właściwej serii bez zamówień | [uprawnienia-promocja-debiutu.spec.ts](../../tests/uprawnienia-promocja-debiutu.spec.ts#L26) | `teacher`, `entitlement`, `promotion`, `debut`, `seasonal` |
+| DEB-03 | DEB-03: pierwsze potwierdzenie Fizyka 7 TNŚ daje pełny zakres właściwej serii bez zamówień | [uprawnienia-promocja-debiutu.spec.ts](../../tests/uprawnienia-promocja-debiutu.spec.ts#L26) | `teacher`, `entitlement`, `promotion`, `debut`, `seasonal` |
+| DEB-04 | DEB-04: poprzedni rok obcy i obecny nasz uruchamiają debiut bez zakupów | [uprawnienia-promocja-debiutu.spec.ts](../../tests/uprawnienia-promocja-debiutu.spec.ts#L45) | `teacher`, `entitlement`, `promotion`, `debut`, `seasonal` |
+| DEB-07 | DEB-07: znany nauczyciel matematyki może debiutować z fizyki | [uprawnienia-promocja-debiutu.spec.ts](../../tests/uprawnienia-promocja-debiutu.spec.ts#L62) | `teacher`, `entitlement`, `promotion`, `debut`, `isolation`, `seasonal` |
+| DEB-08 | DEB-08: po 30 września zakup klasy 4 daje zakres zamówieniowy 4–6 zamiast debiutu 4–8 | [uprawnienia-promocja-debiutu.spec.ts](../../tests/uprawnienia-promocja-debiutu.spec.ts#L81) | `teacher`, `entitlement`, `promotion`, `debut`, `seasonal` |
+| DEB-05 | DEB-05: wcześniejsze nasze potwierdzenie matematyki wyklucza debiut z matematyki | [uprawnienia-promocja-debiutu.spec.ts](../../tests/uprawnienia-promocja-debiutu.spec.ts#L103) | `teacher`, `entitlement`, `promotion`, `debut`, `negative`, `seasonal` |
+| DEB-06 | DEB-06: od 1 października pierwsze potwierdzenie bez zamówień nie daje promocji debiutu | [uprawnienia-promocja-debiutu.spec.ts](../../tests/uprawnienia-promocja-debiutu.spec.ts#L123) | `teacher`, `entitlement`, `promotion`, `debut`, `negative`, `seasonal` |
+| NCL-01 | NCL-01: zamówienie klasy 4 na progu rozszerza dostęp do 4–6 | [uprawnienia-promocja-nowy-klient.spec.ts](../../tests/uprawnienia-promocja-nowy-klient.spec.ts#L50) | `teacher`, `entitlement`, `promotion`, `new-client` |
+| NCL-02 | NCL-02: zamówienie poniżej progu nie uruchamia promocji | [uprawnienia-promocja-nowy-klient.spec.ts](../../tests/uprawnienia-promocja-nowy-klient.spec.ts#L50) | `teacher`, `entitlement`, `promotion`, `new-client` |
+| NCL-03 | NCL-03: zamówienie powyżej progu rozszerza dostęp do 4–6 | [uprawnienia-promocja-nowy-klient.spec.ts](../../tests/uprawnienia-promocja-nowy-klient.spec.ts#L50) | `teacher`, `entitlement`, `promotion`, `new-client` |
+| NCL-04 | NCL-04: zamówienia poniżej progu w obu poprzednich latach nie wykluczają nowego klienta | [uprawnienia-promocja-nowy-klient.spec.ts](../../tests/uprawnienia-promocja-nowy-klient.spec.ts#L50) | `teacher`, `entitlement`, `promotion`, `new-client` |
+| NCL-05 | NCL-05: klasa 7 rozszerza dostęp tylko do 7–8 | [uprawnienia-promocja-nowy-klient.spec.ts](../../tests/uprawnienia-promocja-nowy-klient.spec.ts#L83) | `teacher`, `entitlement`, `promotion`, `new-client`, `ranges` |
+| NCL-06 | NCL-06: zakup w obu zakresach daje sumę 4–8 | [uprawnienia-promocja-nowy-klient.spec.ts](../../tests/uprawnienia-promocja-nowy-klient.spec.ts#L83) | `teacher`, `entitlement`, `promotion`, `new-client`, `ranges` |
+| NCL-07 | NCL-07: korekta zakupu odbiera promocję bez pozostawienia klas 5–6 | [uprawnienia-promocja-nowy-klient.spec.ts](../../tests/uprawnienia-promocja-nowy-klient.spec.ts#L112) | `teacher`, `entitlement`, `promotion`, `new-client`, `recalculation` |
+| NCL-08 | NCL-08: usunięcie zakupu odbiera promocję bez pozostawienia klas 5–6 | [uprawnienia-promocja-nowy-klient.spec.ts](../../tests/uprawnienia-promocja-nowy-klient.spec.ts#L112) | `teacher`, `entitlement`, `promotion`, `new-client`, `recalculation` |
 | TEA-02 | TEA-02: brak pola imię blokuje zapis nauczyciela | [walidacja-anulowanie.spec.ts](../../tests/walidacja-anulowanie.spec.ts#L5) | `validation` |
 | TEA-02 | TEA-02: brak pola nazwisko blokuje zapis nauczyciela | [walidacja-anulowanie.spec.ts](../../tests/walidacja-anulowanie.spec.ts#L5) | `validation` |
 | TEA-02 | TEA-02: brak pola szkoła blokuje zapis nauczyciela | [walidacja-anulowanie.spec.ts](../../tests/walidacja-anulowanie.spec.ts#L5) | `validation` |
@@ -652,6 +676,27 @@
 | ORD-CLASS-20 | ORD-CLASS-20: usunięcie jednego zamówienia nie usuwa klasy produktu z drugiego | [zamowienia-klasa.spec.ts](../../tests/zamowienia-klasa.spec.ts#L303) | `school`, `order`, `order-class`, `delete` |
 | ORD-CLASS-21 | ORD-CLASS-21: zamówienie i jego klasa nie pojawiają się w innej szkole | [zamowienia-klasa.spec.ts](../../tests/zamowienia-klasa.spec.ts#L317) | `school`, `order`, `order-class`, `isolation` |
 | ORD-CLASS-22 | ORD-CLASS-22: zwijanie i rozwijanie zachowuje klasę pozycji | [zamowienia-klasa.spec.ts](../../tests/zamowienia-klasa.spec.ts#L335) | `school`, `order`, `order-class`, `expand` |
+| ORD-DB-02 | ORD-DB-02: kopia zamówienia ma w bazie IsCopied=1, a oryginał IsCopied=0 | [zamowienia-kopie-baza.spec.ts](../../tests/zamowienia-kopie-baza.spec.ts#L62) | `school`, `order`, `copy`, `database` |
+| ORD-DB-03 | ORD-DB-03: usunięcie kopii zachowuje IsDel=1 i IsCopied=1, bez usuwania oryginału | [zamowienia-kopie-baza.spec.ts](../../tests/zamowienia-kopie-baza.spec.ts#L95) | `school`, `order`, `copy`, `database`, `soft-delete` |
+| ORD-COPY-01 | ORD-COPY-01: A → SP, kopia w tej samej strukturze | [zamowienia-kopiowanie-struktura.spec.ts](../../tests/zamowienia-kopiowanie-struktura.spec.ts#L44) | `school`, `order`, `copy`, `redmine-37160` |
+| ORD-COPY-02 | ORD-COPY-02: A → LO, kopia w tej samej strukturze | [zamowienia-kopiowanie-struktura.spec.ts](../../tests/zamowienia-kopiowanie-struktura.spec.ts#L44) | `school`, `order`, `copy`, `redmine-37160` |
+| ORD-COPY-03 | ORD-COPY-03: A → TECH, kopia w tej samej strukturze | [zamowienia-kopiowanie-struktura.spec.ts](../../tests/zamowienia-kopiowanie-struktura.spec.ts#L44) | `school`, `order`, `copy`, `redmine-37160` |
+| ORD-COPY-04 | ORD-COPY-04: LO → A, kopia w tej samej strukturze | [zamowienia-kopiowanie-struktura.spec.ts](../../tests/zamowienia-kopiowanie-struktura.spec.ts#L44) | `school`, `order`, `copy`, `redmine-37160` |
+| ORD-COPY-05 | ORD-COPY-05: LO → SP, kopia w tej samej strukturze | [zamowienia-kopiowanie-struktura.spec.ts](../../tests/zamowienia-kopiowanie-struktura.spec.ts#L44) | `school`, `order`, `copy`, `redmine-37160` |
+| ORD-COPY-06 | ORD-COPY-06: LO → TECH, kopia w tej samej strukturze | [zamowienia-kopiowanie-struktura.spec.ts](../../tests/zamowienia-kopiowanie-struktura.spec.ts#L44) | `school`, `order`, `copy`, `redmine-37160` |
+| ORD-COPY-07 | ORD-COPY-07: TECH → LO, kopia w tej samej strukturze | [zamowienia-kopiowanie-struktura.spec.ts](../../tests/zamowienia-kopiowanie-struktura.spec.ts#L44) | `school`, `order`, `copy`, `redmine-37160` |
+| ORD-COPY-08 | ORD-COPY-08: SP → A, kopia w tej samej strukturze | [zamowienia-kopiowanie-struktura.spec.ts](../../tests/zamowienia-kopiowanie-struktura.spec.ts#L44) | `school`, `order`, `copy`, `redmine-37160` |
+| ORD-COPY-09 | ORD-COPY-09: SP → LO, kopia w tej samej strukturze | [zamowienia-kopiowanie-struktura.spec.ts](../../tests/zamowienia-kopiowanie-struktura.spec.ts#L44) | `school`, `order`, `copy`, `redmine-37160` |
+| ORD-COPY-10 | ORD-COPY-10: SP → TECH, kopia w tej samej strukturze | [zamowienia-kopiowanie-struktura.spec.ts](../../tests/zamowienia-kopiowanie-struktura.spec.ts#L44) | `school`, `order`, `copy`, `redmine-37160` |
+| ORD-COPY-11 | ORD-COPY-11: TECH → A, kopia w tej samej strukturze | [zamowienia-kopiowanie-struktura.spec.ts](../../tests/zamowienia-kopiowanie-struktura.spec.ts#L44) | `school`, `order`, `copy`, `redmine-37160` |
+| ORD-COPY-12 | ORD-COPY-12: TECH → SP, kopia w tej samej strukturze | [zamowienia-kopiowanie-struktura.spec.ts](../../tests/zamowienia-kopiowanie-struktura.spec.ts#L44) | `school`, `order`, `copy`, `redmine-37160` |
+| ORD-COPY-13 | ORD-COPY-13: placówka źródłowa jest niedostępna jako cel | [zamowienia-kopiowanie-struktura.spec.ts](../../tests/zamowienia-kopiowanie-struktura.spec.ts#L70) | `school`, `order`, `copy`, `negative`, `redmine-37160` |
+| ORD-COPY-14 | ORD-COPY-14: inna struktura i placówka samodzielna jest niedostępna jako cel | [zamowienia-kopiowanie-struktura.spec.ts](../../tests/zamowienia-kopiowanie-struktura.spec.ts#L70) | `school`, `order`, `copy`, `negative`, `redmine-37160` |
+| ORD-COPY-15 | ORD-COPY-15: dokument będący kopią nie może być kopiowany dalej | [zamowienia-kopiowanie-struktura.spec.ts](../../tests/zamowienia-kopiowanie-struktura.spec.ts#L87) | `school`, `order`, `copy`, `negative`, `redmine-37160` |
+| ORD-COPY-16 | ORD-COPY-16: pusty wybór blokuje zapis, anulowanie wybranego celu niczego nie kopiuje | [zamowienia-kopiowanie-struktura.spec.ts](../../tests/zamowienia-kopiowanie-struktura.spec.ts#L102) | `school`, `order`, `copy`, `cancel`, `redmine-37160` |
+| ORD-COPY-17 | ORD-COPY-17: jednoczesna kopia do trzech placówek nie tworzy duplikatów | [zamowienia-kopiowanie-struktura.spec.ts](../../tests/zamowienia-kopiowanie-struktura.spec.ts#L115) | `school`, `order`, `copy`, `multiple`, `redmine-37160` |
+| ORD-COPY-18 | ORD-COPY-18: placówka bez struktury nie ma funkcji kopiowania | [zamowienia-kopiowanie-struktura.spec.ts](../../tests/zamowienia-kopiowanie-struktura.spec.ts#L123) | `school`, `order`, `copy`, `negative`, `redmine-37160` |
+| ORD-COPY-19 | ORD-COPY-19: konto bez prawa edycji szkoły nie może kopiować dokumentów | [zamowienia-kopiowanie-struktura.spec.ts](../../tests/zamowienia-kopiowanie-struktura.spec.ts#L132) | `school`, `order`, `copy`, `permissions`, `redmine-37160` |
 | ORD-12 | ORD-12: wyszukiwanie po dokładnym kodzie zwraca właściwy produkt | [zamowienia-produkty.spec.ts](../../tests/zamowienia-produkty.spec.ts#L30) | `school`, `order`, `search` |
 | ORD-13 | ORD-13: wyszukiwanie po fragmencie kodu zwraca oba produkty fizyki 7 | [zamowienia-produkty.spec.ts](../../tests/zamowienia-produkty.spec.ts#L53) | `school`, `order`, `search` |
 | ORD-14 | ORD-14: filtr Przedmiot ogranicza wyniki do fizyki | [zamowienia-produkty.spec.ts](../../tests/zamowienia-produkty.spec.ts#L72) | `school`, `order`, `filter` |
@@ -673,6 +718,22 @@
 | ORD-30 | ORD-30: wyszukanie kolejnego produktu nie usuwa wcześniej wybranego | [zamowienia-produkty.spec.ts](../../tests/zamowienia-produkty.spec.ts#L491) | `school`, `order`, `product` |
 | ORD-31 | ORD-31: zmiana filtrów nie usuwa produktów z Zamówienia | [zamowienia-produkty.spec.ts](../../tests/zamowienia-produkty.spec.ts#L512) | `school`, `order`, `product`, `filter` |
 | ORD-32 | ORD-32: dane produktu są spójne po przeniesieniu do Zamówienia | [zamowienia-produkty.spec.ts](../../tests/zamowienia-produkty.spec.ts#L535) | `school`, `order`, `product` |
+| ORD-BUG-36289-01 | ORD-BUG-36289-01: kopia SP → LO zachowuje adres źródła i zależność od oryginału | [zamowienia-redmine-36289.spec.ts](../../tests/zamowienia-redmine-36289.spec.ts#L11) | `school`, `order`, `copy`, `redmine-36289` |
+| ORD-BUG-36289-02 | ORD-BUG-36289-02: kopia A → SP zachowuje adres źródła i zależność od oryginału | [zamowienia-redmine-36289.spec.ts](../../tests/zamowienia-redmine-36289.spec.ts#L11) | `school`, `order`, `copy`, `redmine-36289` |
+| ORD-BUG-36289-03 | ORD-BUG-36289-03: kopia SP → A zachowuje adres źródła i zależność od oryginału | [zamowienia-redmine-36289.spec.ts](../../tests/zamowienia-redmine-36289.spec.ts#L11) | `school`, `order`, `copy`, `redmine-36289` |
+| ORD-BUG-36290-05 | ORD-BUG-36290-05: zamówienie ręczne i jego kopia SP → LO nie udostępniają historii khsynchro po edycji ilości | [zamowienia-redmine-36290.spec.ts](../../tests/zamowienia-redmine-36290.spec.ts#L89) | `school`, `order`, `copy`, `history`, `manual`, `redmine-36290` |
+| ORD-BUG-36290-06 | ORD-BUG-36290-06: zamówienie ręczne i jego kopia A → SP nie udostępniają historii khsynchro po edycji ilości | [zamowienia-redmine-36290.spec.ts](../../tests/zamowienia-redmine-36290.spec.ts#L89) | `school`, `order`, `copy`, `history`, `manual`, `redmine-36290` |
+| ORD-BUG-36290-01 | ORD-BUG-36290-01: kopia SP → LO jest nieedytowalna i odzwierciedla pozycje oraz ilości oryginału | [zamowienia-redmine-36290.spec.ts](../../tests/zamowienia-redmine-36290.spec.ts#L142) | `school`, `order`, `copy`, `redmine-36290` |
+| ORD-BUG-36290-02 | ORD-BUG-36290-02: kopia A → SP jest nieedytowalna i odzwierciedla pozycje oraz ilości oryginału | [zamowienia-redmine-36290.spec.ts](../../tests/zamowienia-redmine-36290.spec.ts#L142) | `school`, `order`, `copy`, `redmine-36290` |
+| ORD-BUG-36290-03 | ORD-BUG-36290-03: bezpośrednie API nie pozwala edytować kopii w LO ani zmieniać oryginału | [zamowienia-redmine-36290.spec.ts](../../tests/zamowienia-redmine-36290.spec.ts#L198) | `school`, `order`, `copy`, `negative`, `redmine-36290` |
+| ORD-BUG-36290-04 | ORD-BUG-36290-04: bezpośrednie API nie pozwala edytować kopii w A ani zmieniać oryginału | [zamowienia-redmine-36290.spec.ts](../../tests/zamowienia-redmine-36290.spec.ts#L198) | `school`, `order`, `copy`, `negative`, `redmine-36290` |
+| ORD-BUG-36302-01 | ORD-BUG-36302-01: rozwijanie i zwijanie podręcznika w Pozycjach nie zmienia pozostałych wierszy | [zamowienia-redmine-36302.spec.ts](../../tests/zamowienia-redmine-36302.spec.ts#L22) | `school`, `order`, `positions`, `isolation`, `redmine-36302` |
+| ORD-BUG-36304-01 | ORD-BUG-36304-01: usunięcie kopii pokazuje komunikat zgodny z makietą; Nie anuluje, Tak usuwa tylko kopię | [zamowienia-redmine-36304.spec.ts](../../tests/zamowienia-redmine-36304.spec.ts#L7) | `school`, `order`, `copy`, `confirmation`, `redmine-36304` |
+| ORD-BUG-36305-01 | ORD-BUG-36305-01: historia produktu bez roku w tytule nie dopisuje roku zamówienia | [zamowienia-redmine-36305.spec.ts](../../tests/zamowienia-redmine-36305.spec.ts#L21) | `school`, `order`, `history`, `readonly`, `redmine-36305` |
+| ORD-BUG-36305-02 | ORD-BUG-36305-02: historia produktu zachowuje rok należący do tytułu, bez dodatkowego roku zamówienia | [zamowienia-redmine-36305.spec.ts](../../tests/zamowienia-redmine-36305.spec.ts#L21) | `school`, `order`, `history`, `readonly`, `redmine-36305` |
+| ORD-BUG-37176-01 | ORD-BUG-37176-01: ujemna ilość -1 nie pozwala utworzyć zamówienia | [zamowienia-redmine-37176.spec.ts](../../tests/zamowienia-redmine-37176.spec.ts#L19) | `school`, `order`, `quantity`, `regression`, `redmine-37176` |
+| ORD-BUG-37176-02 | ORD-BUG-37176-02: ujemna ilość -10 nie pozwala utworzyć zamówienia | [zamowienia-redmine-37176.spec.ts](../../tests/zamowienia-redmine-37176.spec.ts#L19) | `school`, `order`, `quantity`, `regression`, `redmine-37176` |
+| ORD-DB-01 | ORD-DB-01: Usuń ukrywa zamówienie w UI i zachowuje rekord SchoolOrder z IsDel=1 | [zamowienia-soft-delete.spec.ts](../../tests/zamowienia-soft-delete.spec.ts#L10) | `school`, `order`, `database`, `soft-delete` |
 | ORD-01 | ORD-01: zamówienie szkoły zachowuje produkt i ilość po ponownym otwarciu | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L43) | `school`, `order`, `smoke` |
 | ORD-02 | ORD-02: zamówienie z dwoma produktami zachowuje produkty i ilości | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L74) | `school`, `order`, `positive` |
 | ORD-03 | ORD-03: edycja ilości dwóch produktów i usunięcie zamówienia | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L121) | `school`, `order`, `edit` |

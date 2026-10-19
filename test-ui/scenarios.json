@@ -1,0 +1,355 @@
+{
+  "version": 1,
+  "features": [
+    {
+      "id": "redmine-37160",
+      "issue": "37160",
+      "centerIssueId": "1fe7d28f-8af5-4896-a4b6-52e76d5675ee",
+      "title": "Kopiowanie dokumentów w strukturze placówek",
+      "verification": {
+        "environment": "DEV",
+        "date": "2026-10-19",
+        "passed": 18,
+        "skipped": 1,
+        "failed": 0,
+        "scope": "Wynik wcześniejszego przebiegu: ORD-COPY-01–ORD-COPY-18 passed, ORD-COPY-19 skipped (wtedy bez osobnego konta). ORD-COPY-19 ma już implementację z kontem z .env; ten historyczny wpis nie opisuje bieżącego uruchomienia."
+      },
+      "scope": "Dokument oznacza zamówienie szkolne, nie sam plik załącznika. Przypadki 13–18 sprawdzają ograniczenia UI. ORD-COPY-19 obejmuje osobne konto ograniczone i sprawdzenie odmowy API kodem 403.",
+      "scenarios": [
+        {
+          "id": "ORD-COPY-01",
+          "title": "Zespół Szkół A → Szkoła Podstawowa A",
+          "testIds": ["ORD-COPY-01"],
+          "automation": "automated",
+          "preconditions": [
+            "Konto z prawem edycji szkoły.",
+            "Struktura A: Zespół → SP → Liceum oraz Zespół → Technikum. Osobna struktura B i placówka samodzielna.",
+            "Oryginalne zamówienie z dwoma produktami i ilościami 3 oraz 2."
+          ],
+          "steps": [
+            "Otwórz zamówienia w Zespół Szkół A i zaznacz oryginał.",
+            "Wybierz Kopiuj i sprawdź listę pozostałych placówek A.",
+            "Dodaj Szkoła Podstawowa A do wybranych celów i zapisz.",
+            "Otwórz placówkę docelową ponownie; porównaj zapis z oryginałem i stan pozostałych placówek."
+          ],
+          "expected": "Jedna nowa kopia tylko w wybranej placówce; identyczne produkty i ilości, oryginał i inne zamówienia bez zmian. Poziom zagnieżdżenia nie ogranicza wyboru."
+        },
+        {
+          "id": "ORD-COPY-02",
+          "title": "Zespół Szkół A → Liceum A",
+          "testIds": ["ORD-COPY-02"],
+          "automation": "automated",
+          "preconditions": [
+            "Konto z prawem edycji szkoły.",
+            "Struktura A: Zespół → SP → Liceum oraz Zespół → Technikum. Osobna struktura B i placówka samodzielna.",
+            "Oryginalne zamówienie z dwoma produktami i ilościami 3 oraz 2."
+          ],
+          "steps": [
+            "Otwórz zamówienia w Zespół Szkół A i zaznacz oryginał.",
+            "Wybierz Kopiuj i sprawdź listę pozostałych placówek A.",
+            "Dodaj Liceum A do wybranych celów i zapisz.",
+            "Otwórz placówkę docelową ponownie; porównaj zapis z oryginałem i stan pozostałych placówek."
+          ],
+          "expected": "Jedna nowa kopia tylko w wybranej placówce; identyczne produkty i ilości, oryginał i inne zamówienia bez zmian. Poziom zagnieżdżenia nie ogranicza wyboru."
+        },
+        {
+          "id": "ORD-COPY-03",
+          "title": "Zespół Szkół A → Technikum A",
+          "testIds": ["ORD-COPY-03"],
+          "automation": "automated",
+          "preconditions": [
+            "Konto z prawem edycji szkoły.",
+            "Struktura A: Zespół → SP → Liceum oraz Zespół → Technikum. Osobna struktura B i placówka samodzielna.",
+            "Oryginalne zamówienie z dwoma produktami i ilościami 3 oraz 2."
+          ],
+          "steps": [
+            "Otwórz zamówienia w Zespół Szkół A i zaznacz oryginał.",
+            "Wybierz Kopiuj i sprawdź listę pozostałych placówek A.",
+            "Dodaj Technikum A do wybranych celów i zapisz.",
+            "Otwórz placówkę docelową ponownie; porównaj zapis z oryginałem i stan pozostałych placówek."
+          ],
+          "expected": "Jedna nowa kopia tylko w wybranej placówce; identyczne produkty i ilości, oryginał i inne zamówienia bez zmian. Poziom zagnieżdżenia nie ogranicza wyboru."
+        },
+        {
+          "id": "ORD-COPY-04",
+          "title": "Liceum A → Zespół Szkół A",
+          "testIds": ["ORD-COPY-04"],
+          "automation": "automated",
+          "preconditions": [
+            "Konto z prawem edycji szkoły.",
+            "Struktura A: Zespół → SP → Liceum oraz Zespół → Technikum. Osobna struktura B i placówka samodzielna.",
+            "Oryginalne zamówienie z dwoma produktami i ilościami 3 oraz 2."
+          ],
+          "steps": [
+            "Otwórz zamówienia w Liceum A i zaznacz oryginał.",
+            "Wybierz Kopiuj i sprawdź listę pozostałych placówek A.",
+            "Dodaj Zespół Szkół A do wybranych celów i zapisz.",
+            "Otwórz placówkę docelową ponownie; porównaj zapis z oryginałem i stan pozostałych placówek."
+          ],
+          "expected": "Jedna nowa kopia tylko w wybranej placówce; identyczne produkty i ilości, oryginał i inne zamówienia bez zmian. Poziom zagnieżdżenia nie ogranicza wyboru."
+        },
+        {
+          "id": "ORD-COPY-05",
+          "title": "Liceum A → Szkoła Podstawowa A",
+          "testIds": ["ORD-COPY-05"],
+          "automation": "automated",
+          "preconditions": [
+            "Konto z prawem edycji szkoły.",
+            "Struktura A: Zespół → SP → Liceum oraz Zespół → Technikum. Osobna struktura B i placówka samodzielna.",
+            "Oryginalne zamówienie z dwoma produktami i ilościami 3 oraz 2."
+          ],
+          "steps": [
+            "Otwórz zamówienia w Liceum A i zaznacz oryginał.",
+            "Wybierz Kopiuj i sprawdź listę pozostałych placówek A.",
+            "Dodaj Szkoła Podstawowa A do wybranych celów i zapisz.",
+            "Otwórz placówkę docelową ponownie; porównaj zapis z oryginałem i stan pozostałych placówek."
+          ],
+          "expected": "Jedna nowa kopia tylko w wybranej placówce; identyczne produkty i ilości, oryginał i inne zamówienia bez zmian. Poziom zagnieżdżenia nie ogranicza wyboru."
+        },
+        {
+          "id": "ORD-COPY-06",
+          "title": "Liceum A → Technikum A",
+          "testIds": ["ORD-COPY-06"],
+          "automation": "automated",
+          "preconditions": [
+            "Konto z prawem edycji szkoły.",
+            "Struktura A: Zespół → SP → Liceum oraz Zespół → Technikum. Osobna struktura B i placówka samodzielna.",
+            "Oryginalne zamówienie z dwoma produktami i ilościami 3 oraz 2."
+          ],
+          "steps": [
+            "Otwórz zamówienia w Liceum A i zaznacz oryginał.",
+            "Wybierz Kopiuj i sprawdź listę pozostałych placówek A.",
+            "Dodaj Technikum A do wybranych celów i zapisz.",
+            "Otwórz placówkę docelową ponownie; porównaj zapis z oryginałem i stan pozostałych placówek."
+          ],
+          "expected": "Jedna nowa kopia tylko w wybranej placówce; identyczne produkty i ilości, oryginał i inne zamówienia bez zmian. Poziom zagnieżdżenia nie ogranicza wyboru."
+        },
+        {
+          "id": "ORD-COPY-07",
+          "title": "Technikum A → Liceum A",
+          "testIds": ["ORD-COPY-07"],
+          "automation": "automated",
+          "preconditions": [
+            "Konto z prawem edycji szkoły.",
+            "Struktura A: Zespół → SP → Liceum oraz Zespół → Technikum. Osobna struktura B i placówka samodzielna.",
+            "Oryginalne zamówienie z dwoma produktami i ilościami 3 oraz 2."
+          ],
+          "steps": [
+            "Otwórz zamówienia w Technikum A i zaznacz oryginał.",
+            "Wybierz Kopiuj i sprawdź listę pozostałych placówek A.",
+            "Dodaj Liceum A do wybranych celów i zapisz.",
+            "Otwórz placówkę docelową ponownie; porównaj zapis z oryginałem i stan pozostałych placówek."
+          ],
+          "expected": "Jedna nowa kopia tylko w wybranej placówce; identyczne produkty i ilości, oryginał i inne zamówienia bez zmian. Poziom zagnieżdżenia nie ogranicza wyboru."
+        },
+        {
+          "id": "ORD-COPY-08",
+          "title": "Szkoła Podstawowa A → Zespół Szkół A",
+          "testIds": ["ORD-COPY-08"],
+          "automation": "automated",
+          "preconditions": [
+            "Konto z prawem edycji szkoły.",
+            "Struktura A: Zespół → SP → Liceum oraz Zespół → Technikum. Osobna struktura B i placówka samodzielna.",
+            "Oryginalne zamówienie z dwoma produktami i ilościami 3 oraz 2."
+          ],
+          "steps": [
+            "Otwórz zamówienia w Szkoła Podstawowa A i zaznacz oryginał.",
+            "Wybierz Kopiuj i sprawdź listę pozostałych placówek A.",
+            "Dodaj Zespół Szkół A do wybranych celów i zapisz.",
+            "Otwórz placówkę docelową ponownie; porównaj zapis z oryginałem i stan pozostałych placówek."
+          ],
+          "expected": "Jedna nowa kopia tylko w wybranej placówce; identyczne produkty i ilości, oryginał i inne zamówienia bez zmian. Poziom zagnieżdżenia nie ogranicza wyboru."
+        },
+        {
+          "id": "ORD-COPY-09",
+          "title": "Szkoła Podstawowa A → Liceum A",
+          "testIds": ["ORD-COPY-09"],
+          "automation": "automated",
+          "preconditions": [
+            "Konto z prawem edycji szkoły.",
+            "Struktura A: Zespół → SP → Liceum oraz Zespół → Technikum. Osobna struktura B i placówka samodzielna.",
+            "Oryginalne zamówienie z dwoma produktami i ilościami 3 oraz 2."
+          ],
+          "steps": [
+            "Otwórz zamówienia w Szkoła Podstawowa A i zaznacz oryginał.",
+            "Wybierz Kopiuj i sprawdź listę pozostałych placówek A.",
+            "Dodaj Liceum A do wybranych celów i zapisz.",
+            "Otwórz placówkę docelową ponownie; porównaj zapis z oryginałem i stan pozostałych placówek."
+          ],
+          "expected": "Jedna nowa kopia tylko w wybranej placówce; identyczne produkty i ilości, oryginał i inne zamówienia bez zmian. Poziom zagnieżdżenia nie ogranicza wyboru."
+        },
+        {
+          "id": "ORD-COPY-10",
+          "title": "Szkoła Podstawowa A → Technikum A",
+          "testIds": ["ORD-COPY-10"],
+          "automation": "automated",
+          "preconditions": [
+            "Konto z prawem edycji szkoły.",
+            "Struktura A: Zespół → SP → Liceum oraz Zespół → Technikum. Osobna struktura B i placówka samodzielna.",
+            "Oryginalne zamówienie z dwoma produktami i ilościami 3 oraz 2."
+          ],
+          "steps": [
+            "Otwórz zamówienia w Szkoła Podstawowa A i zaznacz oryginał.",
+            "Wybierz Kopiuj i sprawdź listę pozostałych placówek A.",
+            "Dodaj Technikum A do wybranych celów i zapisz.",
+            "Otwórz placówkę docelową ponownie; porównaj zapis z oryginałem i stan pozostałych placówek."
+          ],
+          "expected": "Jedna nowa kopia tylko w wybranej placówce; identyczne produkty i ilości, oryginał i inne zamówienia bez zmian. Poziom zagnieżdżenia nie ogranicza wyboru."
+        },
+        {
+          "id": "ORD-COPY-11",
+          "title": "Technikum A → Zespół Szkół A",
+          "testIds": ["ORD-COPY-11"],
+          "automation": "automated",
+          "preconditions": [
+            "Konto z prawem edycji szkoły.",
+            "Struktura A: Zespół → SP → Liceum oraz Zespół → Technikum. Osobna struktura B i placówka samodzielna.",
+            "Oryginalne zamówienie z dwoma produktami i ilościami 3 oraz 2."
+          ],
+          "steps": [
+            "Otwórz zamówienia w Technikum A i zaznacz oryginał.",
+            "Wybierz Kopiuj i sprawdź listę pozostałych placówek A.",
+            "Dodaj Zespół Szkół A do wybranych celów i zapisz.",
+            "Otwórz placówkę docelową ponownie; porównaj zapis z oryginałem i stan pozostałych placówek."
+          ],
+          "expected": "Jedna nowa kopia tylko w wybranej placówce; identyczne produkty i ilości, oryginał i inne zamówienia bez zmian. Poziom zagnieżdżenia nie ogranicza wyboru."
+        },
+        {
+          "id": "ORD-COPY-12",
+          "title": "Technikum A → Szkoła Podstawowa A",
+          "testIds": ["ORD-COPY-12"],
+          "automation": "automated",
+          "preconditions": [
+            "Konto z prawem edycji szkoły.",
+            "Struktura A: Zespół → SP → Liceum oraz Zespół → Technikum. Osobna struktura B i placówka samodzielna.",
+            "Oryginalne zamówienie z dwoma produktami i ilościami 3 oraz 2."
+          ],
+          "steps": [
+            "Otwórz zamówienia w Technikum A i zaznacz oryginał.",
+            "Wybierz Kopiuj i sprawdź listę pozostałych placówek A.",
+            "Dodaj Szkoła Podstawowa A do wybranych celów i zapisz.",
+            "Otwórz placówkę docelową ponownie; porównaj zapis z oryginałem i stan pozostałych placówek."
+          ],
+          "expected": "Jedna nowa kopia tylko w wybranej placówce; identyczne produkty i ilości, oryginał i inne zamówienia bez zmian. Poziom zagnieżdżenia nie ogranicza wyboru."
+        },
+        {
+          "id": "ORD-COPY-13",
+          "title": "Brak możliwości wyboru placówki źródłowej",
+          "testIds": ["ORD-COPY-13"],
+          "automation": "automated",
+          "preconditions": [
+            "Konto z prawem edycji szkoły.",
+            "Struktura A: Zespół → SP → Liceum oraz Zespół → Technikum. Osobna struktura B i placówka samodzielna.",
+            "Oryginalne zamówienie z dwoma produktami i ilościami 3 oraz 2."
+          ],
+          "steps": [
+            "Otwórz kopiowanie oryginału z SP A.",
+            "Sprawdź, że SP A nie występuje w dostępnych celach.",
+            "Anuluj i porównaj stan zamówień."
+          ],
+          "expected": "Źródło nie jest dostępne do wyboru; brak nowych kopii."
+        },
+        {
+          "id": "ORD-COPY-14",
+          "title": "Brak celów poza strukturą A",
+          "testIds": ["ORD-COPY-14"],
+          "automation": "automated",
+          "preconditions": [
+            "Konto z prawem edycji szkoły.",
+            "Struktura A: Zespół → SP → Liceum oraz Zespół → Technikum. Osobna struktura B i placówka samodzielna.",
+            "Oryginalne zamówienie z dwoma produktami i ilościami 3 oraz 2."
+          ],
+          "steps": [
+            "Otwórz kopiowanie z SP A.",
+            "Sprawdź brak zespołu B, szkoły B i placówki samodzielnej na liście.",
+            "Anuluj i porównaj stan."
+          ],
+          "expected": "Dostępne wyłącznie inne placówki struktury A; brak zmian po anulowaniu."
+        },
+        {
+          "id": "ORD-COPY-15",
+          "title": "Zakaz ponownego kopiowania kopii",
+          "testIds": ["ORD-COPY-15"],
+          "automation": "automated",
+          "preconditions": [
+            "Konto z prawem edycji szkoły.",
+            "Struktura A: Zespół → SP → Liceum oraz Zespół → Technikum. Osobna struktura B i placówka samodzielna.",
+            "Oryginalne zamówienie z dwoma produktami i ilościami 3 oraz 2."
+          ],
+          "steps": [
+            "Skopiuj oryginał SP A do Liceum A.",
+            "Otwórz zamówienia Liceum A i zaznacz utworzoną kopię.",
+            "Sprawdź przycisk Kopiuj."
+          ],
+          "expected": "Pierwsza kopia zapisana poprawnie; Kopiuj jest wyłączone dla kopii."
+        },
+        {
+          "id": "ORD-COPY-16",
+          "title": "Pusty wybór oraz anulowanie",
+          "testIds": ["ORD-COPY-16"],
+          "automation": "automated",
+          "preconditions": [
+            "Konto z prawem edycji szkoły.",
+            "Struktura A: Zespół → SP → Liceum oraz Zespół → Technikum. Osobna struktura B i placówka samodzielna.",
+            "Oryginalne zamówienie z dwoma produktami i ilościami 3 oraz 2."
+          ],
+          "steps": [
+            "Otwórz kopiowanie bez wskazania celu.",
+            "Sprawdź blokadę Zapisz.",
+            "Dodaj cel, sprawdź dostępny Zapisz i wybierz Anuluj."
+          ],
+          "expected": "Pustego wyboru nie można zapisać; anulowanie nie tworzy kopii."
+        },
+        {
+          "id": "ORD-COPY-17",
+          "title": "Kopiowanie do wielu placówek",
+          "testIds": ["ORD-COPY-17"],
+          "automation": "automated",
+          "preconditions": [
+            "Konto z prawem edycji szkoły.",
+            "Struktura A: Zespół → SP → Liceum oraz Zespół → Technikum. Osobna struktura B i placówka samodzielna.",
+            "Oryginalne zamówienie z dwoma produktami i ilościami 3 oraz 2."
+          ],
+          "steps": [
+            "Z SP A wybierz Zespół A, Liceum A i Technikum A.",
+            "Zapisz raz i porównaj wszystkie placówki."
+          ],
+          "expected": "Dokładnie jedna kopia u każdego z trzech odbiorców; brak duplikatów, oryginał bez zmian."
+        },
+        {
+          "id": "ORD-COPY-18",
+          "title": "Placówka bez struktury",
+          "testIds": ["ORD-COPY-18"],
+          "automation": "automated",
+          "preconditions": [
+            "Konto z prawem edycji szkoły.",
+            "Struktura A: Zespół → SP → Liceum oraz Zespół → Technikum. Osobna struktura B i placówka samodzielna.",
+            "Oryginalne zamówienie z dwoma produktami i ilościami 3 oraz 2."
+          ],
+          "steps": [
+            "Otwórz oryginalne zamówienie placówki samodzielnej.",
+            "Sprawdź dostępność Kopiuj."
+          ],
+          "expected": "Akcja Kopiuj jest niewidoczna."
+        },
+        {
+          "id": "ORD-COPY-19",
+          "title": "Brak prawa edycji szkoły",
+          "testIds": ["ORD-COPY-19"],
+          "automation": "automated",
+          "preconditions": [
+            "Konto z prawem edycji szkoły.",
+            "Struktura A: Zespół → SP → Liceum oraz Zespół → Technikum. Osobna struktura B i placówka samodzielna.",
+            "Oryginalne zamówienie z dwoma produktami i ilościami 3 oraz 2."
+          ],
+          "steps": [
+            "Zaloguj się odrębnym kontem bez School.EDIT z OCTOPUS_DEV_NO_SCHOOL_EDIT_USERNAME/PASSWORD; błąd logowania nie pomija testu.",
+            "Otwórz oryginalne zamówienie w strukturze.",
+            "Sprawdź brak możliwości uruchomienia kopiowania."
+          ],
+          "expected": "Oryginał można kopiować na koncie głównym. Osobne konto ma odczyt, ale Kopiuj jest niedostępne; bezpośrednia próba kopiowania zwraca 403 i nie zmienia danych. Sesja główna nie jest nadpisywana."
+        }
+      ]
+    }
+  ]
+}

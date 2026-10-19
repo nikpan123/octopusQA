@@ -283,6 +283,8 @@ Szkoła NPC podlega progom szkoły podstawowej, więc ten przypadek wymaga A.
 
 ## Sortowanie
 
+Scenariusze CAT-23–CAT-25 są powiązane z [Redmine #37203](redmine-37203.md). Bieżąca wersja dodaje adnotację, tag `@redmine-37203`, zrzuty i JSON z kolejnością wierszy. Wersja po tej zmianie nie została uruchomiona na DEV/TEST; wcześniejsze wyniki nie potwierdzają wykonania nowych kontroli.
+
 Do sortowania służą dokładnie cztery oddzielne szkoły SORT_A, SORT_B, SORT_C i SORT_D. Wyszukiwanie ich wspólnego prefiksu nie obejmuje pozostałych danych kategorii. Cztery wiersze pozwalają sprawdzić kompletny zestaw bez uznawania częściowo wyrenderowanej dużej listy za wszystkie wyniki.
 
 Wiersze są odczytywane według `row-index`, nie przypadkowej kolejności elementów w DOM. Test wymaga też zgodnych ID, aby sortowanie samych tekstów lub brak któregoś wyniku nie dały fałszywego sukcesu.
@@ -306,8 +308,8 @@ Wiersze są odczytywane według `row-index`, nie przypadkowej kolejności elemen
 
 1. Przygotowuje cztery szkoły i niezależną listę par ID oraz oczekiwana kategoria.
 2. Wyszukuje ich wspólny prefiks.
-3. Ustawia kolejno sortowanie rosnące i malejące; potwierdza stan nagłówka.
-4. Po każdym ustawieniu porównuje cały zestaw par ID i kategoria z oczekiwaniem, niezależnie od kolejności.
+3. Ustawia kolejno rosnąco, malejąco, rosnąco, malejąco; potwierdza stan nagłówka.
+4. Po każdym ustawieniu porównuje pełną kolejność par ID i kategoria z niezależnym oczekiwaniem i zapisuje zrzut oraz JSON. Ta sama kontrola wykrywa zmianę przypisania kategorii, brak lub duplikat szkoły.
 
 Zakres: te same szkoły i litery po zmianie sortowania. Ten scenariusz nie sprawdza trzeciego stanu bez sortowania ani sortowania wielu kolumn jednocześnie.
 

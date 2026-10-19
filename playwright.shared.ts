@@ -24,6 +24,7 @@ export function createPlaywrightConfig(environment: OctopusEnvironment) {
       ? 1
       : 0;
   const includeAnnualMedal = process.env.OCTOPUS_INCLUDE_ANNUAL === "1";
+  const includeDatabase = process.env.OCTOPUS_INCLUDE_DATABASE === "1";
   const reporters: ReporterDescription[] = [
     ["list"],
     [
@@ -47,7 +48,15 @@ export function createPlaywrightConfig(environment: OctopusEnvironment) {
 
     // Dwufazowy test roczny generuje kilka tysięcy żądań i zapisuje snapshot.
     // Uruchamiamy go wyłącznie jawnie, poza zwykłą regresją.
-    ...(includeAnnualMedal ? {} : { grepInvert: /@annual-medal/ }),
+    ...(!includeAnnualMedal || !includeDatabase
+      ? {
+          grepInvert: new RegExp(
+            [!includeAnnualMedal && "@annual-medal", !includeDatabase && "@database"]
+              .filter(Boolean)
+              .join("|"),
+          ),
+        }
+      : {}),
 
     globalSetup: "./scripts/cleanup-global-setup.mjs",
 

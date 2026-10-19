@@ -1,9 +1,48 @@
+// Wspólny wybór motywu dla lokalnych paneli na 127.0.0.1 (cookie współdzielone między portami).
+(() => {
+  const key = 'qa_ui_theme';
+  const allowed = ['auto', 'light', 'dark'];
+  const system = window.matchMedia('(prefers-color-scheme: dark)');
+  const select = document.querySelector('#qa-theme-mode');
+  function read() {
+    try {
+      const cookie = document.cookie.split(';').map(part => part.trim()).find(part => part.startsWith(key + '='));
+      const value = cookie ? decodeURIComponent(cookie.slice(key.length + 1)) : localStorage.getItem(key);
+      return allowed.includes(value) ? value : 'auto';
+    } catch { return 'auto'; }
+  }
+  function apply(value) {
+    document.documentElement.dataset.theme = value === 'auto' ? (system.matches ? 'dark' : 'light') : value;
+    document.documentElement.dataset.themePreference = value;
+    if (select) select.value = value;
+  }
+  function refresh() { apply(read()); }
+  select?.addEventListener('change', () => {
+    const value = allowed.includes(select.value) ? select.value : 'auto';
+    try { localStorage.setItem(key, value); } catch {}
+    try { document.cookie = key + '=' + value + '; Path=/; Max-Age=31536000; SameSite=Strict'; } catch {}
+    apply(value);
+  });
+  system.addEventListener('change', refresh);
+  window.addEventListener('focus', refresh);
+  window.addEventListener('storage', event => { if (event.key === key) refresh(); });
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) refresh(); });
+  refresh();
+})();
+
 const $ = (selector) => document.querySelector(selector);
 const $$ = (selector) => [...document.querySelectorAll(selector)];
+const linkedParams = new URLSearchParams(location.search);
+const linkedIds = [...new Set(linkedParams.getAll("test"))];
+let linkedOnly = linkedIds.length > 0;
+let missingLinkedIds = [];
 
 const state = {
   suite: "all",
   tests: [],
+  scenarios: [],
+  testsLoaded: false,
+  scenariosLoaded: false,
   selected: new Set(),
   status: null,
   timerHandle: null,
@@ -136,6 +175,9 @@ function renderStatus(payload) {
   const run = payload.run;
   setBadge(run?.status, payload.running);
   $("#startBtn").disabled = payload.running;
+  $("#debugSelectedBtn").disabled = payload.running || state.selected.size !== 1;
+  $("#previewDebugBtn").disabled = payload.running;
+  $$("[data-debug-test]").forEach(button => { button.disabled = payload.running; });
   $("#stopBtn").disabled = !payload.running;
   $("#rerunFailedBtn").disabled = payload.running || !run?.failedTestIds?.length;
   $("#deleteSelectedTeachersBtn").disabled =
@@ -154,6 +196,22 @@ function renderStatus(payload) {
   $("#reportBtn").setAttribute("href", run?.reportUrl || "#");
   renderFailures(run?.failures || [], run?.reportUrl);
   updateTimer(run);
+  renderDashboard();
+}
+
+function renderDashboard() {
+  $("#dashboardTests").textContent = state.testsLoaded ? state.tests.filter(test => !test.annual).length : "—";
+  $("#dashboardScenarios").textContent = state.scenariosLoaded ? state.scenarios.reduce((count, feature) => count + feature.scenarios.length, 0) : "—";
+  $("#dashboardSelected").textContent = state.selected.size;
+  $("#dashboardEnvironment").textContent = `Środowisko ${$("#environment").value.toUpperCase()}`;
+  const run = state.status?.run;
+  $("#dashboardRun").textContent = run
+    ? `${state.status.running ? "W toku" : run.status} · ${run.environment.toUpperCase()} · ${run.suiteLabel || run.suite} · passed: ${run.counts?.passed ?? 0}, failed: ${run.counts?.failed ?? 0}, skipped: ${run.counts?.skipped ?? 0}`
+    : "Brak przebiegu w bieżącej sesji panelu. Wcześniejsze wyniki znajdziesz w Historii i raportach.";
+  $("#runSelectionSummary").textContent = state.selected.size
+    ? `Uruchomisz ${state.selected.size} zaznaczonych testów. Zaznaczenie ma pierwszeństwo przed pakietem i polem grep.`
+    : "Brak zaznaczenia — uruchomienie obejmie wybrany pakiet z uwzględnieniem pola grep.";
+  $("#debugSelectedBtn").disabled = Boolean(state.status?.running) || state.selected.size !== 1;
 }
 
 function appendLog({ line, stream }) {
@@ -168,12 +226,14 @@ function filteredTests() {
   const term = $("#testSearch").value.trim().toLowerCase();
   return state.tests.filter((test) => {
     if (test.annual) return false;
+    if (linkedOnly && !linkedIds.includes(test.id)) return false;
     if (!term) return true;
     return `${test.id} ${test.title} ${test.file}`.toLowerCase().includes(term);
   });
 }
 
 function renderTests() {
+  renderDashboard();
   const list = $("#testsList");
   const tests = filteredTests();
   $("#testsCount").textContent = `${state.tests.filter((t) => !t.annual).length} testów`;
@@ -187,22 +247,141 @@ function renderTests() {
   list.innerHTML = tests
     .map(
       (test) => `
-        <label class="test-row">
+        <div class="test-row">
           <input type="checkbox" data-test-id="${escapeHtml(test.id)}" ${state.selected.has(test.id) ? "checked" : ""} />
-          <span class="test-id">${escapeHtml(test.id)}</span>
+          <label class="test-id" for="test-select-${escapeHtml(test.id)}">${escapeHtml(test.id)}</label>
           <span class="test-title" title="${escapeHtml(test.title)}">${escapeHtml(test.title.replace(new RegExp(`^${escapeRegexForJs(test.id)}:?\\s*`), ""))}</span>
-          <span class="test-file">${escapeHtml(test.file.split("/").pop())}</span>
-        </label>`,
+          <div class="test-row-actions"><button class="ghost" data-preview-test="${escapeHtml(test.id)}">Podgląd wykonania</button><button class="ghost" data-debug-test="${escapeHtml(test.id)}" ${state.status?.running ? "disabled" : ""}>Krok po kroku</button></div>
+        </div>`,
     )
     .join("");
 
   $$("[data-test-id]").forEach((checkbox) => {
+    checkbox.id = `test-select-${checkbox.dataset.testId}`;
     checkbox.addEventListener("change", () => {
       if (checkbox.checked) state.selected.add(checkbox.dataset.testId);
       else state.selected.delete(checkbox.dataset.testId);
       $("#selectedCount").textContent = `${state.selected.size} zaznaczonych`;
+      renderDashboard();
     });
   });
+  $$("[data-preview-test]").forEach(button => button.addEventListener("click", () => showTestPreview(button.dataset.previewTest)));
+  $$("[data-debug-test]").forEach(button => button.addEventListener("click", () => debugTest(button.dataset.debugTest)));
+}
+
+let previewRequest = 0;
+let previewTestId = null;
+
+async function debugTest(id) {
+  if (!id || !state.tests.some(test => test.id === id) || state.status?.running) return;
+  if (!confirm(`Uruchomić ${id} krok po kroku na ${$("#environment").value.toUpperCase()}? Test ponownie tworzy lub zmienia dane. Otworzy się przeglądarka i Playwright Inspector. Przerwanie może pozostawić dane testowe.`)) return;
+  $("#testPreviewDialog").close();
+  await startRun({ debug: true, selectedTestIds: [id], headed: true, workers: 1, grep: "" });
+}
+
+async function showTestPreview(id) {
+  const requestId = ++previewRequest;
+  previewTestId = id;
+  $("#testPreviewTitle").textContent = `${id} — zapisane wykonanie`;
+  $("#testPreviewMeta").textContent = "Odczytywanie raportów…";
+  $("#testPreviewContent").textContent = "Pobieranie kroków i załączników bez uruchamiania testu…";
+  $("#previewReportLink").hidden = true;
+  $("#previewDebugBtn").disabled = Boolean(state.status?.running);
+  if (!$("#testPreviewDialog").open) $("#testPreviewDialog").showModal();
+  try {
+    const { preview } = await api(`/api/test-preview?id=${encodeURIComponent(id)}&environment=${encodeURIComponent($("#environment").value)}`);
+    if (requestId !== previewRequest) return;
+    if (!preview) {
+      $("#testPreviewMeta").textContent = "Brak zapisanego wykonania tego testu.";
+      $("#testPreviewContent").textContent = "Nie znaleziono raportu z wykonanymi krokami. Samo zebranie listy testów nie jest wykonaniem. Możesz uruchomić pojedynczy test krok po kroku.";
+      return;
+    }
+    $("#testPreviewMeta").textContent = `${preview.status} · ${formatDate(preview.date)} · ${preview.environment === "unknown" ? "środowisko niezapisane w raporcie — sprawdź pełny raport" : preview.environment.toUpperCase()} · ${preview.source} · próba ${preview.attempt + 1}`;
+    const report = $("#previewReportLink");
+    // Adresy pochodzą wyłącznie ze znanych lokalnych katalogów raportów / Centrum testów.
+    if (preview.reportUrl && (/^\/(?:report|latest-report)\//.test(preview.reportUrl) || /^http:\/\/127\.0\.0\.1:4180\/attachments\/[0-9a-f-]+$/i.test(preview.reportUrl))) {
+      report.href = preview.reportUrl;
+      report.hidden = false;
+    }
+    const flat = [];
+    const visit = (steps, depth = 0) => steps.forEach(step => { flat.push({ ...step, depth }); visit(step.steps || [], depth + 1); });
+    visit(preview.steps || []);
+    $("#testPreviewContent").innerHTML = `
+      ${preview.errors.map((error, index) => `<details class="preview-attachment" ${index === 0 ? "open" : ""}><summary>Błąd ${index + 1} — porównanie oczekiwania z wynikiem</summary><pre class="preview-error">${escapeHtml(error)}</pre></details>`).join("")}
+      <h4>Kroki zapisanego wykonania</h4>
+      ${flat.length ? `<div class="preview-navigation"><button id="previewPrevious" class="ghost">← Poprzedni zapisany krok</button><span id="previewStepCounter"></span><button id="previewNext" class="ghost">Następny zapisany krok →</button></div><div class="preview-grid"><ol class="preview-steps">${flat.map((step, index) => `<li><button class="preview-step" data-preview-step="${index}" style="padding-left:${12 + Math.min(step.depth, 5) * 10}px">${step.error ? "BŁĄD · " : step.skipped ? "POMINIĘTO · " : ""}${escapeHtml(step.title)}</button></li>`).join("")}</ol><div id="previewStepDetail"></div></div>` : '<p>Ten raport nie zawiera kroków. Dostępne dane znajdują się w błędach i załącznikach.</p>'}
+      <h4>Dane i porównania — załączniki testu</h4>
+      <p class="metric-note">Żądania, odpowiedzi i stany „przed / po” są widoczne, jeśli test je zapisał. Pełną sieć sprawdzisz w trace. Podgląd nie odczytuje tokenów ani nagłówków sesji z trace.</p>
+      ${preview.attachments.map(attachment => `<details class="preview-attachment"><summary>${escapeHtml(attachment.name)}</summary>${attachment.image && /^\/(report|latest-report)\//.test(attachment.image) ? `<img src="${escapeHtml(attachment.image)}" alt="${escapeHtml(attachment.name)}" loading="lazy">` : ""}${attachment.body !== undefined ? `<pre>${escapeHtml(typeof attachment.body === "string" ? attachment.body : JSON.stringify(attachment.body, null, 2))}</pre>` : ""}</details>`).join("") || "<p>Brak zapisanych załączników.</p>"}`;
+    if (flat.length) {
+      let index = Math.max(0, flat.findIndex(step => step.error));
+      const select = (next) => {
+        index = Math.max(0, Math.min(flat.length - 1, next));
+        const step = flat[index];
+        $("#previewStepCounter").textContent = `${index + 1} / ${flat.length}`;
+        $("#previewPrevious").disabled = index === 0;
+        $("#previewNext").disabled = index === flat.length - 1;
+        $("#previewStepDetail").innerHTML = `<h4>${escapeHtml(step.title)}</h4><p>${step.skipped ? "Pominięto" : step.error ? "Błąd" : "Zapisano wykonanie"} · ${step.duration ?? 0} ms</p>${step.error ? `<pre class="preview-error">${escapeHtml(step.error)}</pre>` : "<p>Brak błędu zapisanego dla tej akcji. Nie oznacza to zaliczenia całego testu.</p>"}`;
+        $$('[data-preview-step]').forEach(button => { if (Number(button.dataset.previewStep) === index) button.setAttribute("aria-current", "step"); else button.removeAttribute("aria-current"); });
+      };
+      $$('[data-preview-step]').forEach(button => button.addEventListener("click", () => select(Number(button.dataset.previewStep))));
+      $("#previewPrevious").onclick = () => select(index - 1);
+      $("#previewNext").onclick = () => select(index + 1);
+      select(index);
+    }
+  } catch (error) {
+    if (requestId !== previewRequest) return;
+    $("#testPreviewMeta").textContent = "Nie udało się odczytać raportu.";
+    $("#testPreviewContent").textContent = error.message;
+  }
+}
+
+function renderScenarios() {
+  const container = $("#scenarioList");
+  const query = ($("#scenarioSearch")?.value || "").trim().toLowerCase();
+  const available = new Set(state.tests.map(test => test.id));
+  container.innerHTML = state.scenarios.map(feature => {
+    const scenarios = feature.scenarios.filter(scenario => JSON.stringify([feature.title, feature.issue, scenario]).toLowerCase().includes(query));
+    if (!scenarios.length) return "";
+    const verification = feature.verification;
+    const verificationText = verification ? `<p class="scenario-verification">Zapisana weryfikacja ${escapeHtml(verification.environment)} · ${escapeHtml(verification.date)}: ${escapeHtml(verification.passed)} passed, ${escapeHtml(verification.skipped)} skipped, ${escapeHtml(verification.failed)} failed.<br>${escapeHtml(verification.scope)}</p>` : "";
+    const issueLinks = `<div class="actions compact">${/^\d+$/.test(feature.issue) ? `<a class="button-link secondary" href="https://redmine.gwo.pl/issues/${encodeURIComponent(feature.issue)}" target="_blank" rel="noopener">Zgłoszenie w Redmine ↗</a>` : ""}${feature.centerIssueId ? `<a class="button-link secondary" href="http://127.0.0.1:4180/#issues/${encodeURIComponent(feature.centerIssueId)}" target="_blank" rel="noopener">Powiązania w Centrum testów ↗</a>` : ""}</div>`;
+    return `<article class="scenario-feature"><h3>${escapeHtml(feature.title)} · #${escapeHtml(feature.issue)}</h3><p>${escapeHtml(feature.scope)}</p>${issueLinks}${verificationText}${scenarios.map(scenario => {
+      const missing = scenario.testIds.filter(id => !available.has(id));
+      const blocked = scenario.automation === "blocked";
+      return `<details class="scenario-item"><summary><strong>${escapeHtml(scenario.id)}</strong> ${escapeHtml(scenario.title)} <span>${blocked ? "Zablokowany" : "Test automatyczny"}</span></summary>
+        <h4>Warunki wstępne</h4><ul>${scenario.preconditions.map(value => `<li>${escapeHtml(value)}</li>`).join("")}</ul>
+        <h4>Kroki</h4><ol>${scenario.steps.map(value => `<li>${escapeHtml(value)}</li>`).join("")}</ol>
+        <h4>Oczekiwany wynik</h4><p>${escapeHtml(scenario.expected)}</p>
+        <p>Powiązane testy: ${scenario.testIds.map(escapeHtml).join(", ")}</p>
+        ${blocked ? `<p class="error">${escapeHtml(scenario.blocker)}</p>` : ""}
+        ${missing.length ? `<p>Brak w bieżącej liście: ${missing.map(escapeHtml).join(", ")}. Odśwież katalog testów.</p>` : ""}
+        <button class="secondary" data-scenario-id="${escapeHtml(scenario.id)}" ${blocked || missing.length ? "disabled" : ""}>Wybierz powiązany test</button>
+      </details>`;
+    }).join("")}</article>`;
+  }).join("") || '<p class="empty">Brak pasujących scenariuszy.</p>';
+  $$('[data-scenario-id]').forEach(button => button.addEventListener("click", () => {
+    const scenario = state.scenarios.flatMap(feature => feature.scenarios).find(item => item.id === button.dataset.scenarioId);
+    if (!scenario || scenario.automation === "blocked" || scenario.testIds.some(id => !available.has(id))) return;
+    linkedOnly = false;
+    missingLinkedIds = [];
+    $("#linked-selection")?.remove();
+    state.selected = new Set(scenario.testIds);
+    $("#testSearch").value = scenario.testIds.length === 1 ? scenario.testIds[0] : "";
+    renderTests();
+    $("#scenarioMessage").textContent = `Wybrano ${scenario.testIds.join(", ")}. Ustaw środowisko i użyj „Uruchom testy”.`;
+    location.hash = "#test-catalog";
+  }));
+}
+
+async function loadScenarios() {
+  try {
+    const catalog = await api("/api/scenarios");
+    state.scenarios = Array.isArray(catalog.features) ? catalog.features : [];
+    state.scenariosLoaded = true;
+    renderDashboard();
+    renderScenarios();
+  } catch (error) { $("#scenarioList").textContent = `Nie udało się pobrać scenariuszy: ${error.message}`; }
 }
 
 async function loadTests() {
@@ -211,7 +390,37 @@ async function loadTests() {
     const environment = $("#environment").value;
     const { tests } = await api(`/api/tests?environment=${environment}`);
     state.tests = tests;
+    state.testsLoaded = true;
+    renderScenarios();
     state.selected.clear();
+    if (linkedOnly) {
+      const available = new Set(tests.filter((t) => !t.annual).map((t) => t.id));
+      missingLinkedIds = linkedIds.filter((id) => !available.has(id));
+      linkedIds.filter((id) => available.has(id)).forEach((id) => state.selected.add(id));
+      let notice = $("#linked-selection");
+      if (!notice) {
+        notice = document.createElement("div");
+        notice.id = "linked-selection";
+        notice.className = "test-data-message info";
+        notice.setAttribute("role", "status");
+        $("#testSearch").before(notice);
+      }
+      notice.textContent =
+        `Zgłoszenie #${linkedParams.get("issue") || "—"}: wybrano ${state.selected.size} testów. Testy czekają na uruchomienie.` +
+        (missingLinkedIds.length
+          ? ` Nie znaleziono: ${missingLinkedIds.join(", ")}. Uruchomienie jest zablokowane do wyjaśnienia powiązań.`
+          : "");
+      const all = document.createElement("button");
+      all.className = "ghost";
+      all.textContent = "Przejdź do pełnego katalogu";
+      all.onclick = () => {
+        linkedOnly = false;
+        missingLinkedIds = [];
+        notice.remove();
+        renderTests();
+      };
+      notice.append(" ", all);
+    }
     renderTests();
   } catch (error) {
     $("#testsList").innerHTML = `<div class="empty error">${escapeHtml(error.message)}</div>`;
@@ -219,6 +428,10 @@ async function loadTests() {
 }
 
 async function startRun(extra = {}) {
+  if (linkedOnly && (missingLinkedIds.length || !(extra.selectedTestIds ?? [...state.selected]).length)) {
+    alert("Wybierz istniejące testy przypięte do zgłoszenia. Nie uruchomiono całej regresji.");
+    return;
+  }
   const payload = {
     environment: $("#environment").value,
     workers: Number($("#workers").value),
@@ -243,6 +456,7 @@ async function startRun(extra = {}) {
     $("#log").textContent = "";
     const result = await api("/api/run", { method: "POST", body: JSON.stringify(payload) });
     renderStatus(result);
+    location.hash = "#run-status";
   } catch (error) {
     alert(error.message);
   }
@@ -264,6 +478,7 @@ async function rerunFailed(runId) {
       body: JSON.stringify({ runId, headed: $("#headed").checked }),
     });
     renderStatus(result);
+    location.hash = "#run-status";
   } catch (error) {
     alert(error.message);
   }
@@ -273,6 +488,9 @@ async function loadHistory() {
   const container = $("#history");
   try {
     const { history } = await api("/api/history");
+    $("#dashboardHistory").textContent = history.length
+      ? `Zapisanych przebiegów: ${history.length}. Ostatni: ${formatDate(history[0].startedAt)} · ${history[0].status}.`
+      : "Historia nie zawiera jeszcze zapisanych przebiegów.";
     if (!history.length) {
       container.innerHTML = '<div class="empty">Brak historii.</div>';
       return;
@@ -554,6 +772,10 @@ $$(".test-data-tab").forEach((button) => {
 });
 
 $("#startBtn").addEventListener("click", () => startRun());
+$("#debugSelectedBtn").addEventListener("click", () => { if (state.selected.size === 1) debugTest([...state.selected][0]); });
+$("#closeTestPreviewBtn").addEventListener("click", () => $("#testPreviewDialog").close());
+$("#testPreviewDialog").addEventListener("close", () => { previewRequest++; });
+$("#previewDebugBtn").addEventListener("click", () => debugTest(previewTestId));
 $("#stopBtn").addEventListener("click", stopRun);
 $("#rerunFailedBtn").addEventListener("click", () => rerunFailed());
 $("#refreshTestsBtn").addEventListener("click", loadTests);
@@ -562,6 +784,7 @@ $("#clearSelectionBtn").addEventListener("click", () => {
   renderTests();
 });
 $("#testSearch").addEventListener("input", renderTests);
+$("#scenarioSearch").addEventListener("input", renderScenarios);
 $("#environment").addEventListener("change", loadTests);
 $("#clearLogBtn").addEventListener("click", () => ($("#log").textContent = ""));
 $("#refreshHistoryBtn").addEventListener("click", loadHistory);
@@ -592,5 +815,42 @@ api("/api/status")
   .then(renderStatus)
   .catch(() => {});
 loadTests();
+loadScenarios();
 loadTestData();
 loadHistory();
+
+// Zmienia się wyłącznie widoczność widoków. Stan formularzy, SSE i log pozostają wspólne.
+const pages = {
+  dashboard: { title: "Pulpit", description: "Podsumowanie testów i szybki dostęp do najważniejszych działań." },
+  "business-scenarios": { title: "Scenariusze", description: "Wymagania, kroki i oczekiwane wyniki powiązane z testami." },
+  "run-tests": { title: "Uruchom testy", description: "Wybierz środowisko, skonfiguruj przebieg i zaznacz testy z katalogu." },
+  "run-status": { title: "Przebieg i logi", description: "Postęp, log na żywo, błędy oraz sterowanie uruchomieniem." },
+  "run-history": { title: "Historia i raporty", description: "Wcześniejsze uruchomienia, raporty HTML i ponawianie błędów." },
+  "test-data": { title: "Dane testowe", description: "Rejestr rekordów testowych i istniejący mechanizm bezpiecznego sprzątania." },
+};
+const pageAliases = { "test-catalog": "run-tests", "run-log": "run-status" };
+
+function updateSectionNavigation(event) {
+  const requested = location.hash.slice(1) || (linkedIds.length ? "run-tests" : "dashboard");
+  const key = Object.hasOwn(pageAliases, requested) ? pageAliases[requested] : requested;
+  const activePage = Object.hasOwn(pages, key) ? key : "dashboard";
+  if (!Object.hasOwn(pages, key)) window.history.replaceState(null, "", `${location.pathname}${location.search}#dashboard`);
+  document.querySelectorAll("main > section[data-page]").forEach(section => { section.hidden = section.dataset.page !== activePage; });
+  document.body.dataset.currentPage = activePage;
+  $("#pageTitle").textContent = pages[activePage].title;
+  $("#pageDescription").textContent = pages[activePage].description;
+  document.title = `${pages[activePage].title} · Octopus Test Runner`;
+  document.querySelectorAll(".qa-sidebar nav a").forEach((link) => {
+    const active = link.getAttribute("href") === `#${activePage}`;
+    link.classList.toggle("active", active);
+    if (active) link.setAttribute("aria-current", "page");
+    else link.removeAttribute("aria-current");
+  });
+  if (event) $("#pageTitle").focus({ preventScroll: true });
+  if (Object.hasOwn(pageAliases, requested)) {
+    window.requestAnimationFrame(() => document.getElementById(requested)?.scrollIntoView({ block: "start" }));
+  } else window.scrollTo(0, 0);
+  renderDashboard();
+}
+window.addEventListener("hashchange", updateSectionNavigation);
+updateSectionNavigation();
