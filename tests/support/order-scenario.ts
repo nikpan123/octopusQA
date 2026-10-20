@@ -21,8 +21,9 @@ export async function prepareOrderSchool(
   page: Page,
   scenario: Scenario,
   key: "primary" | "secondary" = "primary",
+  openPanel = true,
 ) {
-  const school = await ensureOrderTestSchool(page, scenario.app, key);
+  const school = await ensureOrderTestSchool(page, scenario.app, key, openPanel);
 
   await scenario.record(key === "primary" ? "orderSchoolId" : "orderSecondarySchoolId", school.id);
   await scenario.record(

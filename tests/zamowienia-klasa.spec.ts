@@ -326,7 +326,7 @@ test.describe("Klasa w zamówieniach szkolnych", () => {
     await test.step("Sprawdzenie: expectClassViews", async () =>
       expectClassViews(page, api, id, [{ product, classes: [7] }]));
     const other = await test.step("Przygotowanie: dedykowana szkoła do zamówień", async () =>
-      prepareOrderSchool(page, scenario, "secondary"));
+      prepareOrderSchool(page, scenario, "secondary", false));
     await scenario.app.openPanel("school", other.id);
     await test.step("Sprawdzenie: liczba elementów w widoku — orderRow(await openOrders(page), id); oczekiwane: 0", async () =>
       expect(orderRow(await openOrders(page), id)).toHaveCount(0));

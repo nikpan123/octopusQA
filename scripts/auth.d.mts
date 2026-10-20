@@ -7,6 +7,7 @@ export function restoreSession(
   context: BrowserContext,
   session: AuthSession["session"],
 ): Promise<void>;
+export function restoredSessionFor(context: BrowserContext): AuthSession["session"] | undefined;
 export function authenticate(page: Page, secrets: Record<string, string>): Promise<void>;
 export function hasActiveSession(page: Page, timeout?: number): Promise<boolean>;
 export function sessionHasMinimumLifetime(

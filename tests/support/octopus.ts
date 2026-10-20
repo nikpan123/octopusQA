@@ -1,4 +1,5 @@
 import { apiStep } from "./api-step";
+import { browserSessionState } from "./browser-session";
 import { expect, type Locator, type Page } from "@playwright/test";
 
 export type CreateSchoolApiOptions = {
@@ -244,7 +245,7 @@ export class Octopus {
   }
 
   private async octopusAuth() {
-    const storageState = await this.page.context().storageState();
+    const storageState = await browserSessionState(this.page);
 
     const originState = storageState.origins.find((item) =>
       item.localStorage.some((entry) => entry.name === "token"),

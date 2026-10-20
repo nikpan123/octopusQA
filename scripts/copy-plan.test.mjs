@@ -9,6 +9,23 @@ import {
   validateCopyPlan,
 } from "../tests/support/copy-plan.mjs";
 
+<<<<<<< Updated upstream
+=======
+test("pakiet kopiowania używa osobnego zestawu szkół, bez powrotu do zajętych starych rekordów", () => {
+  assert.deepEqual(COPY_KEYS, {
+    A: "specCopyGroup",
+    SP: "specCopyPrimary",
+    LO: "specCopySecondary",
+    TECH: "specCopyTechnical",
+    B: "specCopyOtherGroup",
+    BSP: "specCopyOtherPrimary",
+    SOLO: "specCopyStandalone",
+  });
+  assert.equal(new Set(Object.values(COPY_KEYS)).size, 7);
+  for (const key of Object.values(COPY_KEYS)) assert.match(key, /^specCopy/);
+});
+
+>>>>>>> Stashed changes
 test("kopiowanie proste: tylko dwie placówki i jedna relacja, niezależnie od kierunku kopii", () => {
   for (const [source, target, expected] of [
     ["SP", "LO", { nodes: ["SP", "LO"], relations: [["SP", "LO"]] }],

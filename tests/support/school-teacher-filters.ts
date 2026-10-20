@@ -6,6 +6,7 @@ import { Octopus } from "./octopus";
 import { OCTOPUS_ENV } from "./environment";
 import type { OctopusApiFactory } from "./api-factory";
 import { ClubFormApi } from "./club-form-api";
+import { backgroundSchoolSetup } from "./background-school-setup";
 
 export type TeacherFilter = "Nauczyciele" | "Nasi" | "Obcy";
 export type FilterSchool = { id: string; name: string };
@@ -32,9 +33,12 @@ export class TeacherFilterData {
   async school(label = "A"): Promise<FilterSchool> {
     const key = `REG_${Date.now()}_${randomUUID().slice(0, 6)}`;
     const name = `AUTO_TFL_${OCTOPUS_ENV.toUpperCase()}_${label}_${key}`;
-    const id = await this.app.createSchool(name, `TFL-${key}`, "Szkoła podstawowa");
-    this.schools.push({ id, name });
-    await this.app.markTestRecord();
+    const id = await backgroundSchoolSetup(this.app.page, async (setup) => {
+      const id = await setup.createSchool(name, `TFL-${key}`, "Szkoła podstawowa");
+      this.schools.push({ id, name });
+      await setup.markTestRecord();
+      return id;
+    });
     return { id, name };
   }
 

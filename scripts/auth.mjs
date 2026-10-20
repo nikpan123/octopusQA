@@ -5,6 +5,7 @@ import { setTimeout as delay } from "node:timers/promises";
 import { loadEnvFile } from "node:process";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { launchBackgroundBrowser } from "./background-browser.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -176,6 +177,13 @@ function credentials() {
   };
 }
 
+const restoredSessions = new WeakMap();
+
+export function restoredSessionFor(context) {
+  const session = restoredSessions.get(context);
+  return session ? { origin: session.origin, values: { ...session.values } } : undefined;
+}
+
 export async function restoreSession(context, session) {
   await context.addInitScript(({ origin: sessionOrigin, values }) => {
     if (window.location.origin === sessionOrigin) {
@@ -184,6 +192,7 @@ export async function restoreSession(context, session) {
       }
     }
   }, session);
+  restoredSessions.set(context, { origin: session.origin, values: { ...session.values } });
 }
 
 async function ready(page, timeout = 30_000) {
@@ -394,7 +403,8 @@ async function ensureSessionUnlocked({ force = false } = {}) {
 
   // Osobny browser bez trace/screenshots/video,
   // poza raportem właściwego testu.
-  const browser = await chromium.launch();
+  const background = await launchBackgroundBrowser(chromium);
+  const browser = background.browser;
 
   try {
     if (!force && storedSession) {
@@ -482,7 +492,7 @@ async function ensureSessionUnlocked({ force = false } = {}) {
 
     return result;
   } finally {
-    await browser.close();
+    await background.close();
   }
 }
 

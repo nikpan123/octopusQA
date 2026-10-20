@@ -350,6 +350,352 @@
           "expected": "Oryginał można kopiować na koncie głównym. Osobne konto ma odczyt, ale Kopiuj jest niedostępne; bezpośrednia próba kopiowania zwraca 403 i nie zmienia danych. Sesja główna nie jest nadpisywana."
         }
       ]
+<<<<<<< Updated upstream
+=======
+    },
+    {
+      "id": "redmine-35980",
+      "issue": "35980",
+      "centerIssueId": "27326d22-f303-474e-8fb4-df218c4bebd7",
+      "title": "1.9.2. Kopiowanie zamówień — scenariusz zbiorczy",
+      "scope": "Dokumentacja #35980, #35950 i #35990 oraz nadrzędne #35920 i #34398. Dokument to zamówienie, nie załącznik. Pokrycie automatyczne nie oznacza PASS. #37160 dopuszcza dowolne poziomy tej samej struktury. Historia ilości dotyczy khsynchro, nie zamówień ręcznych. Na DEV nie można wywołać statusów Softlabu: odczyt SQL/UI istniejących danych nie dowodzi wykonania synchronizacji ani przeliczenia skutków.",
+      "scenarios": [
+        {
+          "id": "ORD-SC-35980-01",
+          "title": "Dozwolone kierunki w tej samej strukturze",
+          "testIds": [
+            "ORD-COPY-01",
+            "ORD-COPY-02",
+            "ORD-COPY-03",
+            "ORD-COPY-04",
+            "ORD-COPY-05",
+            "ORD-COPY-06",
+            "ORD-COPY-07",
+            "ORD-COPY-08",
+            "ORD-COPY-09",
+            "ORD-COPY-10",
+            "ORD-COPY-11",
+            "ORD-COPY-12"
+          ],
+          "automation": "automated",
+          "preconditions": [
+            "Środowisko DEV; konto z właściwymi uprawnieniami, a dla odmowy osobne konto ograniczone.",
+            "Wyłącznie własne zamówienia i wydzielone placówki testowe; nie edytuj istniejących danych biznesowych.",
+            "Struktura i liczba placówek zgodna z planem danego testu; cleanup kopii przed oryginałami i relacjami."
+          ],
+          "steps": [
+            "Przygotuj strukturę A: Zespół → SP → LO oraz Zespół → Technikum.",
+            "Dla każdego kierunku utwórz własny oryginał, wybierz inną placówkę i zapisz kopię.",
+            "Porównaj docelowe dokumenty, produkty, ilości i stan pozostałych placówek."
+          ],
+          "expected": "Kopiowanie działa między wszystkimi poziomami tej samej struktury, bez duplikowania i zmiany oryginału."
+        },
+        {
+          "id": "ORD-SC-35980-02",
+          "title": "Granice struktury i zakaz kopiowania do siebie",
+          "testIds": [
+            "ORD-COPY-13",
+            "ORD-COPY-14",
+            "ORD-COPY-18",
+            "ORD-SPEC-35980-05",
+            "ORD-SPEC-35980-06",
+            "ORD-SPEC-35980-07"
+          ],
+          "automation": "automated",
+          "preconditions": [
+            "Środowisko DEV; konto z właściwymi uprawnieniami, a dla odmowy osobne konto ograniczone.",
+            "Wyłącznie własne zamówienia i wydzielone placówki testowe; nie edytuj istniejących danych biznesowych.",
+            "Struktura i liczba placówek zgodna z planem danego testu; cleanup kopii przed oryginałami i relacjami."
+          ],
+          "steps": [
+            "Sprawdź listę celów oryginału w strukturze A.",
+            "Wyklucz źródło, strukturę B i placówkę samodzielną.",
+            "Sprawdź brak funkcji kopiowania w placówce bez struktury.",
+            "Przez API spróbuj kopiowania do siebie, struktury B i samodzielnej placówki; porównaj wszystkie dokumenty przed/po."
+          ],
+          "expected": "UI wyklucza nieprawidłowe cele; API odrzuca próby do siebie, innej struktury i poza strukturę bez zmiany dokumentów."
+        },
+        {
+          "id": "ORD-SC-35980-03",
+          "title": "Zakaz ponownego kopiowania i kontrola uprawnień",
+          "testIds": [
+            "ORD-COPY-15",
+            "ORD-COPY-19",
+            "ORD-SPEC-35980-08"
+          ],
+          "automation": "automated",
+          "preconditions": [
+            "Środowisko DEV; konto z właściwymi uprawnieniami, a dla odmowy osobne konto ograniczone.",
+            "Wyłącznie własne zamówienia i wydzielone placówki testowe; nie edytuj istniejących danych biznesowych.",
+            "Struktura i liczba placówek zgodna z planem danego testu; cleanup kopii przed oryginałami i relacjami."
+          ],
+          "steps": [
+            "Zaznacz dokument będący kopią i sprawdź blokadę Kopiuj.",
+            "Na osobnym koncie ograniczonym spróbuj kopiowania oryginału w UI i API.",
+            "Przez API spróbuj skopiować kopię do trzeciej placówki w tej samej strukturze."
+          ],
+          "expected": "Kopia nie może być kopiowana ponownie także przez API; ograniczone konto otrzymuje 403."
+        },
+        {
+          "id": "ORD-SC-35980-04",
+          "title": "Nowe ID, wiele kopii i jedno źródło na kopię",
+          "testIds": [
+            "ORD-COPY-17",
+            "ORD-SPEC-35980-01"
+          ],
+          "automation": "automated",
+          "preconditions": [
+            "Środowisko DEV; konto z właściwymi uprawnieniami, a dla odmowy osobne konto ograniczone.",
+            "Wyłącznie własne zamówienia i wydzielone placówki testowe; nie edytuj istniejących danych biznesowych.",
+            "Struktura i liczba placówek zgodna z planem danego testu; cleanup kopii przed oryginałami i relacjami."
+          ],
+          "steps": [
+            "Skopiuj źródło do kilku placówek.",
+            "W tej samej placówce docelowej utwórz też kopię innego źródła.",
+            "Zmień pierwsze źródło i porównaj obie kopie."
+          ],
+          "expected": "Każda kopia ma odrębne ID; produkty i ilości są zgodne. Zmiana propaguje się tylko do kopii właściwego źródła. Powiązanie sprawdzane behawioralnie, nie kluczem obcym SQL."
+        },
+        {
+          "id": "ORD-SC-35980-05",
+          "title": "Zakaz niezależnej edycji i bieżący stan kopii",
+          "testIds": [
+            "ORD-BUG-36290-01",
+            "ORD-BUG-36290-02",
+            "ORD-BUG-36290-03",
+            "ORD-BUG-36290-04"
+          ],
+          "automation": "automated",
+          "preconditions": [
+            "Środowisko DEV; konto z właściwymi uprawnieniami, a dla odmowy osobne konto ograniczone.",
+            "Wyłącznie własne zamówienia i wydzielone placówki testowe; nie edytuj istniejących danych biznesowych.",
+            "Struktura i liczba placówek zgodna z planem danego testu; cleanup kopii przed oryginałami i relacjami."
+          ],
+          "steps": [
+            "Sprawdź brak edycji kopii w UI.",
+            "Zmień ilość, dodaj, usuń i zastąp produkt w źródle; porównaj kopię.",
+            "Spróbuj niezależnej zmiany kopii przez API."
+          ],
+          "expected": "Kopia pokazuje bieżące produkty i ilości źródła; niezależna edycja przez API nie zmienia kopii ani źródła. Nie obniżaj oczekiwań przy wykryciu błędu."
+        },
+        {
+          "id": "ORD-SC-35980-06",
+          "title": "Symbol - kopia i zachowanie danych źródła",
+          "testIds": [
+            "ORD-SPEC-35980-01",
+            "ORD-BUG-36289-01",
+            "ORD-BUG-36289-02",
+            "ORD-BUG-36289-03"
+          ],
+          "automation": "partial",
+          "preconditions": [
+            "Środowisko DEV; konto z właściwymi uprawnieniami, a dla odmowy osobne konto ograniczone.",
+            "Wyłącznie własne zamówienia i wydzielone placówki testowe; nie edytuj istniejących danych biznesowych.",
+            "Struktura i liczba placówek zgodna z planem danego testu; cleanup kopii przed oryginałami i relacjami."
+          ],
+          "steps": [
+            "Porównaj symbol źródła z symbolem kopii na liście.",
+            "Rozwiń szczegóły; porównaj produkty, ilości i adres dokumentu źródłowego."
+          ],
+          "expected": "Lista pokazuje „symbol dokumentu - kopia”; szczegóły zachowują dane źródłowe.",
+          "blocker": "Oznaczenie przy symbolu w każdym wariancie widoku szczegółów wymaga dodatkowej oceny; test symbolu obejmuje listę."
+        },
+        {
+          "id": "ORD-SC-35980-07",
+          "title": "Usunięcie błędnej kopii i ponowne kopiowanie",
+          "testIds": [
+            "ORD-SPEC-35980-02"
+          ],
+          "automation": "automated",
+          "preconditions": [
+            "Środowisko DEV; konto z właściwymi uprawnieniami, a dla odmowy osobne konto ograniczone.",
+            "Wyłącznie własne zamówienia i wydzielone placówki testowe; nie edytuj istniejących danych biznesowych.",
+            "Struktura i liczba placówek zgodna z planem danego testu; cleanup kopii przed oryginałami i relacjami."
+          ],
+          "steps": [
+            "Usuń własną kopię przez UI.",
+            "Ponownie skopiuj niezmieniony oryginał do tej samej placówki.",
+            "Porównaj ID, treść i oryginał."
+          ],
+          "expected": "Po usunięciu kopia znika z listy. Ponowne kopiowanie daje dokładnie jedną aktywną kopię o ID odrębnym od źródła i poprawnej treści; oryginał pozostaje niezmieniony. Reaktywacja tej samej logicznie usuniętej kopii jest dopuszczona, ponieważ dokumentacja nie rozstrzyga wymogu nowego ID przy ponownym kopiowaniu."
+        },
+        {
+          "id": "ORD-SC-35980-08",
+          "title": "Usunięcie źródła usuwa wszystkie jego kopie",
+          "testIds": [
+            "ORD-SPEC-35980-03"
+          ],
+          "automation": "automated",
+          "preconditions": [
+            "Środowisko DEV; konto z właściwymi uprawnieniami, a dla odmowy osobne konto ograniczone.",
+            "Wyłącznie własne zamówienia i wydzielone placówki testowe; nie edytuj istniejących danych biznesowych.",
+            "Struktura i liczba placówek zgodna z planem danego testu; cleanup kopii przed oryginałami i relacjami."
+          ],
+          "steps": [
+            "Utwórz kopie źródła w dwóch placówkach oraz kopię kontrolną innego źródła.",
+            "Usuń własny oryginał i porównaj wszystkie placówki."
+          ],
+          "expected": "Znikają tylko usunięty oryginał i jego kopie. Dokument kontrolny i jego kopia pozostają. To kontrola list API/UI, nie soft delete w SQL."
+        },
+        {
+          "id": "ORD-SC-35980-09",
+          "title": "Odłączenie struktury usuwa kopię",
+          "testIds": [
+            "ORD-SPEC-35980-04"
+          ],
+          "automation": "partial",
+          "preconditions": [
+            "Środowisko DEV; konto z właściwymi uprawnieniami, a dla odmowy osobne konto ograniczone.",
+            "Wyłącznie własne zamówienia i wydzielone placówki testowe; nie edytuj istniejących danych biznesowych.",
+            "Struktura i liczba placówek zgodna z planem danego testu; cleanup kopii przed oryginałami i relacjami."
+          ],
+          "steps": [
+            "Przygotuj kopię i lokalny dokument kontrolny w odbiorcy.",
+            "Usuń wyłącznie własną relację strukturalną.",
+            "Porównaj zamówienia źródła i odbiorcy."
+          ],
+          "expected": "Kopia znika, oryginał i lokalny dokument kontrolny pozostają.",
+          "blocker": "Pokryta bezpośrednia relacja SP→LO. Brakuje testów zmiany typu/hierarchii relacji, zawieszenia szkoły i zachowania niezależnych artefaktów według #35990."
+        },
+        {
+          "id": "ORD-SC-35980-10",
+          "title": "Historia ilości synchronizowanego źródła i kopii",
+          "testIds": [
+            "ORD-DB-05"
+          ],
+          "automation": "partial",
+          "preconditions": [
+            "DEV; jawny pakiet odczytu SQL, konto z SELECT i dostępem do widoku szkoły.",
+            "Wyłącznie odczyt istniejącego dokumentu konta automat; bez tworzenia kopii lub zmiany statusów biznesowych.",
+            "Dobór dokumentu z bazy nie dowodzi czasu ani przebiegu synchronizacji."
+          ],
+          "steps": [
+            "Przygotuj dokument khsynchro z rzeczywistymi zmianami ilości i jego kopię.",
+            "Otwórz historię tej samej pozycji w źródle i kopii.",
+            "Wprowadź kolejną zmianę przez obsługiwany proces synchronizacji i porównaj historię."
+          ],
+          "expected": "Kopia prezentuje aktualną historię ilości właściwego produktu i źródła.",
+          "blocker": "ORD-DB-05 sprawdza dostępność historii istniejącego anulowanego źródła integracyjnego. Brak porównania historii źródła i kopii przed/po kontrolowanej synchronizacji, której nie można wywołać na DEV."
+        },
+        {
+          "id": "ORD-SC-35980-11",
+          "title": "Faktura, korekta i anulowanie źródła",
+          "testIds": [
+            "ORD-DB-04"
+          ],
+          "automation": "partial",
+          "preconditions": [
+            "DEV; jawny pakiet odczytu SQL, konto z SELECT i dostępem do widoku szkoły.",
+            "Wyłącznie odczyt istniejącego dokumentu konta automat; bez tworzenia kopii lub zmiany statusów biznesowych.",
+            "Dobór dokumentu z bazy nie dowodzi czasu ani przebiegu synchronizacji."
+          ],
+          "steps": [
+            "Dla oryginału z kopiami przeprowadź zastąpienie fakturą, korektę i anulowanie przez integrację.",
+            "Po każdej operacji porównaj kopie i dokumenty kontrolne."
+          ],
+          "expected": "Kopie odzwierciedlają obowiązujący stan zgodnie z #35950; obce dokumenty pozostają niezmienione.",
+          "blocker": "ORD-DB-04 sprawdza historyczny stan anulowanego źródła: IsCanceled=1, IsDel=0 i prezentację UI. Faktura, korekta, usunięcie przez Softlab, kaskada do kopii oraz przeliczenia nadal wymagają dowodów. Nie zmieniamy statusów SQL."
+        },
+        {
+          "id": "ORD-SC-35980-12",
+          "title": "Kopie w filtrach operacyjnych",
+          "testIds": [
+            "ORD-SPEC-35980-09",
+            "ORD-SPEC-35980-10"
+          ],
+          "automation": "automated",
+          "preconditions": [
+            "Środowisko DEV; konto z właściwymi uprawnieniami, a dla odmowy osobne konto ograniczone.",
+            "Wyłącznie własne zamówienia i wydzielone placówki testowe; nie edytuj istniejących danych biznesowych.",
+            "Struktura i liczba placówek zgodna z planem danego testu; cleanup kopii przed oryginałami i relacjami."
+          ],
+          "steps": [
+            "Przygotuj kopię ze znanym rokiem oraz dwie kopie z różnymi przedmiotami.",
+            "Sprawdź filtrowanie roku, odświeżenie i filtrowanie przedmiotu FIZ/MAT.",
+            "Wyczyść filtr i porównaj stan dokumentów z początkowym."
+          ],
+          "expected": "Kopie są widoczne zgodnie z dostępnymi filtrami roku i przedmiotu, bez duplikatów i zmiany danych."
+        },
+        {
+          "id": "ORD-SC-35980-13",
+          "title": "Gratisy wynikające z kopii",
+          "testIds": [],
+          "automation": "blocked",
+          "preconditions": [
+            "Środowisko DEV; konto z właściwymi uprawnieniami, a dla odmowy osobne konto ograniczone.",
+            "Wyłącznie własne zamówienia i wydzielone placówki testowe; nie edytuj istniejących danych biznesowych.",
+            "Struktura i liczba placówek zgodna z planem danego testu; cleanup kopii przed oryginałami i relacjami."
+          ],
+          "steps": [
+            "Przygotuj kwalifikujące źródło, jego kopię oraz dokument kontrolny poniżej progu.",
+            "Uruchom obsługiwany proces przydzielania gratisów.",
+            "Sprawdź wyniki u odbiorcy, bez podwójnego naliczania."
+          ],
+          "expected": "Kopia podlega regułom gratisów obowiązującym dla placówki docelowej.",
+          "blocker": "Reguły progów są już zapisane w docs/tests/uprawnienia-i-progi.md (dla wysyłki w SP dodatkowe minimum 5). Do wdrożenia pozostaje dobór oczekiwanych gratisów i kontrola wygenerowanych zleceń oraz statusów wysłane/niewysłane bez uruchamiania rzeczywistej wysyłki."
+        },
+        {
+          "id": "ORD-SC-35980-14",
+          "title": "Uprawnienia wynikające z kopii",
+          "testIds": [
+            "ORD-SPEC-35980-11",
+            "ORD-SPEC-35980-12",
+            "ORD-SPEC-35980-13"
+          ],
+          "automation": "partial",
+          "preconditions": [
+            "Środowisko DEV; konto z właściwymi uprawnieniami, a dla odmowy osobne konto ograniczone.",
+            "Wyłącznie własne zamówienia i wydzielone placówki testowe; nie edytuj istniejących danych biznesowych.",
+            "Struktura i liczba placówek zgodna z planem danego testu; cleanup kopii przed oryginałami i relacjami."
+          ],
+          "steps": [
+            "Przygotuj nauczyciela w placówce docelowej bez wcześniejszego dostępu i potwierdzenie klubowe.",
+            "Przed skopiowaniem sprawdź, że zamówienie źródła nie nalicza ilości ani uprawnień nauczyciela placówki docelowej (reguła potwierdzona przez użytkownika).",
+            "Skopiuj kwalifikujący dokument, przelicz dostęp i sprawdź eksport.",
+            "W osobnych testach usuń kopię albo obniż ilość w oryginale poniżej progu i sprawdź ponowne przeliczenie oraz eksport."
+          ],
+          "expected": "Kopia stanowi podstawę uprawnień odbiorcy zgodnie z regułami kwalifikacji; brak przecieku do innej placówki.",
+          "blocker": "Zaimplementowano kontrolę braku dostępu przed kopią oraz wpływu kopii, jej usunięcia i zmiany ilości źródła, bez flag Testowy. Wykonanie na DEV wykazało naliczanie 31 sztuk przed kopią oraz 62 po kopii; testy zmian zatrzymują się na kontroli stanu początkowego, więc nie potwierdzają jeszcze przeliczenia po zmianie. Osobne warstwy baseAccess/promotionAccess, niezależne podstawy BOK/historyczne oraz warianty dat pozostają poza tymi przypadkami."
+        },
+        {
+          "id": "ORD-SC-35980-15",
+          "title": "Audyt automatycznego usunięcia kopii",
+          "testIds": [
+            "ORD-SPEC-35980-04"
+          ],
+          "automation": "automated",
+          "preconditions": [
+            "Środowisko DEV; konto z właściwymi uprawnieniami, a dla odmowy osobne konto ograniczone.",
+            "Wyłącznie własne zamówienia i wydzielone placówki testowe; nie edytuj istniejących danych biznesowych.",
+            "Struktura i liczba placówek zgodna z planem danego testu; cleanup kopii przed oryginałami i relacjami."
+          ],
+          "steps": [
+            "Zachowaj historię placówki przed i po usunięciu relacji.",
+            "Zidentyfikuj zdarzenie automatycznego usunięcia kopii, nie tylko wpis o usunięciu relacji."
+          ],
+          "expected": "Nowy wpis historii identyfikuje usunięcie kopii z jej ID, datą, rodzajem zmiany i autorem. Samo zdarzenie usunięcia relacji nie wystarcza."
+        },
+        {
+          "id": "ORD-SC-35980-16",
+          "title": "Anulowanie operacji i brak pustych kopii",
+          "testIds": [
+            "ORD-COPY-16"
+          ],
+          "automation": "automated",
+          "preconditions": [
+            "Środowisko DEV; konto z właściwymi uprawnieniami, a dla odmowy osobne konto ograniczone.",
+            "Wyłącznie własne zamówienia i wydzielone placówki testowe; nie edytuj istniejących danych biznesowych.",
+            "Struktura i liczba placówek zgodna z planem danego testu; cleanup kopii przed oryginałami i relacjami."
+          ],
+          "steps": [
+            "Otwórz kopiowanie bez celu i sprawdź Zapisz.",
+            "Dodaj cel i anuluj operację.",
+            "Porównaj stan wszystkich placówek."
+          ],
+          "expected": "Pustego wyboru nie można zapisać, anulowanie nie tworzy dokumentów."
+        }
+      ]
+>>>>>>> Stashed changes
     }
   ]
 }

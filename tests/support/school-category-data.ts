@@ -2,8 +2,10 @@ import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { apiStep } from "./api-step";
 import { expect, type Page } from "@playwright/test";
+import { fixtureSchools } from "./fixture-schools";
+import { backgroundSchoolSetup } from "./background-school-setup";
 import { OCTOPUS_ENV } from "./environment";
-import { Octopus, typeValue } from "./octopus";
+import { Octopus } from "./octopus";
 import {
   setStudentCount,
   studentCountInput,
@@ -70,9 +72,10 @@ export async function ensureCategorySchool(
   page: Page,
   app: Octopus,
   definition: Definition,
+  options: { openPanel?: boolean } = {},
 ): Promise<CategorySchool> {
-  return await apiStep(
-    "Przygotowanie: szkoła o zadanym typie, liczbie uczniów i kategorii",
+  return apiStep(
+    "Przygotowanie API: tożsamość szkoły, typ, liczba uczniów i flaga Testowy",
     async () => {
       if (definition.testRecord === false)
         expect(
@@ -83,76 +86,56 @@ export async function ensureCategorySchool(
         .then((value) => JSON.parse(value) as Record<string, CategorySchool>)
         .catch(() => ({}) as Record<string, CategorySchool>);
       const name = prefix + definition.key;
-      let school = cache[definition.key];
-      if (!school) {
-        await app.openPanel("school");
-        const search = await app.openSearch("school");
-        for (const input of await search
-          .locator('input:not([type="checkbox"]):not([readonly]):not([disabled])')
-          .all())
-          await typeValue(input, "");
-        await typeValue(app.field(search, "Nazwa szkoły"), name);
-        const searched = page.waitForResponse((response) => {
-          const url = new URL(response.url());
-          return (
-            response.request().method() === "GET" &&
-            url.pathname === "/api/InstitutionBrowser/GetInstitutions" &&
-            decodeURIComponent(url.search).includes(name)
-          );
-        });
-        await search.getByRole("button", { name: "Szukaj", exact: true }).click();
-        const response = await searched;
-        expect(response.ok(), `Wyszukiwanie szkoły ${name} powinno się powieść`).toBe(true);
-        const body = (await response.json()) as { data: Array<{ id: number; name: string }> };
-        expect(Array.isArray(body.data), "Wyszukiwanie powinno zwrócić tablicę szkół").toBe(true);
-        const matches = body.data.filter((candidate) => candidate.name === name);
-        expect(matches.length, `Nie może istnieć kilka szkół o nazwie ${name}`).toBeLessThanOrEqual(
-          1,
-        );
-        await expect(search).toHaveCount(0);
-        const empty = page
-          .locator("mat-dialog-container")
-          .filter({ hasText: "Brak wyników wyszukiwania" });
-        if (matches.length === 0) {
-          // Wyszukiwanie jest częściowe: SP_1 może zwrócić SP_100, ale nie samą SP_1.
-          // Decyzję o utworzeniu podejmujemy dopiero na podstawie zakończonej odpowiedzi.
-          if (body.data.length === 0) {
-            await expect(empty).toBeVisible();
-            await empty.getByRole("button", { name: "OK", exact: true }).click();
-            await expect(empty).toHaveCount(0);
-          }
-          const id = await app.createSchool(name, `CAT-${definition.key}`, definition.type, {
+      const editable = definition.key === EDIT_CASE.key || definition.key === EDIT_D_CASE.key;
+      const api = await fixtureSchools(page);
+      const [existing] = await api.findMany([
+        {
+          name,
+          type: definition.type,
+          id: cache[definition.key]?.id,
+          ...(editable ? {} : { count: definition.count }),
+        },
+      ]);
+      let school: CategorySchool;
+      if (existing) {
+        school = { id: existing.id, name };
+        if (definition.testRecord === false)
+          expect(existing.tested, "Dedykowana szkoła ma pozostać bez Testowy").toBe(false);
+        else if (!existing.tested) {
+          await backgroundSchoolSetup(page, async (setup) => {
+            await setup.openPanel("school", existing.id);
+            await setup.markTestRecord();
+          });
+        }
+      } else {
+        const id = await backgroundSchoolSetup(page, async (setup) => {
+          const id = await setup.createSchool(name, `CAT-${definition.key}`, definition.type, {
             quantityOfStudents: definition.count,
           });
-          school = { id, name };
-        } else {
-          school = { id: String(matches[0].id), name };
-        }
-        cache[definition.key] = school;
-        await mkdir(path.dirname(cachePath), { recursive: true });
-        await writeFile(cachePath, JSON.stringify(cache, null, 2));
+          if (definition.testRecord !== false) await setup.markTestRecord();
+          return id;
+        });
+        school = { id, name };
+        const [saved] = await api.findMany([
+          { name, type: definition.type, id, count: definition.count },
+        ]);
+        expect(saved?.tested).toBe(definition.testRecord !== false);
       }
-      await app.openPanel("school", school.id);
-      await expect(app.detail("name")).toHaveValue(name);
-      if (definition.testRecord === false) {
-        await expect(
-          page.getByRole("checkbox", { name: "Testowy", exact: true }),
-        ).not.toBeChecked();
-      } else {
-        await app.markTestRecord();
+      cache[definition.key] = school;
+      await mkdir(path.dirname(cachePath), { recursive: true });
+      await writeFile(cachePath, JSON.stringify(cache, null, 2));
+      if (editable && existing?.quantityOfStudents !== definition.count) {
+        await backgroundSchoolSetup(page, async (setup) => {
+          await setStudentCount(setup, school, String(definition.count));
+        });
       }
-      // Tylko dedykowane szkoły edycyjne mogą mieć stan pozostały po przerwanym teście.
-      // Nie naprawiamy danych przypadków granicznych, bo mogłoby to ukrywać błąd produktu.
-      if (definition.key === EDIT_CASE.key || definition.key === EDIT_D_CASE.key) {
-        const baseline = String(definition.count);
-        if ((await studentCountInput(page).inputValue()) !== baseline) {
-          await setStudentCount(app, school, baseline);
-          await app.openPanel("school", school.id);
-        }
+      // Testy kategorii/progów badają widok. Uprawnienia wykorzystują tylko dane API.
+      if (options.openPanel !== false) {
+        await app.openPanel("school", school.id);
+        if (definition.count === undefined)
+          await expect(studentCountInput(page)).toHaveValue(/^(?:0)?$/);
+        else await expect(studentCountInput(page)).toHaveValue(String(definition.count));
       }
-      if (definition.count === undefined)
-        await expect(studentCountInput(page)).toHaveValue(/^(?:0)?$/);
-      else await expect(studentCountInput(page)).toHaveValue(String(definition.count));
       return school;
     },
   );

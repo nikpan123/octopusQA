@@ -1,10 +1,13 @@
-import { expect, type Browser, type Page } from "@playwright/test";
+import { expect, request, type Browser, type BrowserContext } from "@playwright/test";
 import { mkdir, readFile, rename, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { ensureSession, restoreSession } from "../../scripts/auth.mjs";
 import { test as base } from "./scenario";
+import { fixtureSchoolsFromState } from "./fixture-schools";
 import { OCTOPUS_ENV } from "./environment";
-import { Octopus, typeValue } from "./octopus";
+import { Octopus } from "./octopus";
+import { launchBackgroundBrowser } from "../../scripts/background-browser.mjs";
+import { rememberBrowserSession } from "./browser-session";
 
 export type ClubSchool = {
   id: string;
@@ -28,7 +31,6 @@ type ClubSchoolCache = {
 };
 
 const schoolKeys: ClubSchoolKey[] = ["spA", "spB", "secondary"];
-const cacheLifetimeMs = 24 * 60 * 60 * 1_000;
 const cacheFile = path.resolve("playwright", ".auth", OCTOPUS_ENV, "club-schools.json");
 
 const schoolDefinitions = {
@@ -99,110 +101,62 @@ async function writeSchoolCache(schools: ClubSchools) {
   await rename(temporary, cacheFile);
 }
 
-function cacheIsFresh(cache: ClubSchoolCache) {
-  const validatedAt = Date.parse(cache.validatedAt);
-  return Number.isFinite(validatedAt) && Date.now() - validatedAt < cacheLifetimeMs;
-}
-
-async function findSchool(page: Page, app: Octopus, name: string) {
-  await app.openPanel("school");
-
-  const search = await app.openSearch("school");
-  await typeValue(app.field(search, "Nazwa szkoły"), name);
-  await search.getByRole("button", { name: "Szukaj", exact: true }).click();
-
-  const noResults = page.locator("mat-dialog-container").filter({
-    hasText: "Brak wyników wyszukiwania",
-  });
-  const row = app
-    .results("school")
-    .getByRole("row")
-    .filter({
-      has: page.getByRole("gridcell", { name, exact: true }),
-    });
-
-  await expect.poll(async () => (await noResults.count()) + (await row.count())).toBeGreaterThan(0);
-
-  if (await noResults.count()) {
-    await noResults.getByRole("button", { name: "OK", exact: true }).click();
-    await expect(noResults).toHaveCount(0);
-    return null;
-  }
-
-  await expect(row).toHaveCount(1);
-  await row.click();
-  await expect(page).toHaveURL(/\/school\/school-panel\/\d+$/);
-
-  return page.url().split("/").pop()!;
-}
-
-async function findOrCreateSchool(
-  page: Page,
-  app: Octopus,
-  definition: (typeof schoolDefinitions)[keyof typeof schoolDefinitions],
-): Promise<ClubSchool> {
-  const existingId = await findSchool(page, app, definition.name);
-
-  if (existingId) {
-    return { ...definition, id: existingId };
-  }
-
-  const id = await app.createSchool(definition.name, String(Date.now()), definition.type);
-  await app.markTestRecord();
-
-  return { ...definition, id };
-}
-
-async function validateCachedSchool(
-  app: Octopus,
-  school: ClubSchool,
-  definition: (typeof schoolDefinitions)[ClubSchoolKey],
-) {
-  try {
-    await app.openPanel("school", school.id);
-    await expect(app.detail("name")).toHaveValue(definition.name);
-    return { ...definition, id: school.id };
-  } catch {
-    return null;
-  }
-}
-
 async function prepareClubSchools(browser: Browser): Promise<ClubSchools> {
   const cached = await readSchoolCache();
-
-  if (cached && cacheIsFresh(cached)) {
-    console.log(`Szkoły CLUB ${OCTOPUS_ENV.toUpperCase()}: użyto zapamiętanych ID.`);
-    return cached.schools;
-  }
-
   const auth = await ensureSession();
-  const context = await browser.newContext({ storageState: auth.storageState });
-
-  try {
-    await restoreSession(context, auth.session);
-
-    const page = await context.newPage();
-    await page.goto(`${auth.session.origin}/teacher/teacher-panel`);
-    await expect(page.getByRole("button", { name: "Wyloguj", exact: true })).toBeVisible();
-
-    const app = new Octopus(page);
-    const resolved = {} as ClubSchools;
-
-    for (const key of schoolKeys) {
-      const fromCache = cached
-        ? await validateCachedSchool(app, cached.schools[key], schoolDefinitions[key])
-        : null;
-
-      resolved[key] = fromCache ?? (await findOrCreateSchool(page, app, schoolDefinitions[key]));
+  // Sam GET nie potrzebuje przeglądarki ani nawet pustej karty.
+  const apiRequest = await request.newContext();
+  let setupBrowser: Browser | undefined;
+  let closeSetupBrowser: (() => Promise<void>) | undefined;
+  let context: BrowserContext | undefined;
+  let setupApp: Octopus | undefined;
+  const appForRepair = async () => {
+    if (!setupApp) {
+      // Rzadkie tworzenie/oznaczanie fixture też nie powinno pokazywać dodatkowych kart.
+      const background = await launchBackgroundBrowser(browser.browserType());
+      setupBrowser = background.browser;
+      closeSetupBrowser = background.close;
+      context = await setupBrowser.newContext({ storageState: auth.storageState });
+      rememberBrowserSession(context, auth.storageState);
+      await restoreSession(context, auth.session);
+      setupApp = new Octopus(await context.newPage());
     }
-
+    return setupApp;
+  };
+  try {
+    const api = fixtureSchoolsFromState(apiRequest, auth.storageState);
+    const matches = await api.findMany(
+      schoolKeys.map((key) => ({ ...schoolDefinitions[key], id: cached?.schools[key].id })),
+    );
+    const resolved = {} as ClubSchools;
+    for (const [index, key] of schoolKeys.entries()) {
+      const definition = schoolDefinitions[key];
+      const found = matches[index];
+      if (found) {
+        resolved[key] = { ...definition, id: found.id };
+        if (!found.tested) {
+          const app = await appForRepair();
+          await app.openPanel("school", found.id);
+          await app.markTestRecord();
+        }
+      } else {
+        const app = await appForRepair();
+        const id = await app.createSchool(definition.name, String(Date.now()), definition.type);
+        await app.markTestRecord();
+        resolved[key] = { ...definition, id };
+      }
+    }
     await writeSchoolCache(resolved);
     console.log(
-      `Szkoły CLUB ${OCTOPUS_ENV.toUpperCase()}: ${cached ? "odświeżono" : "utworzono"} cache ID.`,
+      `Szkoły CLUB ${OCTOPUS_ENV.toUpperCase()}: ID i dane zweryfikowano przez API, bez nawigacji przygotowawczej.`,
     );
     return resolved;
   } finally {
-    await context.close();
+    try {
+      await closeSetupBrowser?.();
+    } finally {
+      await apiRequest.dispose();
+    }
   }
 }
 

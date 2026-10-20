@@ -1,3 +1,5 @@
+import path from "node:path";
+import {tmpdir} from "node:os";
 import { defineConfig, devices, type ReporterDescription } from "@playwright/test";
 
 import { randomUUID } from "node:crypto";
@@ -35,6 +37,7 @@ export function createPlaywrightConfig(environment: OctopusEnvironment) {
     ],
     ["./scripts/performance-reporter.mjs"],
     ["./scripts/failure-reporter.mjs"],
+    ["./shared/browser-preview-reporter.cjs"],
   ];
 
   if (process.env.CI) {
@@ -45,6 +48,7 @@ export function createPlaywrightConfig(environment: OctopusEnvironment) {
 
   return defineConfig({
     testDir: "./tests",
+    metadata: {qaBrowserPreviewDirectory:path.join(tmpdir(), "qa-browser-preview-"+runId)},
 
     // Dwufazowy test roczny generuje kilka tysięcy żądań i zapisuje snapshot.
     // Uruchamiamy go wyłącznie jawnie, poza zwykłą regresją.
@@ -88,6 +92,8 @@ export function createPlaywrightConfig(environment: OctopusEnvironment) {
 
     use: {
       baseURL,
+      // Wyłącznie jawny tryb podglądu. Playwright resetuje stan przed kolejnym testem.
+      reuseContext: process.env.OCTOPUS_SINGLE_TAB === "1",
 
       actionTimeout: 20_000,
 

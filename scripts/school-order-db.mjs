@@ -99,6 +99,45 @@ export async function probeSchoolOrderDatabase() {
   return result;
 }
 
+<<<<<<< Updated upstream
+=======
+export async function findHistoricalOrders(requireHistory = false) {
+  const result = await sqlRead(requireHistory ? "FindHistoricalWithHistory" : "FindHistorical");
+  if (!Array.isArray(result.rows) || result.rows.length > 10)
+    throw new Error("Niepoprawna lista kandydatów historycznych.");
+  return result.rows;
+}
+
+export async function findStatusAudit() {
+  const result = await sqlRead("FindStatusAudit");
+  if (!Array.isArray(result.rows) || result.rows.length > 10)
+    throw new Error("Niepoprawny wynik audytu.");
+  return result.rows;
+}
+
+export async function readHistoricalOrder(orderId, schoolId) {
+  const order = validateSqlId(orderId),
+    school = validateSqlId(schoolId);
+  const result = await sqlRead("ReadHistorical", [
+    "-OrderId",
+    String(order),
+    "-SchoolId",
+    String(school),
+  ]);
+  if (!Array.isArray(result.rows) || result.rows.length !== 1)
+    throw new Error("Brak wskazanego dokumentu historycznego.");
+  const row = result.rows[0];
+  if (
+    row.id !== order ||
+    row.schoolId !== school ||
+    typeof row.isCanceled !== "boolean" ||
+    typeof row.isDel !== "boolean"
+  )
+    throw new Error("Wynik SQL nie odpowiada wskazanemu dokumentowi.");
+  return row;
+}
+
+>>>>>>> Stashed changes
 export async function readSchoolOrder(orderId, schoolId) {
   const order = validateSqlId(orderId);
   const school = validateSqlId(schoolId);

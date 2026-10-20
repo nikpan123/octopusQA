@@ -6,6 +6,10 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { randomUUID } from "node:crypto";
 import { latestTestPreview, validPreviewId } from "./test-preview.mjs";
+<<<<<<< Updated upstream
+=======
+import { GuidedApiRun } from "./guided-api.mjs";
+>>>>>>> Stashed changes
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(__dirname, "..");
@@ -17,7 +21,24 @@ const reportsDir = path.join(runsDir, "html-reports");
 const PORT = Number(process.env.OCTOPUS_TEST_UI_PORT || 4173);
 
 export const SUITES = {
+<<<<<<< Updated upstream
   database: { label: "Baza danych — soft delete", files: ["tests/zamowienia-soft-delete.spec.ts", "tests/zamowienia-kopie-baza.spec.ts"] },
+=======
+  database: {
+    label: "Dokumenty Softlab — odczyt SQL (DEV)",
+    files: ["tests/zamowienia-softlab-odczyt.spec.ts"],
+  },
+  copying: {
+    label: "Kopiowanie zamówień",
+    files: [
+      "tests/zamowienia-kopiowanie-struktura.spec.ts",
+      "tests/zamowienia-redmine-36289.spec.ts",
+      "tests/zamowienia-redmine-36290.spec.ts",
+      "tests/zamowienia-redmine-35980.spec.ts",
+      "tests/zamowienia-kopie-uprawnienia.spec.ts",
+    ],
+  },
+>>>>>>> Stashed changes
   all: { label: "Cała regresja", files: [] },
   teachers: {
     label: "Nauczyciele",
@@ -86,6 +107,7 @@ export const SUITES = {
 };
 
 const state = {
+  guided: null,
   child: null,
   run: null,
   clients: new Set(),
@@ -337,6 +359,12 @@ function publicStatus() {
           workers: run.workers,
           headed: run.headed,
           debug: Boolean(run.debug),
+<<<<<<< Updated upstream
+=======
+          debugMode: run.debugMode || "inspector",
+          guided: state.guided?.snapshot() || null,
+          singleTab: Boolean(run.singleTab),
+>>>>>>> Stashed changes
           grep: run.grep,
           selectedTestIds: run.selectedTestIds,
           counts: run.counts,
@@ -701,6 +729,8 @@ async function deleteTeachersFromRegistry(fileNames) {
 }
 
 export function buildRunArguments(options) {
+  if (options.singleTab && (options.debug || options.annualMode))
+    throw new Error("Jedna karta to osobny tryb podglądu, bez Inspektora i workflow rocznego.");
   const environment = options.environment === "test" ? "test" : "dev";
   const config = configForEnvironment(environment);
   const args = ["test", `--config=${config}`];
@@ -709,9 +739,31 @@ export function buildRunArguments(options) {
     const ids = options.selectedTestIds;
     if (options.annualMode || !Array.isArray(ids) || ids.length !== 1 || !validPreviewId(ids[0]))
       throw new Error("Tryb krok po kroku wymaga zaznaczenia dokładnie jednego testu z katalogu.");
+<<<<<<< Updated upstream
     if (environment !== "dev" && ids[0].startsWith("ORD-DB-")) throw new Error("Test bazy danych jest dostępny tylko dla DEV.");
     args.push("--grep", `(?:${escapeRegex(ids[0])})(?![A-Z0-9-])`, "--debug", "--workers=1", "--retries=0", "--trace=on");
     return { args, environment, suite: "debug", suiteLabel: `Krok po kroku · ${ids[0]}`, workers: 1, includeDatabase: ids[0].startsWith("ORD-DB-") };
+=======
+    if (environment !== "dev" && ids[0].startsWith("ORD-DB-"))
+      throw new Error("Test bazy danych jest dostępny tylko dla DEV.");
+    args.push(
+      "--grep",
+      `(?:${escapeRegex(ids[0])})(?![A-Z0-9-])`,
+      ...(options.guidedApi ? ["--timeout=0"] : ["--debug"]),
+      "--workers=1",
+      "--retries=0",
+      "--trace=on",
+    );
+    return {
+      args,
+      environment,
+      suite: "debug",
+      suiteLabel: `Krok po kroku · ${ids[0]}`,
+      guidedApi: Boolean(options.guidedApi),
+      workers: 1,
+      includeDatabase: ids[0].startsWith("ORD-DB-"),
+    };
+>>>>>>> Stashed changes
   }
 
   if (options.annualMode) {
@@ -748,27 +800,54 @@ export function buildRunArguments(options) {
     : [];
   const ordersOnlySelection =
     selectedIds.length > 0 && selectedIds.every((id) => id.startsWith("ORD-"));
+<<<<<<< Updated upstream
   const includeDatabase = suite === "database" || selectedIds.some(id => id.startsWith("ORD-DB-")) || /ORD-DB-|@database/.test(String(options.grep ?? ""));
   if (includeDatabase && environment !== "dev") throw new Error("Test bazy danych jest dostępny tylko dla DEV.");
+=======
+  const includeDatabase =
+    suite === "database" ||
+    selectedIds.some((id) => id.startsWith("ORD-DB-")) ||
+    /ORD-DB-|@database/.test(String(options.grep ?? ""));
+  if (includeDatabase && environment !== "dev")
+    throw new Error("Test bazy danych jest dostępny tylko dla DEV.");
+>>>>>>> Stashed changes
 
   // ORD-y są skonfigurowane do pracy równoległej, ale dla tego pakietu
   // świadomie ograniczamy wykonanie do maksymalnie 2 workerów. Każdy worker
   // korzysta z osobnej szkoły referencyjnej (TEST_PARALLEL_INDEX), więc nie
   // powinien kolidować z zamówieniami tworzonymi przez drugi worker.
+  const copyingSelection =
+    suite === "copying" ||
+    selectedIds.some((id) => /^ORD-(?:COPY-|SPEC-35980-|BUG-3628[39]-|BUG-36290-)/.test(id)) ||
+    /@copy|ORD-COPY-|ORD-SPEC-35980-/.test(String(options.grep ?? ""));
   const workers =
+<<<<<<< Updated upstream
     includeDatabase ? 1 : suite === "orders" || ordersOnlySelection ? Math.min(requestedWorkers, 2) : requestedWorkers;
+=======
+    options.singleTab || includeDatabase || copyingSelection
+      ? 1
+      : suite === "orders" || ordersOnlySelection
+        ? Math.min(requestedWorkers, 2)
+        : requestedWorkers;
+>>>>>>> Stashed changes
 
   args.push(`--workers=${workers}`);
-  if (options.headed) args.push("--headed");
+  if (options.headed || options.singleTab) args.push("--headed");
+  if (options.singleTab) args.push("--retries=0");
 
+<<<<<<< Updated upstream
   return { args, environment, suite, suiteLabel: suiteDef.label, workers,
     includeDatabase,
   };
+=======
+  return { args, environment, suite, suiteLabel: suiteDef.label, workers, includeDatabase, singleTab: Boolean(options.singleTab) };
+>>>>>>> Stashed changes
 }
 
 async function startRun(options) {
   if (state.child || state.starting) throw new Error("Test run is already in progress");
   state.starting = true;
+<<<<<<< Updated upstream
   try { return await startRunInternal(options); }
   finally { state.starting = false; }
 }
@@ -783,6 +862,33 @@ async function startRunInternal(options) {
     const file = path.resolve(root, "tests", matches[0].file.replace(/^tests\//, ""));
     if (!file.startsWith(path.join(root, "tests") + path.sep)) throw new Error("Niepoprawna lokalizacja testu.");
     built.args.splice(2, 0, `${path.relative(root, file).split(path.sep).join("/")}:${matches[0].line}`);
+=======
+  try {
+    return await startRunInternal(options);
+  } finally {
+    state.starting = false;
+  }
+}
+
+async function startRunInternal(options) {
+  let built = buildRunArguments(options);
+  if (options.debug) {
+    const matches = (await listTests(built.environment)).filter(
+      (test) => test.id === options.selectedTestIds[0],
+    );
+    if (matches.length !== 1 || matches[0].annual)
+      throw new Error("Wybierz jeden jednoznaczny, zwykły test z aktualnego katalogu.");
+    // Capability comes from the current catalog, never a client-supplied flag.
+    built = buildRunArguments({ ...options, guidedApi: matches[0].debugMode === "api" });
+    const file = path.resolve(root, "tests", matches[0].file.replace(/^tests\//, ""));
+    if (!file.startsWith(path.join(root, "tests") + path.sep))
+      throw new Error("Niepoprawna lokalizacja testu.");
+    built.args.splice(
+      2,
+      0,
+      `${path.relative(root, file).split(path.sep).join("/")}:${matches[0].line}`,
+    );
+>>>>>>> Stashed changes
     // Listowanie jest asynchroniczne: drugi start nie może wejść pomiędzy walidację a uruchomienie.
     if (state.child) throw new Error("Test run is already in progress");
   }
@@ -808,8 +914,15 @@ async function startRunInternal(options) {
     suite: built.suite,
     suiteLabel: built.suiteLabel,
     workers: built.workers || 1,
+<<<<<<< Updated upstream
     headed: Boolean(options.headed || options.debug),
     debug: Boolean(options.debug),
+=======
+    headed: !built.guidedApi && Boolean(options.headed || options.debug || built.singleTab),
+    debug: Boolean(options.debug),
+    debugMode: built.guidedApi ? "api" : "inspector",
+    singleTab: Boolean(built.singleTab),
+>>>>>>> Stashed changes
     grep: options.grep ? String(options.grep) : "",
     selectedTestIds: Array.isArray(options.selectedTestIds) ? options.selectedTestIds : [],
     counts: { passed: 0, failed: 0, expectedFailed: 0, skipped: 0 },
@@ -820,13 +933,20 @@ async function startRunInternal(options) {
     command: `npx playwright ${built.args.join(" ")}`,
   };
 
+  state.guided = built.guidedApi ? new GuidedApiRun(runId, () => emit("status", publicStatus())) : null;
   const env = {
     ...process.env,
     OCTOPUS_ENV: built.environment,
     OCTOPUS_WORKERS: String(state.run.workers),
     OCTOPUS_UI_RUN_ID: state.run.id,
     OCTOPUS_INCLUDE_DATABASE: built.includeDatabase ? "1" : "0",
+<<<<<<< Updated upstream
+=======
+    OCTOPUS_SINGLE_TAB: built.singleTab ? "1" : "0",
+>>>>>>> Stashed changes
     PLAYWRIGHT_HTML_OUTPUT_DIR: reportDir,
+    OCTOPUS_GUIDED_API: built.guidedApi ? "1" : "0",
+    ...(built.guidedApi ? { PWDEBUG: "0", OCTOPUS_GUIDED_URL: `http://127.0.0.1:${PORT}`, OCTOPUS_GUIDED_KEY: state.guided.key } : {}),
     ...(options.annualMode ? { OCTOPUS_INCLUDE_ANNUAL: "1" } : {}),
   };
 
@@ -839,7 +959,17 @@ async function startRunInternal(options) {
 
   state.child = child;
   pushLog(`UI: ${state.run.command}`);
+<<<<<<< Updated upstream
   if (options.debug) pushLog("KROK PO KROKU: w oknie Playwright Inspector użyj Step over, aby przejść do następnej akcji, lub Resume, aby kontynuować. Żądania i porównania API sprawdzisz w raporcie/trace; Inspektor nie jest debuggerem kodu TypeScript. Przerwanie może pozostawić dane testowe.");
+=======
+  if (built.singleTab)
+    pushLog("PODGLĄD W JEDNEJ KARCIE: reset stanu przed każdym testem, jeden worker. Błąd może spowodować restart okna. To tryb diagnostyczny, nie zmiana domyślnej izolacji regresji.");
+  if (built.guidedApi) pushLog("KROK PO KROKU — API: przygotowanie automatyczne, bez Inspektora. Otwórz Przebieg i logi; każdy kolejny krok uruchomisz przyciskiem Następny krok. Żądania i odpowiedzi są prezentowane bez nagłówków autoryzacji. Stop przerywa test i może pozostawić dane.");
+  if (options.debug && !built.guidedApi)
+    pushLog(
+      "KROK PO KROKU: przygotowanie szkół i danych API przebiega automatycznie w tle, bez dodatkowych kart i postojów F10. W Inspektorze użyj Step over (F10) do właściwych akcji testu lub Resume, aby kontynuować. Nakładka podglądu jest wyłączona w Inspektorze, aby jej odświeżanie nie tworzyło dodatkowych kroków. Szczegóły przygotowania i żądania API pozostają w raporcie/trace; Inspektor nie jest debuggerem kodu TypeScript. Przerwanie może pozostawić dane testowe.",
+    );
+>>>>>>> Stashed changes
   emit("status", publicStatus());
 
   child.stdout.on("data", (data) => pushLog(data.toString("utf8"), "stdout"));
@@ -850,6 +980,7 @@ async function startRunInternal(options) {
   });
 
   child.on("close", async (code, signal) => {
+    state.guided?.close();
     const endedAt = new Date().toISOString();
 
     finalizeRunCounts(code);
@@ -883,6 +1014,7 @@ async function startRunInternal(options) {
 
 async function stopRun() {
   if (!state.child) return false;
+  state.guided?.close();
   const pid = state.child.pid;
   if (process.platform === "win32") {
     spawn("taskkill", ["/pid", String(pid), "/T", "/F"], { windowsHide: true });
@@ -912,6 +1044,7 @@ export function parseListOutput(output) {
       line: Number(lineNo),
       column: Number(columnNo),
       annual: /\bMED-YEAR-/.test(title) || /@annual-medal\b/.test(title),
+      debugMode: /@step-api\b/.test(title) ? "api" : "inspector",
     });
   }
   return tests;
@@ -1004,7 +1137,14 @@ const server = http.createServer(async (req, res) => {
 
     if (url.pathname === "/api/test-preview" && req.method === "GET") {
       const id = url.searchParams.get("id");
+<<<<<<< Updated upstream
       if (!validPreviewId(id)) { sendJson(res, 400, { error: "Niepoprawne ID testu." }); return; }
+=======
+      if (!validPreviewId(id)) {
+        sendJson(res, 400, { error: "Niepoprawne ID testu." });
+        return;
+      }
+>>>>>>> Stashed changes
       const environment = url.searchParams.get("environment") === "test" ? "test" : "dev";
       const preview = await latestTestPreview(root, id, environment, await loadHistory());
       sendJson(res, 200, { preview });
@@ -1019,6 +1159,27 @@ const server = http.createServer(async (req, res) => {
     if (url.pathname === "/api/run" && req.method === "POST") {
       const body = await readJsonBody(req);
       sendJson(res, 200, await startRun(body));
+      return;
+    }
+
+    if (["/api/guided/event", "/api/guided/wait", "/api/guided/next"].includes(url.pathname) && req.method === "POST") {
+      const body = await readJsonBody(req);
+      const guided = state.guided;
+      if (!state.child || !guided || body.runId !== guided.runId) {
+        sendJson(res, 409, { error: "Ten podgląd API nie jest już aktywny." }); return;
+      }
+      if (url.pathname === "/api/guided/next") {
+        if (req.headers.origin !== `http://127.0.0.1:${PORT}`) {
+          sendJson(res, 403, { error: "Otwórz lokalny panel przed przejściem do kroku." }); return;
+        }
+        guided.next(body.stepId);
+        sendJson(res, 200, { accepted: true }); return;
+      }
+      if (req.headers["x-guided-key"] !== guided.key) {
+        sendJson(res, 403, { error: "Nieprawidłowa sesja podglądu." }); return;
+      }
+      if (url.pathname.endsWith("/wait")) sendJson(res, 200, await guided.wait(body.stepId));
+      else { guided.event(body); sendJson(res, 200, { accepted: true }); }
       return;
     }
 
@@ -1069,6 +1230,7 @@ const server = http.createServer(async (req, res) => {
           environment: source.environment,
           workers: source.workers,
           headed: Boolean(body.headed ?? source.headed),
+          singleTab: Boolean(body.singleTab ?? source.singleTab),
           suite: source.suite || "all",
           selectedTestIds: source.failedTestIds,
         }),
@@ -1077,7 +1239,15 @@ const server = http.createServer(async (req, res) => {
     }
 
     if (url.pathname.startsWith("/latest-report/")) {
+<<<<<<< Updated upstream
       await serveFile(res, path.join(root, "playwright-report"), decodeURIComponent(url.pathname.slice("/latest-report/".length)));
+=======
+      await serveFile(
+        res,
+        path.join(root, "playwright-report"),
+        decodeURIComponent(url.pathname.slice("/latest-report/".length)),
+      );
+>>>>>>> Stashed changes
       return;
     }
 

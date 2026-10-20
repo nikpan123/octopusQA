@@ -7,6 +7,7 @@ import { type CategorySchool } from "./school-category";
 import { Octopus } from "./octopus";
 import { OrderClassApi } from "./order-class";
 import { liveOctopusHeaders } from "./live-auth";
+import { backgroundSchoolSetup } from "./background-school-setup";
 
 export const ACCESS_YEAR = Number(TFL_CURRENT_SCHOOL_YEAR.split("/")[0]);
 export const GRANTED = "Przyznano";
@@ -58,13 +59,18 @@ export async function entitlementSchool(
   testRecord = true,
 ) {
   const worker = process.env.TEST_PARALLEL_INDEX ?? "0";
-  return ensureCategorySchool(page, new Octopus(page), {
-    key: `ENT_${testRecord ? "" : "UNMARKED_"}${key}_W${worker}`,
-    testRecord,
-    type: "Szkoła podstawowa",
-    count: students,
-    category: students <= 100 ? "C" : students <= 400 ? "B" : "A",
-  });
+  return ensureCategorySchool(
+    page,
+    new Octopus(page),
+    {
+      key: `ENT_${testRecord ? "" : "UNMARKED_"}${key}_W${worker}`,
+      testRecord,
+      type: "Szkoła podstawowa",
+      count: students,
+      category: students <= 100 ? "C" : students <= 400 ? "B" : "A",
+    },
+    { openPanel: false },
+  );
 }
 
 export class EntitlementData {
@@ -331,6 +337,7 @@ export class EntitlementData {
 export const test = base.extend<{
   access: EntitlementData;
   accessTestFlags: { teacher: boolean; school: boolean };
+<<<<<<< Updated upstream
   accessSchoolKey: string;
 }>({
   accessTestFlags: [{ teacher: true, school: true }, { option: true }],
@@ -344,8 +351,27 @@ export const test = base.extend<{
       const schools = [
         await entitlementSchool(page, `${accessSchoolKey}PRIMARY`, 400, accessTestFlags.school),
         await entitlementSchool(page, `${accessSchoolKey}SECOND`, 400, accessTestFlags.school),
+=======
+  accessSchoolNamespace: string;
+}>({
+  accessTestFlags: [{ teacher: true, school: true }, { option: true }],
+  accessSchoolNamespace: ["", { option: true }],
+  access: [
+    async (
+      { page, scenario, authSession, performanceMetrics, accessTestFlags, accessSchoolNamespace },
+      use,
+      testInfo,
+    ) => {
+      if (accessSchoolNamespace && !/^[A-Za-z0-9_]{1,48}$/.test(accessSchoolNamespace))
+        throw new Error("Niepoprawna przestrzeń danych uprawnień.");
+      const suffix = accessSchoolNamespace ? `_${accessSchoolNamespace}` : "";
+      const schools = [
+        await entitlementSchool(page, `PRIMARY${suffix}`, 400, accessTestFlags.school),
+        await entitlementSchool(page, `SECOND${suffix}`, 400, accessTestFlags.school),
+>>>>>>> Stashed changes
       ];
       const teacherId = await scenario.createTeacher(schools[0].id, schools[0].name, {
+        openPanel: false,
         testRecord: accessTestFlags.teacher,
         additionalSchoolIds: [schools[1].id],
         subjectLevels: [
@@ -353,9 +379,12 @@ export const test = base.extend<{
           { subject: "Fizyka", level: "Szkoła Podstawowa" },
         ],
       });
-      const teacherTestFlag = page.getByRole("checkbox", { name: "Testowy", exact: true });
-      if (accessTestFlags.teacher) await expect(teacherTestFlag).toBeChecked();
-      else await expect(teacherTestFlag).not.toBeChecked();
+      await backgroundSchoolSetup(page, async (setup) => {
+        await setup.openPanel("teacher", teacherId);
+        const teacherTestFlag = setup.page.getByRole("checkbox", { name: "Testowy", exact: true });
+        if (accessTestFlags.teacher) await expect(teacherTestFlag).toBeChecked();
+        else await expect(teacherTestFlag).not.toBeChecked();
+      });
       await scenario.record("accessTestFlags", JSON.stringify(accessTestFlags));
       const club = new ClubFormApi(page.context().request, authSession, performanceMetrics, () =>
         liveOctopusHeaders(page),

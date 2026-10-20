@@ -4,6 +4,7 @@ import { readFile } from "node:fs/promises";
 import { chromium, expect } from "@playwright/test";
 import { SUITES, extractTestId, parseListOutput, buildRunArguments } from "./test-ui-server.mjs";
 
+<<<<<<< Updated upstream
 test("podgląd UI: zapisane kroki nie uruchamiają testu; debug wymaga potwierdzenia i wysyła tylko jeden test", async () => {
   const browser = await chromium.launch();
   try {
@@ -144,6 +145,19 @@ test("scenariusze UI pokazują kroki i wybierają wyłącznie powiązany test be
   } finally {
     await browser.close();
   }
+=======
+test("jedna karta jest jawnym podglądem: jeden worker, widoczna przeglądarka, bez retry", () => {
+  const normal = buildRunArguments({ suite: "schools", workers: 2 });
+  assert.equal(normal.singleTab, false);
+  assert.equal(normal.workers, 2);
+  const preview = buildRunArguments({ suite: "schools", workers: 4, singleTab: true });
+  assert.equal(preview.singleTab, true);
+  assert.equal(preview.workers, 1);
+  assert.ok(preview.args.includes("--headed"));
+  assert.ok(preview.args.includes("--retries=0"));
+  assert.throws(() => buildRunArguments({ singleTab: true, debug: true }));
+  assert.throws(() => buildRunArguments({ singleTab: true, annualMode: "PREPARE" }));
+>>>>>>> Stashed changes
 });
 
 test("pakiet Szkoły zawiera oba pliki Struktury", () => {
@@ -294,9 +308,13 @@ test("panel pokazuje krótkie ID i wysyła zaznaczony nowy test", async () => {
     await page.getByRole("button", { name: "Szkoły", exact: true }).click();
     await page.locator('[data-test-id="STR-106"]').check();
     await expect(page.locator("#selectedCount")).toHaveText("1 zaznaczonych");
+    await page.locator("#singleTab").check();
+    await expect(page.locator("#workers")).toBeDisabled();
+    await expect(page.locator("#headed")).toBeChecked();
     await page.locator("#startBtn").click();
     await expect
       .poll(() => submitted)
+<<<<<<< Updated upstream
       .toMatchObject({ suite: "schools", selectedTestIds: ["STR-106"] });
     await page.waitForURL("**/#run-status");
     await page.locator('.qa-sidebar nav a[href="#run-tests"]').click();
@@ -333,6 +351,15 @@ test("panel pokazuje krótkie ID i wysyła zaznaczony nowy test", async () => {
     page.once("dialog", (dialog) => dialog.accept());
     await page.locator("#startBtn").click();
     assert.equal(submitted, undefined, "Brak testu nie uruchamia całej regresji");
+=======
+      .toMatchObject({
+        suite: "schools",
+        selectedTestIds: ["STR-106"],
+        singleTab: true,
+        headed: true,
+        workers: 1,
+      });
+>>>>>>> Stashed changes
     // Cała sieć jest przechwycona; test panelu nie uruchamia regresji na DEV.
   } finally {
     await browser.close();

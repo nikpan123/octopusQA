@@ -2,7 +2,11 @@ import { expect, type Locator } from "@playwright/test";
 import { test as base } from "./scenario";
 import { OrderClassApi } from "./order-class";
 import { StructureApi } from "./school-structure-api";
+<<<<<<< Updated upstream
 import { ensureStructureTestSchools } from "./school-structure-data";
+=======
+import { ensureStructureTestSchools, type StructureSchoolKey } from "./school-structure-data";
+>>>>>>> Stashed changes
 import { liveOctopusHeaders } from "./live-auth";
 import { openOrders, orderRow } from "./order";
 import type { StructureSchool } from "./school-structure";
@@ -16,27 +20,62 @@ import {
 export { copyPairPlan, ISOLATION_COPY_PLAN, STANDALONE_COPY_PLAN } from "./copy-plan.mjs";
 export type { CopyNode } from "./copy-plan.mjs";
 
+<<<<<<< Updated upstream
 export const test = base.extend<{ copy: CopyData; copyPlan: CopyPlan }>({
   copyPlan: [FULL_COPY_PLAN, { option: true }],
   copy: [
     async ({ page, scenario, authSession, copyPlan }, use, info) => {
+=======
+export const test = base.extend<
+  {
+    copy: CopyData;
+    copyPlan: CopyPlan;
+    copySchoolKeys: Record<CopyNode, StructureSchoolKey>;
+  },
+  { copyNamespace: string }
+>({
+  copyNamespace: [
+    async ({}, use, worker) => {
+      const run = process.env.OCTOPUS_TEST_RUN_LOCK_TOKEN?.replace(/-/g, "").slice(0, 12);
+      if (!run) throw new Error("Brak identyfikatora uruchomienia do izolacji szkół kopiowania.");
+      await use(`${run}_W${worker.parallelIndex}`);
+    },
+    { scope: "worker" },
+  ],
+  copyPlan: [FULL_COPY_PLAN, { option: true }],
+  copySchoolKeys: [COPY_KEYS, { option: true }],
+  copy: [
+    async ({ page, scenario, authSession, copyPlan, copySchoolKeys, copyNamespace }, use, info) => {
+>>>>>>> Stashed changes
       const { nodes, relations: plannedRelations } = validateCopyPlan(copyPlan);
       const entries =
         await test.step(`Przygotowanie: tylko wymagane placówki ${nodes.join(", ")} (${nodes.length})`, () =>
           ensureStructureTestSchools(
             page,
             scenario.app,
+<<<<<<< Updated upstream
             nodes.map((node) => COPY_KEYS[node]),
           ));
       const schools = Object.fromEntries(
         nodes.map((node) => [node, entries[COPY_KEYS[node]]!]),
+=======
+            nodes.map((node) => copySchoolKeys[node]),
+            copyNamespace,
+          ));
+      const schools = Object.fromEntries(
+        nodes.map((node) => [node, entries[copySchoolKeys[node]]!]),
+>>>>>>> Stashed changes
       ) as Record<CopyNode, StructureSchool>;
       const structure = new StructureApi(page.context().request, authSession);
       await structure.resolve(Object.values(schools));
       for (const school of Object.values(schools))
         expect(
           structure.edges(await structure.tree(school)),
+<<<<<<< Updated upstream
           "Nie zmieniamy pozostałości ani obcych relacji",
+=======
+          `Przygotowanie kopiowania: szkoła ${school.name} (${school.id}) musi być bez relacji. Nie usuwamy zastanych powiązań.`,
+>>>>>>> Stashed changes
         ).toEqual([]);
       const apis = Object.fromEntries(
         nodes.map((node) => [
@@ -64,7 +103,26 @@ export const test = base.extend<{ copy: CopyData; copyPlan: CopyPlan }>({
         for (const [parent, child] of plannedRelations)
           relations.push(await structure.seed(schools[parent], schools[child], 1));
         await info.attach("Zakres przygotowania danych", {
+<<<<<<< Updated upstream
           body: JSON.stringify({ nodes, relations: plannedRelations }),
+=======
+          body: JSON.stringify({
+            nodes,
+            namespace: copyNamespace,
+            schools: Object.fromEntries(
+              nodes.map((node) => [
+                node,
+                {
+                  ...schools[node],
+                  institutionUnitId: structure.unit(schools[node]),
+                },
+              ]),
+            ),
+            relations: plannedRelations,
+            cleanup:
+              "Wyłącznie dokumenty i relacje utworzone przez bieżący test; zastane powiązania pozostają nietknięte.",
+          }),
+>>>>>>> Stashed changes
           contentType: "application/json",
         });
         await use({
@@ -135,6 +193,25 @@ export const test = base.extend<{ copy: CopyData; copyPlan: CopyPlan }>({
             await scenario.app.openPanel("school", schools[node].id);
             return openOrders(page);
           },
+<<<<<<< Updated upstream
+=======
+          async unlink(parent, child) {
+            const edge = structure
+              .edges(await structure.tree(schools[parent]))
+              .find(
+                (item) =>
+                  item.parent === structure.unit(schools[parent]) &&
+                  item.child === structure.unit(schools[child]),
+              );
+            expect(
+              edge,
+              "Usuwamy tylko bezpośrednią relację przygotowaną przez ten test",
+            ).toBeDefined();
+            expect(relations).toContain(edge!.id);
+            await structure.deactivate(edge!.id);
+            relations.splice(relations.indexOf(edge!.id), 1);
+          },
+>>>>>>> Stashed changes
         });
       } finally {
         const cleanup = async () => {
@@ -196,6 +273,10 @@ export type CopyData = {
   open: (node: CopyNode, id: string) => Promise<Locator>;
   save: (dialog: Locator, source: CopyNode, id: string, targets: CopyNode[]) => Promise<void>;
   panel: (node: CopyNode) => Promise<Locator>;
+<<<<<<< Updated upstream
+=======
+  unlink: (parent: CopyNode, child: CopyNode) => Promise<void>;
+>>>>>>> Stashed changes
 };
 
 export function copyTargetRow(dialog: Locator, school: StructureSchool) {

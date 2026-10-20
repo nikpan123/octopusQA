@@ -9,6 +9,8 @@
     "auth:check": "node scripts/check-auth.mjs",
     "login:auto": "node scripts/check-auth.mjs --force",
     "test:auth": "node --test scripts/auth.test.mjs",
+    "test:school-setup": "playwright test --config scripts/background-school-setup.config.ts",
+    "test:single-tab": "playwright test --config scripts/single-tab.config.ts",
     "test": "playwright test",
     "test:headed": "playwright test --headed",
     "test:workers:2": "cross-env OCTOPUS_WORKERS=2 playwright test",
@@ -21,7 +23,11 @@
     "cleanup:teachers": "node scripts/cleanup-teachers.mjs",
     "test:cleanup": "node --test scripts/cleanup-teachers.test.mjs",
     "test:failures": "node --test scripts/failure-classifier.test.mjs",
+<<<<<<< Updated upstream
     "test:unit": "node --test scripts/auth.test.mjs scripts/cleanup-teachers.test.mjs scripts/failure-classifier.test.mjs scripts/test-ui-server.test.mjs scripts/test-preview.test.mjs scripts/copy-plan.test.mjs scripts/school-order-db.test.mjs",
+=======
+    "test:unit": "node --test scripts/auth.test.mjs scripts/background-browser.test.mjs scripts/cleanup-teachers.test.mjs scripts/failure-classifier.test.mjs scripts/test-ui-server.test.mjs scripts/copy-plan.test.mjs scripts/copy-scenarios.test.mjs scripts/fixture-schools.test.mjs scripts/school-order-db.test.mjs",
+>>>>>>> Stashed changes
     "report": "playwright show-report",
     "check": "tsc --noEmit",
     "lint": "eslint .",

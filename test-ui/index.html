@@ -51,7 +51,7 @@
             </select>
           </label>
           <label class="field">
-            <span>Workery</span>
+            <span>Liczba testów wykonywanych równocześnie</span>
             <select id="workers">
               <option value="1">1</option>
               <option value="2" selected>2</option>
@@ -68,7 +68,11 @@
             <button class="suite" data-suite="teachers">Nauczyciele</button>
             <button class="suite" data-suite="schools">Szkoły</button>
             <button class="suite" data-suite="orders">Zamówienia</button>
+<<<<<<< Updated upstream
             <button class="suite" data-suite="database">Baza danych — soft delete</button>
+=======
+            <button class="suite" data-suite="copying">Kopiowanie zamówień</button>
+>>>>>>> Stashed changes
             <button class="suite" data-suite="clubs">Klubowiczostwo</button>
             <button class="suite" data-suite="medals">Medalowość</button>
           </div>
@@ -76,22 +80,34 @@
 
         <div class="grid two">
           <label class="field">
-            <span>Grep / ID testu</span>
+            <span>Filtr nazwy lub ID testu (opcjonalnie)</span>
             <input id="grep" placeholder="np. ORD-43 albo @order" />
           </label>
           <label class="toggle-row">
             <input id="headed" type="checkbox" />
-            <span>Headed (widoczna przeglądarka)</span>
+            <span>Pokaż okno przeglądarki podczas testu<small class="preview-caption">Nazwa testu, aktualny etap i czynność pojawią się w prawym górnym rogu otwartej strony.</small></span>
           </label>
         </div>
 
+<<<<<<< Updated upstream
+=======
+        <label class="toggle-row">
+          <input id="singleTab" type="checkbox" />
+          <span>Podgląd w jednej karcie — kolejne testy bez otwierania nowych kart</span>
+        </label>
+        <p class="metric-note">Tryb podglądu: widoczna przeglądarka, jeden worker i reset stanu między testami. Po błędzie Playwright może ponownie uruchomić okno. Osobne konta i wymagane okna testowe nadal mogą otwierać dodatkową kartę. Zwykła regresja pozostaje izolowana.</p>
+>>>>>>> Stashed changes
         <p id="runSelectionSummary" class="metric-note" aria-live="polite"></p>
         <div class="actions">
           <button id="startBtn" class="primary">▶ Uruchom testy</button>
           <button id="debugSelectedBtn" class="secondary" disabled>Krok po kroku — 1 test</button>
           <a class="button-link secondary" href="#run-status">Otwórz przebieg i logi</a>
         </div>
+<<<<<<< Updated upstream
         <p class="metric-note">Podgląd zapisanego wykonania znajdziesz przy każdym teście w katalogu. Tryb krok po kroku uruchamia test ponownie w widocznej przeglądarce z Inspektorem Playwrighta.</p>
+=======
+        <p class="metric-note">Krok po kroku uruchamia test ponownie. Testy UI korzystają z Inspektora Playwrighta. Testy oznaczone jako podgląd API pokazują etapy, żądania i odpowiedzi na stronie Przebieg i logi — bez pustej przeglądarki. Przygotowanie danych wykonuje się automatycznie; następne etapy uruchamiasz przyciskiem lub F10 w panelu.</p>
+>>>>>>> Stashed changes
       </section>
 
       <section class="card status-card" id="run-status" data-page="run-status" hidden>
@@ -116,7 +132,11 @@
         </p>
         <div class="actions compact">
           <button id="stopBtn" class="danger" disabled>■ Stop</button>
+<<<<<<< Updated upstream
           <button id="rerunFailedBtn" class="secondary" disabled>↻ Ponów failed</button>
+=======
+          <button id="rerunFailedBtn" class="secondary" disabled>↻ Ponów niezaliczone</button>
+>>>>>>> Stashed changes
           <a
             id="reportBtn"
             class="button-link secondary disabled"
@@ -128,6 +148,13 @@
           <button id="performanceBtn" class="secondary">Raport wydajności</button>
         </div>
         <div id="failureSummary" class="failure-summary" hidden></div>
+        <section id="guidedApiPanel" hidden aria-label="Podgląd krokowy API">
+          <h3>Test API — krok po kroku</h3>
+          <p id="guidedApiMessage" role="status">Przygotowanie danych w tle…</p>
+          <p class="metric-note">Kroki wykonują rzeczywiste żądania na wybranym środowisku. Przygotowanie i sprzątanie są automatyczne. Nagłówki autoryzacji nie są pokazywane; większe odpowiedzi są skracane.</p>
+          <button id="guidedApiNext" class="primary" disabled>Następny krok (F10)</button>
+          <div id="guidedApiSteps"></div>
+        </section>
       </section>
 
       <section class="card scenarios-card" id="business-scenarios" data-page="business-scenarios" hidden>

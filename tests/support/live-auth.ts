@@ -1,11 +1,16 @@
 import type { Page } from "@playwright/test";
 import { OCTOPUS_BASE_URL } from "./environment";
+import { browserSessionState } from "./browser-session";
 
 /** Odczyt w chwili żądania, nie kopia tokenu z początku fixture. */
 export async function liveOctopusHeaders(page: Page): Promise<{ Authorization: string }> {
-  if (new URL(page.url()).origin !== OCTOPUS_BASE_URL)
+  const initialPage = page.url() === "about:blank";
+  if (!initialPage && new URL(page.url()).origin !== OCTOPUS_BASE_URL)
     throw new Error("Bieżący token można odczytać wyłącznie z otwartego profilu Octopusa.");
-  const raw = await page.evaluate(() => localStorage.getItem("token"));
+  // Bieżący JWT bez evaluate() ani pomocniczych kart storageState().
+  const raw = (await browserSessionState(page)).origins
+    .find((origin) => origin.origin === OCTOPUS_BASE_URL)
+    ?.localStorage.find((item) => item.name === "token")?.value;
   if (!raw) throw new Error("Brak tokenu w bieżącej sesji przeglądarki Octopusa.");
   let value: unknown = raw;
   try {
