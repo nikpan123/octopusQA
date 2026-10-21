@@ -54,6 +54,7 @@ test("SQL: osobny pakiet / wybrany test; zwykła regresja nie wymaga dostępu do
   assert.equal(buildRunArguments({ suite: "database" }).includeDatabase, true);
   const databaseRun = buildRunArguments({ suite: "database" });
   assert.ok(databaseRun.args.includes("tests/zamowienia-kopie-baza.spec.ts"));
+  assert.ok(databaseRun.args.includes("tests/zamowienia-softlab-odczyt.spec.ts"));
   for (const id of ["ORD-DB-02", "ORD-DB-03"])
     assert.equal(buildRunArguments({ selectedTestIds: [id] }).includeDatabase, true);
   assert.equal(buildRunArguments({ suite: "database", workers: 4 }).workers, 1);

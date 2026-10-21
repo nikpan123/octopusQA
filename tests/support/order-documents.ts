@@ -223,6 +223,7 @@ export class OrderDocuments {
     this.teacherId ??= await this.scenario.createTeacher(
       this.schoolOrders.school.id,
       this.schoolOrders.school.name,
+      { openPanel: false },
     );
     return this.teacherId;
   }

@@ -20,6 +20,36 @@
           "id": "ORD-COPY-01",
           "title": "Zespół Szkół A → Szkoła Podstawowa A",
           "testIds": ["ORD-COPY-01"],
+          "stepLinks": [
+            {
+              "step": 0,
+              "testId": "ORD-COPY-01",
+              "titles": [
+                "UI: otwarcie kopiowania i pełny zbiór trzech pozostałych placówek struktury A"
+              ]
+            },
+            {
+              "step": 1,
+              "testId": "ORD-COPY-01",
+              "titles": [
+                "UI: otwarcie kopiowania i pełny zbiór trzech pozostałych placówek struktury A",
+                "UI: lista celów zawiera wyłącznie trzy pozostałe placówki struktury A"
+              ]
+            },
+            {
+              "step": 2,
+              "testId": "ORD-COPY-01",
+              "titles": ["UI: wybór celów SP i zapis kopii"]
+            },
+            {
+              "step": 3,
+              "testId": "ORD-COPY-01",
+              "titles": [
+                "Porównanie API: nowe kopie tylko u wybranych odbiorców, identyczne produkty i ilości, oryginał bez zmian",
+                "UI: kopia jest widoczna w placówce docelowej po ponownym wejściu"
+              ]
+            }
+          ],
           "automation": "automated",
           "preconditions": [
             "Konto z prawem edycji szkoły.",
@@ -38,6 +68,36 @@
           "id": "ORD-COPY-02",
           "title": "Zespół Szkół A → Liceum A",
           "testIds": ["ORD-COPY-02"],
+          "stepLinks": [
+            {
+              "step": 0,
+              "testId": "ORD-COPY-02",
+              "titles": [
+                "UI: otwarcie kopiowania i pełny zbiór trzech pozostałych placówek struktury A"
+              ]
+            },
+            {
+              "step": 1,
+              "testId": "ORD-COPY-02",
+              "titles": [
+                "UI: otwarcie kopiowania i pełny zbiór trzech pozostałych placówek struktury A",
+                "UI: lista celów zawiera wyłącznie trzy pozostałe placówki struktury A"
+              ]
+            },
+            {
+              "step": 2,
+              "testId": "ORD-COPY-02",
+              "titles": ["UI: wybór celów LO i zapis kopii"]
+            },
+            {
+              "step": 3,
+              "testId": "ORD-COPY-02",
+              "titles": [
+                "Porównanie API: nowe kopie tylko u wybranych odbiorców, identyczne produkty i ilości, oryginał bez zmian",
+                "UI: kopia jest widoczna w placówce docelowej po ponownym wejściu"
+              ]
+            }
+          ],
           "automation": "automated",
           "preconditions": [
             "Konto z prawem edycji szkoły.",
@@ -56,6 +116,36 @@
           "id": "ORD-COPY-03",
           "title": "Zespół Szkół A → Technikum A",
           "testIds": ["ORD-COPY-03"],
+          "stepLinks": [
+            {
+              "step": 0,
+              "testId": "ORD-COPY-03",
+              "titles": [
+                "UI: otwarcie kopiowania i pełny zbiór trzech pozostałych placówek struktury A"
+              ]
+            },
+            {
+              "step": 1,
+              "testId": "ORD-COPY-03",
+              "titles": [
+                "UI: otwarcie kopiowania i pełny zbiór trzech pozostałych placówek struktury A",
+                "UI: lista celów zawiera wyłącznie trzy pozostałe placówki struktury A"
+              ]
+            },
+            {
+              "step": 2,
+              "testId": "ORD-COPY-03",
+              "titles": ["UI: wybór celów TECH i zapis kopii"]
+            },
+            {
+              "step": 3,
+              "testId": "ORD-COPY-03",
+              "titles": [
+                "Porównanie API: nowe kopie tylko u wybranych odbiorców, identyczne produkty i ilości, oryginał bez zmian",
+                "UI: kopia jest widoczna w placówce docelowej po ponownym wejściu"
+              ]
+            }
+          ],
           "automation": "automated",
           "preconditions": [
             "Konto z prawem edycji szkoły.",
@@ -74,6 +164,36 @@
           "id": "ORD-COPY-04",
           "title": "Liceum A → Zespół Szkół A",
           "testIds": ["ORD-COPY-04"],
+          "stepLinks": [
+            {
+              "step": 0,
+              "testId": "ORD-COPY-04",
+              "titles": [
+                "UI: otwarcie kopiowania i pełny zbiór trzech pozostałych placówek struktury A"
+              ]
+            },
+            {
+              "step": 1,
+              "testId": "ORD-COPY-04",
+              "titles": [
+                "UI: otwarcie kopiowania i pełny zbiór trzech pozostałych placówek struktury A",
+                "UI: lista celów zawiera wyłącznie trzy pozostałe placówki struktury A"
+              ]
+            },
+            {
+              "step": 2,
+              "testId": "ORD-COPY-04",
+              "titles": ["UI: wybór celów A i zapis kopii"]
+            },
+            {
+              "step": 3,
+              "testId": "ORD-COPY-04",
+              "titles": [
+                "Porównanie API: nowe kopie tylko u wybranych odbiorców, identyczne produkty i ilości, oryginał bez zmian",
+                "UI: kopia jest widoczna w placówce docelowej po ponownym wejściu"
+              ]
+            }
+          ],
           "automation": "automated",
           "preconditions": [
             "Konto z prawem edycji szkoły.",
@@ -92,6 +212,36 @@
           "id": "ORD-COPY-05",
           "title": "Liceum A → Szkoła Podstawowa A",
           "testIds": ["ORD-COPY-05"],
+          "stepLinks": [
+            {
+              "step": 0,
+              "testId": "ORD-COPY-05",
+              "titles": [
+                "UI: otwarcie kopiowania i pełny zbiór trzech pozostałych placówek struktury A"
+              ]
+            },
+            {
+              "step": 1,
+              "testId": "ORD-COPY-05",
+              "titles": [
+                "UI: otwarcie kopiowania i pełny zbiór trzech pozostałych placówek struktury A",
+                "UI: lista celów zawiera wyłącznie trzy pozostałe placówki struktury A"
+              ]
+            },
+            {
+              "step": 2,
+              "testId": "ORD-COPY-05",
+              "titles": ["UI: wybór celów SP i zapis kopii"]
+            },
+            {
+              "step": 3,
+              "testId": "ORD-COPY-05",
+              "titles": [
+                "Porównanie API: nowe kopie tylko u wybranych odbiorców, identyczne produkty i ilości, oryginał bez zmian",
+                "UI: kopia jest widoczna w placówce docelowej po ponownym wejściu"
+              ]
+            }
+          ],
           "automation": "automated",
           "preconditions": [
             "Konto z prawem edycji szkoły.",
@@ -110,6 +260,36 @@
           "id": "ORD-COPY-06",
           "title": "Liceum A → Technikum A",
           "testIds": ["ORD-COPY-06"],
+          "stepLinks": [
+            {
+              "step": 0,
+              "testId": "ORD-COPY-06",
+              "titles": [
+                "UI: otwarcie kopiowania i pełny zbiór trzech pozostałych placówek struktury A"
+              ]
+            },
+            {
+              "step": 1,
+              "testId": "ORD-COPY-06",
+              "titles": [
+                "UI: otwarcie kopiowania i pełny zbiór trzech pozostałych placówek struktury A",
+                "UI: lista celów zawiera wyłącznie trzy pozostałe placówki struktury A"
+              ]
+            },
+            {
+              "step": 2,
+              "testId": "ORD-COPY-06",
+              "titles": ["UI: wybór celów TECH i zapis kopii"]
+            },
+            {
+              "step": 3,
+              "testId": "ORD-COPY-06",
+              "titles": [
+                "Porównanie API: nowe kopie tylko u wybranych odbiorców, identyczne produkty i ilości, oryginał bez zmian",
+                "UI: kopia jest widoczna w placówce docelowej po ponownym wejściu"
+              ]
+            }
+          ],
           "automation": "automated",
           "preconditions": [
             "Konto z prawem edycji szkoły.",
@@ -128,6 +308,36 @@
           "id": "ORD-COPY-07",
           "title": "Technikum A → Liceum A",
           "testIds": ["ORD-COPY-07"],
+          "stepLinks": [
+            {
+              "step": 0,
+              "testId": "ORD-COPY-07",
+              "titles": [
+                "UI: otwarcie kopiowania i pełny zbiór trzech pozostałych placówek struktury A"
+              ]
+            },
+            {
+              "step": 1,
+              "testId": "ORD-COPY-07",
+              "titles": [
+                "UI: otwarcie kopiowania i pełny zbiór trzech pozostałych placówek struktury A",
+                "UI: lista celów zawiera wyłącznie trzy pozostałe placówki struktury A"
+              ]
+            },
+            {
+              "step": 2,
+              "testId": "ORD-COPY-07",
+              "titles": ["UI: wybór celów LO i zapis kopii"]
+            },
+            {
+              "step": 3,
+              "testId": "ORD-COPY-07",
+              "titles": [
+                "Porównanie API: nowe kopie tylko u wybranych odbiorców, identyczne produkty i ilości, oryginał bez zmian",
+                "UI: kopia jest widoczna w placówce docelowej po ponownym wejściu"
+              ]
+            }
+          ],
           "automation": "automated",
           "preconditions": [
             "Konto z prawem edycji szkoły.",
@@ -146,6 +356,36 @@
           "id": "ORD-COPY-08",
           "title": "Szkoła Podstawowa A → Zespół Szkół A",
           "testIds": ["ORD-COPY-08"],
+          "stepLinks": [
+            {
+              "step": 0,
+              "testId": "ORD-COPY-08",
+              "titles": [
+                "UI: otwarcie kopiowania i pełny zbiór trzech pozostałych placówek struktury A"
+              ]
+            },
+            {
+              "step": 1,
+              "testId": "ORD-COPY-08",
+              "titles": [
+                "UI: otwarcie kopiowania i pełny zbiór trzech pozostałych placówek struktury A",
+                "UI: lista celów zawiera wyłącznie trzy pozostałe placówki struktury A"
+              ]
+            },
+            {
+              "step": 2,
+              "testId": "ORD-COPY-08",
+              "titles": ["UI: wybór celów A i zapis kopii"]
+            },
+            {
+              "step": 3,
+              "testId": "ORD-COPY-08",
+              "titles": [
+                "Porównanie API: nowe kopie tylko u wybranych odbiorców, identyczne produkty i ilości, oryginał bez zmian",
+                "UI: kopia jest widoczna w placówce docelowej po ponownym wejściu"
+              ]
+            }
+          ],
           "automation": "automated",
           "preconditions": [
             "Konto z prawem edycji szkoły.",
@@ -164,6 +404,36 @@
           "id": "ORD-COPY-09",
           "title": "Szkoła Podstawowa A → Liceum A",
           "testIds": ["ORD-COPY-09"],
+          "stepLinks": [
+            {
+              "step": 0,
+              "testId": "ORD-COPY-09",
+              "titles": [
+                "UI: otwarcie kopiowania i pełny zbiór trzech pozostałych placówek struktury A"
+              ]
+            },
+            {
+              "step": 1,
+              "testId": "ORD-COPY-09",
+              "titles": [
+                "UI: otwarcie kopiowania i pełny zbiór trzech pozostałych placówek struktury A",
+                "UI: lista celów zawiera wyłącznie trzy pozostałe placówki struktury A"
+              ]
+            },
+            {
+              "step": 2,
+              "testId": "ORD-COPY-09",
+              "titles": ["UI: wybór celów LO i zapis kopii"]
+            },
+            {
+              "step": 3,
+              "testId": "ORD-COPY-09",
+              "titles": [
+                "Porównanie API: nowe kopie tylko u wybranych odbiorców, identyczne produkty i ilości, oryginał bez zmian",
+                "UI: kopia jest widoczna w placówce docelowej po ponownym wejściu"
+              ]
+            }
+          ],
           "automation": "automated",
           "preconditions": [
             "Konto z prawem edycji szkoły.",
@@ -182,6 +452,36 @@
           "id": "ORD-COPY-10",
           "title": "Szkoła Podstawowa A → Technikum A",
           "testIds": ["ORD-COPY-10"],
+          "stepLinks": [
+            {
+              "step": 0,
+              "testId": "ORD-COPY-10",
+              "titles": [
+                "UI: otwarcie kopiowania i pełny zbiór trzech pozostałych placówek struktury A"
+              ]
+            },
+            {
+              "step": 1,
+              "testId": "ORD-COPY-10",
+              "titles": [
+                "UI: otwarcie kopiowania i pełny zbiór trzech pozostałych placówek struktury A",
+                "UI: lista celów zawiera wyłącznie trzy pozostałe placówki struktury A"
+              ]
+            },
+            {
+              "step": 2,
+              "testId": "ORD-COPY-10",
+              "titles": ["UI: wybór celów TECH i zapis kopii"]
+            },
+            {
+              "step": 3,
+              "testId": "ORD-COPY-10",
+              "titles": [
+                "Porównanie API: nowe kopie tylko u wybranych odbiorców, identyczne produkty i ilości, oryginał bez zmian",
+                "UI: kopia jest widoczna w placówce docelowej po ponownym wejściu"
+              ]
+            }
+          ],
           "automation": "automated",
           "preconditions": [
             "Konto z prawem edycji szkoły.",
@@ -200,6 +500,36 @@
           "id": "ORD-COPY-11",
           "title": "Technikum A → Zespół Szkół A",
           "testIds": ["ORD-COPY-11"],
+          "stepLinks": [
+            {
+              "step": 0,
+              "testId": "ORD-COPY-11",
+              "titles": [
+                "UI: otwarcie kopiowania i pełny zbiór trzech pozostałych placówek struktury A"
+              ]
+            },
+            {
+              "step": 1,
+              "testId": "ORD-COPY-11",
+              "titles": [
+                "UI: otwarcie kopiowania i pełny zbiór trzech pozostałych placówek struktury A",
+                "UI: lista celów zawiera wyłącznie trzy pozostałe placówki struktury A"
+              ]
+            },
+            {
+              "step": 2,
+              "testId": "ORD-COPY-11",
+              "titles": ["UI: wybór celów A i zapis kopii"]
+            },
+            {
+              "step": 3,
+              "testId": "ORD-COPY-11",
+              "titles": [
+                "Porównanie API: nowe kopie tylko u wybranych odbiorców, identyczne produkty i ilości, oryginał bez zmian",
+                "UI: kopia jest widoczna w placówce docelowej po ponownym wejściu"
+              ]
+            }
+          ],
           "automation": "automated",
           "preconditions": [
             "Konto z prawem edycji szkoły.",
@@ -218,6 +548,36 @@
           "id": "ORD-COPY-12",
           "title": "Technikum A → Szkoła Podstawowa A",
           "testIds": ["ORD-COPY-12"],
+          "stepLinks": [
+            {
+              "step": 0,
+              "testId": "ORD-COPY-12",
+              "titles": [
+                "UI: otwarcie kopiowania i pełny zbiór trzech pozostałych placówek struktury A"
+              ]
+            },
+            {
+              "step": 1,
+              "testId": "ORD-COPY-12",
+              "titles": [
+                "UI: otwarcie kopiowania i pełny zbiór trzech pozostałych placówek struktury A",
+                "UI: lista celów zawiera wyłącznie trzy pozostałe placówki struktury A"
+              ]
+            },
+            {
+              "step": 2,
+              "testId": "ORD-COPY-12",
+              "titles": ["UI: wybór celów SP i zapis kopii"]
+            },
+            {
+              "step": 3,
+              "testId": "ORD-COPY-12",
+              "titles": [
+                "Porównanie API: nowe kopie tylko u wybranych odbiorców, identyczne produkty i ilości, oryginał bez zmian",
+                "UI: kopia jest widoczna w placówce docelowej po ponownym wejściu"
+              ]
+            }
+          ],
           "automation": "automated",
           "preconditions": [
             "Konto z prawem edycji szkoły.",
@@ -234,6 +594,23 @@
         },
         {
           "id": "ORD-COPY-13",
+          "stepLinks": [
+            {
+              "step": 0,
+              "testId": "ORD-COPY-13",
+              "titles": ["UI: otwarcie listy celów oryginału SP"]
+            },
+            {
+              "step": 1,
+              "testId": "ORD-COPY-13",
+              "titles": ["UI: lista zawiera cel kontrolny i wyklucza niedozwolone placówki"]
+            },
+            {
+              "step": 2,
+              "testId": "ORD-COPY-13",
+              "titles": ["UI: anulowanie kopiowania pozostawia wszystkie dokumenty bez zmian"]
+            }
+          ],
           "title": "Brak możliwości wyboru placówki źródłowej",
           "testIds": ["ORD-COPY-13"],
           "automation": "automated",
@@ -251,6 +628,23 @@
         },
         {
           "id": "ORD-COPY-14",
+          "stepLinks": [
+            {
+              "step": 0,
+              "testId": "ORD-COPY-14",
+              "titles": ["UI: otwarcie listy celów oryginału SP"]
+            },
+            {
+              "step": 1,
+              "testId": "ORD-COPY-14",
+              "titles": ["UI: lista zawiera cel kontrolny i wyklucza niedozwolone placówki"]
+            },
+            {
+              "step": 2,
+              "testId": "ORD-COPY-14",
+              "titles": ["UI: anulowanie kopiowania pozostawia wszystkie dokumenty bez zmian"]
+            }
+          ],
           "title": "Brak celów poza strukturą A",
           "testIds": ["ORD-COPY-14"],
           "automation": "automated",
@@ -268,6 +662,26 @@
         },
         {
           "id": "ORD-COPY-15",
+          "stepLinks": [
+            {
+              "step": 0,
+              "testId": "ORD-COPY-15",
+              "titles": [
+                "UI: wybór celów LO i zapis kopii",
+                "Porównanie API: nowe kopie tylko u wybranych odbiorców, identyczne produkty i ilości, oryginał bez zmian"
+              ]
+            },
+            {
+              "step": 1,
+              "testId": "ORD-COPY-15",
+              "titles": ["UI: otwarcie odbiorcy i zaznaczenie utworzonej kopii"]
+            },
+            {
+              "step": 2,
+              "testId": "ORD-COPY-15",
+              "titles": ["UI: zaznaczona kopia ma zablokowany przycisk Kopiuj"]
+            }
+          ],
           "title": "Zakaz ponownego kopiowania kopii",
           "testIds": ["ORD-COPY-15"],
           "automation": "automated",
@@ -285,6 +699,26 @@
         },
         {
           "id": "ORD-COPY-16",
+          "stepLinks": [
+            {
+              "step": 0,
+              "testId": "ORD-COPY-16",
+              "titles": ["UI: otwarcie kopiowania bez zaznaczonego celu"]
+            },
+            {
+              "step": 1,
+              "testId": "ORD-COPY-16",
+              "titles": ["UI: pusty wybór blokuje Zapisz"]
+            },
+            {
+              "step": 2,
+              "testId": "ORD-COPY-16",
+              "titles": [
+                "UI: dodanie celu odblokowuje Zapisz, ale operacja zostaje anulowana",
+                "API: po anulowaniu wszystkie dokumenty pozostają bez zmian"
+              ]
+            }
+          ],
           "title": "Pusty wybór oraz anulowanie",
           "testIds": ["ORD-COPY-16"],
           "automation": "automated",
@@ -302,6 +736,21 @@
         },
         {
           "id": "ORD-COPY-17",
+          "stepLinks": [
+            {
+              "step": 0,
+              "testId": "ORD-COPY-17",
+              "titles": ["UI: wybór celów A, LO, TECH i zapis kopii"]
+            },
+            {
+              "step": 1,
+              "testId": "ORD-COPY-17",
+              "titles": [
+                "UI: wybór celów A, LO, TECH i zapis kopii",
+                "Porównanie API: nowe kopie tylko u wybranych odbiorców, identyczne produkty i ilości, oryginał bez zmian"
+              ]
+            }
+          ],
           "title": "Kopiowanie do wielu placówek",
           "testIds": ["ORD-COPY-17"],
           "automation": "automated",
@@ -318,6 +767,18 @@
         },
         {
           "id": "ORD-COPY-18",
+          "stepLinks": [
+            {
+              "step": 0,
+              "testId": "ORD-COPY-18",
+              "titles": ["UI: otwarcie oryginału placówki samodzielnej"]
+            },
+            {
+              "step": 1,
+              "testId": "ORD-COPY-18",
+              "titles": ["UI: placówka samodzielna nie ma przycisku Kopiuj"]
+            }
+          ],
           "title": "Placówka bez struktury",
           "testIds": ["ORD-COPY-18"],
           "automation": "automated",
@@ -334,6 +795,26 @@
         },
         {
           "id": "ORD-COPY-19",
+          "stepLinks": [
+            {
+              "step": 0,
+              "testId": "ORD-COPY-19",
+              "titles": ["Logowanie osobnego konta bez School.EDIT, bez zastępowania sesji głównej"]
+            },
+            {
+              "step": 1,
+              "testId": "ORD-COPY-19",
+              "titles": ["UI: konto ograniczone odczytuje oryginał we właściwej placówce"]
+            },
+            {
+              "step": 2,
+              "testId": "ORD-COPY-19",
+              "titles": [
+                "UI: konto ograniczone nie może uruchomić kopiowania oryginału",
+                "API: serwer odrzuca kopiowanie przez zalogowane konto ograniczone kodem 403"
+              ]
+            }
+          ],
           "title": "Brak prawa edycji szkoły",
           "testIds": ["ORD-COPY-19"],
           "automation": "automated",
@@ -348,6 +829,952 @@
             "Sprawdź brak możliwości uruchomienia kopiowania."
           ],
           "expected": "Oryginał można kopiować na koncie głównym. Osobne konto ma odczyt, ale Kopiuj jest niedostępne; bezpośrednia próba kopiowania zwraca 403 i nie zmienia danych. Sesja główna nie jest nadpisywana."
+        }
+      ]
+    },
+    {
+      "id": "redmine-35980",
+      "issue": "35980",
+      "centerIssueId": "27326d22-f303-474e-8fb4-df218c4bebd7",
+      "title": "1.9.2. Kopiowanie zamówień — scenariusz zbiorczy",
+      "scope": "Dokumentacja #35980, #35950 i #35990 oraz nadrzędne #35920 i #34398. Dokument to zamówienie, nie załącznik. Pokrycie automatyczne nie oznacza PASS. #37160 dopuszcza dowolne poziomy tej samej struktury. Historia ilości dotyczy khsynchro, nie zamówień ręcznych. Na DEV nie można wywołać statusów Softlabu: odczyt SQL/UI istniejących danych nie dowodzi wykonania synchronizacji ani przeliczenia skutków.",
+      "scenarios": [
+        {
+          "id": "ORD-SC-35980-01",
+          "stepLinks": [
+            {
+              "step": 0,
+              "checks": [
+                {
+                  "testId": "ORD-COPY-01",
+                  "titles": ["Przygotowanie API: utworzenie zaplanowanych relacji struktury"]
+                },
+                {
+                  "testId": "ORD-COPY-02",
+                  "titles": ["Przygotowanie API: utworzenie zaplanowanych relacji struktury"]
+                },
+                {
+                  "testId": "ORD-COPY-03",
+                  "titles": ["Przygotowanie API: utworzenie zaplanowanych relacji struktury"]
+                },
+                {
+                  "testId": "ORD-COPY-04",
+                  "titles": ["Przygotowanie API: utworzenie zaplanowanych relacji struktury"]
+                },
+                {
+                  "testId": "ORD-COPY-05",
+                  "titles": ["Przygotowanie API: utworzenie zaplanowanych relacji struktury"]
+                },
+                {
+                  "testId": "ORD-COPY-06",
+                  "titles": ["Przygotowanie API: utworzenie zaplanowanych relacji struktury"]
+                },
+                {
+                  "testId": "ORD-COPY-07",
+                  "titles": ["Przygotowanie API: utworzenie zaplanowanych relacji struktury"]
+                },
+                {
+                  "testId": "ORD-COPY-08",
+                  "titles": ["Przygotowanie API: utworzenie zaplanowanych relacji struktury"]
+                },
+                {
+                  "testId": "ORD-COPY-09",
+                  "titles": ["Przygotowanie API: utworzenie zaplanowanych relacji struktury"]
+                },
+                {
+                  "testId": "ORD-COPY-10",
+                  "titles": ["Przygotowanie API: utworzenie zaplanowanych relacji struktury"]
+                },
+                {
+                  "testId": "ORD-COPY-11",
+                  "titles": ["Przygotowanie API: utworzenie zaplanowanych relacji struktury"]
+                },
+                {
+                  "testId": "ORD-COPY-12",
+                  "titles": ["Przygotowanie API: utworzenie zaplanowanych relacji struktury"]
+                }
+              ]
+            },
+            {
+              "step": 1,
+              "checks": [
+                {
+                  "testId": "ORD-COPY-01",
+                  "titles": [
+                    "Przygotowanie API: oryginalne zamówienie w A, dwa produkty i różne ilości",
+                    "UI: wybór celów SP i zapis kopii"
+                  ]
+                },
+                {
+                  "testId": "ORD-COPY-02",
+                  "titles": [
+                    "Przygotowanie API: oryginalne zamówienie w A, dwa produkty i różne ilości",
+                    "UI: wybór celów LO i zapis kopii"
+                  ]
+                },
+                {
+                  "testId": "ORD-COPY-03",
+                  "titles": [
+                    "Przygotowanie API: oryginalne zamówienie w A, dwa produkty i różne ilości",
+                    "UI: wybór celów TECH i zapis kopii"
+                  ]
+                },
+                {
+                  "testId": "ORD-COPY-04",
+                  "titles": [
+                    "Przygotowanie API: oryginalne zamówienie w LO, dwa produkty i różne ilości",
+                    "UI: wybór celów A i zapis kopii"
+                  ]
+                },
+                {
+                  "testId": "ORD-COPY-05",
+                  "titles": [
+                    "Przygotowanie API: oryginalne zamówienie w LO, dwa produkty i różne ilości",
+                    "UI: wybór celów SP i zapis kopii"
+                  ]
+                },
+                {
+                  "testId": "ORD-COPY-06",
+                  "titles": [
+                    "Przygotowanie API: oryginalne zamówienie w LO, dwa produkty i różne ilości",
+                    "UI: wybór celów TECH i zapis kopii"
+                  ]
+                },
+                {
+                  "testId": "ORD-COPY-07",
+                  "titles": [
+                    "Przygotowanie API: oryginalne zamówienie w TECH, dwa produkty i różne ilości",
+                    "UI: wybór celów LO i zapis kopii"
+                  ]
+                },
+                {
+                  "testId": "ORD-COPY-08",
+                  "titles": [
+                    "Przygotowanie API: oryginalne zamówienie w SP, dwa produkty i różne ilości",
+                    "UI: wybór celów A i zapis kopii"
+                  ]
+                },
+                {
+                  "testId": "ORD-COPY-09",
+                  "titles": [
+                    "Przygotowanie API: oryginalne zamówienie w SP, dwa produkty i różne ilości",
+                    "UI: wybór celów LO i zapis kopii"
+                  ]
+                },
+                {
+                  "testId": "ORD-COPY-10",
+                  "titles": [
+                    "Przygotowanie API: oryginalne zamówienie w SP, dwa produkty i różne ilości",
+                    "UI: wybór celów TECH i zapis kopii"
+                  ]
+                },
+                {
+                  "testId": "ORD-COPY-11",
+                  "titles": [
+                    "Przygotowanie API: oryginalne zamówienie w TECH, dwa produkty i różne ilości",
+                    "UI: wybór celów A i zapis kopii"
+                  ]
+                },
+                {
+                  "testId": "ORD-COPY-12",
+                  "titles": [
+                    "Przygotowanie API: oryginalne zamówienie w TECH, dwa produkty i różne ilości",
+                    "UI: wybór celów SP i zapis kopii"
+                  ]
+                }
+              ]
+            },
+            {
+              "step": 2,
+              "checks": [
+                {
+                  "testId": "ORD-COPY-01",
+                  "titles": [
+                    "Porównanie API: nowe kopie tylko u wybranych odbiorców, identyczne produkty i ilości, oryginał bez zmian",
+                    "UI: kopia jest widoczna w placówce docelowej po ponownym wejściu"
+                  ]
+                },
+                {
+                  "testId": "ORD-COPY-02",
+                  "titles": [
+                    "Porównanie API: nowe kopie tylko u wybranych odbiorców, identyczne produkty i ilości, oryginał bez zmian",
+                    "UI: kopia jest widoczna w placówce docelowej po ponownym wejściu"
+                  ]
+                },
+                {
+                  "testId": "ORD-COPY-03",
+                  "titles": [
+                    "Porównanie API: nowe kopie tylko u wybranych odbiorców, identyczne produkty i ilości, oryginał bez zmian",
+                    "UI: kopia jest widoczna w placówce docelowej po ponownym wejściu"
+                  ]
+                },
+                {
+                  "testId": "ORD-COPY-04",
+                  "titles": [
+                    "Porównanie API: nowe kopie tylko u wybranych odbiorców, identyczne produkty i ilości, oryginał bez zmian",
+                    "UI: kopia jest widoczna w placówce docelowej po ponownym wejściu"
+                  ]
+                },
+                {
+                  "testId": "ORD-COPY-05",
+                  "titles": [
+                    "Porównanie API: nowe kopie tylko u wybranych odbiorców, identyczne produkty i ilości, oryginał bez zmian",
+                    "UI: kopia jest widoczna w placówce docelowej po ponownym wejściu"
+                  ]
+                },
+                {
+                  "testId": "ORD-COPY-06",
+                  "titles": [
+                    "Porównanie API: nowe kopie tylko u wybranych odbiorców, identyczne produkty i ilości, oryginał bez zmian",
+                    "UI: kopia jest widoczna w placówce docelowej po ponownym wejściu"
+                  ]
+                },
+                {
+                  "testId": "ORD-COPY-07",
+                  "titles": [
+                    "Porównanie API: nowe kopie tylko u wybranych odbiorców, identyczne produkty i ilości, oryginał bez zmian",
+                    "UI: kopia jest widoczna w placówce docelowej po ponownym wejściu"
+                  ]
+                },
+                {
+                  "testId": "ORD-COPY-08",
+                  "titles": [
+                    "Porównanie API: nowe kopie tylko u wybranych odbiorców, identyczne produkty i ilości, oryginał bez zmian",
+                    "UI: kopia jest widoczna w placówce docelowej po ponownym wejściu"
+                  ]
+                },
+                {
+                  "testId": "ORD-COPY-09",
+                  "titles": [
+                    "Porównanie API: nowe kopie tylko u wybranych odbiorców, identyczne produkty i ilości, oryginał bez zmian",
+                    "UI: kopia jest widoczna w placówce docelowej po ponownym wejściu"
+                  ]
+                },
+                {
+                  "testId": "ORD-COPY-10",
+                  "titles": [
+                    "Porównanie API: nowe kopie tylko u wybranych odbiorców, identyczne produkty i ilości, oryginał bez zmian",
+                    "UI: kopia jest widoczna w placówce docelowej po ponownym wejściu"
+                  ]
+                },
+                {
+                  "testId": "ORD-COPY-11",
+                  "titles": [
+                    "Porównanie API: nowe kopie tylko u wybranych odbiorców, identyczne produkty i ilości, oryginał bez zmian",
+                    "UI: kopia jest widoczna w placówce docelowej po ponownym wejściu"
+                  ]
+                },
+                {
+                  "testId": "ORD-COPY-12",
+                  "titles": [
+                    "Porównanie API: nowe kopie tylko u wybranych odbiorców, identyczne produkty i ilości, oryginał bez zmian",
+                    "UI: kopia jest widoczna w placówce docelowej po ponownym wejściu"
+                  ]
+                }
+              ]
+            }
+          ],
+          "title": "Dozwolone kierunki w tej samej strukturze",
+          "testIds": [
+            "ORD-COPY-01",
+            "ORD-COPY-02",
+            "ORD-COPY-03",
+            "ORD-COPY-04",
+            "ORD-COPY-05",
+            "ORD-COPY-06",
+            "ORD-COPY-07",
+            "ORD-COPY-08",
+            "ORD-COPY-09",
+            "ORD-COPY-10",
+            "ORD-COPY-11",
+            "ORD-COPY-12"
+          ],
+          "automation": "automated",
+          "preconditions": [
+            "Środowisko DEV; konto z właściwymi uprawnieniami, a dla odmowy osobne konto ograniczone.",
+            "Wyłącznie własne zamówienia i wydzielone placówki testowe; nie edytuj istniejących danych biznesowych.",
+            "Struktura i liczba placówek zgodna z planem danego testu; cleanup kopii przed oryginałami i relacjami."
+          ],
+          "steps": [
+            "Przygotuj strukturę A: Zespół → SP → LO oraz Zespół → Technikum.",
+            "Dla każdego kierunku utwórz własny oryginał, wybierz inną placówkę i zapisz kopię.",
+            "Porównaj docelowe dokumenty, produkty, ilości i stan pozostałych placówek."
+          ],
+          "expected": "Kopiowanie działa między wszystkimi poziomami tej samej struktury, bez duplikowania i zmiany oryginału."
+        },
+        {
+          "id": "ORD-SC-35980-02",
+          "stepLinks": [
+            {
+              "step": 0,
+              "checks": [
+                {
+                  "testId": "ORD-COPY-13",
+                  "titles": ["UI: otwarcie listy celów oryginału SP"]
+                },
+                {
+                  "testId": "ORD-COPY-14",
+                  "titles": ["UI: otwarcie listy celów oryginału SP"]
+                }
+              ]
+            },
+            {
+              "step": 1,
+              "checks": [
+                {
+                  "testId": "ORD-COPY-13",
+                  "titles": ["UI: lista zawiera cel kontrolny i wyklucza niedozwolone placówki"]
+                },
+                {
+                  "testId": "ORD-COPY-14",
+                  "titles": ["UI: lista zawiera cel kontrolny i wyklucza niedozwolone placówki"]
+                }
+              ]
+            },
+            {
+              "step": 2,
+              "testId": "ORD-COPY-18",
+              "titles": ["UI: placówka samodzielna nie ma przycisku Kopiuj"]
+            },
+            {
+              "step": 3,
+              "checks": [
+                {
+                  "testId": "ORD-SPEC-35980-05",
+                  "titles": ["API: próba kopiowania oryginału SP → SP przez konto uprawnione"]
+                },
+                {
+                  "testId": "ORD-SPEC-35980-06",
+                  "titles": ["API: próba ominięcia listy dozwolonych celów, SP → BSP"]
+                },
+                {
+                  "testId": "ORD-SPEC-35980-07",
+                  "titles": ["API: próba ominięcia listy dozwolonych celów, SP → SOLO"]
+                }
+              ]
+            }
+          ],
+          "title": "Granice struktury i zakaz kopiowania do siebie",
+          "testIds": [
+            "ORD-COPY-13",
+            "ORD-COPY-14",
+            "ORD-COPY-18",
+            "ORD-SPEC-35980-05",
+            "ORD-SPEC-35980-06",
+            "ORD-SPEC-35980-07"
+          ],
+          "automation": "automated",
+          "preconditions": [
+            "Środowisko DEV; konto z właściwymi uprawnieniami, a dla odmowy osobne konto ograniczone.",
+            "Wyłącznie własne zamówienia i wydzielone placówki testowe; nie edytuj istniejących danych biznesowych.",
+            "Struktura i liczba placówek zgodna z planem danego testu; cleanup kopii przed oryginałami i relacjami."
+          ],
+          "steps": [
+            "Sprawdź listę celów oryginału w strukturze A.",
+            "Wyklucz źródło, strukturę B i placówkę samodzielną.",
+            "Sprawdź brak funkcji kopiowania w placówce bez struktury.",
+            "Przez API spróbuj kopiowania do siebie, struktury B i samodzielnej placówki; porównaj wszystkie dokumenty przed/po."
+          ],
+          "expected": "UI wyklucza nieprawidłowe cele; API odrzuca próby do siebie, innej struktury i poza strukturę bez zmiany dokumentów."
+        },
+        {
+          "id": "ORD-SC-35980-03",
+          "title": "Zakaz ponownego kopiowania i kontrola uprawnień",
+          "stepLinks": [
+            {
+              "step": 0,
+              "testId": "ORD-COPY-15",
+              "titles": [
+                "UI: otwarcie odbiorcy i zaznaczenie utworzonej kopii",
+                "UI: zaznaczona kopia ma zablokowany przycisk Kopiuj"
+              ]
+            },
+            {
+              "step": 1,
+              "testId": "ORD-COPY-19",
+              "titles": [
+                "UI: konto ograniczone nie może uruchomić kopiowania oryginału",
+                "API: serwer odrzuca kopiowanie przez zalogowane konto ograniczone kodem 403"
+              ]
+            },
+            {
+              "step": 2,
+              "testId": "ORD-SPEC-35980-08",
+              "titles": ["API: kopia LO → TECH, przy poprawnym celu w tej samej strukturze"]
+            }
+          ],
+          "testIds": ["ORD-COPY-15", "ORD-COPY-19", "ORD-SPEC-35980-08"],
+          "automation": "automated",
+          "preconditions": [
+            "Środowisko DEV; konto z właściwymi uprawnieniami, a dla odmowy osobne konto ograniczone.",
+            "Wyłącznie własne zamówienia i wydzielone placówki testowe; nie edytuj istniejących danych biznesowych.",
+            "Struktura i liczba placówek zgodna z planem danego testu; cleanup kopii przed oryginałami i relacjami."
+          ],
+          "steps": [
+            "Zaznacz dokument będący kopią i sprawdź blokadę Kopiuj.",
+            "Na osobnym koncie ograniczonym spróbuj kopiowania oryginału w UI i API.",
+            "Przez API spróbuj skopiować kopię do trzeciej placówki w tej samej strukturze."
+          ],
+          "expected": "Kopia nie może być kopiowana ponownie także przez API; ograniczone konto otrzymuje 403."
+        },
+        {
+          "id": "ORD-SC-35980-04",
+          "stepLinks": [
+            {
+              "step": 0,
+              "testId": "ORD-COPY-17",
+              "titles": [
+                "UI: wybór celów A, LO, TECH i zapis kopii",
+                "Porównanie API: nowe kopie tylko u wybranych odbiorców, identyczne produkty i ilości, oryginał bez zmian"
+              ]
+            },
+            {
+              "step": 1,
+              "testId": "ORD-SPEC-35980-01",
+              "titles": ["Przygotowanie: dwa źródła i ich odrębne kopie w tej samej placówce"]
+            },
+            {
+              "step": 2,
+              "testId": "ORD-SPEC-35980-01",
+              "titles": [
+                "Powiązanie z jednym źródłem: zmiana pierwszego oryginału aktualizuje tylko jego kopię"
+              ]
+            }
+          ],
+          "title": "Nowe ID, wiele kopii i jedno źródło na kopię",
+          "testIds": ["ORD-COPY-17", "ORD-SPEC-35980-01"],
+          "automation": "automated",
+          "preconditions": [
+            "Środowisko DEV; konto z właściwymi uprawnieniami, a dla odmowy osobne konto ograniczone.",
+            "Wyłącznie własne zamówienia i wydzielone placówki testowe; nie edytuj istniejących danych biznesowych.",
+            "Struktura i liczba placówek zgodna z planem danego testu; cleanup kopii przed oryginałami i relacjami."
+          ],
+          "steps": [
+            "Skopiuj źródło do kilku placówek.",
+            "W tej samej placówce docelowej utwórz też kopię innego źródła.",
+            "Zmień pierwsze źródło i porównaj obie kopie."
+          ],
+          "expected": "Każda kopia ma odrębne ID; produkty i ilości są zgodne. Zmiana propaguje się tylko do kopii właściwego źródła. Powiązanie sprawdzane behawioralnie, nie kluczem obcym SQL."
+        },
+        {
+          "id": "ORD-SC-35980-05",
+          "stepLinks": [
+            {
+              "step": 0,
+              "checks": [
+                {
+                  "testId": "ORD-BUG-36290-01",
+                  "titles": [
+                    "UI: oryginał ma aktywną edycję, kopia nie pozwala zmieniać ilości ani dodawać i usuwać pozycji"
+                  ]
+                },
+                {
+                  "testId": "ORD-BUG-36290-02",
+                  "titles": [
+                    "UI: oryginał ma aktywną edycję, kopia nie pozwala zmieniać ilości ani dodawać i usuwać pozycji"
+                  ]
+                }
+              ]
+            },
+            {
+              "step": 1,
+              "checks": [
+                {
+                  "testId": "ORD-BUG-36290-01",
+                  "titles": [
+                    "Zmiana ilości oryginału 3 → 8: zgodność API i UI kopii",
+                    "Dodanie pozycji do oryginału: kopia zawiera dokładnie nowe pozycje i ilości w API oraz UI",
+                    "Usunięcie drugiej pozycji z oryginału: kopia zawiera dokładnie nowe pozycje i ilości w API oraz UI",
+                    "Zamiana produktu w oryginale: kopia zawiera dokładnie nowe pozycje i ilości w API oraz UI"
+                  ]
+                },
+                {
+                  "testId": "ORD-BUG-36290-02",
+                  "titles": [
+                    "Zmiana ilości oryginału 3 → 8: zgodność API i UI kopii",
+                    "Dodanie pozycji do oryginału: kopia zawiera dokładnie nowe pozycje i ilości w API oraz UI",
+                    "Usunięcie drugiej pozycji z oryginału: kopia zawiera dokładnie nowe pozycje i ilości w API oraz UI",
+                    "Zamiana produktu w oryginale: kopia zawiera dokładnie nowe pozycje i ilości w API oraz UI"
+                  ]
+                }
+              ]
+            },
+            {
+              "step": 2,
+              "checks": [
+                {
+                  "testId": "ORD-BUG-36290-03",
+                  "titles": [
+                    "Próba API: zmiana ilości kopii nie zmienia żadnego dokumentu",
+                    "Próba API: dodanie pozycji kopii nie zmienia żadnego dokumentu",
+                    "Próba API: usunięcie pozycji kopii nie zmienia żadnego dokumentu"
+                  ]
+                },
+                {
+                  "testId": "ORD-BUG-36290-04",
+                  "titles": [
+                    "Próba API: zmiana ilości kopii nie zmienia żadnego dokumentu",
+                    "Próba API: dodanie pozycji kopii nie zmienia żadnego dokumentu",
+                    "Próba API: usunięcie pozycji kopii nie zmienia żadnego dokumentu"
+                  ]
+                }
+              ]
+            }
+          ],
+          "title": "Zakaz niezależnej edycji i bieżący stan kopii",
+          "testIds": [
+            "ORD-BUG-36290-01",
+            "ORD-BUG-36290-02",
+            "ORD-BUG-36290-03",
+            "ORD-BUG-36290-04"
+          ],
+          "automation": "automated",
+          "preconditions": [
+            "Środowisko DEV; konto z właściwymi uprawnieniami, a dla odmowy osobne konto ograniczone.",
+            "Wyłącznie własne zamówienia i wydzielone placówki testowe; nie edytuj istniejących danych biznesowych.",
+            "Struktura i liczba placówek zgodna z planem danego testu; cleanup kopii przed oryginałami i relacjami."
+          ],
+          "steps": [
+            "Sprawdź brak edycji kopii w UI.",
+            "Zmień ilość, dodaj, usuń i zastąp produkt w źródle; porównaj kopię.",
+            "Spróbuj niezależnej zmiany kopii przez API."
+          ],
+          "expected": "Kopia pokazuje bieżące produkty i ilości źródła; niezależna edycja przez API nie zmienia kopii ani źródła. Nie obniżaj oczekiwań przy wykryciu błędu."
+        },
+        {
+          "id": "ORD-SC-35980-06",
+          "stepLinks": [
+            {
+              "step": 0,
+              "testId": "ORD-SPEC-35980-01",
+              "titles": ["Prezentacja: lista zawiera symbol źródła z oznaczeniem - kopia"]
+            },
+            {
+              "step": 1,
+              "checks": [
+                {
+                  "testId": "ORD-BUG-36289-01",
+                  "titles": [
+                    "Porównanie API: nowe kopie tylko u wybranych odbiorców, identyczne produkty i ilości, oryginał bez zmian",
+                    "API i UI: adres kopii jest adresem źródła, nie placówki docelowej",
+                    "UI po ponownym wejściu: adres źródła i zmieniona ilość kopii"
+                  ]
+                },
+                {
+                  "testId": "ORD-BUG-36289-02",
+                  "titles": [
+                    "Porównanie API: nowe kopie tylko u wybranych odbiorców, identyczne produkty i ilości, oryginał bez zmian",
+                    "API i UI: adres kopii jest adresem źródła, nie placówki docelowej",
+                    "UI po ponownym wejściu: adres źródła i zmieniona ilość kopii"
+                  ]
+                },
+                {
+                  "testId": "ORD-BUG-36289-03",
+                  "titles": [
+                    "Porównanie API: nowe kopie tylko u wybranych odbiorców, identyczne produkty i ilości, oryginał bez zmian",
+                    "API i UI: adres kopii jest adresem źródła, nie placówki docelowej",
+                    "UI po ponownym wejściu: adres źródła i zmieniona ilość kopii"
+                  ]
+                }
+              ]
+            }
+          ],
+          "title": "Symbol - kopia i zachowanie danych źródła",
+          "testIds": [
+            "ORD-SPEC-35980-01",
+            "ORD-BUG-36289-01",
+            "ORD-BUG-36289-02",
+            "ORD-BUG-36289-03"
+          ],
+          "automation": "partial",
+          "preconditions": [
+            "Środowisko DEV; konto z właściwymi uprawnieniami, a dla odmowy osobne konto ograniczone.",
+            "Wyłącznie własne zamówienia i wydzielone placówki testowe; nie edytuj istniejących danych biznesowych.",
+            "Struktura i liczba placówek zgodna z planem danego testu; cleanup kopii przed oryginałami i relacjami."
+          ],
+          "steps": [
+            "Porównaj symbol źródła z symbolem kopii na liście.",
+            "Rozwiń szczegóły; porównaj produkty, ilości i adres dokumentu źródłowego."
+          ],
+          "expected": "Lista pokazuje „symbol dokumentu - kopia”; szczegóły zachowują dane źródłowe.",
+          "blocker": "Oznaczenie przy symbolu w każdym wariancie widoku szczegółów wymaga dodatkowej oceny; test symbolu obejmuje listę."
+        },
+        {
+          "id": "ORD-SC-35980-07",
+          "stepLinks": [
+            {
+              "step": 0,
+              "testId": "ORD-SPEC-35980-02",
+              "titles": ["UI: usunięcie wyłącznie własnej kopii"]
+            },
+            {
+              "step": 1,
+              "testId": "ORD-SPEC-35980-02",
+              "titles": ["Ponowne kopiowanie oryginału do tej samej placówki"]
+            },
+            {
+              "step": 2,
+              "testId": "ORD-SPEC-35980-02",
+              "titles": [
+                "Ponowne kopiowanie: jedna aktywna kopia, własne ID, właściwe pozycje i niezmieniony oryginał"
+              ]
+            }
+          ],
+          "title": "Usunięcie błędnej kopii i ponowne kopiowanie",
+          "testIds": ["ORD-SPEC-35980-02"],
+          "automation": "automated",
+          "preconditions": [
+            "Środowisko DEV; konto z właściwymi uprawnieniami, a dla odmowy osobne konto ograniczone.",
+            "Wyłącznie własne zamówienia i wydzielone placówki testowe; nie edytuj istniejących danych biznesowych.",
+            "Struktura i liczba placówek zgodna z planem danego testu; cleanup kopii przed oryginałami i relacjami."
+          ],
+          "steps": [
+            "Usuń własną kopię przez UI.",
+            "Ponownie skopiuj niezmieniony oryginał do tej samej placówki.",
+            "Porównaj ID, treść i oryginał."
+          ],
+          "expected": "Po usunięciu kopia znika z listy. Ponowne kopiowanie daje dokładnie jedną aktywną kopię o ID odrębnym od źródła i poprawnej treści; oryginał pozostaje niezmieniony. Reaktywacja tej samej logicznie usuniętej kopii jest dopuszczona, ponieważ dokumentacja nie rozstrzyga wymogu nowego ID przy ponownym kopiowaniu."
+        },
+        {
+          "id": "ORD-SC-35980-08",
+          "stepLinks": [
+            {
+              "step": 0,
+              "testId": "ORD-SPEC-35980-03",
+              "titles": ["Przygotowanie: dwie kopie źródła i niezależna kopia kontrolna"]
+            },
+            {
+              "step": 1,
+              "testId": "ORD-SPEC-35980-03",
+              "titles": ["Usunięcie własnego oryginału przez API i porównanie wszystkich placówek"]
+            }
+          ],
+          "title": "Usunięcie źródła usuwa wszystkie jego kopie",
+          "testIds": ["ORD-SPEC-35980-03"],
+          "automation": "automated",
+          "preconditions": [
+            "Środowisko DEV; konto z właściwymi uprawnieniami, a dla odmowy osobne konto ograniczone.",
+            "Wyłącznie własne zamówienia i wydzielone placówki testowe; nie edytuj istniejących danych biznesowych.",
+            "Struktura i liczba placówek zgodna z planem danego testu; cleanup kopii przed oryginałami i relacjami."
+          ],
+          "steps": [
+            "Utwórz kopie źródła w dwóch placówkach oraz kopię kontrolną innego źródła.",
+            "Usuń własny oryginał i porównaj wszystkie placówki."
+          ],
+          "expected": "Znikają tylko usunięty oryginał i jego kopie. Dokument kontrolny i jego kopia pozostają. To kontrola list API/UI, nie soft delete w SQL."
+        },
+        {
+          "id": "ORD-SC-35980-09",
+          "stepLinks": [
+            {
+              "step": 0,
+              "testId": "ORD-SPEC-35980-04",
+              "titles": ["Przygotowanie: kopia i lokalny dokument kontrolny odbiorcy"]
+            },
+            {
+              "step": 1,
+              "testId": "ORD-SPEC-35980-04",
+              "titles": ["Usunięcie tylko własnej relacji SP → LO i sprawdzenie skutków"]
+            },
+            {
+              "step": 2,
+              "testId": "ORD-SPEC-35980-04",
+              "titles": ["Usunięcie tylko własnej relacji SP → LO i sprawdzenie skutków"]
+            }
+          ],
+          "title": "Odłączenie struktury usuwa kopię",
+          "testIds": ["ORD-SPEC-35980-04"],
+          "automation": "partial",
+          "preconditions": [
+            "Środowisko DEV; konto z właściwymi uprawnieniami, a dla odmowy osobne konto ograniczone.",
+            "Wyłącznie własne zamówienia i wydzielone placówki testowe; nie edytuj istniejących danych biznesowych.",
+            "Struktura i liczba placówek zgodna z planem danego testu; cleanup kopii przed oryginałami i relacjami."
+          ],
+          "steps": [
+            "Przygotuj kopię i lokalny dokument kontrolny w odbiorcy.",
+            "Usuń wyłącznie własną relację strukturalną.",
+            "Porównaj zamówienia źródła i odbiorcy."
+          ],
+          "expected": "Kopia znika, oryginał i lokalny dokument kontrolny pozostają.",
+          "blocker": "Pokryta bezpośrednia relacja SP→LO. Brakuje testów zmiany typu/hierarchii relacji, zawieszenia szkoły i zachowania niezależnych artefaktów według #35990."
+        },
+        {
+          "id": "ORD-SC-35980-10",
+          "title": "Historia ilości synchronizowanego źródła i kopii",
+          "testIds": ["ORD-DB-05"],
+          "automation": "partial",
+          "preconditions": [
+            "DEV; jawny pakiet odczytu SQL, konto z SELECT i dostępem do widoku szkoły.",
+            "Wyłącznie odczyt istniejącego dokumentu konta automat; bez tworzenia kopii lub zmiany statusów biznesowych.",
+            "Dobór dokumentu z bazy nie dowodzi czasu ani przebiegu synchronizacji."
+          ],
+          "steps": [
+            "Przygotuj dokument khsynchro z rzeczywistymi zmianami ilości i jego kopię.",
+            "Otwórz historię tej samej pozycji w źródle i kopii.",
+            "Wprowadź kolejną zmianę przez obsługiwany proces synchronizacji i porównaj historię."
+          ],
+          "expected": "Kopia prezentuje aktualną historię ilości właściwego produktu i źródła.",
+          "blocker": "ORD-DB-05 sprawdza dostępność historii istniejącego anulowanego źródła integracyjnego. Brak porównania historii źródła i kopii przed/po kontrolowanej synchronizacji, której nie można wywołać na DEV."
+        },
+        {
+          "id": "ORD-SC-35980-11",
+          "title": "Faktura, korekta i anulowanie źródła",
+          "testIds": ["ORD-DB-04"],
+          "automation": "partial",
+          "preconditions": [
+            "DEV; jawny pakiet odczytu SQL, konto z SELECT i dostępem do widoku szkoły.",
+            "Wyłącznie odczyt istniejącego dokumentu konta automat; bez tworzenia kopii lub zmiany statusów biznesowych.",
+            "Dobór dokumentu z bazy nie dowodzi czasu ani przebiegu synchronizacji."
+          ],
+          "steps": [
+            "Dla oryginału z kopiami przeprowadź zastąpienie fakturą, korektę i anulowanie przez integrację.",
+            "Po każdej operacji porównaj kopie i dokumenty kontrolne."
+          ],
+          "expected": "Kopie odzwierciedlają obowiązujący stan zgodnie z #35950; obce dokumenty pozostają niezmienione.",
+          "blocker": "ORD-DB-04 sprawdza historyczny stan anulowanego źródła: IsCanceled=1, IsDel=0 i prezentację UI. Faktura, korekta, usunięcie przez Softlab, kaskada do kopii oraz przeliczenia nadal wymagają dowodów. Nie zmieniamy statusów SQL."
+        },
+        {
+          "id": "ORD-SC-35980-12",
+          "stepLinks": [
+            {
+              "step": 0,
+              "checks": [
+                {
+                  "testId": "ORD-SPEC-35980-09",
+                  "titles": ["Przygotowanie: kopia ze znanym rokiem dokumentu"]
+                },
+                {
+                  "testId": "ORD-SPEC-35980-10",
+                  "titles": ["Przygotowanie: dwie kopie różnych przedmiotów i stan kontrolny"]
+                }
+              ]
+            },
+            {
+              "step": 1,
+              "checks": [
+                {
+                  "testId": "ORD-SPEC-35980-09",
+                  "titles": [
+                    "UI: rok dokumentu pokazuje dokładnie jedną kopię",
+                    "UI: inny rok ukrywa kopię",
+                    "UI: powrót do właściwego roku i odświeżenie nie gubią ani nie powielają kopii"
+                  ]
+                },
+                {
+                  "testId": "ORD-SPEC-35980-10",
+                  "titles": [
+                    "UI: FIZ pokazuje wyłącznie kopię fizyki",
+                    "UI: MAT pokazuje wyłącznie kopię matematyki"
+                  ]
+                }
+              ]
+            },
+            {
+              "step": 2,
+              "checks": [
+                {
+                  "testId": "ORD-SPEC-35980-09",
+                  "titles": [
+                    "UI: powrót do właściwego roku i odświeżenie nie gubią ani nie powielają kopii"
+                  ]
+                },
+                {
+                  "testId": "ORD-SPEC-35980-10",
+                  "titles": ["UI: wyczyszczenie filtra przywraca obie kopie bez duplikatów"]
+                }
+              ]
+            }
+          ],
+          "title": "Kopie w filtrach operacyjnych",
+          "testIds": ["ORD-SPEC-35980-09", "ORD-SPEC-35980-10"],
+          "automation": "automated",
+          "preconditions": [
+            "Środowisko DEV; konto z właściwymi uprawnieniami, a dla odmowy osobne konto ograniczone.",
+            "Wyłącznie własne zamówienia i wydzielone placówki testowe; nie edytuj istniejących danych biznesowych.",
+            "Struktura i liczba placówek zgodna z planem danego testu; cleanup kopii przed oryginałami i relacjami."
+          ],
+          "steps": [
+            "Przygotuj kopię ze znanym rokiem oraz dwie kopie z różnymi przedmiotami.",
+            "Sprawdź filtrowanie roku, odświeżenie i filtrowanie przedmiotu FIZ/MAT.",
+            "Wyczyść filtr i porównaj stan dokumentów z początkowym."
+          ],
+          "expected": "Kopie są widoczne zgodnie z dostępnymi filtrami roku i przedmiotu, bez duplikatów i zmiany danych."
+        },
+        {
+          "id": "ORD-SC-35980-13",
+          "title": "Gratisy wynikające z kopii",
+          "testIds": [],
+          "automation": "blocked",
+          "preconditions": [
+            "Środowisko DEV; konto z właściwymi uprawnieniami, a dla odmowy osobne konto ograniczone.",
+            "Wyłącznie własne zamówienia i wydzielone placówki testowe; nie edytuj istniejących danych biznesowych.",
+            "Struktura i liczba placówek zgodna z planem danego testu; cleanup kopii przed oryginałami i relacjami."
+          ],
+          "steps": [
+            "Przygotuj kwalifikujące źródło, jego kopię oraz dokument kontrolny poniżej progu.",
+            "Uruchom obsługiwany proces przydzielania gratisów.",
+            "Sprawdź wyniki u odbiorcy, bez podwójnego naliczania."
+          ],
+          "expected": "Kopia podlega regułom gratisów obowiązującym dla placówki docelowej.",
+          "blocker": "Reguły progów są już zapisane w docs/tests/uprawnienia-i-progi.md (dla wysyłki w SP dodatkowe minimum 5). Do wdrożenia pozostaje dobór oczekiwanych gratisów i kontrola wygenerowanych zleceń oraz statusów wysłane/niewysłane bez uruchamiania rzeczywistej wysyłki."
+        },
+        {
+          "id": "ORD-SC-35980-14",
+          "stepLinks": [
+            {
+              "step": 0,
+              "checks": [
+                {
+                  "testId": "ORD-SPEC-35980-11",
+                  "titles": [
+                    "Przygotowanie: relacja placówek i wpis uprawnień odbiorcy",
+                    "Bez zamówień i flag Testowy nie ma niezależnego przyznania dostępu"
+                  ]
+                },
+                {
+                  "testId": "ORD-SPEC-35980-12",
+                  "titles": [
+                    "Przygotowanie: relacja placówek i wpis uprawnień odbiorcy",
+                    "Bez zamówień i flag Testowy nie ma niezależnego przyznania dostępu"
+                  ]
+                },
+                {
+                  "testId": "ORD-SPEC-35980-13",
+                  "titles": [
+                    "Przygotowanie: relacja placówek i wpis uprawnień odbiorcy",
+                    "Bez zamówień i flag Testowy nie ma niezależnego przyznania dostępu"
+                  ]
+                }
+              ]
+            },
+            {
+              "step": 1,
+              "testId": "ORD-SPEC-35980-13",
+              "titles": [
+                "Brak kopii: zamówienie powiązanego źródła nie nalicza ilości ani dostępu odbiorcy"
+              ]
+            },
+            {
+              "step": 2,
+              "checks": [
+                {
+                  "testId": "ORD-SPEC-35980-11",
+                  "titles": [
+                    "Kopia daje 31 sztuk przy progu 30 i przyznaje dostęp w placówce docelowej"
+                  ]
+                },
+                {
+                  "testId": "ORD-SPEC-35980-12",
+                  "titles": [
+                    "Kopia daje 31 sztuk przy progu 30 i przyznaje dostęp w placówce docelowej"
+                  ]
+                }
+              ]
+            },
+            {
+              "step": 3,
+              "checks": [
+                {
+                  "testId": "ORD-SPEC-35980-11",
+                  "titles": [
+                    "usunięcie kopii: ponowne przeliczenie nie zachowuje nieaktualnego dostępu"
+                  ]
+                },
+                {
+                  "testId": "ORD-SPEC-35980-12",
+                  "titles": [
+                    "obniżenie ilości w oryginale: ponowne przeliczenie nie zachowuje nieaktualnego dostępu"
+                  ]
+                }
+              ]
+            }
+          ],
+          "title": "Uprawnienia wynikające z kopii",
+          "testIds": ["ORD-SPEC-35980-11", "ORD-SPEC-35980-12", "ORD-SPEC-35980-13"],
+          "automation": "partial",
+          "preconditions": [
+            "Środowisko DEV; konto z właściwymi uprawnieniami, a dla odmowy osobne konto ograniczone.",
+            "Wyłącznie własne zamówienia i wydzielone placówki testowe; nie edytuj istniejących danych biznesowych.",
+            "Struktura i liczba placówek zgodna z planem danego testu; cleanup kopii przed oryginałami i relacjami."
+          ],
+          "steps": [
+            "Przygotuj nauczyciela w placówce docelowej bez wcześniejszego dostępu i potwierdzenie klubowe.",
+            "Przed skopiowaniem sprawdź, że zamówienie źródła nie nalicza ilości ani uprawnień nauczyciela placówki docelowej (reguła potwierdzona przez użytkownika).",
+            "Skopiuj kwalifikujący dokument, przelicz dostęp i sprawdź eksport.",
+            "W osobnych testach usuń kopię albo obniż ilość w oryginale poniżej progu i sprawdź ponowne przeliczenie oraz eksport."
+          ],
+          "expected": "Kopia stanowi podstawę uprawnień odbiorcy zgodnie z regułami kwalifikacji; brak przecieku do innej placówki.",
+          "blocker": "Zaimplementowano kontrolę braku dostępu przed kopią oraz wpływu kopii, jej usunięcia i zmiany ilości źródła, bez flag Testowy. Wykonanie na DEV wykazało naliczanie 31 sztuk przed kopią oraz 62 po kopii; testy zmian zatrzymują się na kontroli stanu początkowego, więc nie potwierdzają jeszcze przeliczenia po zmianie. Osobne warstwy baseAccess/promotionAccess, niezależne podstawy BOK/historyczne oraz warianty dat pozostają poza tymi przypadkami."
+        },
+        {
+          "id": "ORD-SC-35980-15",
+          "stepLinks": [
+            {
+              "step": 0,
+              "testId": "ORD-SPEC-35980-04",
+              "titles": [
+                "Audyt: odczyt historii przed usunięciem relacji",
+                "Audyt: odczyt historii po usunięciu relacji"
+              ]
+            },
+            {
+              "step": 1,
+              "testId": "ORD-SPEC-35980-04",
+              "titles": [
+                "Audyt: nowy wpis identyfikuje usuniętą kopię i datę, nie tylko zmianę relacji"
+              ]
+            }
+          ],
+          "title": "Audyt automatycznego usunięcia kopii",
+          "testIds": ["ORD-SPEC-35980-04"],
+          "automation": "automated",
+          "preconditions": [
+            "Środowisko DEV; konto z właściwymi uprawnieniami, a dla odmowy osobne konto ograniczone.",
+            "Wyłącznie własne zamówienia i wydzielone placówki testowe; nie edytuj istniejących danych biznesowych.",
+            "Struktura i liczba placówek zgodna z planem danego testu; cleanup kopii przed oryginałami i relacjami."
+          ],
+          "steps": [
+            "Zachowaj historię placówki przed i po usunięciu relacji.",
+            "Zidentyfikuj zdarzenie automatycznego usunięcia kopii, nie tylko wpis o usunięciu relacji."
+          ],
+          "expected": "Nowy wpis historii identyfikuje usunięcie kopii z jej ID, datą, rodzajem zmiany i autorem. Samo zdarzenie usunięcia relacji nie wystarcza."
+        },
+        {
+          "id": "ORD-SC-35980-16",
+          "stepLinks": [
+            {
+              "step": 0,
+              "testId": "ORD-COPY-16",
+              "titles": [
+                "UI: otwarcie kopiowania bez zaznaczonego celu",
+                "UI: pusty wybór blokuje Zapisz"
+              ]
+            },
+            {
+              "step": 1,
+              "testId": "ORD-COPY-16",
+              "titles": ["UI: dodanie celu odblokowuje Zapisz, ale operacja zostaje anulowana"]
+            },
+            {
+              "step": 2,
+              "testId": "ORD-COPY-16",
+              "titles": ["API: po anulowaniu wszystkie dokumenty pozostają bez zmian"]
+            }
+          ],
+          "title": "Anulowanie operacji i brak pustych kopii",
+          "testIds": ["ORD-COPY-16"],
+          "automation": "automated",
+          "preconditions": [
+            "Środowisko DEV; konto z właściwymi uprawnieniami, a dla odmowy osobne konto ograniczone.",
+            "Wyłącznie własne zamówienia i wydzielone placówki testowe; nie edytuj istniejących danych biznesowych.",
+            "Struktura i liczba placówek zgodna z planem danego testu; cleanup kopii przed oryginałami i relacjami."
+          ],
+          "steps": [
+            "Otwórz kopiowanie bez celu i sprawdź Zapisz.",
+            "Dodaj cel i anuluj operację.",
+            "Porównaj stan wszystkich placówek."
+          ],
+          "expected": "Pustego wyboru nie można zapisać, anulowanie nie tworzy dokumentów."
         }
       ]
     }

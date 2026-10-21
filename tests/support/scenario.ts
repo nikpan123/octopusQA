@@ -6,6 +6,7 @@ import { Octopus } from "./octopus";
 import type { TeacherSubjectLevel } from "./api-factory";
 
 export type CreateScenarioTeacherOptions = {
+  openPanel?: boolean;
   testRecord?: boolean;
   additionalSchoolIds?: string[];
   subjectLevels?: TeacherSubjectLevel[];
@@ -70,7 +71,7 @@ export const test = base.extend<{ scenario: Scenario }>({
             subjectLevels: options.subjectLevels,
           });
           await record("teacherId", teacherId);
-          await app.openPanel("teacher", teacherId);
+          if (options.openPanel !== false) await app.openPanel("teacher", teacherId);
           return teacherId;
         },
       });

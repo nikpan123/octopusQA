@@ -1,0 +1,111 @@
+import { defineConfig, devices, type ReporterDescription } from "@playwright/test";
+
+import { randomUUID } from "node:crypto";
+
+export type OctopusEnvironment = "dev" | "test";
+
+export function createPlaywrightConfig(environment: OctopusEnvironment) {
+  process.env.OCTOPUS_ENV = environment;
+
+  const runId = randomUUID();
+  process.env.OCTOPUS_AUTH_RUN_ID = runId;
+
+  const baseURL =
+    environment === "test" ? "https://octopus.gwotest.pl" : "https://octopus.gwodev.pl";
+  const requestedWorkers = Number(process.env.OCTOPUS_WORKERS ?? 2);
+  const workers = Number.isInteger(requestedWorkers)
+    ? Math.min(4, Math.max(1, requestedWorkers))
+    : 2;
+  process.env.OCTOPUS_EFFECTIVE_WORKERS = String(workers);
+  const requestedRetries = Number(process.env.OCTOPUS_RETRIES ?? (process.env.CI ? 1 : 0));
+  const retries = Number.isInteger(requestedRetries)
+    ? Math.min(2, Math.max(0, requestedRetries))
+    : process.env.CI
+      ? 1
+      : 0;
+  const includeAnnualMedal = process.env.OCTOPUS_INCLUDE_ANNUAL === "1";
+  const reporters: ReporterDescription[] = [
+    ["list"],
+    [
+      "html",
+      {
+        open: "never",
+      },
+    ],
+    ["./scripts/performance-reporter.mjs"],
+    ["./scripts/failure-reporter.mjs"],
+  ];
+
+  if (process.env.CI) {
+    reporters.splice(1, 0, ["github"], ["junit", { outputFile: "test-results/junit.xml" }]);
+  }
+
+  console.log(`Playwright: środowisko ${environment.toUpperCase()} → ${baseURL}`);
+
+  return defineConfig({
+    testDir: "./tests",
+
+    // Dwufazowy test roczny generuje kilka tysięcy żądań i zapisuje snapshot.
+    // Uruchamiamy go wyłącznie jawnie, poza zwykłą regresją.
+    ...(includeAnnualMedal ? {} : { grepInvert: /@annual-medal/ }),
+
+    globalSetup: "./scripts/cleanup-global-setup.mjs",
+
+    globalTeardown: "./scripts/cleanup-global-teardown.mjs",
+
+    fullyParallel: false,
+
+    workers,
+
+    // Lokalnie błąd pozostaje natychmiast widoczny. CI może jednokrotnie
+    // potwierdzić, czy awaria była przejściowa; limit 2 chroni przed
+    // maskowaniem trwałych defektów przez wielokrotne ponawianie.
+    retries,
+
+    timeout: 240_000,
+
+    expect: {
+      timeout: 20_000,
+    },
+
+    forbidOnly: Boolean(process.env.CI),
+
+    reporter: reporters,
+
+    // Każde uruchomienie zapisuje ślady w osobnym katalogu. Dzięki temu
+    // start testu z VS Code nie może skasować plików trwającego pełnego zestawu
+    // jeszcze zanim globalSetup wykryje blokadę równoległego uruchomienia.
+    outputDir: `test-results/${runId}`,
+
+    use: {
+      baseURL,
+      // Wyłącznie jawny tryb podglądu. Playwright resetuje stan przed kolejnym testem.
+      reuseContext: process.env.OCTOPUS_SINGLE_TAB === "1",
+
+      actionTimeout: 20_000,
+
+      navigationTimeout: 45_000,
+
+      screenshot: "only-on-failure",
+
+      trace: "retain-on-failure",
+
+      video: "off",
+    },
+
+    projects: [
+      {
+        name: "chromium",
+
+        use: {
+          ...devices["Desktop Chrome"],
+
+          viewport: {
+            width: 1600,
+            height: 1000,
+          },
+        },
+      },
+    ],
+  });
+}

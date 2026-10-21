@@ -1,7 +1,9 @@
-import { expect, type Page } from "@playwright/test";
+import { type Page } from "@playwright/test";
 
+import { fixtureSchools } from "./fixture-schools";
+import { backgroundSchoolSetup } from "./background-school-setup";
 import { OCTOPUS_ENV } from "./environment";
-import { Octopus, typeValue } from "./octopus";
+import { Octopus } from "./octopus";
 
 export type OrderTestSchool = {
   id: string;
@@ -27,125 +29,36 @@ function definitionFor(key: OrderTestSchoolKey): { name: string } {
 
 const cachedSchools = new Map<OrderTestSchoolKey, OrderTestSchool>();
 
-async function searchExactSchool(
-  page: Page,
-  app: Octopus,
-  name: string,
-): Promise<OrderTestSchool | null> {
-  await app.openPanel("school");
-
-  const search = await app.openSearch("school");
-  await typeValue(app.field(search, "Nazwa szkoły"), name);
-
-  await search
-    .getByRole("button", {
-      name: "Szukaj",
-      exact: true,
-    })
-    .click();
-
-  await expect(search).toHaveCount(0);
-
-  const empty = page
-    .locator("mat-dialog-container")
-    .filter({ hasText: "Brak wyników wyszukiwania" });
-
-  const exactRow = app
-    .results("school")
-    .getByRole("row")
-    .filter({
-      has: page.getByRole("gridcell", {
-        name,
-        exact: true,
-      }),
-    });
-
-  const state = async () => {
-    if (await empty.isVisible().catch(() => false)) {
-      return "EMPTY";
-    }
-
-    const count = await exactRow.count();
-    if (count > 0) {
-      return `FOUND:${count}`;
-    }
-
-    return "WAITING";
-  };
-
-  await expect
-    .poll(state, {
-      timeout: 20_000,
-      message: `Wyszukiwanie szkoły referencyjnej „${name}” powinno się zakończyć`,
-    })
-    .not.toBe("WAITING");
-
-  if (await empty.isVisible().catch(() => false)) {
-    await empty
-      .getByRole("button", {
-        name: "OK",
-        exact: true,
-      })
-      .click();
-
-    await expect(empty).toHaveCount(0);
-
-    return null;
-  }
-
-  await expect(
-    exactRow,
-    `Powinna istnieć najwyżej jedna szkoła referencyjna „${name}”`,
-  ).toHaveCount(1);
-
-  await exactRow.click();
-
-  await expect(page).toHaveURL(/\/school\/school-panel\/\d+$/);
-  await expect(app.detail("name")).toHaveValue(name);
-
-  const id = page.url().split("/").pop() ?? "";
-  expect(id).toMatch(/^\d+$/);
-
-  return {
-    id,
-    name,
-  };
-}
-
 export async function ensureOrderTestSchool(
   page: Page,
   app: Octopus,
   key: OrderTestSchoolKey = "primary",
+  openPanel = true,
 ): Promise<OrderTestSchool> {
-  const cached = cachedSchools.get(key);
-
-  if (cached) {
-    await app.openPanel("school", cached.id);
-    await expect(app.detail("name")).toHaveValue(cached.name);
-    await app.markTestRecord();
-    return cached;
-  }
-
   const definition = definitionFor(key);
-
-  const existing = await searchExactSchool(page, app, definition.name);
-
-  if (existing) {
-    await app.markTestRecord();
-    cachedSchools.set(key, existing);
-    return existing;
+  const api = await fixtureSchools(page);
+  const [found] = await api.findMany([
+    { ...definition, type: "Szkoła podstawowa", id: cachedSchools.get(key)?.id },
+  ]);
+  let school: OrderTestSchool;
+  if (found) {
+    school = { id: found.id, name: found.name };
+    if (!found.tested) {
+      await backgroundSchoolSetup(page, async (setup) => {
+        await setup.openPanel("school", found.id);
+        await setup.markTestRecord();
+      });
+    }
+  } else {
+    const id = await backgroundSchoolSetup(page, async (setup) => {
+      const id = await setup.createSchool(definition.name, String(Date.now()), "Szkoła podstawowa");
+      await setup.markTestRecord();
+      return id;
+    });
+    school = { id, name: definition.name };
   }
-
-  const id = await app.createSchool(definition.name, String(Date.now()), "Szkoła podstawowa");
-
-  await app.markTestRecord();
-
-  const created: OrderTestSchool = {
-    id,
-    name: definition.name,
-  };
-
-  cachedSchools.set(key, created);
-
-  return created;
+  cachedSchools.set(key, school);
+  // Niektóre testy formularzy od razu używają otwartego profilu. To nawigacja do testu, nie walidacja fixture.
+  if (openPanel) await app.openPanel("school", school.id);
+  return school;
 }

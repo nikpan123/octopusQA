@@ -582,7 +582,7 @@ test.describe("Dokumenty zamówień ręcznych i oświadczeń", () => {
       expect(original).toBeDefined();
     });
     const other = await test.step("Przygotowanie: dedykowana szkoła do zamówień", async () =>
-      prepareOrderSchool(page, scenario, "secondary"));
+      prepareOrderSchool(page, scenario, "secondary", false));
     await d.moveTeacher(other);
     await test.step("Sprawdzenie: zgodność wartości — (await d.schoolRecords()) .find((order) => order.id === original!.id)! .fileStorage.some((file) => file.id === sto…; oczekiwane: true", async () => {
       expect(

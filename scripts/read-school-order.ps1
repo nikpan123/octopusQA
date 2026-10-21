@@ -1,5 +1,5 @@
 param(
-  [ValidateSet('Probe', 'ReadOrder')][string]$Action = 'Probe',
+  [ValidateSet('Probe', 'ReadOrder', 'FindHistorical', 'FindHistoricalWithHistory', 'FindStatusAudit', 'ReadHistorical')][string]$Action = 'Probe',
   [int]$OrderId = 0,
   [int]$SchoolId = 0
 )
@@ -20,7 +20,7 @@ try {
   $port = 1433
   if ($env:OCTOPUS_DEV_DB_PORT) { $port = [int]$env:OCTOPUS_DEV_DB_PORT }
   if ($port -lt 1 -or $port -gt 65535) { throw 'INVALID_PORT' }
-  if ($Action -eq 'ReadOrder' -and ($OrderId -le 0 -or $SchoolId -le 0)) { throw 'INVALID_ID' }
+  if ($Action -in @('ReadOrder', 'ReadHistorical') -and ($OrderId -le 0 -or $SchoolId -le 0)) { throw 'INVALID_ID' }
 
   $builder = New-Object System.Data.SqlClient.SqlConnectionStringBuilder
   $builder['Data Source'] = "$($env:OCTOPUS_DEV_DB_SERVER),$port"
@@ -58,7 +58,73 @@ ORDER BY c.column_id
     while ($reader.Read()) {
       $columns += @{ schema = [string]$reader['SchemaName']; name = [string]$reader['ColumnName']; type = [string]$reader['TypeName'] }
     }
-    @{ database = $database; columns = @($columns) } | ConvertTo-Json -Depth 5 -Compress
+    $reader.Dispose(); $reader = $null
+    $command.CommandText = @'
+SELECT t.name AS TableName, c.name AS ColumnName
+FROM sys.tables t JOIN sys.columns c ON c.object_id = t.object_id
+WHERE t.name LIKE N'%Order%' OR t.name LIKE N'%History%' OR t.name LIKE N'%Relation%' OR t.name IN (N'User', N'Users')
+ORDER BY t.name, c.column_id
+'@
+    $reader = $command.ExecuteReader()
+    $relatedColumns = @()
+    while ($reader.Read()) { $relatedColumns += @{ table = [string]$reader['TableName']; column = [string]$reader['ColumnName'] } }
+    @{ database = $database; columns = @($columns); relatedColumns = @($relatedColumns) } | ConvertTo-Json -Depth 5 -Compress
+  } elseif ($Action -in @('FindHistorical', 'FindHistoricalWithHistory')) {
+    # Kandydaci, nie dowód pochodzenia zmiany. Żaden rekord nie jest modyfikowany.
+    $command.CommandText = @'
+WITH candidates AS (
+ SELECT Id, SchoolId, IsDel, IsCanceled, IsCopied, CreatedBy, CreatedAt, CmsOrderSymbol, SalesOrderSymbol,
+ ROW_NUMBER() OVER (PARTITION BY IsCanceled ORDER BY Id DESC) AS CandidateRank
+ FROM dbo.SchoolOrder o
+ WHERE (IsCanceled = 1 OR IsDel = 1) AND IsCopied = 0
+ AND (NULLIF(CmsOrderSymbol, N'') IS NOT NULL OR NULLIF(SalesOrderSymbol, N'') IS NOT NULL)
+ AND COALESCE(SalesOrderSymbol, N'') NOT LIKE N'%/BOK/%'
+ AND CreatedBy IN (SELECT Id FROM dbo.[User] WHERE Login = N'automat')
+ AND (@RequireHistory = 0 OR EXISTS (
+   SELECT 1 FROM dbo.SchoolOrderItem i JOIN dbo.InstitutionOrderItemHistory h ON h.InstitutionOrderItemId = i.Id
+   WHERE i.SchoolOrderId = o.Id AND h.InstitutionTypeId = 1
+ ))
+)
+SELECT Id, SchoolId, IsDel, IsCanceled, IsCopied, CreatedBy, CreatedAt, CmsOrderSymbol, SalesOrderSymbol,
+ (SELECT TOP (1) i.DictOrderItemId FROM dbo.SchoolOrderItem i
+ JOIN dbo.InstitutionOrderItemHistory h ON h.InstitutionOrderItemId = i.Id
+ WHERE i.SchoolOrderId = candidates.Id AND h.InstitutionTypeId = 1 ORDER BY h.CreatedAt DESC, h.Id DESC) AS HistoryProductId
+FROM candidates WHERE CandidateRank <= 5 ORDER BY IsCanceled DESC, Id DESC
+'@
+    [void]$command.Parameters.Add('@RequireHistory', [System.Data.SqlDbType]::Bit)
+    $command.Parameters['@RequireHistory'].Value = $Action -eq 'FindHistoricalWithHistory'
+    $reader = $command.ExecuteReader()
+    $rows = @()
+    while ($reader.Read()) {
+      $historyProductId = $null
+      if (-not $reader.IsDBNull($reader.GetOrdinal('HistoryProductId'))) { $historyProductId = [int]$reader['HistoryProductId'] }
+      $rows += @{ id = [int]$reader['Id']; schoolId = [int]$reader['SchoolId']; isDel = [bool]$reader['IsDel']; isCanceled = [bool]$reader['IsCanceled']; isCopied = [bool]$reader['IsCopied']; createdBy = [int]$reader['CreatedBy']; createdAt = ([datetime]$reader['CreatedAt']).ToString('o'); cmsOrderSymbol = [string]$reader['CmsOrderSymbol']; salesOrderSymbol = [string]$reader['SalesOrderSymbol']; historyProductId = $historyProductId }
+    }
+    @{ database = $database; rows = @($rows) } | ConvertTo-Json -Depth 5 -Compress
+  } elseif ($Action -eq 'FindStatusAudit') {
+    $command.CommandText = @'
+SELECT TOP (10) h.Id, h.SchoolId, h.Field, h.Value, h.ChangedAt, u.Login
+FROM dbo.SchoolDataChangeHistory h JOIN dbo.[User] u ON u.Id = h.CreatedBy
+WHERE h.Field LIKE N'%Zam%' AND (h.Field LIKE N'%usuni%' OR h.Field LIKE N'%anul%' OR h.Value LIKE N'%usuni%' OR h.Value LIKE N'%anul%')
+AND u.Login = N'automat'
+ORDER BY h.ChangedAt DESC, h.Id DESC
+'@
+    $reader = $command.ExecuteReader(); $rows = @()
+    while ($reader.Read()) { $rows += @{ id = [int]$reader['Id']; schoolId = [int]$reader['SchoolId']; field = [string]$reader['Field']; value = [string]$reader['Value']; changedAt = ([datetime]$reader['ChangedAt']).ToString('o'); actor = [string]$reader['Login'] } }
+    @{ database = $database; rows = @($rows) } | ConvertTo-Json -Depth 5 -Compress
+  } elseif ($Action -eq 'ReadHistorical') {
+    $command.CommandText = @'
+SELECT o.Id, o.SchoolId, o.IsDel, o.IsCopied, o.IsCanceled, o.CreatedBy, o.CreatedAt,
+o.CmsOrderSymbol, o.SalesOrderSymbol, u.Login
+FROM dbo.SchoolOrder o JOIN dbo.[User] u ON u.Id = o.CreatedBy
+WHERE o.Id = @OrderId AND o.SchoolId = @SchoolId
+'@
+    [void]$command.Parameters.Add('@OrderId', [System.Data.SqlDbType]::Int)
+    [void]$command.Parameters.Add('@SchoolId', [System.Data.SqlDbType]::Int)
+    $command.Parameters['@OrderId'].Value = $OrderId; $command.Parameters['@SchoolId'].Value = $SchoolId
+    $reader = $command.ExecuteReader(); $rows = @()
+    while ($reader.Read()) { $rows += @{ id = [int]$reader['Id']; schoolId = [int]$reader['SchoolId']; isDel = [bool]$reader['IsDel']; isCopied = [bool]$reader['IsCopied']; isCanceled = [bool]$reader['IsCanceled']; createdBy = [int]$reader['CreatedBy']; createdAt = ([datetime]$reader['CreatedAt']).ToString('o'); cmsOrderSymbol = [string]$reader['CmsOrderSymbol']; salesOrderSymbol = [string]$reader['SalesOrderSymbol']; actor = [string]$reader['Login'] } }
+    @{ database = $database; rows = @($rows) } | ConvertTo-Json -Depth 5 -Compress
   } else {
     # Jedyny odczyt dokumentu. Brak dowolnego SQL, DML, DDL i procedur.
     $command.CommandText = 'SELECT Id, SchoolId, IsDel, IsCopied FROM dbo.SchoolOrder WHERE Id = @OrderId AND SchoolId = @SchoolId'

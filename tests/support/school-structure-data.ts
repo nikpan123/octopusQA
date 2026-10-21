@@ -2,12 +2,21 @@ import { expect, type Page } from "@playwright/test";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 
+import { fixtureSchools } from "./fixture-schools";
+import { backgroundSchoolSetup } from "./background-school-setup";
 import { OCTOPUS_ENV } from "./environment";
-import { Octopus, typeValue } from "./octopus";
+import { Octopus } from "./octopus";
 import type { StructureSchool } from "./school-structure";
 import type { StructureApi } from "./school-structure-api";
 
 export type StructureSchoolKey =
+  | "specCopyGroup"
+  | "specCopyPrimary"
+  | "specCopySecondary"
+  | "specCopyTechnical"
+  | "specCopyOtherGroup"
+  | "specCopyOtherPrimary"
+  | "specCopyStandalone"
   | "copyGroup"
   | "copyPrimary"
   | "copySecondary"
@@ -39,6 +48,25 @@ type StructureSchoolDefinition = {
 const environment = OCTOPUS_ENV.toUpperCase();
 
 const definitions: Record<StructureSchoolKey, StructureSchoolDefinition> = {
+  specCopyGroup: { name: `AUTO_STR_${environment}_COPY_SPEC35980_ZESPOL_A`, type: "Zespół szkół" },
+  specCopyPrimary: {
+    name: `AUTO_STR_${environment}_COPY_SPEC35980_SP_A`,
+    type: "Szkoła podstawowa",
+  },
+  specCopySecondary: { name: `AUTO_STR_${environment}_COPY_SPEC35980_LO_A`, type: "Liceum" },
+  specCopyTechnical: { name: `AUTO_STR_${environment}_COPY_SPEC35980_TECH_A`, type: "Technikum" },
+  specCopyOtherGroup: {
+    name: `AUTO_STR_${environment}_COPY_SPEC35980_ZESPOL_B`,
+    type: "Zespół szkół",
+  },
+  specCopyOtherPrimary: {
+    name: `AUTO_STR_${environment}_COPY_SPEC35980_SP_B`,
+    type: "Szkoła podstawowa",
+  },
+  specCopyStandalone: {
+    name: `AUTO_STR_${environment}_COPY_SPEC35980_SAMODZIELNA`,
+    type: "Szkoła podstawowa",
+  },
   copyGroup: { name: `AUTO_STR_${environment}_COPY_ZESPOL_A`, type: "Zespół szkół" },
   copyPrimary: { name: `AUTO_STR_${environment}_COPY_SP_A`, type: "Szkoła podstawowa" },
   copySecondary: { name: `AUTO_STR_${environment}_COPY_LO_A`, type: "Liceum" },
@@ -64,6 +92,7 @@ const definitions: Record<StructureSchoolKey, StructureSchoolDefinition> = {
 };
 
 const cachedSchools = new Map<StructureSchoolKey, StructureSchool>();
+const scopedSchoolCaches = new Map<string, Map<StructureSchoolKey, StructureSchool>>();
 const cacheFile = path.resolve("playwright", ".auth", OCTOPUS_ENV, "structure-schools.json");
 let cacheLoaded = false;
 
@@ -87,89 +116,58 @@ async function saveSchoolCache() {
   await writeFile(cacheFile, `${JSON.stringify(Object.fromEntries(cachedSchools), null, 2)}\n`);
 }
 
-async function findExactStructureSchool(
-  page: Page,
-  app: Octopus,
-  name: string,
-): Promise<StructureSchool | null> {
-  await app.openPanel("school");
-  const search = await app.openSearch("school");
-  await typeValue(app.field(search, "Nazwa szkoły"), name);
-  await search.getByRole("button", { name: "Szukaj", exact: true }).click();
-  await expect(search).toHaveCount(0);
-
-  const empty = page.locator("mat-dialog-container").filter({
-    hasText: "Brak wyników wyszukiwania",
-  });
-  const exactRow = app
-    .results("school")
-    .getByRole("row")
-    .filter({
-      has: page.getByRole("gridcell", { name, exact: true }),
-    });
-
-  await expect
-    .poll(async () => {
-      if (await empty.isVisible().catch(() => false)) return "EMPTY";
-      const count = await exactRow.count();
-      return count > 0 ? `FOUND:${count}` : "WAITING";
-    })
-    .not.toBe("WAITING");
-
-  if (await empty.isVisible().catch(() => false)) {
-    await empty.getByRole("button", { name: "OK", exact: true }).click();
-    await expect(empty).toHaveCount(0);
-    return null;
-  }
-
-  await expect(exactRow, `Powinna istnieć jedna szkoła „${name}”`).toHaveCount(1);
-  await exactRow.click();
-  await expect(page).toHaveURL(/\/school\/school-panel\/\d+$/);
-
-  return { id: page.url().split("/").pop()!, name };
-}
-
 export async function ensureStructureTestSchool(
   page: Page,
   app: Octopus,
   key: StructureSchoolKey,
 ): Promise<StructureSchool> {
-  await loadSchoolCache();
-  const cached = cachedSchools.get(key);
-  if (cached) {
-    await app.openPanel("school", cached.id);
-    await expect(app.detail("name")).toHaveValue(definitions[key].name);
-    await app.markTestRecord();
-    return cached;
-  }
-
-  const definition = definitions[key];
-  const existing = await findExactStructureSchool(page, app, definition.name);
-  if (existing) {
-    await app.markTestRecord();
-    cachedSchools.set(key, existing);
-    await saveSchoolCache();
-    return existing;
-  }
-
-  const id = await app.createSchool(definition.name, `STR-${Date.now()}`, definition.type);
-  await app.markTestRecord();
-
-  const created = { id, name: definition.name };
-  cachedSchools.set(key, created);
-  await saveSchoolCache();
-  return created;
+  return (await ensureStructureTestSchools(page, app, [key]))[key]!;
 }
 
 export async function ensureStructureTestSchools(
   page: Page,
   app: Octopus,
   keys: StructureSchoolKey[],
+  namespace = "",
 ) {
+  if (namespace && !/^[A-Za-z0-9_]{1,48}$/.test(namespace))
+    throw new Error("Niepoprawna przestrzeń danych szkół testowych.");
+  await loadSchoolCache();
+  if (namespace && !scopedSchoolCaches.has(namespace)) scopedSchoolCaches.set(namespace, new Map());
+  const cache = namespace ? scopedSchoolCaches.get(namespace)! : cachedSchools;
+  const definitionFor = (key: StructureSchoolKey) => ({
+    ...definitions[key],
+    name: definitions[key].name + (namespace ? `_RUN_${namespace}` : ""),
+  });
+  const api = await fixtureSchools(page);
+  const found = await api.findMany(
+    keys.map((key) => ({ ...definitionFor(key), id: cache.get(key)?.id })),
+  );
   const entries: Array<readonly [StructureSchoolKey, StructureSchool]> = [];
-  for (const key of keys) {
-    entries.push([key, await ensureStructureTestSchool(page, app, key)] as const);
+  for (const [index, key] of keys.entries()) {
+    const existing = found[index];
+    let school: StructureSchool;
+    if (existing) {
+      school = { id: existing.id, name: existing.name };
+      if (!existing.tested) {
+        await backgroundSchoolSetup(page, async (setup) => {
+          await setup.openPanel("school", existing.id);
+          await setup.markTestRecord();
+        });
+      }
+    } else {
+      const definition = definitionFor(key);
+      const id = await backgroundSchoolSetup(page, async (setup) => {
+        const id = await setup.createSchool(definition.name, `STR-${Date.now()}`, definition.type);
+        await setup.markTestRecord();
+        return id;
+      });
+      school = { id, name: definition.name };
+    }
+    cache.set(key, school);
+    entries.push([key, school]);
   }
+  if (!namespace) await saveSchoolCache();
   return Object.fromEntries(entries) as Partial<Record<StructureSchoolKey, StructureSchool>>;
 }
 
@@ -185,21 +183,24 @@ export async function ensureInactiveStructureSchool(page: Page, app: Octopus, ap
   const fixture = { ...school, institutionUnitId: api.unit(school), inactive: false };
   cachedSchools.set("inactive", fixture);
   await saveSchoolCache();
-  await app.openPanel("school", fixture.id);
-  await page.getByRole("button", { name: "Zawieś", exact: true }).click();
-  const dialog = app.dialog("Zawieszanie szkoły");
-  await expect(dialog).toBeVisible();
-  const responsePromise = page.waitForResponse((response) => {
-    const path = new URL(response.url()).pathname;
-    return (
-      response.request().method() !== "GET" &&
-      (path.startsWith("/api/School/") || path.startsWith("/api/Institution/"))
-    );
+  await backgroundSchoolSetup(page, async (setup) => {
+    const page = setup.page;
+    await setup.openPanel("school", fixture.id);
+    await page.getByRole("button", { name: "Zawieś", exact: true }).click();
+    const dialog = setup.dialog("Zawieszanie szkoły");
+    await expect(dialog).toBeVisible();
+    const responsePromise = page.waitForResponse((response) => {
+      const path = new URL(response.url()).pathname;
+      return (
+        response.request().method() !== "GET" &&
+        (path.startsWith("/api/School/") || path.startsWith("/api/Institution/"))
+      );
+    });
+    await dialog.getByRole("button", { name: "Tak", exact: true }).click();
+    const response = await responsePromise;
+    expect(response.ok(), "Zawieszenie dedykowanej szkoły testowej powinno się powieść").toBe(true);
+    await expect(dialog).toHaveCount(0);
   });
-  await dialog.getByRole("button", { name: "Tak", exact: true }).click();
-  const response = await responsePromise;
-  expect(response.ok(), "Zawieszenie dedykowanej szkoły testowej powinno się powieść").toBe(true);
-  await expect(dialog).toHaveCount(0);
   fixture.inactive = true;
   await saveSchoolCache();
   return fixture;

@@ -1,4 +1,5 @@
 import { apiStep } from "./api-step";
+import { browserSessionState } from "./browser-session";
 import { expect, type APIRequestContext, type Locator, type Page } from "@playwright/test";
 import { test as base, type Scenario } from "./scenario";
 import { OCTOPUS_BASE_URL, OCTOPUS_ENV } from "./environment";
@@ -19,6 +20,8 @@ type SavedOrder = {
   isCopied?: boolean;
   schoolAdressToOrder?: string;
   createdAt?: string;
+  salesOrderSymbol?: string;
+  cmsOrderSymbol?: string;
   orderItems: Array<{ dictOrderItemId: number; quantity: number }>;
 };
 
@@ -217,8 +220,8 @@ export class OrderClassApi {
 export const test = base.extend<{ classOrders: OrderClassApi }>({
   classOrders: [
     async ({ page, scenario }, use) => {
-      const school = await prepareOrderSchool(page, scenario);
-      const state = await page.context().storageState();
+      const school = await prepareOrderSchool(page, scenario, "primary", false);
+      const state = await browserSessionState(page);
       const entries = state.origins.find(
         (origin) => origin.origin === OCTOPUS_BASE_URL,
       )?.localStorage;

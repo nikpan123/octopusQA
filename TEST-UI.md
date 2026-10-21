@@ -33,6 +33,28 @@ Wtedy otwórz `http://127.0.0.1:4174`. Nie uruchamiaj równoczesnych testów na 
 
 ## Funkcje
 
+### Debugger testów — pierwsza wersja
+
+Otwórz **Debugger testów** w menu. Wybierz środowisko i test, przeczytaj zakres, a następnie kliknij **Rozpocznij debugowanie**. To wykonuje rzeczywisty test; przygotowanie sesji i danych odbywa się automatycznie. Przycisk **Następny krok** lub klawisz **F10** wykonuje jeden opisany etap, który może zawierać kilka działań przeglądarki albo żądań API.
+
+Konfiguracja i sesja mają osobne widoki. Po starcie podgląd pojawia się po lewej, a etapy po prawej; pod podglądem są pomiary i logi. **Konfiguracja** pozwala wrócić do formularza, a **Wróć do sesji** przywraca podgląd bez ponownego uruchamiania testu. W czasie wykonania wybór testu pozostaje zablokowany. Przyciski ▶, Ⅱ i ■ oznaczają kontynuację, pauzę oraz zatrzymanie; opis można sprawdzić po najechaniu lub w **Instrukcji**. Pomiary z pliku wydajności pojawiają się wyłącznie dla bieżącego przebiegu; czasy debugowania obejmują także pauzy.
+
+- **UI:** obraz rzeczywistej sesji Playwrighta odświeża się w panelu. Kliknięcia w obraz nie sterują stroną.
+- **API:** rozwiń etap, aby zobaczyć żądanie, odpowiedź i rezultat kontroli. Dane uwierzytelniające są ukryte.
+- **Kontynuuj automatycznie:** wykonuje kolejne etapy bez oczekiwania na przycisk. **Pauza przed następnym krokiem** nie przerywa aktualnie wykonywanego etapu.
+- **Zatrzymaj test:** kończy proces. Może przerwać sprzątanie i pozostawić dane testowe.
+- Po zakończeniu dostępne są raport Playwrighta i **Zapis kroków JSON**. Wynik pojedynczego etapu nie zastępuje wyniku całego testu. Końcowy odebrany obraz UI trafia także do załączników testu.
+
+W pilotażu obsługiwane są testy `MED-BUG-37204-01`–`04` (UI: filtry medalu) i `ORD-SPEC-35980-05`–`08` (API: ograniczenia kopiowania). Pozostałe przypadki nadal działają w katalogu oraz istniejącym Inspektorze; wymagają dodania opisanych etapów do tego debuggera. Pierwsza wersja jest w Octopusie, z mechanizmem przygotowanym do wykorzystania w pozostałych panelach.
+
+W testach API kopiowania są dodatkowe punkty podglądu: **po przygotowaniu danych**, **po badanym żądaniu API** oraz **przed sprzątaniem**. Pokazują ID i nazwy szkół, źródło i cel, ID zamówień oraz linki do profili szkół. Po otwarciu linku wybierz zakładkę Zamówienia; po żądaniu odśwież otwartą kartę. Przed wysłaniem można także przeczytać planowane żądanie. Dane przygotowawcze mogą wymagać wcześniejszych wywołań API; punkt „przed API” dotyczy konkretnej badanej próby kopiowania.
+
+Te punkty zawsze wstrzymują automatyczną kontynuację. Dane pozostają do obejrzenia również po błędzie asercji, do naciśnięcia **Zatwierdź sprzątanie**. Nie edytuj ich ręcznie — zmieniłoby to warunki testu. Po zakończeniu sesji zapis ID i linków pozostaje w krokach JSON, ale dokumenty mogą już być usunięte przez sprzątanie. Przycisk Zatrzymaj test nadal kończy proces od razu i może przerwać sprzątanie.
+
+Test UI dodaje etapy przez `guidedUiStep` z `tests/support/guided-ui-step.ts` i oznaczenie `@step-ui`. Test API korzysta z istniejącego `guidedApiStep` oraz `@step-api`. Zwykłe uruchomienie tych testów nie czeka na debugger. Obraz jest przechowywany w pamięci tylko dla bieżącej sesji. Sterowanie i aktualizacje obrazu są powiązane z identyfikatorem przebiegu; klucz połączenia procesu testowego nie jest publikowany w stanie panelu.
+
+Izolowaną kontrolę debuggera uruchamia `npm run test:debugger`. Korzysta z lokalnej strony próbnej i przechwyconych wywołań panelu, bez logowania do Octopusa i bez testów na DEV/TEST.
+
 ### Scenariusze testowe
 
 Menu **Scenariusze** prowadzi do opisów funkcjonalności: warunków wstępnych, kroków, oczekiwanych wyników i powiązanych ID testów. Pierwszy zestaw obejmuje kopiowanie zamówień w strukturze placówek, Redmine 37160. Wyszukiwanie działa po ID, nazwie i numerze zgłoszenia. Przycisk wyboru zaznacza wyłącznie powiązany test w katalogu, ale go nie uruchamia. Szczegóły: [kopiowanie zamówień](docs/tests/kopiowanie-zamowien-struktura.md).
@@ -169,9 +191,23 @@ Panel uruchamia `MED-YEAR-PREP` i `MED-YEAR-01` jako osobne, potwierdzane operac
 
 ## Endpointy lokalne
 
+### Raporty przy scenariuszach
+
+Widok scenariuszy pokazuje ostatni powiązany przebieg, jego datę, środowisko i zakres (np. 1/3 testów), link do raportu oraz historię pięciu ostatnich przebiegów. Wyniki są odczytywane z zakończonych raportów zapisanych przez panel i tylko z wybranego środowiska. Nie łączymy wyników różnych przebiegów w jeden PASS. Brakujące lub nieczytelne raporty są sygnalizowane.
+
+Powiązanie kroku z raportem definiuje opcjonalne `stepLinks` w `test-ui/scenarios.json`: indeks `step` liczony od zera oraz `testId` należący do scenariusza i tablica dokładnych nazw `titles` z `test.step`. Krok obejmujący kilka testów używa `checks: [{ testId, titles }, ...]`. Wszystkie wymagane testy i etapy muszą być zapisane jednoznacznie w tym samym przebiegu, aby krok otrzymał PASS. FAIL dowolnego wymaganego etapu pozostaje widoczny także przy braku zapisów pozostałych etapów. Rozwijana lista „Powiązane etapy” umożliwia przejście do każdego z nich oddzielnie.
+
+Powiązano 105 kroków w 32 scenariuszach: cały zestaw ORD-COPY-01–19 i 13 scenariuszy zbiorczych #35980. Pozostałe 8 kroków w ORD-SC-35980-10, -11 i -13 wymaga testów integracji lub gratisów, których obecne kontrole nie realizują w pełnym zakresie; ich niepełnego pokrycia nie oznaczamy jako PASS. Istniejącym kontrolom bez nazw dodano etapy `test.step`, bez zmiany żądań i oczekiwań. Te nazwy pojawią się w raportach z kolejnych uruchomień — stare raporty nie są przepisywane. „Brak zapisu kroku” oznacza wtedy gotowe powiązanie, ale brak odpowiedniego zapisu w wybranym raporcie.
+
+Przycisk „Pokaż wykonanie” otwiera konkretny przebieg i wskazany etap bez ponownego uruchamiania testu. Brak mapowania albo etapu w starszym raporcie nie oznacza PASS.
+
+Wynik kroku nie oznacza zaliczenia całego testu ani wymagania. Załączniki w podglądzie należą do całego wykonania testu. Automatyzacja (pokrycie) pozostaje osobną informacją.
+
 ```text
 GET  /api/status
 GET  /api/tests
+GET  /api/scenario-evidence?environment=dev
+GET  /api/test-preview?id=<test-id>&environment=dev&runId=<run-id>
 POST /api/run
 POST /api/stop
 GET  /api/history

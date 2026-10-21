@@ -1,4 +1,4 @@
-import { test } from "@playwright/test";
+import { test } from "../../shared/browser-preview";
 
 /** Describe shared API preparation and cleanup without changing the operation. */
 export async function apiStep<T>(title: string, operation: () => Promise<T>): Promise<T> {

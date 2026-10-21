@@ -5,7 +5,8 @@ import { apiStep } from "./api-step";
 import { expect, type Locator } from "@playwright/test";
 import { Octopus } from "./octopus";
 import { OCTOPUS_ENV } from "./environment";
-import { categoryInput, studentCountInput } from "./school-category";
+import { fixtureSchools } from "./fixture-schools";
+import { backgroundSchoolSetup } from "./background-school-setup";
 
 export type SearchCriteria = {
   name?: string;
@@ -128,6 +129,7 @@ async function prepareSearchDataset(app: Octopus): Promise<SearchDataset> {
       if (Date.now() >= deadline)
         throw new Error(
           `Przygotowanie szkół SFLT jest zablokowane: ${lockPath}. Sprawdź proces właściciela; nie usuwaj blokady działających testów.`,
+          { cause: error },
         );
       await delay(250);
     }
@@ -152,57 +154,72 @@ async function prepareSearchDataset(app: Octopus): Promise<SearchDataset> {
     expect(registry.prefix).toBe(datasetPrefix);
     expect(Number.isInteger(registry.rspoBase)).toBe(true);
     const save = () => writeFile(datasetPath, JSON.stringify(registry, null, 2));
-    for (const [index, category] of ["A", "B", "C", "D"].entries()) {
+    const categories = ["A", "B", "C", "D"];
+    const definitions = categories.map((category, index) => {
       const name = `${datasetPrefix}_${category}`;
       const cached = registry.schools.filter((school) => school.category === category);
       expect(
         cached.length,
-        `Rejestr musi zawierać najwyżej jedną szkołę ${category}`,
+        `Najwyżej jeden wpis rejestru kategorii ${category}`,
       ).toBeLessThanOrEqual(1);
-      if (cached.length) {
+      if (cached[0]) {
         expect(cached[0].name).toBe(name);
         expect(cached[0].rspo).toBe(String(registry.rspoBase + index));
-        await app.openPanel("school", cached[0].id);
-        await expect(app.detail("name")).toHaveValue(name);
-        await expect(categoryInput(app.page)).toHaveValue(category);
-        await expect(studentCountInput(app.page)).toHaveValue(String([401, 101, 1, 0][index]));
-        await app.markTestRecord();
-        continue;
       }
-      // Stałe nazwy pozwalają odzyskać ID po przerwaniu zapisu lokalnego rejestru.
-      const found = await searchSchools(app, { name });
-      const matches = found.schools.filter((school) => school.name === name);
-      expect(matches.length, `Niejednoznaczna szkoła testowa ${name}`).toBeLessThanOrEqual(1);
-      if (found.schools.length === 0) await expectEmptySchoolSearch(app);
+      return {
+        id: cached[0]?.id,
+        name,
+        type: category === "D" ? "Przedszkole" : "Szkoła podstawowa",
+        count: [401, 101, 1, 0][index],
+        rspo: String(registry.rspoBase + index),
+      };
+    });
+    const api = await fixtureSchools(app.page);
+    // Lista instytucji zwraca RSPO=null dla tego zestawu; sam filtr RSPO sprawdza SFLT-17.
+    // Nie dodajemy tutaj nowego wymagania względem dawnego przygotowania UI.
+    const identityDefinitions = definitions.map(({ id, name, type, count }) => ({
+      id,
+      name,
+      type,
+      count,
+    }));
+    const resolved = await api.findMany(identityDefinitions);
+    for (const [index, category] of categories.entries()) {
+      const definition = definitions[index];
+      const found = resolved[index];
       let id: string;
-      if (matches.length) {
-        id = String(matches[0].id);
-      } else {
+      if (found) id = found.id;
+      else {
         if (registry.pending)
           throw new Error(
-            `Niepotwierdzony zapis szkoły ${registry.pending}. Sprawdź DEV i rejestr ${datasetPath} przed ponowną próbą; nie tworzymy automatycznie duplikatu.`,
+            `Niepotwierdzony zapis szkoły ${registry.pending}; nie tworzymy duplikatu.`,
           );
-        registry.pending = name;
+        registry.pending = definition.name;
         await save();
-        id = await app.createSchool(
-          name,
-          `SFLT-${OCTOPUS_ENV}-${category}`,
-          category === "D" ? "Przedszkole" : "Szkoła podstawowa",
-          {
-            quantityOfStudents: [401, 101, 1, 0][index],
-            rspo: String(registry.rspoBase + index),
-          },
+        id = await backgroundSchoolSetup(app.page, (setup) =>
+          setup.createSchool(definition.name, `SFLT-${OCTOPUS_ENV}-${category}`, definition.type, {
+            quantityOfStudents: definition.count,
+            rspo: definition.rspo,
+          }),
         );
       }
-      registry.schools.push({ id, name, category, rspo: String(registry.rspoBase + index) });
-      delete registry.pending;
-      // Zapis ID od razu: nie powtarzamy tworzenia po błędzie późniejszego oznaczania.
+      const saved = { id, name: definition.name, category, rspo: definition.rspo };
+      const existingIndex = registry.schools.findIndex((school) => school.category === category);
+      if (existingIndex < 0) registry.schools.push(saved);
+      else registry.schools[existingIndex] = saved;
+      if (registry.pending === definition.name) delete registry.pending;
       await save();
-      await app.openPanel("school", id);
-      await expect(app.detail("name")).toHaveValue(name);
-      await expect(categoryInput(app.page)).toHaveValue(category);
-      await expect(studentCountInput(app.page)).toHaveValue(String([401, 101, 1, 0][index]));
-      await app.markTestRecord();
+      if (!found?.tested) {
+        await backgroundSchoolSetup(app.page, async (setup) => {
+          await setup.openPanel("school", id);
+          await setup.markTestRecord();
+        });
+      }
+      if (!found) {
+        const [confirmed] = await api.findMany([{ ...identityDefinitions[index], id }]);
+        expect(confirmed?.tested).toBe(true);
+      }
+      // Wyszukiwanie i prezentacja kategorii są sprawdzane w ciele SFLT; przygotowanie sprawdza dane przez API.
     }
     return {
       prefix: registry.prefix,

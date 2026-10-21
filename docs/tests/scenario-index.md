@@ -2,7 +2,7 @@
 
 > Plik generowany automatycznie przez `npm run docs:scenarios`. Nie edytuj tabeli ręcznie.
 
-Łącznie: **773 scenariuszy**.
+Łącznie: **788 scenariuszy**.
 
 | ID | Scenariusz | Plik | Tagi |
 |---|---|---|---|
@@ -430,10 +430,10 @@
 | THR-20 | THR-20: Szkoła NPC 1200 uczniów ma stały próg 10 | [szkola-prog.spec.ts](../../tests/szkola-prog.spec.ts#L59) | `school`, `threshold` |
 | THR-21 | THR-21: zapis SIO przelicza próg cyfrowy w otwartym profilu | [szkola-prog.spec.ts](../../tests/szkola-prog.spec.ts#L76) | `school`, `threshold`, `edit` |
 | THR-22 | THR-22: anulowanie SIO nie zmienia progu | [szkola-prog.spec.ts](../../tests/szkola-prog.spec.ts#L124) | `school`, `threshold`, `cancel` |
-| MED-BUG-37204-01 | MED-BUG-37204-01: Medal Brak zwraca szkołę 94435 | [szkola-redmine-37204.spec.ts](../../tests/szkola-redmine-37204.spec.ts#L42) | `school`, `medal`, `regression`, `redmine-37204` |
-| MED-BUG-37204-02 | MED-BUG-37204-02: Brak lub Złoto działa jako OR | [szkola-redmine-37204.spec.ts](../../tests/szkola-redmine-37204.spec.ts#L42) | `school`, `medal`, `regression`, `redmine-37204` |
-| MED-BUG-37204-03 | MED-BUG-37204-03: Złoto wyklucza szkołę z medalem Brak | [szkola-redmine-37204.spec.ts](../../tests/szkola-redmine-37204.spec.ts#L42) | `school`, `medal`, `regression`, `redmine-37204` |
-| MED-BUG-37204-04 | MED-BUG-37204-04: wyczyszczenie filtra medalu przywraca szkołę | [szkola-redmine-37204.spec.ts](../../tests/szkola-redmine-37204.spec.ts#L42) | `school`, `medal`, `regression`, `redmine-37204` |
+| MED-BUG-37204-01 | MED-BUG-37204-01: Medal Brak zwraca szkołę 94435 | [szkola-redmine-37204.spec.ts](../../tests/szkola-redmine-37204.spec.ts#L43) | `school`, `medal`, `regression`, `redmine-37204`, `step-ui` |
+| MED-BUG-37204-02 | MED-BUG-37204-02: Brak lub Złoto działa jako OR | [szkola-redmine-37204.spec.ts](../../tests/szkola-redmine-37204.spec.ts#L43) | `school`, `medal`, `regression`, `redmine-37204`, `step-ui` |
+| MED-BUG-37204-03 | MED-BUG-37204-03: Złoto wyklucza szkołę z medalem Brak | [szkola-redmine-37204.spec.ts](../../tests/szkola-redmine-37204.spec.ts#L43) | `school`, `medal`, `regression`, `redmine-37204`, `step-ui` |
+| MED-BUG-37204-04 | MED-BUG-37204-04: wyczyszczenie filtra medalu przywraca szkołę | [szkola-redmine-37204.spec.ts](../../tests/szkola-redmine-37204.spec.ts#L43) | `school`, `medal`, `regression`, `redmine-37204`, `step-ui` |
 | STR-88 | STR-88: nowa szkoła udostępnia dialog struktury bez nadanego ID | [szkola-struktura-dodawanie.spec.ts](../../tests/szkola-struktura-dodawanie.spec.ts#L165) | `school`, `structure`, `school-add` |
 | STR-89 | STR-89: Zapisz strukturę odkłada relację do zapisu nowej szkoły | [szkola-struktura-dodawanie.spec.ts](../../tests/szkola-struktura-dodawanie.spec.ts#L183) | `school`, `structure`, `school-add`, `api` |
 | STR-90 | STR-90: nowa szkoła utrwala Filia / Podrzędna | [szkola-struktura-dodawanie.spec.ts](../../tests/szkola-struktura-dodawanie.spec.ts#L266) | `school`, `structure`, `school-add`, `persistence` |
@@ -678,6 +678,9 @@
 | ORD-CLASS-22 | ORD-CLASS-22: zwijanie i rozwijanie zachowuje klasę pozycji | [zamowienia-klasa.spec.ts](../../tests/zamowienia-klasa.spec.ts#L335) | `school`, `order`, `order-class`, `expand` |
 | ORD-DB-02 | ORD-DB-02: kopia zamówienia ma w bazie IsCopied=1, a oryginał IsCopied=0 | [zamowienia-kopie-baza.spec.ts](../../tests/zamowienia-kopie-baza.spec.ts#L62) | `school`, `order`, `copy`, `database` |
 | ORD-DB-03 | ORD-DB-03: usunięcie kopii zachowuje IsDel=1 i IsCopied=1, bez usuwania oryginału | [zamowienia-kopie-baza.spec.ts](../../tests/zamowienia-kopie-baza.spec.ts#L95) | `school`, `order`, `copy`, `database`, `soft-delete` |
+| ORD-SPEC-35980-13 | ORD-SPEC-35980-13: zamówienie źródła bez kopii nie daje ilości ani dostępu odbiorcy | [zamowienia-kopie-uprawnienia.spec.ts](../../tests/zamowienia-kopie-uprawnienia.spec.ts#L25) | `school`, `order`, `copy`, `entitlement`, `unmarked`, `redmine-35980` |
+| ORD-SPEC-35980-11 | ORD-SPEC-35980-11: kopia nadaje dostęp odbiorcy, a usunięcie kopii odbiera podstawę zamówieniową | [zamowienia-kopie-uprawnienia.spec.ts](../../tests/zamowienia-kopie-uprawnienia.spec.ts#L25) | `school`, `order`, `copy`, `entitlement`, `unmarked`, `redmine-35980` |
+| ORD-SPEC-35980-12 | ORD-SPEC-35980-12: kopia nadaje dostęp odbiorcy, a obniżenie ilości w oryginale odbiera podstawę zamówieniową | [zamowienia-kopie-uprawnienia.spec.ts](../../tests/zamowienia-kopie-uprawnienia.spec.ts#L25) | `school`, `order`, `copy`, `entitlement`, `unmarked`, `redmine-35980` |
 | ORD-COPY-01 | ORD-COPY-01: A → SP, kopia w tej samej strukturze | [zamowienia-kopiowanie-struktura.spec.ts](../../tests/zamowienia-kopiowanie-struktura.spec.ts#L44) | `school`, `order`, `copy`, `redmine-37160` |
 | ORD-COPY-02 | ORD-COPY-02: A → LO, kopia w tej samej strukturze | [zamowienia-kopiowanie-struktura.spec.ts](../../tests/zamowienia-kopiowanie-struktura.spec.ts#L44) | `school`, `order`, `copy`, `redmine-37160` |
 | ORD-COPY-03 | ORD-COPY-03: A → TECH, kopia w tej samej strukturze | [zamowienia-kopiowanie-struktura.spec.ts](../../tests/zamowienia-kopiowanie-struktura.spec.ts#L44) | `school`, `order`, `copy`, `redmine-37160` |
@@ -690,13 +693,13 @@
 | ORD-COPY-10 | ORD-COPY-10: SP → TECH, kopia w tej samej strukturze | [zamowienia-kopiowanie-struktura.spec.ts](../../tests/zamowienia-kopiowanie-struktura.spec.ts#L44) | `school`, `order`, `copy`, `redmine-37160` |
 | ORD-COPY-11 | ORD-COPY-11: TECH → A, kopia w tej samej strukturze | [zamowienia-kopiowanie-struktura.spec.ts](../../tests/zamowienia-kopiowanie-struktura.spec.ts#L44) | `school`, `order`, `copy`, `redmine-37160` |
 | ORD-COPY-12 | ORD-COPY-12: TECH → SP, kopia w tej samej strukturze | [zamowienia-kopiowanie-struktura.spec.ts](../../tests/zamowienia-kopiowanie-struktura.spec.ts#L44) | `school`, `order`, `copy`, `redmine-37160` |
-| ORD-COPY-13 | ORD-COPY-13: placówka źródłowa jest niedostępna jako cel | [zamowienia-kopiowanie-struktura.spec.ts](../../tests/zamowienia-kopiowanie-struktura.spec.ts#L70) | `school`, `order`, `copy`, `negative`, `redmine-37160` |
-| ORD-COPY-14 | ORD-COPY-14: inna struktura i placówka samodzielna jest niedostępna jako cel | [zamowienia-kopiowanie-struktura.spec.ts](../../tests/zamowienia-kopiowanie-struktura.spec.ts#L70) | `school`, `order`, `copy`, `negative`, `redmine-37160` |
-| ORD-COPY-15 | ORD-COPY-15: dokument będący kopią nie może być kopiowany dalej | [zamowienia-kopiowanie-struktura.spec.ts](../../tests/zamowienia-kopiowanie-struktura.spec.ts#L87) | `school`, `order`, `copy`, `negative`, `redmine-37160` |
-| ORD-COPY-16 | ORD-COPY-16: pusty wybór blokuje zapis, anulowanie wybranego celu niczego nie kopiuje | [zamowienia-kopiowanie-struktura.spec.ts](../../tests/zamowienia-kopiowanie-struktura.spec.ts#L102) | `school`, `order`, `copy`, `cancel`, `redmine-37160` |
-| ORD-COPY-17 | ORD-COPY-17: jednoczesna kopia do trzech placówek nie tworzy duplikatów | [zamowienia-kopiowanie-struktura.spec.ts](../../tests/zamowienia-kopiowanie-struktura.spec.ts#L115) | `school`, `order`, `copy`, `multiple`, `redmine-37160` |
-| ORD-COPY-18 | ORD-COPY-18: placówka bez struktury nie ma funkcji kopiowania | [zamowienia-kopiowanie-struktura.spec.ts](../../tests/zamowienia-kopiowanie-struktura.spec.ts#L123) | `school`, `order`, `copy`, `negative`, `redmine-37160` |
-| ORD-COPY-19 | ORD-COPY-19: konto bez prawa edycji szkoły nie może kopiować dokumentów | [zamowienia-kopiowanie-struktura.spec.ts](../../tests/zamowienia-kopiowanie-struktura.spec.ts#L132) | `school`, `order`, `copy`, `permissions`, `redmine-37160` |
+| ORD-COPY-13 | ORD-COPY-13: placówka źródłowa jest niedostępna jako cel | [zamowienia-kopiowanie-struktura.spec.ts](../../tests/zamowienia-kopiowanie-struktura.spec.ts#L72) | `school`, `order`, `copy`, `negative`, `redmine-37160` |
+| ORD-COPY-14 | ORD-COPY-14: inna struktura i placówka samodzielna jest niedostępna jako cel | [zamowienia-kopiowanie-struktura.spec.ts](../../tests/zamowienia-kopiowanie-struktura.spec.ts#L72) | `school`, `order`, `copy`, `negative`, `redmine-37160` |
+| ORD-COPY-15 | ORD-COPY-15: dokument będący kopią nie może być kopiowany dalej | [zamowienia-kopiowanie-struktura.spec.ts](../../tests/zamowienia-kopiowanie-struktura.spec.ts#L94) | `school`, `order`, `copy`, `negative`, `redmine-37160` |
+| ORD-COPY-16 | ORD-COPY-16: pusty wybór blokuje zapis, anulowanie wybranego celu niczego nie kopiuje | [zamowienia-kopiowanie-struktura.spec.ts](../../tests/zamowienia-kopiowanie-struktura.spec.ts#L115) | `school`, `order`, `copy`, `cancel`, `redmine-37160` |
+| ORD-COPY-17 | ORD-COPY-17: jednoczesna kopia do trzech placówek nie tworzy duplikatów | [zamowienia-kopiowanie-struktura.spec.ts](../../tests/zamowienia-kopiowanie-struktura.spec.ts#L135) | `school`, `order`, `copy`, `multiple`, `redmine-37160` |
+| ORD-COPY-18 | ORD-COPY-18: placówka bez struktury nie ma funkcji kopiowania | [zamowienia-kopiowanie-struktura.spec.ts](../../tests/zamowienia-kopiowanie-struktura.spec.ts#L143) | `school`, `order`, `copy`, `negative`, `redmine-37160` |
+| ORD-COPY-19 | ORD-COPY-19: konto bez prawa edycji szkoły nie może kopiować dokumentów | [zamowienia-kopiowanie-struktura.spec.ts](../../tests/zamowienia-kopiowanie-struktura.spec.ts#L157) | `school`, `order`, `copy`, `permissions`, `redmine-37160` |
 | ORD-12 | ORD-12: wyszukiwanie po dokładnym kodzie zwraca właściwy produkt | [zamowienia-produkty.spec.ts](../../tests/zamowienia-produkty.spec.ts#L30) | `school`, `order`, `search` |
 | ORD-13 | ORD-13: wyszukiwanie po fragmencie kodu zwraca oba produkty fizyki 7 | [zamowienia-produkty.spec.ts](../../tests/zamowienia-produkty.spec.ts#L53) | `school`, `order`, `search` |
 | ORD-14 | ORD-14: filtr Przedmiot ogranicza wyniki do fizyki | [zamowienia-produkty.spec.ts](../../tests/zamowienia-produkty.spec.ts#L72) | `school`, `order`, `filter` |
@@ -718,6 +721,16 @@
 | ORD-30 | ORD-30: wyszukanie kolejnego produktu nie usuwa wcześniej wybranego | [zamowienia-produkty.spec.ts](../../tests/zamowienia-produkty.spec.ts#L491) | `school`, `order`, `product` |
 | ORD-31 | ORD-31: zmiana filtrów nie usuwa produktów z Zamówienia | [zamowienia-produkty.spec.ts](../../tests/zamowienia-produkty.spec.ts#L512) | `school`, `order`, `product`, `filter` |
 | ORD-32 | ORD-32: dane produktu są spójne po przeniesieniu do Zamówienia | [zamowienia-produkty.spec.ts](../../tests/zamowienia-produkty.spec.ts#L535) | `school`, `order`, `product` |
+| ORD-SPEC-35980-05 | ORD-SPEC-35980-05: API odrzuca kopiowanie do tej samej placówki bez zmiany dokumentów | [zamowienia-redmine-35980.spec.ts](../../tests/zamowienia-redmine-35980.spec.ts#L106) | `school`, `order`, `copy`, `negative`, `redmine-35980`, `redmine-37218`, `step-api` |
+| ORD-SPEC-35980-06 | ORD-SPEC-35980-06: API odrzuca kopiowanie do innej struktury | [zamowienia-redmine-35980.spec.ts](../../tests/zamowienia-redmine-35980.spec.ts#L123) | `school`, `order`, `copy`, `negative`, `redmine-35980`, `redmine-37217`, `step-api` |
+| ORD-SPEC-35980-07 | ORD-SPEC-35980-07: API odrzuca kopiowanie do placówki poza strukturą | [zamowienia-redmine-35980.spec.ts](../../tests/zamowienia-redmine-35980.spec.ts#L123) | `school`, `order`, `copy`, `negative`, `redmine-35980`, `redmine-37217`, `step-api` |
+| ORD-SPEC-35980-08 | ORD-SPEC-35980-08: API odrzuca ponowne kopiowanie kopii do trzeciej placówki | [zamowienia-redmine-35980.spec.ts](../../tests/zamowienia-redmine-35980.spec.ts#L137) | `school`, `order`, `copy`, `negative`, `redmine-35980`, `redmine-37219`, `step-api` |
+| ORD-SPEC-35980-09 | ORD-SPEC-35980-09: filtr roku ukrywa i przywraca kopię bez duplikatów, także po odświeżeniu | [zamowienia-redmine-35980.spec.ts](../../tests/zamowienia-redmine-35980.spec.ts#L153) | `school`, `order`, `copy`, `filter`, `redmine-35980` |
+| ORD-SPEC-35980-10 | ORD-SPEC-35980-10: filtr przedmiotu rozróżnia kopie i nie zmienia dokumentów | [zamowienia-redmine-35980.spec.ts](../../tests/zamowienia-redmine-35980.spec.ts#L218) | `school`, `order`, `copy`, `filter`, `redmine-35980` |
+| ORD-SPEC-35980-01 | ORD-SPEC-35980-01: kopie dwóch źródeł mają odrębne ID i symbol, a zmiana źródła nie przenika do obcej kopii | [zamowienia-redmine-35980.spec.ts](../../tests/zamowienia-redmine-35980.spec.ts#L253) | `school`, `order`, `copy`, `isolation`, `redmine-35980` |
+| ORD-SPEC-35980-02 | ORD-SPEC-35980-02: błędną kopię można usunąć i utworzyć ponownie bez zmiany oryginału | [zamowienia-redmine-35980.spec.ts](../../tests/zamowienia-redmine-35980.spec.ts#L302) | `school`, `order`, `copy`, `recreate`, `redmine-35980` |
+| ORD-SPEC-35980-03 | ORD-SPEC-35980-03: usunięcie oryginału usuwa jego kopie we wszystkich celach, bez obcych dokumentów | [zamowienia-redmine-35980.spec.ts](../../tests/zamowienia-redmine-35980.spec.ts#L349) | `school`, `order`, `copy`, `cascade`, `redmine-35980` |
+| ORD-SPEC-35980-04 | ORD-SPEC-35980-04: odłączenie placówki usuwa kopię, zachowuje oryginał i lokalne zamówienie | [zamowienia-redmine-35980.spec.ts](../../tests/zamowienia-redmine-35980.spec.ts#L382) | `school`, `order`, `copy`, `structure`, `redmine-35980` |
 | ORD-BUG-36289-01 | ORD-BUG-36289-01: kopia SP → LO zachowuje adres źródła i zależność od oryginału | [zamowienia-redmine-36289.spec.ts](../../tests/zamowienia-redmine-36289.spec.ts#L11) | `school`, `order`, `copy`, `redmine-36289` |
 | ORD-BUG-36289-02 | ORD-BUG-36289-02: kopia A → SP zachowuje adres źródła i zależność od oryginału | [zamowienia-redmine-36289.spec.ts](../../tests/zamowienia-redmine-36289.spec.ts#L11) | `school`, `order`, `copy`, `redmine-36289` |
 | ORD-BUG-36289-03 | ORD-BUG-36289-03: kopia SP → A zachowuje adres źródła i zależność od oryginału | [zamowienia-redmine-36289.spec.ts](../../tests/zamowienia-redmine-36289.spec.ts#L11) | `school`, `order`, `copy`, `redmine-36289` |
@@ -734,6 +747,8 @@
 | ORD-BUG-37176-01 | ORD-BUG-37176-01: ujemna ilość -1 nie pozwala utworzyć zamówienia | [zamowienia-redmine-37176.spec.ts](../../tests/zamowienia-redmine-37176.spec.ts#L19) | `school`, `order`, `quantity`, `regression`, `redmine-37176` |
 | ORD-BUG-37176-02 | ORD-BUG-37176-02: ujemna ilość -10 nie pozwala utworzyć zamówienia | [zamowienia-redmine-37176.spec.ts](../../tests/zamowienia-redmine-37176.spec.ts#L19) | `school`, `order`, `quantity`, `regression`, `redmine-37176` |
 | ORD-DB-01 | ORD-DB-01: Usuń ukrywa zamówienie w UI i zachowuje rekord SchoolOrder z IsDel=1 | [zamowienia-soft-delete.spec.ts](../../tests/zamowienia-soft-delete.spec.ts#L10) | `school`, `order`, `database`, `soft-delete` |
+| ORD-DB-04 | ORD-DB-04: anulowane zamówienie integracji pozostaje widoczne z oznaczeniem anulowane — odczyt istniejącego stanu | [zamowienia-softlab-odczyt.spec.ts](../../tests/zamowienia-softlab-odczyt.spec.ts#L18) | `school`, `order`, `copy`, `database`, `readonly`, `redmine-35980`, `redmine-35950` |
+| ORD-DB-05 | ORD-DB-05: anulowane zamówienie integracji udostępnia historię ilości — odczyt istniejącego stanu | [zamowienia-softlab-odczyt.spec.ts](../../tests/zamowienia-softlab-odczyt.spec.ts#L18) | `school`, `order`, `copy`, `database`, `readonly`, `redmine-35980`, `redmine-35950` |
 | ORD-01 | ORD-01: zamówienie szkoły zachowuje produkt i ilość po ponownym otwarciu | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L43) | `school`, `order`, `smoke` |
 | ORD-02 | ORD-02: zamówienie z dwoma produktami zachowuje produkty i ilości | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L74) | `school`, `order`, `positive` |
 | ORD-03 | ORD-03: edycja ilości dwóch produktów i usunięcie zamówienia | [zamowienia-szkoly.spec.ts](../../tests/zamowienia-szkoly.spec.ts#L121) | `school`, `order`, `edit` |

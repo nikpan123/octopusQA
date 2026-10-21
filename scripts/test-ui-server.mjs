@@ -6,6 +6,10 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { randomUUID } from "node:crypto";
 import { latestTestPreview, validPreviewId } from "./test-preview.mjs";
+import { loadScenarioEvidence, testPreviewForRun } from "./scenario-evidence.mjs";
+import { GuidedApiRun } from "./guided-api.mjs";
+import { DebuggerFrame } from "./debugger-frame.mjs";
+const debuggerFrame = new DebuggerFrame();
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(__dirname, "..");
@@ -17,7 +21,20 @@ const reportsDir = path.join(runsDir, "html-reports");
 const PORT = Number(process.env.OCTOPUS_TEST_UI_PORT || 4173);
 
 export const SUITES = {
-  database: { label: "Baza danych — soft delete", files: ["tests/zamowienia-soft-delete.spec.ts", "tests/zamowienia-kopie-baza.spec.ts"] },
+  database: {
+    label: "Baza danych i dokumenty Softlab (DEV)",
+    files: ["tests/zamowienia-soft-delete.spec.ts", "tests/zamowienia-kopie-baza.spec.ts", "tests/zamowienia-softlab-odczyt.spec.ts"],
+  },
+  copying: {
+    label: "Kopiowanie zamówień",
+    files: [
+      "tests/zamowienia-kopiowanie-struktura.spec.ts",
+      "tests/zamowienia-redmine-36289.spec.ts",
+      "tests/zamowienia-redmine-36290.spec.ts",
+      "tests/zamowienia-redmine-35980.spec.ts",
+      "tests/zamowienia-kopie-uprawnienia.spec.ts",
+    ],
+  },
   all: { label: "Cała regresja", files: [] },
   teachers: {
     label: "Nauczyciele",
@@ -86,6 +103,7 @@ export const SUITES = {
 };
 
 const state = {
+  guided: null,
   child: null,
   run: null,
   clients: new Set(),
@@ -337,6 +355,10 @@ function publicStatus() {
           workers: run.workers,
           headed: run.headed,
           debug: Boolean(run.debug),
+          debugMode: run.debugMode || "inspector",
+          debugger: Boolean(run.debugger),
+          guided: state.guided?.snapshot() || null,
+          singleTab: Boolean(run.singleTab),
           grep: run.grep,
           selectedTestIds: run.selectedTestIds,
           counts: run.counts,
@@ -348,6 +370,7 @@ function publicStatus() {
           performanceFile: run.performanceFile || null,
           reportUrl: run.reportUrl || null,
           reportAvailable: existsSync(path.join(reportsDir, run.id, "index.html")),
+          debuggerStepsUrl: run.debuggerStepsUrl || null,
         }
       : null,
   };
@@ -701,6 +724,9 @@ async function deleteTeachersFromRegistry(fileNames) {
 }
 
 export function buildRunArguments(options) {
+  if (options.debugger && !options.debug) throw new Error("Debugger wymaga jednego testu w trybie krokowym.");
+  if (options.singleTab && (options.debug || options.annualMode))
+    throw new Error("Jedna karta to osobny tryb podglądu, bez Inspektora i workflow rocznego.");
   const environment = options.environment === "test" ? "test" : "dev";
   const config = configForEnvironment(environment);
   const args = ["test", `--config=${config}`];
@@ -709,9 +735,26 @@ export function buildRunArguments(options) {
     const ids = options.selectedTestIds;
     if (options.annualMode || !Array.isArray(ids) || ids.length !== 1 || !validPreviewId(ids[0]))
       throw new Error("Tryb krok po kroku wymaga zaznaczenia dokładnie jednego testu z katalogu.");
-    if (environment !== "dev" && ids[0].startsWith("ORD-DB-")) throw new Error("Test bazy danych jest dostępny tylko dla DEV.");
-    args.push("--grep", `(?:${escapeRegex(ids[0])})(?![A-Z0-9-])`, "--debug", "--workers=1", "--retries=0", "--trace=on");
-    return { args, environment, suite: "debug", suiteLabel: `Krok po kroku · ${ids[0]}`, workers: 1, includeDatabase: ids[0].startsWith("ORD-DB-") };
+    if (environment !== "dev" && ids[0].startsWith("ORD-DB-"))
+      throw new Error("Test bazy danych jest dostępny tylko dla DEV.");
+    args.push(
+      "--grep",
+      `(?:${escapeRegex(ids[0])})(?![A-Z0-9-])`,
+      ...((options.guidedApi || options.guidedUi) ? ["--timeout=0", ...(options.headed ? ["--headed"] : [])] : ["--debug"]),
+      "--workers=1",
+      "--retries=0",
+      "--trace=on",
+    );
+    return {
+      args,
+      environment,
+      suite: "debug",
+      suiteLabel: `Krok po kroku · ${ids[0]}`,
+      guidedApi: Boolean(options.guidedApi),
+      guidedUi: Boolean(options.guidedUi),
+      workers: 1,
+      includeDatabase: ids[0].startsWith("ORD-DB-"),
+    };
   }
 
   if (options.annualMode) {
@@ -748,41 +791,65 @@ export function buildRunArguments(options) {
     : [];
   const ordersOnlySelection =
     selectedIds.length > 0 && selectedIds.every((id) => id.startsWith("ORD-"));
-  const includeDatabase = suite === "database" || selectedIds.some(id => id.startsWith("ORD-DB-")) || /ORD-DB-|@database/.test(String(options.grep ?? ""));
-  if (includeDatabase && environment !== "dev") throw new Error("Test bazy danych jest dostępny tylko dla DEV.");
+  const includeDatabase =
+    suite === "database" ||
+    selectedIds.some((id) => id.startsWith("ORD-DB-")) ||
+    /ORD-DB-|@database/.test(String(options.grep ?? ""));
+  if (includeDatabase && environment !== "dev")
+    throw new Error("Test bazy danych jest dostępny tylko dla DEV.");
 
   // ORD-y są skonfigurowane do pracy równoległej, ale dla tego pakietu
   // świadomie ograniczamy wykonanie do maksymalnie 2 workerów. Każdy worker
   // korzysta z osobnej szkoły referencyjnej (TEST_PARALLEL_INDEX), więc nie
   // powinien kolidować z zamówieniami tworzonymi przez drugi worker.
+  const copyingSelection =
+    suite === "copying" ||
+    selectedIds.some((id) => /^ORD-(?:COPY-|SPEC-35980-|BUG-3628[39]-|BUG-36290-)/.test(id)) ||
+    /@copy|ORD-COPY-|ORD-SPEC-35980-/.test(String(options.grep ?? ""));
   const workers =
-    includeDatabase ? 1 : suite === "orders" || ordersOnlySelection ? Math.min(requestedWorkers, 2) : requestedWorkers;
+    options.singleTab || includeDatabase || copyingSelection
+      ? 1
+      : suite === "orders" || ordersOnlySelection
+        ? Math.min(requestedWorkers, 2)
+        : requestedWorkers;
 
   args.push(`--workers=${workers}`);
-  if (options.headed) args.push("--headed");
+  if (options.headed || options.singleTab) args.push("--headed");
+  if (options.singleTab) args.push("--retries=0");
 
-  return { args, environment, suite, suiteLabel: suiteDef.label, workers,
-    includeDatabase,
-  };
+  return { args, environment, suite, suiteLabel: suiteDef.label, workers, includeDatabase, singleTab: Boolean(options.singleTab) };
 }
 
 async function startRun(options) {
   if (state.child || state.starting) throw new Error("Test run is already in progress");
   state.starting = true;
-  try { return await startRunInternal(options); }
-  finally { state.starting = false; }
+  try {
+    return await startRunInternal(options);
+  } finally {
+    state.starting = false;
+  }
 }
 
 async function startRunInternal(options) {
-
-  const built = buildRunArguments(options);
+  let built = buildRunArguments(options);
   if (options.debug) {
-    const matches = (await listTests(built.environment)).filter((test) => test.id === options.selectedTestIds[0]);
+    const matches = (await listTests(built.environment)).filter(
+      (test) => test.id === options.selectedTestIds[0],
+    );
     if (matches.length !== 1 || matches[0].annual)
       throw new Error("Wybierz jeden jednoznaczny, zwykły test z aktualnego katalogu.");
+    // Capability comes from the current catalog, never a client-supplied flag.
+    if (options.debugger && !matches[0].debuggerMode)
+      throw new Error("Ten test wymaga przygotowania opisanych kroków. Wybierz test oznaczony UI lub API w debuggerze.");
+    built = buildRunArguments({ ...options, guidedApi: matches[0].debugMode === "api", guidedUi: Boolean(options.debugger && matches[0].debuggerMode === "ui") });
     const file = path.resolve(root, "tests", matches[0].file.replace(/^tests\//, ""));
-    if (!file.startsWith(path.join(root, "tests") + path.sep)) throw new Error("Niepoprawna lokalizacja testu.");
-    built.args.splice(2, 0, `${path.relative(root, file).split(path.sep).join("/")}:${matches[0].line}`);
+    if (!file.startsWith(path.join(root, "tests") + path.sep))
+      throw new Error("Niepoprawna lokalizacja testu.");
+    built.args.splice(
+      2,
+      0,
+      `${path.relative(root, file).split(path.sep).join("/")}:${matches[0].line}`,
+    );
     // Listowanie jest asynchroniczne: drugi start nie może wejść pomiędzy walidację a uruchomienie.
     if (state.child) throw new Error("Test run is already in progress");
   }
@@ -808,8 +875,11 @@ async function startRunInternal(options) {
     suite: built.suite,
     suiteLabel: built.suiteLabel,
     workers: built.workers || 1,
-    headed: Boolean(options.headed || options.debug),
+    headed: Boolean(options.headed || (!built.guidedApi && options.debug) || built.singleTab),
     debug: Boolean(options.debug),
+    debugMode: built.guidedApi ? "api" : built.guidedUi ? "ui" : "inspector",
+    debugger: Boolean(options.debugger),
+    singleTab: Boolean(built.singleTab),
     grep: options.grep ? String(options.grep) : "",
     selectedTestIds: Array.isArray(options.selectedTestIds) ? options.selectedTestIds : [],
     counts: { passed: 0, failed: 0, expectedFailed: 0, skipped: 0 },
@@ -820,13 +890,21 @@ async function startRunInternal(options) {
     command: `npx playwright ${built.args.join(" ")}`,
   };
 
+  debuggerFrame.clear();
+  state.guided = (built.guidedApi || built.guidedUi) ? new GuidedApiRun(runId, () => emit("status", publicStatus())) : null;
   const env = {
     ...process.env,
     OCTOPUS_ENV: built.environment,
     OCTOPUS_WORKERS: String(state.run.workers),
     OCTOPUS_UI_RUN_ID: state.run.id,
     OCTOPUS_INCLUDE_DATABASE: built.includeDatabase ? "1" : "0",
+    OCTOPUS_SINGLE_TAB: built.singleTab ? "1" : "0",
     PLAYWRIGHT_HTML_OUTPUT_DIR: reportDir,
+    QA_TEST_DEBUGGER: options.debugger ? "1" : "0",
+    ...(options.debugger ? { QA_BROWSER_PREVIEW: "0" } : {}),
+    OCTOPUS_GUIDED_API: built.guidedApi ? "1" : "0",
+    OCTOPUS_GUIDED_BROWSER: built.guidedApi && (options.headed || options.debugger) ? "1" : "0",
+    ...((built.guidedApi || built.guidedUi) ? { PWDEBUG: "0", OCTOPUS_GUIDED_URL: `http://127.0.0.1:${PORT}`, OCTOPUS_GUIDED_KEY: state.guided.key } : {}),
     ...(options.annualMode ? { OCTOPUS_INCLUDE_ANNUAL: "1" } : {}),
   };
 
@@ -839,7 +917,14 @@ async function startRunInternal(options) {
 
   state.child = child;
   pushLog(`UI: ${state.run.command}`);
-  if (options.debug) pushLog("KROK PO KROKU: w oknie Playwright Inspector użyj Step over, aby przejść do następnej akcji, lub Resume, aby kontynuować. Żądania i porównania API sprawdzisz w raporcie/trace; Inspektor nie jest debuggerem kodu TypeScript. Przerwanie może pozostawić dane testowe.");
+  if (built.singleTab)
+    pushLog("PODGLĄD W JEDNEJ KARCIE: reset stanu przed każdym testem, jeden worker. Błąd może spowodować restart okna. To tryb diagnostyczny, nie zmiana domyślnej izolacji regresji.");
+  if (built.guidedApi) pushLog(`KROK PO KROKU — API: przygotowanie automatyczne, bez Inspektora. ${state.run.headed ? "W widocznej przeglądarce zobaczysz źródło i placówkę docelową; ostatni krok zamyka podgląd i uruchamia sprzątanie." : "Tryb bez widocznej przeglądarki."} Sterowanie: Przebieg i logi → Następny krok lub F10 w panelu. Żądania i odpowiedzi bez nagłówków autoryzacji. Stop może pozostawić dane testowe.`);
+  if (built.guidedUi) pushLog("DEBUGGER UI: przygotowanie sesji automatyczne. Następny krok wykonuje opisany etap. Podgląd strony w zakładce Debugger testów. Stop może pozostawić dane testowe.");
+  if (options.debug && !built.guidedApi && !built.guidedUi)
+    pushLog(
+      "KROK PO KROKU: przygotowanie szkół i danych API przebiega automatycznie w tle, bez dodatkowych kart i postojów F10. W Inspektorze użyj Step over (F10) do właściwych akcji testu lub Resume, aby kontynuować. Nakładka podglądu jest wyłączona w Inspektorze, aby jej odświeżanie nie tworzyło dodatkowych kroków. Szczegóły przygotowania i żądania API pozostają w raporcie/trace; Inspektor nie jest debuggerem kodu TypeScript. Przerwanie może pozostawić dane testowe.",
+    );
   emit("status", publicStatus());
 
   child.stdout.on("data", (data) => pushLog(data.toString("utf8"), "stdout"));
@@ -850,6 +935,7 @@ async function startRunInternal(options) {
   });
 
   child.on("close", async (code, signal) => {
+    state.guided?.close();
     const endedAt = new Date().toISOString();
 
     finalizeRunCounts(code);
@@ -863,6 +949,13 @@ async function startRunInternal(options) {
     const failureReport = await readFailureReport(state.run.id);
     state.run.failures = failureReport?.failures ?? [];
 
+    if (state.run.debugger && state.guided) {
+      state.run.guided = state.guided.snapshot();
+      try {
+        await writeFile(path.join(reportDir, "debugger-steps.json"), JSON.stringify(state.run.guided, null, 2));
+        state.run.debuggerStepsUrl = `/report/${runId}/debugger-steps.json`;
+      } catch (error) { pushLog(`Nie udało się zapisać kroków: ${error.message}`, "stderr"); }
+    }
     const historyEntry = {
       ...state.run,
       durationMs: new Date(endedAt) - new Date(startedAt),
@@ -883,6 +976,7 @@ async function startRunInternal(options) {
 
 async function stopRun() {
   if (!state.child) return false;
+  state.guided?.close();
   const pid = state.child.pid;
   if (process.platform === "win32") {
     spawn("taskkill", ["/pid", String(pid), "/T", "/F"], { windowsHide: true });
@@ -912,6 +1006,8 @@ export function parseListOutput(output) {
       line: Number(lineNo),
       column: Number(columnNo),
       annual: /\bMED-YEAR-/.test(title) || /@annual-medal\b/.test(title),
+      debugMode: /@step-api\b/.test(title) ? "api" : "inspector",
+      debuggerMode: /@step-api\b/.test(title) ? "api" : /@step-ui\b/.test(title) ? "ui" : null,
     });
   }
   return tests;
@@ -1004,13 +1100,26 @@ const server = http.createServer(async (req, res) => {
 
     if (url.pathname === "/api/test-preview" && req.method === "GET") {
       const id = url.searchParams.get("id");
-      if (!validPreviewId(id)) { sendJson(res, 400, { error: "Niepoprawne ID testu." }); return; }
+      if (!validPreviewId(id)) {
+        sendJson(res, 400, { error: "Niepoprawne ID testu." });
+        return;
+      }
       const environment = url.searchParams.get("environment") === "test" ? "test" : "dev";
-      const preview = await latestTestPreview(root, id, environment, await loadHistory());
+      const runId = url.searchParams.get("runId");
+      const history = await loadHistory();
+      const preview = runId
+        ? await testPreviewForRun(root, id, environment, history, runId)
+        : await latestTestPreview(root, id, environment, history);
       sendJson(res, 200, { preview });
       return;
     }
 
+    if (url.pathname === "/api/scenario-evidence" && req.method === "GET") {
+      const environment = url.searchParams.get("environment") === "test" ? "test" : "dev";
+      const catalog = JSON.parse(await readFile(path.join(uiDir, "scenarios.json"), "utf8"));
+      sendJson(res, 200, await loadScenarioEvidence(root, catalog, environment, await loadHistory()));
+      return;
+    }
     if (url.pathname === "/api/scenarios" && req.method === "GET") {
       sendJson(res, 200, JSON.parse(await readFile(path.join(uiDir, "scenarios.json"), "utf8")));
       return;
@@ -1019,6 +1128,45 @@ const server = http.createServer(async (req, res) => {
     if (url.pathname === "/api/run" && req.method === "POST") {
       const body = await readJsonBody(req);
       sendJson(res, 200, await startRun(body));
+      return;
+    }
+
+    if (url.pathname === "/api/debugger/frame") {
+      if (req.method === "GET") {
+        const image = req.headers["sec-fetch-site"] === "cross-site" ? null : debuggerFrame.get(url.searchParams.get("runId"));
+        if (!image) { res.writeHead(404, { "Cache-Control": "no-store" }); res.end(); return; }
+        res.writeHead(200, { "Content-Type": "image/jpeg", "Cache-Control": "no-store", "X-Content-Type-Options": "nosniff" }); res.end(image); return;
+      }
+      if (req.method === "POST") {
+        const body = await readJsonBody(req);
+        if (!state.child || !state.run?.debugger || body.runId !== state.run.id || req.headers["x-guided-key"] !== state.guided?.key) {
+          sendJson(res, 403, { error: "Nieaktywna sesja debuggera." }); return;
+        }
+        debuggerFrame.update(body.runId, body.image);
+        sendJson(res, 200, { accepted: true }); return;
+      }
+    }
+    if (["/api/guided/event", "/api/guided/wait", "/api/guided/next", "/api/guided/control"].includes(url.pathname) && req.method === "POST") {
+      const body = await readJsonBody(req);
+      const guided = state.guided;
+      if (!state.child || !guided || body.runId !== guided.runId) {
+        sendJson(res, 409, { error: "Ten podgląd API nie jest już aktywny." }); return;
+      }
+      if (["/api/guided/next", "/api/guided/control"].includes(url.pathname)) {
+        if (req.headers.origin !== `http://127.0.0.1:${PORT}`) {
+          sendJson(res, 403, { error: "Otwórz lokalny panel przed przejściem do kroku." }); return;
+        }
+        if (url.pathname.endsWith("control")) {
+          if (typeof body.continuous !== "boolean") { sendJson(res, 400, { error: "Niepoprawny tryb sterowania." }); return; }
+          guided.setContinuous(body.continuous);
+        } else guided.next(body.stepId);
+        sendJson(res, 200, { accepted: true }); return;
+      }
+      if (req.headers["x-guided-key"] !== guided.key) {
+        sendJson(res, 403, { error: "Nieprawidłowa sesja podglądu." }); return;
+      }
+      if (url.pathname.endsWith("/wait")) sendJson(res, 200, await guided.wait(body.stepId));
+      else { guided.event(body); sendJson(res, 200, { accepted: true }); }
       return;
     }
 
@@ -1069,6 +1217,7 @@ const server = http.createServer(async (req, res) => {
           environment: source.environment,
           workers: source.workers,
           headed: Boolean(body.headed ?? source.headed),
+          singleTab: Boolean(body.singleTab ?? source.singleTab),
           suite: source.suite || "all",
           selectedTestIds: source.failedTestIds,
         }),
@@ -1077,7 +1226,11 @@ const server = http.createServer(async (req, res) => {
     }
 
     if (url.pathname.startsWith("/latest-report/")) {
-      await serveFile(res, path.join(root, "playwright-report"), decodeURIComponent(url.pathname.slice("/latest-report/".length)));
+      await serveFile(
+        res,
+        path.join(root, "playwright-report"),
+        decodeURIComponent(url.pathname.slice("/latest-report/".length)),
+      );
       return;
     }
 
