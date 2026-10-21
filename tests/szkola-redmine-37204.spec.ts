@@ -1,4 +1,5 @@
 import { test, expect } from "./support/fixtures";
+import { guidedUiStep } from "./support/guided-ui-step";
 import { Octopus } from "./support/octopus";
 import { medalInput } from "./support/school-medal";
 import {
@@ -39,7 +40,7 @@ const cases = [
 
 test.describe("Redmine #37204 — filtrowanie po medalu Brak", () => {
   for (const scenario of cases) {
-    test(`${scenario.id}: ${scenario.title} @school @medal @regression @redmine-37204`, async ({
+    test(`${scenario.id}: ${scenario.title} @school @medal @regression @redmine-37204 @step-ui`, async ({
       page,
     }, info) => {
       info.annotations.push({
@@ -61,7 +62,7 @@ test.describe("Redmine #37204 — filtrowanie po medalu Brak", () => {
           city: string;
           informationAboutMedalCategory?: { medalCategoryName?: string };
         };
-        await test.step("Warunek wstępny: szkoła 94435 istnieje, a API i profil pokazują medal Brak", async () => {
+        await guidedUiStep("Warunek wstępny: szkoła 94435 istnieje, a API i profil pokazują medal Brak", async () => {
           const responsePromise = page.waitForResponse((response) => {
             if (response.request().method() !== "GET") return false;
             const url = new URL(response.url());
@@ -96,14 +97,14 @@ test.describe("Redmine #37204 — filtrowanie po medalu Brak", () => {
           ).toBe("Brak");
           await expect(medalInput(page)).toHaveValue("Brak");
         });
-        await test.step("Kontrola bez medalu: nazwa i miejscowość zwracają szkołę zgłoszenia", async () => {
+        await guidedUiStep("Kontrola bez medalu: nazwa i miejscowość zwracają szkołę zgłoszenia", async () => {
           const form = await schoolSearchForm(app);
           await applySearchCriteria(app, form, { name: target.name, city: target.city });
           const result = await submitSchoolSearch(app, form);
           evidence.unfilteredIds = result.ids;
           expect(result.ids).toContain(schoolId);
         });
-        await test.step("Wyszukiwanie według nazwy i miejscowości z wybranym filtrem medalu", async () => {
+        await guidedUiStep("Wyszukiwanie według nazwy i miejscowości z wybranym filtrem medalu", async () => {
           const form = await schoolSearchForm(app);
           await applySearchCriteria(app, form, {
             name: target.name,

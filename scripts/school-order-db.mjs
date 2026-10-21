@@ -99,8 +99,6 @@ export async function probeSchoolOrderDatabase() {
   return result;
 }
 
-<<<<<<< Updated upstream
-=======
 export async function findHistoricalOrders(requireHistory = false) {
   const result = await sqlRead(requireHistory ? "FindHistoricalWithHistory" : "FindHistorical");
   if (!Array.isArray(result.rows) || result.rows.length > 10)
@@ -137,7 +135,6 @@ export async function readHistoricalOrder(orderId, schoolId) {
   return row;
 }
 
->>>>>>> Stashed changes
 export async function readSchoolOrder(orderId, schoolId) {
   const order = validateSqlId(orderId);
   const school = validateSqlId(schoolId);

@@ -10,8 +10,6 @@ import type { StructureSchool } from "./school-structure";
 import type { StructureApi } from "./school-structure-api";
 
 export type StructureSchoolKey =
-<<<<<<< Updated upstream
-=======
   | "specCopyGroup"
   | "specCopyPrimary"
   | "specCopySecondary"
@@ -19,7 +17,6 @@ export type StructureSchoolKey =
   | "specCopyOtherGroup"
   | "specCopyOtherPrimary"
   | "specCopyStandalone"
->>>>>>> Stashed changes
   | "copyGroup"
   | "copyPrimary"
   | "copySecondary"
@@ -51,8 +48,6 @@ type StructureSchoolDefinition = {
 const environment = OCTOPUS_ENV.toUpperCase();
 
 const definitions: Record<StructureSchoolKey, StructureSchoolDefinition> = {
-<<<<<<< Updated upstream
-=======
   specCopyGroup: { name: `AUTO_STR_${environment}_COPY_SPEC35980_ZESPOL_A`, type: "Zespół szkół" },
   specCopyPrimary: {
     name: `AUTO_STR_${environment}_COPY_SPEC35980_SP_A`,
@@ -72,7 +67,6 @@ const definitions: Record<StructureSchoolKey, StructureSchoolDefinition> = {
     name: `AUTO_STR_${environment}_COPY_SPEC35980_SAMODZIELNA`,
     type: "Szkoła podstawowa",
   },
->>>>>>> Stashed changes
   copyGroup: { name: `AUTO_STR_${environment}_COPY_ZESPOL_A`, type: "Zespół szkół" },
   copyPrimary: { name: `AUTO_STR_${environment}_COPY_SP_A`, type: "Szkoła podstawowa" },
   copySecondary: { name: `AUTO_STR_${environment}_COPY_LO_A`, type: "Liceum" },

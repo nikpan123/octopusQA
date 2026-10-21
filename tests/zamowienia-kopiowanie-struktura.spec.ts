@@ -49,10 +49,12 @@ test.describe("Kopiowanie dokumentów w strukturze — Redmine 37160", () => {
       const dialog =
         await test.step("UI: otwarcie kopiowania i pełny zbiór trzech pozostałych placówek struktury A", () =>
           data.open(source, id));
-      for (const node of ["A", "SP", "LO", "TECH"] as CopyNode[])
-        await expect(copyTargetRow(dialog, data.schools[node])).toHaveCount(
-          node === source ? 0 : 1,
-        );
+      await test.step("UI: lista celów zawiera wyłącznie trzy pozostałe placówki struktury A", async () => {
+        for (const node of ["A", "SP", "LO", "TECH"] as CopyNode[])
+          await expect(copyTargetRow(dialog, data.schools[node])).toHaveCount(
+            node === source ? 0 : 1,
+          );
+      });
       await data.save(dialog, source, id, [target]);
       await expectCopy(data, before, source, id, [target]);
       const added = (await data.apis[target].orders()).find(
@@ -72,15 +74,20 @@ test.describe("Kopiowanie dokumentów w strukturze — Redmine 37160", () => {
       async ({ copy: data }) => {
         const source = await data.source("SP");
         const before = await data.snapshot();
-        const dialog = await data.open("SP", source.id);
-        await expect(
-          copyTargetRow(dialog, data.schools.LO),
-          "Istnieje poprawny cel kontrolny",
-        ).toHaveCount(1);
-        for (const node of forbidden)
-          await expect(copyTargetRow(dialog, data.schools[node])).toHaveCount(0);
-        await dialog.getByRole("button", { name: "Anuluj", exact: true }).click();
-        expect(await data.snapshot()).toEqual(before);
+        const dialog = await test.step("UI: otwarcie listy celów oryginału SP", () =>
+          data.open("SP", source.id));
+        await test.step("UI: lista zawiera cel kontrolny i wyklucza niedozwolone placówki", async () => {
+          await expect(
+            copyTargetRow(dialog, data.schools.LO),
+            "Istnieje poprawny cel kontrolny",
+          ).toHaveCount(1);
+          for (const node of forbidden)
+            await expect(copyTargetRow(dialog, data.schools[node])).toHaveCount(0);
+        });
+        await test.step("UI: anulowanie kopiowania pozostawia wszystkie dokumenty bez zmian", async () => {
+          await dialog.getByRole("button", { name: "Anuluj", exact: true }).click();
+          expect(await data.snapshot()).toEqual(before);
+        });
       },
     );
   }
@@ -94,9 +101,15 @@ test.describe("Kopiowanie dokumentów w strukturze — Redmine 37160", () => {
       const copy = (await data.apis.LO.orders()).find(
         (row) => !before.LO.some((old) => old.id === row.id),
       )!;
-      const panel = await data.panel("LO");
-      await orderRow(panel, String(copy.id)).click();
-      await expect(panel.getByRole("button", { name: "Kopiuj", exact: true })).toBeDisabled();
+      const panel =
+        await test.step("UI: otwarcie odbiorcy i zaznaczenie utworzonej kopii", async () => {
+          const panel = await data.panel("LO");
+          await orderRow(panel, String(copy.id)).click();
+          return panel;
+        });
+      await test.step("UI: zaznaczona kopia ma zablokowany przycisk Kopiuj", async () => {
+        await expect(panel.getByRole("button", { name: "Kopiuj", exact: true })).toBeDisabled();
+      });
     },
   );
   pairTest(
@@ -104,12 +117,19 @@ test.describe("Kopiowanie dokumentów w strukturze — Redmine 37160", () => {
     async ({ copy: data }) => {
       const { id } = await data.source("SP");
       const before = await data.snapshot();
-      const dialog = await data.open("SP", id);
-      await expect(dialog.getByRole("button", { name: "Zapisz", exact: true })).toBeDisabled();
-      await copyTargetRow(dialog, data.schools.LO).getByRole("gridcell").first().click();
-      await expect(dialog.getByRole("button", { name: "Zapisz", exact: true })).toBeEnabled();
-      await dialog.getByRole("button", { name: "Anuluj", exact: true }).click();
-      expect(await data.snapshot()).toEqual(before);
+      const dialog = await test.step("UI: otwarcie kopiowania bez zaznaczonego celu", () =>
+        data.open("SP", id));
+      await test.step("UI: pusty wybór blokuje Zapisz", async () => {
+        await expect(dialog.getByRole("button", { name: "Zapisz", exact: true })).toBeDisabled();
+      });
+      await test.step("UI: dodanie celu odblokowuje Zapisz, ale operacja zostaje anulowana", async () => {
+        await copyTargetRow(dialog, data.schools.LO).getByRole("gridcell").first().click();
+        await expect(dialog.getByRole("button", { name: "Zapisz", exact: true })).toBeEnabled();
+        await dialog.getByRole("button", { name: "Anuluj", exact: true }).click();
+      });
+      await test.step("API: po anulowaniu wszystkie dokumenty pozostają bez zmian", async () => {
+        expect(await data.snapshot()).toEqual(before);
+      });
     },
   );
   test("ORD-COPY-17: jednoczesna kopia do trzech placówek nie tworzy duplikatów @school @order @copy @multiple @redmine-37160", async ({
@@ -124,9 +144,14 @@ test.describe("Kopiowanie dokumentów w strukturze — Redmine 37160", () => {
     "ORD-COPY-18: placówka bez struktury nie ma funkcji kopiowania @school @order @copy @negative @redmine-37160",
     async ({ copy: data }) => {
       const { id } = await data.source("SOLO");
-      const panel = await data.panel("SOLO");
-      await orderRow(panel, id).click();
-      await expect(panel.getByRole("button", { name: "Kopiuj", exact: true })).toHaveCount(0);
+      const panel = await test.step("UI: otwarcie oryginału placówki samodzielnej", async () => {
+        const panel = await data.panel("SOLO");
+        await orderRow(panel, id).click();
+        return panel;
+      });
+      await test.step("UI: placówka samodzielna nie ma przycisku Kopiuj", async () => {
+        await expect(panel.getByRole("button", { name: "Kopiuj", exact: true })).toHaveCount(0);
+      });
     },
   );
   pairTest(
@@ -147,26 +172,30 @@ test.describe("Kopiowanie dokumentów w strukturze — Redmine 37160", () => {
         await restoreSession(context, account.session);
         const page = await context.newPage();
         // Konto tylko do odczytu nie ma przycisku „Edycja danych”.
-        await page.goto(`/school/school-panel/${data.schools.SP.id}`, {
-          waitUntil: "domcontentloaded",
-        });
-        await expect(
-          page.getByRole("heading", { name: "Dane podstawowe szkoły", exact: true }),
-        ).toBeVisible();
-        await expect(
-          page
-            .locator(".info-row")
-            .filter({ has: page.getByText("ID", { exact: true }) })
-            .locator('input[type="text"]'),
-          "Konto ograniczone odczytuje właściwą szkołę bez wymagania prawa edycji",
-        ).toHaveValue(data.schools.SP.id);
-        const panel = await openOrders(page);
-        const row = orderRow(panel, id);
-        await expect(
-          row,
-          "Ograniczone konto musi móc odczytać przygotowany oryginał",
-        ).toBeVisible();
-        await row.click();
+        const panel =
+          await test.step("UI: konto ograniczone odczytuje oryginał we właściwej placówce", async () => {
+            await page.goto(`/school/school-panel/${data.schools.SP.id}`, {
+              waitUntil: "domcontentloaded",
+            });
+            await expect(
+              page.getByRole("heading", { name: "Dane podstawowe szkoły", exact: true }),
+            ).toBeVisible();
+            await expect(
+              page
+                .locator(".info-row")
+                .filter({ has: page.getByText("ID", { exact: true }) })
+                .locator('input[type="text"]'),
+              "Konto ograniczone odczytuje właściwą szkołę bez wymagania prawa edycji",
+            ).toHaveValue(data.schools.SP.id);
+            const panel = await openOrders(page);
+            const row = orderRow(panel, id);
+            await expect(
+              row,
+              "Ograniczone konto musi móc odczytać przygotowany oryginał",
+            ).toBeVisible();
+            await row.click();
+            return panel;
+          });
         const copy = panel.getByRole("button", { name: "Kopiuj", exact: true });
         await test.step("UI: konto ograniczone nie może uruchomić kopiowania oryginału", async () => {
           if (await copy.isVisible()) await expect(copy).toBeDisabled();

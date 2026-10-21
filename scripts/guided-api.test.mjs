@@ -12,6 +12,9 @@ test("API nie uruchamia Inspektora; zwykły test UI zachowuje --debug", () => {
   const api = buildRunArguments({ ...options, guidedApi: true });
   assert.equal(api.args.includes("--debug"), false);
   assert.equal(api.args.includes("--headed"), false);
+  assert.ok(
+    buildRunArguments({ ...options, guidedApi: true, headed: true }).args.includes("--headed"),
+  );
   assert.ok(api.args.includes("--timeout=0"));
   assert.ok(buildRunArguments(options).args.includes("--debug"));
   assert.equal(

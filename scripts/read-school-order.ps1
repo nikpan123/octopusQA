@@ -1,9 +1,5 @@
 param(
-<<<<<<< Updated upstream
-  [ValidateSet('Probe', 'ReadOrder')][string]$Action = 'Probe',
-=======
   [ValidateSet('Probe', 'ReadOrder', 'FindHistorical', 'FindHistoricalWithHistory', 'FindStatusAudit', 'ReadHistorical')][string]$Action = 'Probe',
->>>>>>> Stashed changes
   [int]$OrderId = 0,
   [int]$SchoolId = 0
 )
@@ -24,11 +20,7 @@ try {
   $port = 1433
   if ($env:OCTOPUS_DEV_DB_PORT) { $port = [int]$env:OCTOPUS_DEV_DB_PORT }
   if ($port -lt 1 -or $port -gt 65535) { throw 'INVALID_PORT' }
-<<<<<<< Updated upstream
-  if ($Action -eq 'ReadOrder' -and ($OrderId -le 0 -or $SchoolId -le 0)) { throw 'INVALID_ID' }
-=======
   if ($Action -in @('ReadOrder', 'ReadHistorical') -and ($OrderId -le 0 -or $SchoolId -le 0)) { throw 'INVALID_ID' }
->>>>>>> Stashed changes
 
   $builder = New-Object System.Data.SqlClient.SqlConnectionStringBuilder
   $builder['Data Source'] = "$($env:OCTOPUS_DEV_DB_SERVER),$port"
@@ -66,9 +58,6 @@ ORDER BY c.column_id
     while ($reader.Read()) {
       $columns += @{ schema = [string]$reader['SchemaName']; name = [string]$reader['ColumnName']; type = [string]$reader['TypeName'] }
     }
-<<<<<<< Updated upstream
-    @{ database = $database; columns = @($columns) } | ConvertTo-Json -Depth 5 -Compress
-=======
     $reader.Dispose(); $reader = $null
     $command.CommandText = @'
 SELECT t.name AS TableName, c.name AS ColumnName
@@ -136,7 +125,6 @@ WHERE o.Id = @OrderId AND o.SchoolId = @SchoolId
     $reader = $command.ExecuteReader(); $rows = @()
     while ($reader.Read()) { $rows += @{ id = [int]$reader['Id']; schoolId = [int]$reader['SchoolId']; isDel = [bool]$reader['IsDel']; isCopied = [bool]$reader['IsCopied']; isCanceled = [bool]$reader['IsCanceled']; createdBy = [int]$reader['CreatedBy']; createdAt = ([datetime]$reader['CreatedAt']).ToString('o'); cmsOrderSymbol = [string]$reader['CmsOrderSymbol']; salesOrderSymbol = [string]$reader['SalesOrderSymbol']; actor = [string]$reader['Login'] } }
     @{ database = $database; rows = @($rows) } | ConvertTo-Json -Depth 5 -Compress
->>>>>>> Stashed changes
   } else {
     # Jedyny odczyt dokumentu. Brak dowolnego SQL, DML, DDL i procedur.
     $command.CommandText = 'SELECT Id, SchoolId, IsDel, IsCopied FROM dbo.SchoolOrder WHERE Id = @OrderId AND SchoolId = @SchoolId'

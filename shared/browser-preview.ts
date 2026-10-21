@@ -3,6 +3,7 @@ import {readFile} from 'node:fs/promises';
 import path from 'node:path';
 import {enablePreviewDragging} from './preview-drag.cjs';
 import {readPreviewPosition,savePreviewPosition,type PreviewPosition} from './preview-position.cjs';
+import {startDebuggerPreview} from './debugger-browser';
 export * from '@playwright/test';
 
 type Preview = {title:string;step:string;number:number;action:string;testIndex?:number;totalTests?:number;attempt?:number};
@@ -37,7 +38,11 @@ export const test = base.extend<{qaBrowserPreview:boolean|undefined}>({
     const inspector=!!process.env.PWDEBUG&&!['0','false','console'].includes(process.env.PWDEBUG);
     const enabled=!inspector&&(qaBrowserPreview??(process.env.QA_BROWSER_PREVIEW==='1'||(!headless&&process.env.QA_BROWSER_PREVIEW!=='0')));
     const directory=testInfo.config.metadata.qaBrowserPreviewDirectory;
-    if(!enabled||typeof directory!=='string'){await use(page);return;}
+    if(!enabled||typeof directory!=='string'){
+      const stopDebugger=await startDebuggerPreview(page,testInfo);
+      try{await use(page);}finally{await stopDebugger();}
+      return;
+    }
     const context=page.context();let stopped=false,busy=false;
     const positionFile=typeof testInfo.config.metadata.qaBrowserPreviewPositionFile==='string'?testInfo.config.metadata.qaBrowserPreviewPositionFile:undefined;
     let positionStore=positionStores.get(context);

@@ -884,13 +884,6 @@ dialog::backdrop {
 @media(max-width:650px){.qa-octopus .test-row{grid-template-columns:24px minmax(0,1fr)}.qa-octopus .suite-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.qa-octopus .metric-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 
 .qa-dot-cms{--app-color:#b66d28}
-<<<<<<< Updated upstream
-.scenario-feature { padding: 12px 0; }
-.scenario-item { border: 1px solid var(--qa-line, #d8e1ec); border-radius: 8px; padding: 14px; margin: 12px 0; }
-.scenario-item summary { cursor: pointer; line-height: 1.7; }
-.scenario-item summary span { display: inline-block; padding: 0 8px; font-size: 12px; color: var(--qa-muted, #52647a); }
-.scenario-item li { margin: 6px 0; }
-=======
 .scenario-feature { padding: 24px 0; }
 .scenario-feature + .scenario-feature { margin-top: 28px; border-top: 2px solid var(--qa-line, #d8e1ec); }
 .scenario-feature-header { display: flex; justify-content: space-between; align-items: center; gap: 20px; padding: 0 !important; margin: 0 0 14px !important; }
@@ -969,7 +962,6 @@ dialog::backdrop {
   .scenario-body { padding: 0 15px 15px; }
   .scenario-feature-count { padding: 8px; }
 }
->>>>>>> Stashed changes
 
 /* Widoki pozostają zamontowane, dzięki czemu nawigacja zachowuje formularze i logi. */
 .qa-octopus .layout > section[hidden] { display: none !important; }
@@ -1132,8 +1124,6 @@ html[data-theme=dark] .qa-app #toast{background:#293b55;color:#edf4ff;border-col
 html[data-theme=dark] .qa-app :is(.field>span,header p,.test-scope,.suite-card ul,.launch-options summary){color:var(--qa-muted)}
 html[data-theme=dark] .qa-app .suite-categories button span{background:#2b3c50;color:#c9d6e8}
 html[data-theme=dark] .qa-octopus :is(.test-row:hover,.test-row:focus-within,.data-row:hover:not(.data-head)){background:var(--qa-elevated);color:var(--qa-ink)}
-<<<<<<< Updated upstream
-=======
 
 /* QA_GUIDE_START */
 .qa-guide-intro{margin:18px 0 24px;background:var(--qa-surface,#fff);border:1px solid var(--qa-line,#d5dfe7);border-radius:12px;color:var(--qa-ink,#223248)}
@@ -1281,4 +1271,247 @@ html[data-theme=dark] .qa-octopus .scenario-accordion.scenario-partial .scenario
 .guided-api-step { border: 1px solid var(--border, #64748b); border-radius: 10px; padding: 14px; margin-top: 14px; }
 .guided-api-step pre { white-space: pre-wrap; overflow-wrap: anywhere; max-height: 360px; overflow: auto; }
 .guided-api-error { color: var(--danger, #b91c1c); }
->>>>>>> Stashed changes
+/* Run configuration and catalog, based on the supplied compact layout. */
+.qa-octopus{--run-surface:#fff;--run-inset:#f5f7fb;--run-hover:#edf3fc;--run-accent:#2563eb}
+html[data-theme=dark] .qa-octopus{--run-surface:#111827;--run-inset:#0f172a;--run-hover:#1f2937;--run-accent:#38bdf8}
+.qa-octopus :is(.controls,.tests-card){background:var(--run-surface);padding:0;overflow:hidden;border:1px solid var(--qa-line);border-radius:12px;box-shadow:none}
+.qa-octopus :is(.controls,.tests-card)>.section-head{padding:20px 24px;margin:0;border-bottom:1px solid var(--qa-line);align-items:center}
+.qa-octopus :is(.controls,.tests-card) h2{font-size:18px;margin:0}
+.qa-octopus :is(.controls,.tests-card) .section-head p{margin:5px 0 0;color:var(--qa-muted)}
+.qa-octopus .config-body{padding:24px;display:grid;gap:22px}
+.qa-octopus .config-body .grid{margin:0}
+.qa-octopus .config-body .field{gap:8px;margin:0}
+.qa-octopus .config-body .field>span{font-size:12px;font-weight:600;text-transform:none;letter-spacing:0;color:var(--qa-muted)}
+.qa-octopus .config-body :is(input:not([type=checkbox]),select){background:var(--run-inset);border-color:var(--qa-line);color:var(--qa-ink);min-height:42px;border-radius:7px}
+.qa-octopus .controls .suite-grid{display:flex;gap:4px;padding:5px;border:1px solid var(--qa-line);background:var(--run-inset);border-radius:9px;overflow-x:auto;max-width:100%;scrollbar-width:thin}
+.qa-octopus .controls .suite{flex:0 0 auto;min-height:36px;padding:7px 13px;background:transparent;color:var(--qa-muted);border:1px solid transparent;border-radius:6px;white-space:nowrap;font-size:13px;box-shadow:none}
+.qa-octopus .controls .suite:hover{background:var(--run-hover);color:var(--qa-ink)}
+.qa-octopus .controls .suite.active{color:var(--qa-ink);background:var(--run-surface);border-color:var(--qa-line);box-shadow:0 1px 3px #0002}
+.qa-octopus .preview-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
+.qa-octopus .preview-switch{position:relative;display:flex;align-items:flex-start;gap:12px;margin:0;cursor:pointer;min-width:0}
+.qa-octopus .preview-switch input{position:absolute;left:0;top:0;width:38px;height:24px;opacity:0;margin:0;cursor:pointer}
+.qa-octopus .switch-track{flex:0 0 38px;width:38px;height:22px;border-radius:20px;background:var(--qa-muted);margin-top:2px;pointer-events:none;transition:background .15s}
+.qa-octopus .switch-track:after{content:'';display:block;width:16px;height:16px;border-radius:50%;background:#fff;transform:translate(3px,3px);transition:transform .15s}
+.qa-octopus .preview-switch input:checked+.switch-track{background:#2563eb}
+.qa-octopus .preview-switch input:checked+.switch-track:after{transform:translate(19px,3px)}
+.qa-octopus .preview-switch input:focus-visible+.switch-track{outline:3px solid var(--run-accent);outline-offset:3px}
+.qa-octopus .preview-switch strong{display:block;font-size:13px;font-weight:600;color:var(--qa-ink)}
+.qa-octopus .preview-switch small{display:block;font-size:12px;color:var(--qa-muted);margin-top:4px;line-height:1.5}
+.qa-octopus .run-advanced{font-size:12px;color:var(--qa-muted)}
+.qa-octopus .run-advanced summary{cursor:pointer;width:fit-content;padding:5px 0}
+.qa-octopus .run-advanced[open] .field{margin-top:15px}
+.qa-octopus .config-footer{padding:18px 24px;border-top:1px solid var(--qa-line);background:var(--run-inset);display:flex;gap:20px;align-items:center;justify-content:space-between}
+.qa-octopus #runSelectionSummary{margin:0;color:var(--qa-muted);font-size:12px;max-width:430px}
+.qa-octopus .config-footer .actions{margin:0;display:flex;gap:8px;justify-content:flex-end;align-items:center}
+.qa-octopus .config-footer :is(button,.button-link){font-size:12px;min-height:40px;white-space:nowrap}
+.qa-octopus .config-footer #startBtn{background:#2563eb;border-color:#2563eb;color:#fff;order:2}
+.qa-octopus .config-footer #startBtn:hover:not(:disabled){background:#1d4ed8}
+.qa-octopus .config-footer .qa-guide-before-run{display:none}
+.qa-octopus .tests-card>.wide-search{display:block;width:calc(100% - 48px);margin:20px 24px 12px;background:var(--run-inset);color:var(--qa-ink);border:1px solid var(--qa-line);min-height:42px}
+.qa-octopus .tests-card>.test-summary{margin:0;padding:0 24px 14px;display:flex;gap:12px;justify-content:space-between;color:var(--qa-muted);font-size:12px}
+.qa-octopus .tests-card #linked-selection{margin:16px 24px 0}
+.qa-octopus .tests-card .tests-list{border:0;border-top:1px solid var(--qa-line);border-radius:0;max-height:620px;overflow-y:auto}
+.qa-octopus .tests-card .test-row{display:grid;grid-template-columns:18px minmax(0,1fr) auto;gap:14px;padding:18px 24px;background:transparent;border-bottom:1px solid var(--qa-line);align-items:center;min-height:94px}
+.qa-octopus .tests-card .test-row:last-child{border-bottom:0}
+.qa-octopus .tests-card .test-row:hover{background:var(--run-hover);color:var(--qa-ink)}
+.qa-octopus .tests-card .test-row:has(input:checked){background:color-mix(in srgb,var(--run-accent) 7%,var(--run-surface))}
+.qa-octopus .tests-card .test-row>input{grid-column:1;grid-row:1;margin:0;width:15px;height:15px;accent-color:#3b82f6}
+.qa-octopus .test-info{grid-column:2;grid-row:1;min-width:0}
+.qa-octopus .test-heading{display:flex;align-items:baseline;flex-wrap:wrap;gap:5px 12px;min-width:0}
+.qa-octopus .test-heading .test-id{color:var(--run-accent);font-size:12px;font-weight:600;white-space:normal;overflow-wrap:anywhere;cursor:pointer}
+.qa-octopus .test-heading .test-title{color:var(--qa-ink);font-size:13px;font-weight:500;min-width:0;flex:1 1 320px;overflow-wrap:anywhere}
+.qa-octopus .test-tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px;min-width:0}
+.qa-octopus .test-tag{padding:1px 6px;background:var(--run-inset);border:1px solid var(--qa-line);border-radius:4px;color:var(--qa-muted);font:11px/1.6 ui-monospace,monospace;overflow-wrap:anywhere;max-width:100%}
+.qa-octopus .tests-card .test-row>.test-row-actions{grid-column:3;grid-row:1;display:flex;flex-wrap:nowrap;gap:6px;align-items:center}
+.qa-octopus .tests-card .test-row-actions [data-qa-guide]{order:-1}
+.qa-octopus .qa-icon-action,.qa-octopus .tests-card .test-row-actions .qa-icon-action{width:34px;height:34px;min-height:34px;min-width:34px;display:inline-flex;align-items:center;justify-content:center;padding:7px;margin:0;border:1px solid transparent;background:transparent;color:var(--qa-muted);border-radius:6px;font-size:22px;line-height:1}
+.qa-octopus .qa-icon-action svg{width:18px;height:18px;flex-shrink:0}
+.qa-octopus .qa-icon-action:hover:not(:disabled){background:var(--run-hover);border-color:var(--qa-line);color:var(--run-accent)}
+.qa-octopus :is(.controls,.tests-card) :is(button,a,input,select):focus-visible{outline:2px solid var(--run-accent);outline-offset:3px}
+.qa-octopus .annual-card{background:var(--run-surface);border-color:var(--qa-line);padding:20px 24px}
+.qa-octopus .annual-card h2{font-size:16px;color:var(--qa-ink)}
+@media(max-width:1200px){.qa-octopus .config-footer{align-items:flex-start;flex-direction:column;gap:14px}.qa-octopus #runSelectionSummary{max-width:none}.qa-octopus .config-footer .actions{justify-content:flex-start}.qa-octopus .tests-card .test-row{grid-template-columns:18px minmax(0,1fr) auto;gap:10px;padding:16px 20px}}
+@media(max-width:800px){.qa-octopus .preview-options{grid-template-columns:minmax(0,1fr)}.qa-octopus .tests-card .test-row{grid-template-columns:18px minmax(0,1fr)}.qa-octopus .tests-card .test-row>.test-row-actions{grid-column:2;grid-row:2;justify-content:flex-start}.qa-octopus .tests-card .test-row>input{grid-row:1;align-self:start;margin-top:4px}}
+@media(max-width:650px){.qa-octopus .config-body{padding:18px;gap:18px}.qa-octopus :is(.controls,.tests-card)>.section-head{padding:18px}.qa-octopus .config-footer{padding:18px}.qa-octopus .config-footer .actions{width:100%}.qa-octopus .config-footer :is(button,.button-link){white-space:normal;flex:1 1 140px}.qa-octopus .tests-card>.wide-search{width:calc(100% - 36px);margin:16px 18px 12px}.qa-octopus .tests-card>.test-summary{padding:0 18px 12px}.qa-octopus .tests-card .test-row{padding:16px 18px}.qa-octopus .test-heading{flex-direction:column;align-items:stretch}.qa-octopus .test-heading .test-title{flex:auto}.qa-octopus .tests-card #linked-selection{margin:16px 18px 0}}
+html[data-theme=dark] .qa-octopus :is(.controls,.tests-card){background:var(--run-surface)}
+html[data-theme=dark] .qa-octopus .controls .suite{background:transparent;border-color:transparent;color:var(--qa-muted)}
+html[data-theme=dark] .qa-octopus .controls .suite.active{background:var(--run-hover);border-color:var(--qa-line);color:var(--qa-ink)}
+html[data-theme=dark] .qa-octopus .annual-card{background:#1b1c20;border-color:#51472c}
+/* Debugger workspace shares the panel theme and never changes the regression layout. */
+.qa-octopus .debugger-page{display:grid;gap:20px;min-width:0}
+.qa-octopus .debugger-page[hidden]{display:none}
+.qa-octopus .debugger-page .card{margin:0;min-width:0}
+.qa-octopus .debugger-pilot{border:1px solid var(--qa-line);border-radius:20px;padding:5px 10px;font-size:11px;color:var(--qa-accent);white-space:nowrap}
+.qa-octopus .debugger-picker{display:grid;grid-template-columns:130px minmax(0,1fr);gap:14px;margin:20px 0 0}
+.qa-octopus .debugger-select{grid-column:1/-1}
+.qa-octopus .debugger-picker :is(select,input){width:100%;min-width:0;color:var(--qa-ink)}
+.qa-octopus .debugger-description{padding:16px;border:1px solid var(--qa-line);border-radius:9px;background:var(--qa-soft);overflow-wrap:anywhere}
+.qa-octopus .debugger-description p{margin:6px 0 0}
+.qa-octopus .debugger-start-bar{display:flex;gap:24px;align-items:center;justify-content:space-between;margin-top:18px}
+.qa-octopus .debugger-start-bar p{margin:0;color:var(--qa-muted);font-size:12px;max-width:720px}
+.qa-octopus .debugger-start-bar button{flex-shrink:0}
+.qa-octopus .debugger-session-head{display:flex;align-items:start;justify-content:space-between;gap:16px}
+.qa-octopus .debugger-session-head h2{font-size:18px;margin:0}
+.qa-octopus #debugMessage{margin:8px 0 0;color:var(--qa-muted);max-width:900px}
+.qa-octopus .debugger-controls{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px;align-items:center}
+.qa-octopus .debugger-controls [hidden]{display:none!important}
+.qa-octopus .debugger-controls kbd{font:11px system-ui;border:1px solid #ffffff50;border-radius:4px;padding:1px 4px;margin-left:6px}
+.qa-octopus .debugger-workspace{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(270px,1fr);gap:18px;margin-top:20px;align-items:start}
+.qa-octopus .debugger-preview{border:1px solid var(--qa-line);border-radius:10px;overflow:hidden;min-width:0;background:var(--qa-bg)}
+.qa-octopus .debugger-preview-heading{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px;padding:12px 16px;border-bottom:1px solid var(--qa-line);font-size:12px}
+.qa-octopus #debugFrameState{color:var(--qa-muted);font-size:11px}
+.qa-octopus #debugFrame{display:block;width:100%;height:auto;background:#fff}
+.qa-octopus #debugFrame[hidden],.qa-octopus #debugFramePlaceholder[hidden]{display:none}
+.qa-octopus .debugger-placeholder{min-height:280px;padding:40px 24px;display:flex;flex-direction:column;justify-content:center;text-align:center;color:var(--qa-muted)}
+.qa-octopus .debugger-placeholder p{max-width:420px;margin:10px auto 0}
+.qa-octopus #debugFrameCaption{padding:0 14px}
+.qa-octopus .debugger-timeline{min-width:0;max-height:640px;overflow:auto;padding-right:5px}
+.qa-octopus .debugger-timeline h3{margin:0;font-size:15px}
+.qa-octopus #debugSteps{list-style:none;padding:0;margin:16px 0 0;display:grid;gap:10px}
+.qa-octopus .debugger-step{border:1px solid var(--qa-line);border-radius:8px;padding:12px;font-size:12px;overflow-wrap:anywhere;background:var(--qa-bg)}
+.qa-octopus .debugger-step-heading{display:flex;gap:10px;align-items:start}
+.qa-octopus .debugger-step-heading small{display:block;margin-top:5px;color:var(--qa-muted)}
+.qa-octopus .debugger-step-number{width:24px;height:24px;border:1px solid var(--qa-line);border-radius:50%;flex:0 0 24px;display:grid;place-items:center}
+.qa-octopus .debugger-step-passed{border-left:3px solid #2ca77c}
+.qa-octopus .debugger-step-failed{border-left:3px solid #ef6464}
+.qa-octopus :is(.debugger-step-waiting,.debugger-step-running){border-left:3px solid var(--qa-accent)}
+.qa-octopus .debugger-step details{margin-top:12px}
+.qa-octopus .debugger-step summary,.qa-octopus .debugger-log-panel summary{cursor:pointer;color:var(--qa-accent)}
+.qa-octopus .debugger-step-empty{color:var(--qa-muted);font-size:13px;padding:16px 0}
+.qa-octopus .debugger-request{margin-top:10px;border-top:1px solid var(--qa-line);padding-top:10px}
+.qa-octopus .debugger-page pre{white-space:pre-wrap;overflow-wrap:anywhere;background:var(--qa-bg);border:1px solid var(--qa-line);border-radius:7px;padding:12px;max-height:300px;overflow:auto;color:var(--qa-ink);font:11px/1.6 Consolas,monospace}
+.qa-octopus .debugger-page .debugger-error{color:#d95757}
+.qa-octopus .debugger-log-panel{border-top:1px solid var(--qa-line);padding-top:18px;margin-top:20px}
+.qa-octopus #debugLogs{max-height:260px}
+@media(max-width:1150px){.qa-octopus .debugger-workspace{grid-template-columns:minmax(0,1fr)}.qa-octopus .debugger-timeline{max-height:none}.qa-octopus .debugger-start-bar{align-items:start;flex-direction:column;gap:14px}}
+@media(max-width:650px){.qa-octopus .debugger-picker{grid-template-columns:minmax(0,1fr)}.qa-octopus .debugger-session-head{flex-wrap:wrap}.qa-octopus .debugger-controls>*{flex:1 1 150px}.qa-octopus .debugger-start-bar button{width:100%}.qa-octopus .debugger-page .section-head{flex-wrap:wrap}.qa-octopus .debugger-picker select{font-size:12px}}
+.qa-octopus .debugger-inspection{padding:16px;border-bottom:1px solid var(--qa-line);font-size:12px;overflow-wrap:anywhere}
+.qa-octopus #debugInspection[hidden]{display:none!important}
+.qa-octopus .debugger-inspection h3{margin:0;font-size:15px;color:var(--qa-accent)}
+.qa-octopus .debugger-inspection>p{margin:10px 0;line-height:1.6}
+.qa-octopus .debugger-school-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:14px}
+.qa-octopus .debugger-school{padding:12px;border:1px solid var(--qa-line);border-radius:8px;background:var(--qa-surface,#fff);min-width:0}
+.qa-octopus .debugger-school-id{display:block;color:var(--qa-muted);margin-top:3px}
+.qa-octopus .debugger-school p{margin:8px 0;font-size:11px}
+.qa-octopus .debugger-school .button-link{font-size:11px;min-height:34px;padding:6px 9px}
+.qa-octopus .debugger-school-orders span{display:block;margin-top:5px;font-family:Consolas,monospace}
+.qa-octopus .debugger-data-ended{border-left:3px solid #cf9d46;padding-left:10px;color:var(--qa-muted)}
+.qa-octopus .debugger-planned-request{margin-top:16px}
+.qa-octopus .debugger-planned-request summary{cursor:pointer;color:var(--qa-accent)}
+@media(max-width:650px){.qa-octopus .debugger-school-list{grid-template-columns:minmax(0,1fr)}}
+/* Debugger console: separate preparation and session, based on the supplied HTML. */
+.qa-octopus[data-current-page=debugger]{--dbg-bg:#f4f6fa;--dbg-surface:#fff;--dbg-raised:#f0f3f8;--dbg-line:#dce2eb;--dbg-ink:#202c3c;--dbg-muted:#65748a;--dbg-blue:#2563eb;--dbg-green:#208047;--dbg-red:#cf3f46}
+html[data-theme=dark] .qa-octopus[data-current-page=debugger]{--dbg-bg:#0e121b;--dbg-surface:#161b22;--dbg-raised:#21262d;--dbg-line:#30363d;--dbg-ink:#f0f6fc;--dbg-muted:#9ba5b1;--dbg-blue:#6ba5ff;--dbg-green:#69c47e;--dbg-red:#f88179}
+.qa-octopus .debugger-page :is(.debugger-setup,.debugger-session)[hidden],.qa-octopus #debugBackToSession[hidden],.qa-octopus .debugger-aux [hidden]{display:none!important}
+.qa-octopus .debugger-page .debugger-setup{width:100%;max-width:800px;justify-self:center;background:var(--dbg-surface);border:1px solid var(--dbg-line);padding:30px;border-radius:12px;color:var(--dbg-ink);box-shadow:0 10px 40px #00000008}
+.qa-octopus .debugger-setup>.section-head{align-items:start;margin:0 0 22px}
+.qa-octopus .debugger-setup h2{font-size:23px;letter-spacing:-.5px}
+.qa-octopus .debugger-setup .section-head p{color:var(--dbg-muted);font-size:13px;margin:8px 0 0}
+.qa-octopus .debugger-picker{grid-template-columns:170px minmax(0,1fr);gap:22px;margin:0}
+.qa-octopus .debugger-picker .field{gap:8px;margin:0;min-width:0}
+.qa-octopus .debugger-picker .field>span{font:600 11px/1.5 'Segoe UI',sans-serif;letter-spacing:.06em;color:var(--dbg-muted)}
+.qa-octopus .debugger-picker :is(input,select){background:var(--dbg-bg);border-color:var(--dbg-line);color:var(--dbg-ink);border-radius:6px;padding:10px 12px}
+.qa-octopus #debugCapability{font-size:11px;color:var(--dbg-muted);margin:10px 0 22px}
+.qa-octopus .debugger-description{background:var(--dbg-raised);border-color:var(--dbg-line);padding:18px;font-size:13px;line-height:1.7;color:var(--dbg-muted)}
+.qa-octopus .debugger-description>strong{color:var(--dbg-ink);display:block;margin-bottom:8px}
+.qa-octopus .debugger-start-bar{border-top:1px solid var(--dbg-line);padding-top:22px;margin-top:24px;gap:14px;flex-wrap:wrap;flex-direction:row;align-items:center}
+.qa-octopus .debugger-start-bar p{flex:1 1 260px;font-size:11px;color:var(--dbg-muted)}
+.qa-octopus .debugger-page :is(#debugStart,#debugNext){background:#2563eb;border-color:#2563eb;color:white;border-radius:6px}
+.qa-octopus .debugger-page :is(#debugStart,#debugNext):hover:not(:disabled){background:#1d4ed8}
+.qa-octopus[data-current-page=debugger][data-debugger-view=session]>.topbar{display:none}
+.qa-octopus[data-current-page=debugger][data-debugger-view=session] .layout{padding:0;max-width:none;gap:0}
+.qa-octopus[data-current-page=debugger][data-debugger-view=session] .layout>.qa-guide-intro{display:none}
+.qa-octopus[data-current-page=debugger][data-debugger-view=session] .debugger-page{gap:0}
+.qa-octopus .debugger-page .debugger-session{display:flex;flex-direction:column;height:100dvh;padding:0;border:0;border-radius:0;background:var(--dbg-bg);color:var(--dbg-ink);overflow:hidden;box-shadow:none}
+.qa-octopus .debugger-command-bar{display:flex;align-items:center;flex-wrap:wrap;gap:16px;padding:16px 22px;background:var(--dbg-surface);border-bottom:1px solid var(--dbg-line);flex-shrink:0}
+.qa-octopus .debugger-session-head{flex:1 1 280px;min-width:0;align-items:center;gap:12px}
+.qa-octopus #debugSessionTitle{font:600 15px/1.5 'Segoe UI',sans-serif;color:var(--dbg-ink);overflow-wrap:anywhere}
+.qa-octopus #debugMessage{font-size:11px;line-height:1.6;color:var(--dbg-muted);max-width:650px;margin:4px 0 0}
+.qa-octopus .debugger-controls{margin:0;flex:0 1 auto;gap:6px;flex-wrap:wrap}
+.qa-octopus .debugger-page :is(.debugger-controls,.debugger-aux) :is(button,a){border-radius:6px;font-size:12px;min-height:36px}
+.qa-octopus .debugger-controls kbd{font:10px/1.3 Consolas,monospace;color:#e2eaff;background:#ffffff17;border-color:#ffffff24;padding:2px 4px}
+.qa-octopus .debugger-controls .debugger-icon-control{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;min-width:36px;padding:8px;flex:0 0 36px;background:var(--dbg-surface);border-color:var(--dbg-line);color:var(--dbg-ink)}
+.qa-octopus .debugger-icon-control svg{width:17px;height:17px;flex-shrink:0}
+.qa-octopus .debugger-controls #debugStop{color:var(--dbg-red);border-color:color-mix(in srgb,var(--dbg-red) 35%,transparent);background:transparent}
+.qa-octopus .debugger-aux{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.qa-octopus .debugger-aux :is(button.secondary,a.button-link){padding:7px 11px;background:var(--dbg-surface);border-color:var(--dbg-line);color:var(--dbg-ink)}
+.qa-octopus .debugger-aux a{font-size:11px!important}
+.qa-octopus .debugger-pilot{font-size:10px;letter-spacing:.02em;border-color:var(--dbg-line);color:var(--dbg-muted);background:var(--dbg-raised);padding:4px 8px}
+.qa-octopus #debugModeBadge[data-status=passed]{color:var(--dbg-green);border-color:color-mix(in srgb,var(--dbg-green) 40%,transparent);background:color-mix(in srgb,var(--dbg-green) 10%,transparent)}
+.qa-octopus #debugModeBadge[data-status=failed]{color:var(--dbg-red);border-color:color-mix(in srgb,var(--dbg-red) 40%,transparent)}
+.qa-octopus #debugModeBadge[data-status=running]{color:var(--dbg-blue)}
+.qa-octopus .debugger-control-note{font-size:10px;line-height:1.5;padding:8px 22px;margin:0;background:var(--dbg-surface);border-bottom:1px solid var(--dbg-line);color:var(--dbg-muted);flex-shrink:0}
+.qa-octopus .debugger-workspace{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:0;margin:0;flex:1;min-height:0;overflow:hidden;align-items:stretch}
+.qa-octopus .debugger-main{display:grid;grid-template-rows:minmax(0,1fr) auto;min-width:0;min-height:0;overflow:hidden;border-right:1px solid var(--dbg-line)}
+.qa-octopus .debugger-preview{min-height:0;overflow:auto;border:0;border-radius:0;background:var(--dbg-bg);padding:18px 22px 0;scrollbar-width:thin}
+.qa-octopus .debugger-preview-heading{padding:0 0 12px;border:0;gap:10px;color:var(--dbg-ink);position:sticky;top:-18px;background:var(--dbg-bg);z-index:1}
+.qa-octopus #debugFrame{border:1px solid var(--dbg-line);border-radius:7px;max-width:100%;height:auto}
+.qa-octopus #debugFrameCaption{font-size:10px;padding:9px 0;margin:0;color:var(--dbg-muted)}
+.qa-octopus .debugger-placeholder{border:1px dashed var(--dbg-line);border-radius:8px;min-height:260px;background:var(--dbg-surface);color:var(--dbg-muted);font-size:12px}
+.qa-octopus .debugger-timeline{padding:0;max-height:none;overflow:auto;scrollbar-width:thin;background:var(--dbg-surface);min-height:0}
+.qa-octopus .debugger-timeline-head{position:sticky;top:0;padding:20px 20px 15px;border-bottom:1px solid var(--dbg-line);background:var(--dbg-surface);z-index:2}
+.qa-octopus .debugger-timeline h3{font-size:14px;color:var(--dbg-ink)}
+.qa-octopus #debugStepCount{font-size:11px;color:var(--dbg-muted);margin:6px 0 0;line-height:1.65}
+.qa-octopus #debugSteps{margin:0;padding:18px;gap:12px}
+.qa-octopus .debugger-step{border:1px solid var(--dbg-line);border-radius:7px;background:var(--dbg-raised);padding:14px;box-shadow:none;font-size:12px;color:var(--dbg-ink)}
+.qa-octopus .debugger-step-heading{gap:12px}
+.qa-octopus .debugger-step-heading strong{font-weight:500;line-height:1.5}
+.qa-octopus .debugger-step-heading small{font-size:11px;color:var(--dbg-muted)}
+.qa-octopus .debugger-step-number{font:600 11px/1.5 Consolas,monospace;background:var(--dbg-bg);border-color:var(--dbg-line);color:var(--dbg-muted)}
+.qa-octopus .debugger-step-passed{border-color:color-mix(in srgb,var(--dbg-green) 38%,var(--dbg-line))}
+.qa-octopus .debugger-step-passed .debugger-step-number{background:var(--dbg-green);border-color:var(--dbg-green);color:#fff}
+.qa-octopus .debugger-step-passed small{color:var(--dbg-green)}
+.qa-octopus :is(.debugger-step-running,.debugger-step-waiting){border-color:var(--dbg-blue);background:color-mix(in srgb,var(--dbg-blue) 6%,var(--dbg-surface))}
+.qa-octopus :is(.debugger-step-running,.debugger-step-waiting) .debugger-step-number{background:#2563eb;border-color:#2563eb;color:white;box-shadow:0 0 0 3px #3b82f620}
+.qa-octopus .debugger-step-failed{border-color:var(--dbg-red)}
+.qa-octopus .debugger-step summary{font-size:11px;color:var(--dbg-blue)}
+.qa-octopus .debugger-observations{background:var(--dbg-surface);border-top:1px solid var(--dbg-line);max-height:290px;overflow:auto;scrollbar-width:thin;min-width:0}
+.qa-octopus .debugger-observations-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 22px;border-bottom:1px solid var(--dbg-line)}
+.qa-octopus .debugger-observations-head h3{font-size:11px;text-transform:uppercase;letter-spacing:.07em;margin:0;color:var(--dbg-muted)}
+.qa-octopus #debugMetricSource{font:10px/1.5 Consolas,monospace;color:var(--dbg-muted);overflow-wrap:anywhere}
+.qa-octopus .debugger-metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:14px;padding:14px 22px 8px}
+.qa-octopus .debugger-metric{display:flex;flex-direction:column;gap:4px;min-width:0}
+.qa-octopus .debugger-metric>span{font:11px/1.5 Consolas,monospace;color:var(--dbg-muted);overflow-wrap:anywhere}
+.qa-octopus .debugger-metric strong{font-size:17px;color:var(--dbg-ink);font-weight:600}
+.qa-octopus .debugger-metric small{font-size:10px;color:var(--dbg-muted);font-weight:400}
+.qa-octopus .debugger-metrics-note{font-size:10px;padding:0 22px;margin:0;color:var(--dbg-muted)}
+.qa-octopus .debugger-log-panel{border:0;margin:0;padding:9px 22px 12px}
+.qa-octopus .debugger-log-panel summary{font-size:11px;color:var(--dbg-blue)}
+.qa-octopus #debugLogs{max-height:120px;min-height:34px;margin:8px 0 0;border-color:var(--dbg-line);background:var(--dbg-bg);font:10px/1.6 Consolas,monospace;color:var(--dbg-muted)}
+.qa-octopus .debugger-page pre{background:var(--dbg-bg);border-color:var(--dbg-line);color:var(--dbg-ink)}
+.qa-octopus .debugger-inspection{padding:0 0 18px;border:0;font-size:12px}
+.qa-octopus .debugger-school{background:var(--dbg-surface);border-color:var(--dbg-line)}
+.qa-octopus .debugger-school p{color:var(--dbg-muted)}
+.qa-octopus .debugger-page :is(button,a,select,input):focus-visible{outline:2px solid var(--dbg-blue);outline-offset:3px}
+@media(min-width:1600px){.qa-octopus .debugger-workspace{grid-template-columns:minmax(0,1fr) 400px}}
+@media(max-width:1100px){.qa-octopus .debugger-workspace{grid-template-columns:minmax(0,1fr) 310px}.qa-octopus .debugger-command-bar{padding:14px 16px;gap:12px}.qa-octopus .debugger-aux{flex-basis:100%}.qa-octopus .debugger-preview{padding:14px 16px 0}.qa-octopus .debugger-school-list{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:900px){.qa-octopus .debugger-page .debugger-session{height:auto;min-height:100dvh;overflow:visible}.qa-octopus .debugger-workspace{display:block;overflow:visible}.qa-octopus .debugger-main{display:block;border-right:0;overflow:visible}.qa-octopus .debugger-preview{max-height:80vh;overflow:auto;min-height:240px;padding-bottom:0}.qa-octopus .debugger-timeline{max-height:none;overflow:visible;border-top:1px solid var(--dbg-line)}.qa-octopus .debugger-timeline-head{position:static}.qa-octopus .debugger-observations{max-height:none}.qa-octopus .debugger-command-bar{position:sticky;top:0;z-index:10}.qa-octopus .debugger-page .debugger-setup{padding:22px}.qa-octopus .debugger-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:650px){.qa-octopus .debugger-picker{grid-template-columns:minmax(0,1fr);gap:16px}.qa-octopus .debugger-setup h2{font-size:21px}.qa-octopus .debugger-start-bar{align-items:stretch}.qa-octopus .debugger-start-bar p{flex-basis:100%}.qa-octopus .debugger-start-bar button{width:100%}.qa-octopus .debugger-session-head{flex-basis:100%}.qa-octopus .debugger-controls{width:100%}.qa-octopus .debugger-controls>#debugNext{flex:1;min-width:0;padding:9px}.qa-octopus .debugger-aux{gap:6px}.qa-octopus .debugger-controls .debugger-icon-control{flex:0 0 34px;width:34px;min-width:34px}.qa-octopus .debugger-aux>*{flex:1 1 120px}.qa-octopus .debugger-observations-head{flex-wrap:wrap}.qa-octopus .debugger-control-note{padding:8px 16px}}
+html[data-theme=dark] .qa-octopus .debugger-page .debugger-setup{background:var(--dbg-surface);border-color:var(--dbg-line)}
+html[data-theme=dark] .qa-octopus .debugger-page .debugger-icon-control,html[data-theme=dark] .qa-octopus .debugger-page .debugger-aux :is(button,a){background:var(--dbg-surface);border-color:var(--dbg-line);color:var(--dbg-ink)}
+html[data-theme=dark] .qa-octopus .debugger-page #debugStop{color:var(--dbg-red);border-color:color-mix(in srgb,var(--dbg-red) 35%,transparent);background:transparent}
+.qa-octopus .debugger-help-dialog{width:min(620px,calc(100vw - 32px));max-height:85vh;overflow:auto;border:1px solid var(--dbg-line);border-radius:12px;background:var(--dbg-surface);color:var(--dbg-ink);padding:26px;font-size:13px;line-height:1.7}
+.qa-octopus .debugger-help-dialog::backdrop{background:#0009;backdrop-filter:blur(3px)}
+.qa-octopus .debugger-help-dialog li{margin-bottom:12px}
+.qa-octopus .debugger-help-dialog ol{padding-left:20px}
+html[data-theme=dark] .qa-octopus[data-current-page=debugger] .qa-sidebar .qa-switcher a{background:#172131;color:#dbe7f9;border-color:#34465e}
+html[data-theme=dark] .qa-octopus[data-current-page=debugger] .qa-sidebar nav a.active{background:#1b3050;color:#89baff;border-color:#34465e}
+/* Evidence is separate from automation coverage; no unrecorded step gets a green badge. */
+.scenario-execution-badge, .scenario-execution-note { display: block; font-size: 12px; line-height: 1.5; margin-top: 5px; }
+.scenario-execution-badge { width: fit-content; padding: 3px 8px; border: 1px solid currentColor; border-radius: 6px; }
+.scenario-execution-note { opacity: .8; }
+.scenario-step-evidence { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 8px; font-size: 12px; }
+.scenario-step-evidence > span { border: 1px solid currentColor; border-radius: 5px; padding: 2px 7px; }
+.scenario-evidence-tests { display: flex; flex-wrap: wrap; gap: 6px; margin: 12px 0; }
+.scenario-preview { font-size: 12px; padding: 6px 10px; }
+.scenario-linked-stages { margin-top: 8px; font-size: 12px; }
+.scenario-linked-stage { margin-top: 8px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-size: 12px; }
+.scenario-linked-stage > span { flex: 1 1 220px; overflow-wrap: anywhere; }
+.scenario-evidence-history { margin-top: 14px; font-size: 12px; }
+.scenario-evidence-history li { margin: 8px 0; }
+.evidence-passed { color: #157249; }
+.evidence-failed { color: #b42335; }
+.evidence-partial, .evidence-skipped, .evidence-unknown { color: #87540c; }
+[data-theme="dark"] .evidence-passed { color: #80dbb1; }
+[data-theme="dark"] .evidence-failed { color: #ff9da8; }
+[data-theme="dark"] .evidence-partial, [data-theme="dark"] .evidence-skipped, [data-theme="dark"] .evidence-unknown { color: #f4c574; }

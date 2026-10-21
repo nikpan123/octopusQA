@@ -1,14 +1,3 @@
-<<<<<<< Updated upstream
-// Dane topologii pozostają jawne: testy hierarchii zachowują pełny graf A.
-export const COPY_KEYS = {
-  A: "copyGroup",
-  SP: "copyPrimary",
-  LO: "copySecondary",
-  TECH: "copyTechnical",
-  B: "copyOtherGroup",
-  BSP: "copyOtherPrimary",
-  SOLO: "copyStandalone",
-=======
 // Osobny zestaw dla całego pakietu kopiowania. Stare szkoły COPY_* pozostają
 // nietknięte: mogą zawierać relacje utworzone poza bieżącym wykonaniem testów.
 // Dane topologii pozostają jawne: testy hierarchii zachowują pełny graf A.
@@ -20,7 +9,6 @@ export const COPY_KEYS = {
   B: "specCopyOtherGroup",
   BSP: "specCopyOtherPrimary",
   SOLO: "specCopyStandalone",
->>>>>>> Stashed changes
 };
 export const FULL_COPY_PLAN = {
   nodes: ["A", "SP", "LO", "TECH"],

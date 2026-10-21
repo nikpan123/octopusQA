@@ -337,28 +337,15 @@ export class EntitlementData {
 export const test = base.extend<{
   access: EntitlementData;
   accessTestFlags: { teacher: boolean; school: boolean };
-<<<<<<< Updated upstream
+  accessSchoolNamespace: string;
   accessSchoolKey: string;
 }>({
   accessTestFlags: [{ teacher: true, school: true }, { option: true }],
+  accessSchoolNamespace: ["", { option: true }],
   accessSchoolKey: ["", { option: true }],
   access: [
     async (
-      { page, scenario, authSession, performanceMetrics, accessTestFlags, accessSchoolKey },
-      use,
-      testInfo,
-    ) => {
-      const schools = [
-        await entitlementSchool(page, `${accessSchoolKey}PRIMARY`, 400, accessTestFlags.school),
-        await entitlementSchool(page, `${accessSchoolKey}SECOND`, 400, accessTestFlags.school),
-=======
-  accessSchoolNamespace: string;
-}>({
-  accessTestFlags: [{ teacher: true, school: true }, { option: true }],
-  accessSchoolNamespace: ["", { option: true }],
-  access: [
-    async (
-      { page, scenario, authSession, performanceMetrics, accessTestFlags, accessSchoolNamespace },
+      { page, scenario, authSession, performanceMetrics, accessTestFlags, accessSchoolNamespace, accessSchoolKey },
       use,
       testInfo,
     ) => {
@@ -366,9 +353,8 @@ export const test = base.extend<{
         throw new Error("Niepoprawna przestrzeń danych uprawnień.");
       const suffix = accessSchoolNamespace ? `_${accessSchoolNamespace}` : "";
       const schools = [
-        await entitlementSchool(page, `PRIMARY${suffix}`, 400, accessTestFlags.school),
-        await entitlementSchool(page, `SECOND${suffix}`, 400, accessTestFlags.school),
->>>>>>> Stashed changes
+        await entitlementSchool(page, `${accessSchoolKey}PRIMARY${suffix}`, 400, accessTestFlags.school),
+        await entitlementSchool(page, `${accessSchoolKey}SECOND${suffix}`, 400, accessTestFlags.school),
       ];
       const teacherId = await scenario.createTeacher(schools[0].id, schools[0].name, {
         openPanel: false,

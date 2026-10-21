@@ -41,6 +41,7 @@ function installQaGuide(config) {
     const b = document.createElement('button');
     b.type = 'button'; b.className = 'secondary qa-guide-button'; b.dataset.qaGuide = 'true';
     b.textContent = 'Jak wykonać test?';
+    if (config.compactGuideButtons && host.classList.contains('test-row-actions')) { b.classList.add('qa-icon-action'); b.title = 'Jak wykonać test?'; b.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 0 1 5 0c0 2-2.5 2-2.5 4M12 16v1"/></svg>'; }
     b.setAttribute('aria-label', 'Jak wykonać test: ' + test.title);
     b.addEventListener('click', event => { event.preventDefault(); event.stopPropagation(); show(test, b); });
     host.append(b);

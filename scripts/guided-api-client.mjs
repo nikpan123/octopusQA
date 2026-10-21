@@ -3,7 +3,7 @@ import { randomUUID } from "node:crypto";
 import { safeGuidedValue } from "./guided-api.mjs";
 
 const active = new AsyncLocalStorage();
-const enabled = () => process.env.OCTOPUS_GUIDED_API === "1";
+const enabled = () => process.env.OCTOPUS_GUIDED_API === "1" || process.env.QA_TEST_DEBUGGER === "1";
 async function send(path, body) {
   const base = new URL(process.env.OCTOPUS_GUIDED_URL);
   if (base.protocol !== "http:" || base.hostname !== "127.0.0.1")
@@ -21,10 +21,10 @@ async function send(path, body) {
   return response.json();
 }
 
-export async function guidedOperation(title, operation, automatic = false) {
+export async function guidedOperation(title, operation, automatic = false, options = {}) {
   if (!enabled() || active.getStore()) return operation();
   const stepId = randomUUID();
-  await send("/api/guided/event", { kind: "start", stepId, title, automatic });
+  await send("/api/guided/event", { kind: "start", stepId, title, automatic, checkpoint: options.checkpoint === true, inspection: options.inspection });
   if (!automatic) {
     const result = await send("/api/guided/wait", { stepId });
     if (!result.proceed) throw new Error("Podgląd API zatrzymany przed wykonaniem kroku.");

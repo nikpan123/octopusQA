@@ -23,11 +23,7 @@
     "cleanup:teachers": "node scripts/cleanup-teachers.mjs",
     "test:cleanup": "node --test scripts/cleanup-teachers.test.mjs",
     "test:failures": "node --test scripts/failure-classifier.test.mjs",
-<<<<<<< Updated upstream
-    "test:unit": "node --test scripts/auth.test.mjs scripts/cleanup-teachers.test.mjs scripts/failure-classifier.test.mjs scripts/test-ui-server.test.mjs scripts/test-preview.test.mjs scripts/copy-plan.test.mjs scripts/school-order-db.test.mjs",
-=======
-    "test:unit": "node --test scripts/auth.test.mjs scripts/background-browser.test.mjs scripts/cleanup-teachers.test.mjs scripts/failure-classifier.test.mjs scripts/test-ui-server.test.mjs scripts/copy-plan.test.mjs scripts/copy-scenarios.test.mjs scripts/fixture-schools.test.mjs scripts/school-order-db.test.mjs",
->>>>>>> Stashed changes
+    "test:unit": "node --test scripts/auth.test.mjs scripts/background-browser.test.mjs scripts/guided-api.test.mjs scripts/cleanup-teachers.test.mjs scripts/failure-classifier.test.mjs scripts/test-ui-server.test.mjs scripts/test-preview.test.mjs scripts/copy-plan.test.mjs scripts/copy-scenarios.test.mjs scripts/fixture-schools.test.mjs scripts/school-order-db.test.mjs",
     "report": "playwright show-report",
     "check": "tsc --noEmit",
     "lint": "eslint .",
@@ -41,6 +37,8 @@
     "test:test": "cross-env OCTOPUS_ENV=test playwright test",
     "test:ui:dev": "cross-env OCTOPUS_ENV=dev playwright test --ui",
     "test:ui:test": "cross-env OCTOPUS_ENV=test playwright test --ui",
+    "test:debugger": "node --test scripts/debugger.test.mjs scripts/debugger-inspection.test.mjs",
+    "test:scenario-evidence": "node --test scripts/scenario-evidence.test.mjs scripts/scenario-evidence-ui.test.mjs",
     "test-ui": "node scripts/test-ui-server.mjs"
   },
   "devDependencies": {

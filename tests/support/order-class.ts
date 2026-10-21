@@ -20,11 +20,8 @@ type SavedOrder = {
   isCopied?: boolean;
   schoolAdressToOrder?: string;
   createdAt?: string;
-<<<<<<< Updated upstream
-=======
   salesOrderSymbol?: string;
   cmsOrderSymbol?: string;
->>>>>>> Stashed changes
   orderItems: Array<{ dictOrderItemId: number; quantity: number }>;
 };
 

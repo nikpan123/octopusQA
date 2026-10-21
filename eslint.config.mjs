@@ -88,10 +88,7 @@ export default tseslint.config(
       "tests/zamowienia-kopiowanie-struktura.spec.ts",
       "tests/zamowienia-redmine-36289.spec.ts",
       "tests/zamowienia-redmine-36290.spec.ts",
-<<<<<<< Updated upstream
-=======
       "tests/zamowienia-redmine-35980.spec.ts",
->>>>>>> Stashed changes
     ],
     settings: {
       playwright: {

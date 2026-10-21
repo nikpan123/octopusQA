@@ -29,7 +29,7 @@ export function redactPreview(value) {
     .replace(/eyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+/g, "[token ukryty]");
 }
 
-async function reportFiles(html) {
+export async function reportFiles(html) {
   const match = html.match(/data:application\/zip;base64,([^<]+)/);
   if (!match) return [];
   const buffer = Buffer.from(match[1], "base64");

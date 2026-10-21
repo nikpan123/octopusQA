@@ -1,7 +1,5 @@
 export type SchoolOrderDbRow = { id: number; schoolId: number; isDel: boolean; isCopied: boolean };
 export function validateDbConfiguration(env?: Record<string, string | undefined>): void;
-<<<<<<< Updated upstream
-=======
 export function findHistoricalOrders(requireHistory?: boolean): Promise<
   Array<
     SchoolOrderDbRow & {
@@ -36,7 +34,6 @@ export function findStatusAudit(): Promise<
     actor: string;
   }>
 >;
->>>>>>> Stashed changes
 export function validateSqlId(value: string | number): number;
 export function probeSchoolOrderDatabase(): Promise<{
   database: string;

@@ -11,7 +11,9 @@ import { readStructureHistory } from "./support/school-structure";
 import { liveOctopusHeaders } from "./support/live-auth";
 import { OCTOPUS_BASE_URL } from "./support/environment";
 import type { Page } from "@playwright/test";
-import { guidedApiStep } from "./support/guided-api-step";
+import { copyInspection } from "./support/copy-debugger-inspection";
+import { guidedApiStep, guidedInspection } from "./support/guided-api-step";
+import { copyApiBrowserPreviewEnabled, showCopyApiPreview } from "./support/copy-api-preview";
 
 const pairTest = copyTestFor(copyPairPlan("SP", "LO"));
 const boundaryTest = copyTestFor({
@@ -24,27 +26,81 @@ const boundaryTest = copyTestFor({
 
 async function rejectCopyAttempt(data: CopyData, page: Page, sourceId: string, target: CopyNode) {
   const before = await data.snapshot();
-  const response = await guidedApiStep(
-    "Wyślij próbę kopiowania przez API (zmienia dane na DEV)",
-    async () =>
-      page.context().request.post(`${OCTOPUS_BASE_URL}/api/SchoolOrder/MakeSchoolOrderCopy`, {
-        headers: await liveOctopusHeaders(page),
-        data: {
-          institutionOrderId: Number(sourceId),
-          institutionUnitIdsCopyTo: [data.structure.unit(data.schools[target])],
-          createdBy: data.structure.userId,
-        },
-      }),
+  const browserPreview = copyApiBrowserPreviewEnabled();
+  const source = data.nodes.find((node) =>
+    before[node].some((order) => String(order.id) === sourceId),
   );
-  // 401/403 lub 500 nie potwierdzają walidacji reguły kopiowania dla konta uprawnionego.
-  await guidedApiStep("Sprawdź odrzucenie operacji i brak zmian w dokumentach", async () => {
-    await expect(async () => {
-      expect(await data.snapshot(), "Odrzucona próba nie zmienia żadnego dokumentu").toEqual(
-        before,
+  const path = "/api/SchoolOrder/MakeSchoolOrderCopy";
+  const body = {
+    institutionOrderId: Number(sourceId),
+    institutionUnitIdsCopyTo: [data.structure.unit(data.schools[target])],
+    createdBy: data.structure.userId,
+  };
+  const plannedRequest = { method: "POST", path, body };
+  let latest = before;
+  try {
+    if (browserPreview) {
+      expect(source, "Podgląd wskazuje placówkę rzeczywistego dokumentu źródłowego").toBeDefined();
+      await showCopyApiPreview(data, source!, sourceId);
+      await guidedInspection(
+        "Dane przygotowane — obejrzyj szkoły i zamówienia przed API",
+        copyInspection(data, before, source, target, "before", plannedRequest),
       );
-    }).toPass({ timeout: 5000 });
-    await data.structure.reject(response);
-  });
+    }
+    const response = await guidedApiStep(
+      "Wyślij próbę kopiowania przez API i pokaż placówkę docelową",
+      async () => {
+        const result = await page.context().request.post(OCTOPUS_BASE_URL + path, {
+          headers: await liveOctopusHeaders(page),
+          data: body,
+        });
+        if (browserPreview) {
+          latest = await data.snapshot();
+          const oldIds = new Set(before[target].map((order) => String(order.id)));
+          const added = latest[target].find((order) => !oldIds.has(String(order.id)));
+          await showCopyApiPreview(
+            data,
+            target,
+            added ? String(added.id) : target === source ? sourceId : undefined,
+          );
+        }
+        return result;
+      },
+    );
+    if (browserPreview)
+      await guidedInspection(
+        "API wykonane — obejrzyj zamówienia przed oceną wyniku",
+        copyInspection(data, latest, source, target, "after"),
+      );
+    // 401/403 lub 500 nie potwierdzają walidacji reguły dla konta uprawnionego.
+    await guidedApiStep("Sprawdź odrzucenie operacji i brak zmian w dokumentach", async () => {
+      await expect(async () => {
+        expect(await data.snapshot(), "Odrzucona próba nie zmienia żadnego dokumentu").toEqual(
+          before,
+        );
+      }).toPass({ timeout: 5000 });
+      await data.structure.reject(response);
+    });
+  } finally {
+    // Keep data available even after a failed assertion. The fixture retains its
+    // existing ownership checks and performs cleanup only after this checkpoint.
+    if (browserPreview) {
+      let refreshed = true;
+      try {
+        latest = await data.snapshot();
+      } catch {
+        refreshed = false;
+      }
+      const inspection = copyInspection(data, latest, source, target, "cleanup");
+      if (!refreshed)
+        inspection.message +=
+          " Nie udało się odświeżyć danych: lista dokumentów pokazuje ostatni poprawny odczyt. Sprawdź aktualny stan przez linki.";
+      await guidedInspection(
+        "Zatwierdź sprzątanie — do tego momentu dane pozostają dostępne",
+        inspection,
+      );
+    }
+  }
 }
 
 pairTest(
@@ -78,7 +134,7 @@ for (const [id, target, title] of [
   );
 }
 
-test("ORD-SPEC-35980-08: API odrzuca ponowne kopiowanie kopii do trzeciej placówki @school @order @copy @negative @redmine-35980 @step-api", async ({
+test("ORD-SPEC-35980-08: API odrzuca ponowne kopiowanie kopii do trzeciej placówki @school @order @copy @negative @redmine-35980 @redmine-37219 @step-api", async ({
   copy: data,
   page,
 }) => {
@@ -97,11 +153,15 @@ test("ORD-SPEC-35980-08: API odrzuca ponowne kopiowanie kopii do trzeciej placó
 pairTest(
   "ORD-SPEC-35980-09: filtr roku ukrywa i przywraca kopię bez duplikatów, także po odświeżeniu @school @order @copy @filter @redmine-35980",
   async ({ copy: data, page }) => {
-    const original = await data.source("SP");
-    const copyId = (await makeCopy(data, original.id)).LO!;
-    const row = (await data.apis.LO.orders()).find((item) => String(item.id) === copyId)!;
-    const ownYear = row.createdAt?.slice(0, 4);
-    expect(ownYear, "Kopia ma zapisaną datę utworzenia").toMatch(/^\d{4}$/);
+    const { copyId, ownYear } =
+      await test.step("Przygotowanie: kopia ze znanym rokiem dokumentu", async () => {
+        const original = await data.source("SP");
+        const copyId = (await makeCopy(data, original.id)).LO!;
+        const row = (await data.apis.LO.orders()).find((item) => String(item.id) === copyId)!;
+        const ownYear = row.createdAt?.slice(0, 4);
+        expect(ownYear, "Kopia ma zapisaną datę utworzenia").toMatch(/^\d{4}$/);
+        return { copyId, ownYear };
+      });
     const panel = await data.panel("LO");
     const year = panel.getByRole("combobox").first();
     await test.step("UI: rok dokumentu pokazuje dokładnie jedną kopię", async () => {
@@ -158,13 +218,17 @@ async function makeCopy(data: CopyData, sourceId: string, targets: CopyNode[] = 
 pairTest(
   "ORD-SPEC-35980-10: filtr przedmiotu rozróżnia kopie i nie zmienia dokumentów @school @order @copy @filter @redmine-35980",
   async ({ copy: data }) => {
-    const physics = await data.apis.SP.product("F7P", [7]);
-    const mathematics = await data.apis.SP.product("4P-2", [4]);
-    const physicsSource = await data.apis.SP.save([{ product: physics, quantity: 3 }]);
-    const mathSource = await data.apis.SP.save([{ product: mathematics, quantity: 2 }]);
-    const physicsCopy = (await makeCopy(data, physicsSource)).LO!;
-    const mathCopy = (await makeCopy(data, mathSource)).LO!;
-    const before = await data.snapshot();
+    const { physicsCopy, mathCopy, before } =
+      await test.step("Przygotowanie: dwie kopie różnych przedmiotów i stan kontrolny", async () => {
+        const physics = await data.apis.SP.product("F7P", [7]);
+        const mathematics = await data.apis.SP.product("4P-2", [4]);
+        const physicsSource = await data.apis.SP.save([{ product: physics, quantity: 3 }]);
+        const mathSource = await data.apis.SP.save([{ product: mathematics, quantity: 2 }]);
+        const physicsCopy = (await makeCopy(data, physicsSource)).LO!;
+        const mathCopy = (await makeCopy(data, mathSource)).LO!;
+        const before = await data.snapshot();
+        return { physicsCopy, mathCopy, before };
+      });
     const panel = await data.panel("LO");
     const subject = panel.getByRole("textbox", { name: "wpisz", exact: true });
     await test.step("UI: FIZ pokazuje wyłącznie kopię fizyki", async () => {
@@ -189,11 +253,15 @@ pairTest(
 pairTest(
   "ORD-SPEC-35980-01: kopie dwóch źródeł mają odrębne ID i symbol, a zmiana źródła nie przenika do obcej kopii @school @order @copy @isolation @redmine-35980",
   async ({ copy: data }, info) => {
-    const first = await data.source("SP");
-    const second = await data.source("SP");
-    const a = (await makeCopy(data, first.id)).LO!;
-    const b = (await makeCopy(data, second.id)).LO!;
-    expect(new Set([first.id, second.id, a, b]).size).toBe(4);
+    const { first, second, a, b } =
+      await test.step("Przygotowanie: dwa źródła i ich odrębne kopie w tej samej placówce", async () => {
+        const first = await data.source("SP");
+        const second = await data.source("SP");
+        const a = (await makeCopy(data, first.id)).LO!;
+        const b = (await makeCopy(data, second.id)).LO!;
+        expect(new Set([first.id, second.id, a, b]).size).toBe(4);
+        return { first, second, a, b };
+      });
     const source = (await data.apis.SP.orders()).find((row) => String(row.id) === first.id)!;
     const symbol = source.salesOrderSymbol || source.cmsOrderSymbol;
     expect(symbol, "Źródło ma niepusty symbol dokumentu").toBeTruthy();
@@ -244,7 +312,9 @@ pairTest(
         .poll(async () => (await data.apis.LO.orders()).some((row) => String(row.id) === oldCopy))
         .toBe(false);
     });
-    const newCopy = (await makeCopy(data, original.id)).LO!;
+    const newCopy =
+      await test.step("Ponowne kopiowanie oryginału do tej samej placówki", async () =>
+        (await makeCopy(data, original.id)).LO!);
     await test.step("Ponowne kopiowanie: jedna aktywna kopia, własne ID, właściwe pozycje i niezmieniony oryginał", async () => {
       // Specyfikacja wymaga ID odrębnego od źródła, ale nie zabrania reaktywacji logicznie usuniętej kopii.
       expect(newCopy).not.toBe(original.id);
@@ -279,11 +349,15 @@ pairTest(
 test("ORD-SPEC-35980-03: usunięcie oryginału usuwa jego kopie we wszystkich celach, bez obcych dokumentów @school @order @copy @cascade @redmine-35980", async ({
   copy: data,
 }, info) => {
-  const original = await data.source("SP");
-  const control = await data.source("SP");
-  const copies = await makeCopy(data, original.id, ["LO", "TECH"]);
-  await makeCopy(data, control.id, ["LO"]);
-  const before = await data.snapshot();
+  const { original, control, copies, before } =
+    await test.step("Przygotowanie: dwie kopie źródła i niezależna kopia kontrolna", async () => {
+      const original = await data.source("SP");
+      const control = await data.source("SP");
+      const copies = await makeCopy(data, original.id, ["LO", "TECH"]);
+      await makeCopy(data, control.id, ["LO"]);
+      const before = await data.snapshot();
+      return { original, control, copies, before };
+    });
   await test.step("Usunięcie własnego oryginału przez API i porównanie wszystkich placówek", async () => {
     await data.apis.SP.remove(original.id);
     for (const node of data.nodes) {
@@ -308,10 +382,14 @@ test("ORD-SPEC-35980-03: usunięcie oryginału usuwa jego kopie we wszystkich ce
 pairTest(
   "ORD-SPEC-35980-04: odłączenie placówki usuwa kopię, zachowuje oryginał i lokalne zamówienie @school @order @copy @structure @redmine-35980",
   async ({ copy: data, scenario }, info) => {
-    const original = await data.source("SP");
-    const control = await data.source("LO");
-    const copyId = (await makeCopy(data, original.id)).LO!;
-    const before = await data.snapshot();
+    const { original, control, copyId, before } =
+      await test.step("Przygotowanie: kopia i lokalny dokument kontrolny odbiorcy", async () => {
+        const original = await data.source("SP");
+        const control = await data.source("LO");
+        const copyId = (await makeCopy(data, original.id)).LO!;
+        const before = await data.snapshot();
+        return { original, control, copyId, before };
+      });
     // Po odłączeniu poprawnie zmieniają się metadane relacji placówki, nie treść dokumentów.
     const documents = (rows: typeof before.LO) =>
       rows.map((row) =>
@@ -319,7 +397,8 @@ pairTest(
           Object.entries(row).filter(([key]) => key !== "institutionAllRelationInformation"),
         ),
       );
-    const historyBefore = await readStructureHistory(scenario.app, data.schools.LO);
+    const historyBefore = await test.step("Audyt: odczyt historii przed usunięciem relacji", () =>
+      readStructureHistory(scenario.app, data.schools.LO));
     await test.step("Usunięcie tylko własnej relacji SP → LO i sprawdzenie skutków", async () => {
       await data.unlink("SP", "LO");
       await expect
@@ -328,7 +407,8 @@ pairTest(
       expect(documents(await data.apis.SP.orders())).toEqual(documents(before.SP));
       expect((await data.apis.LO.orders()).some((row) => String(row.id) === control.id)).toBe(true);
     });
-    const historyAfter = await readStructureHistory(scenario.app, data.schools.LO);
+    const historyAfter = await test.step("Audyt: odczyt historii po usunięciu relacji", () =>
+      readStructureHistory(scenario.app, data.schools.LO));
     await test.step("Audyt: nowy wpis identyfikuje usuniętą kopię i datę, nie tylko zmianę relacji", async () => {
       const old = new Set(historyBefore.data.map((entry) => JSON.stringify(entry)));
       const id = new RegExp(`(?:^|\\D)${copyId}(?:\\D|$)`);

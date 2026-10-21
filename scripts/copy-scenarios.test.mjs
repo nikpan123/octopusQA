@@ -96,11 +96,12 @@ test("UI: kompaktowe scenariusze otwierają osobny opis i nowe okno z dokładnie
     await page.locator("#scenarioSearch").fill("35980");
     const partial = page.locator('[data-scenario-key="ORD-SC-35980-09"]');
     await expect(partial).toContainText("Pokrycie częściowe");
-    await expect(partial.locator(".scenario-body")).toHaveCount(0);
+    await expect(partial.locator(".scenario-body")).toBeHidden();
     assert.equal(
-      await partial.locator(".scenario-open").evaluate((el) => window.getComputedStyle(el).display),
+      await partial.locator("summary").evaluate((el) => window.getComputedStyle(el).display),
       "grid",
     );
+    await partial.locator("summary").click();
     const detailOpened = context.waitForEvent("page");
     await partial.locator("[data-scenario-open]").click();
     const detail = await detailOpened;
@@ -112,6 +113,7 @@ test("UI: kompaktowe scenariusze otwierają osobny opis i nowe okno z dokładnie
     assert.equal(await detail.evaluate(() => window.opener), null);
     await detail.close();
     await expect(page.locator('[data-scenario-id="ORD-SC-35980-13"]')).toBeDisabled();
+    await page.locator('[data-scenario-key="ORD-SC-35980-01"] > summary').click();
     const runOpened = context.waitForEvent("page");
     await page.locator('a[data-scenario-id="ORD-SC-35980-01"]').click();
     const runPage = await runOpened;
@@ -127,6 +129,7 @@ test("UI: kompaktowe scenariusze otwierają osobny opis i nowe okno z dokładnie
     await expect(page.locator(".scenario-item")).toHaveCount(16);
     await expect(page.locator("#selectedCount")).toHaveText("0 zaznaczonych");
     const singleOpened = context.waitForEvent("page");
+    await page.locator('[data-scenario-key="ORD-SC-35980-08"] > summary').click();
     await page.locator('a[data-scenario-id="ORD-SC-35980-08"]').click();
     const single = await singleOpened;
     await expect(single.locator('[data-test-id="ORD-SPEC-35980-03"]')).toBeChecked();

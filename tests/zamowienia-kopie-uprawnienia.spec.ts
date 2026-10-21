@@ -41,8 +41,11 @@ for (const [id, change] of [
     let relation: number | undefined;
     let copyId: string | undefined;
     try {
-      relation = await structure.seed(sourceSchool, targetSchool, 1);
-      const record = await data.create("Fizyka", ["7"], targetSchool);
+      const record =
+        await test.step("Przygotowanie: relacja placówek i wpis uprawnień odbiorcy", async () => {
+          relation = await structure.seed(sourceSchool, targetSchool, 1);
+          return data.create("Fizyka", ["7"], targetSchool);
+        });
       const current = async () => (await data.records()).find((row) => row.id === record.id)!;
       const details = (row: AccessRecord) => row.details.find((item) => item.class === "7 F+");
       const exported = async () =>

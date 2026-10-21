@@ -4,7 +4,6 @@ import { readFile } from "node:fs/promises";
 import { chromium, expect } from "@playwright/test";
 import { SUITES, extractTestId, parseListOutput, buildRunArguments } from "./test-ui-server.mjs";
 
-<<<<<<< Updated upstream
 test("podgląd UI: zapisane kroki nie uruchamiają testu; debug wymaga potwierdzenia i wysyła tylko jeden test", async () => {
   const browser = await chromium.launch();
   try {
@@ -98,7 +97,7 @@ test("scenariusze UI pokazują kroki i wybierają wyłącznie powiązany test be
     let submitted;
     const errors = [];
     page.on("pageerror", (error) => errors.push(error.message));
-    await page.route("**/*", async (route) => {
+    await page.context().route("**/*", async (route) => {
       const pathname = new URL(route.request().url()).pathname;
       if (["/", "/styles.css", "/app.js"].includes(pathname)) {
         const file = pathname === "/" ? "index.html" : pathname.slice(1);
@@ -125,27 +124,33 @@ test("scenariusze UI pokazują kroki i wybierają wyłącznie powiązany test be
     });
     await page.goto("http://runner.test/");
     await page.locator('.qa-sidebar nav').getByRole("link", { name: "Scenariusze", exact: true }).click();
+    await page.locator("#scenarioSearch").fill("37160");
     await expect(page.locator(".scenario-item")).toHaveCount(19);
-    await expect(page.locator(".scenario-verification")).toContainText("18 passed, 1 skipped, 0 failed");
+    await page.locator(".scenario-history > summary").click();
+    await expect(page.locator(".scenario-verification")).toContainText("18 zaliczonych, 1 pominiętych, 0 niezaliczonych");
     await page.locator("#scenarioSearch").fill("ORD-COPY-02");
-    await expect(page.locator(".scenario-item")).toHaveCount(1);
-    await page.locator(".scenario-item summary").click();
-    await expect(page.locator(".scenario-item")).toContainText("Oczekiwany wynik");
-    await page.getByRole("button", { name: "Wybierz powiązany test" }).click();
-    await expect(page.locator("#selectedCount")).toHaveText("1 zaznaczonych");
-    await expect(page.locator('[data-test-id="ORD-COPY-02"]')).toBeChecked();
+    const scenario = page.locator('[data-scenario-key="ORD-COPY-02"]');
+    await expect(scenario).toHaveCount(1);
+    await scenario.locator("summary").click();
+    await expect(scenario).toContainText("Oczekiwany rezultat");
+    const opened = page.context().waitForEvent("page");
+    await scenario.locator('a[data-scenario-id="ORD-COPY-02"]').click();
+    const runner = await opened;
+    await expect(runner.locator("#selectedCount")).toHaveText("1 zaznaczonych");
+    await expect(runner.locator('[data-test-id="ORD-COPY-02"]')).toBeChecked();
     assert.equal(submitted, undefined);
-    await page.locator("#startBtn").click();
+    await runner.locator("#startBtn").click();
     await expect.poll(() => submitted).toMatchObject({ selectedTestIds: ["ORD-COPY-02"] });
     await page.locator('.qa-sidebar nav a[href="#business-scenarios"]').click();
     await page.locator("#scenarioSearch").fill("ORD-COPY-19");
-    await page.locator(".scenario-item summary").click();
+    await page.locator('[data-scenario-key="ORD-COPY-19"] > summary').click();
     await expect(page.locator('[data-scenario-id="ORD-COPY-19"]')).toBeEnabled();
     assert.deepEqual(errors, []);
   } finally {
     await browser.close();
   }
-=======
+});
+
 test("jedna karta jest jawnym podglądem: jeden worker, widoczna przeglądarka, bez retry", () => {
   const normal = buildRunArguments({ suite: "schools", workers: 2 });
   assert.equal(normal.singleTab, false);
@@ -157,7 +162,6 @@ test("jedna karta jest jawnym podglądem: jeden worker, widoczna przeglądarka, 
   assert.ok(preview.args.includes("--retries=0"));
   assert.throws(() => buildRunArguments({ singleTab: true, debug: true }));
   assert.throws(() => buildRunArguments({ singleTab: true, annualMode: "PREPARE" }));
->>>>>>> Stashed changes
 });
 
 test("pakiet Szkoły zawiera oba pliki Struktury", () => {
@@ -314,8 +318,7 @@ test("panel pokazuje krótkie ID i wysyła zaznaczony nowy test", async () => {
     await page.locator("#startBtn").click();
     await expect
       .poll(() => submitted)
-<<<<<<< Updated upstream
-      .toMatchObject({ suite: "schools", selectedTestIds: ["STR-106"] });
+      .toMatchObject({ suite: "schools", selectedTestIds: ["STR-106"], singleTab: true, headed: true, workers: 1 });
     await page.waitForURL("**/#run-status");
     await page.locator('.qa-sidebar nav a[href="#run-tests"]').click();
     await page.locator("#testSearch").fill("@redmine-37176");
@@ -351,15 +354,6 @@ test("panel pokazuje krótkie ID i wysyła zaznaczony nowy test", async () => {
     page.once("dialog", (dialog) => dialog.accept());
     await page.locator("#startBtn").click();
     assert.equal(submitted, undefined, "Brak testu nie uruchamia całej regresji");
-=======
-      .toMatchObject({
-        suite: "schools",
-        selectedTestIds: ["STR-106"],
-        singleTab: true,
-        headed: true,
-        workers: 1,
-      });
->>>>>>> Stashed changes
     // Cała sieć jest przechwycona; test panelu nie uruchamia regresji na DEV.
   } finally {
     await browser.close();
