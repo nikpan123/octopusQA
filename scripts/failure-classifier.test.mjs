@@ -4,6 +4,15 @@ import test from "node:test";
 import { classifyFailure } from "./failure-classifier.mjs";
 import FailureReporter from "./failure-reporter.mjs";
 
+test("brak referencji szkoły jest brakiem danych środowiska, a nie błędem interfejsu", () => {
+  const result = classifyFailure({
+    message:
+      "Dane referencyjne octopus.gwotest.pl: oczekiwano jednej aktywnej szkoły „Szkoła”, Poznań; znaleziono 0. Uzupełnij dane tego środowiska.",
+  });
+  assert.equal(result.category, "TEST_DATA_ERROR");
+  assert.match(result.summary, /gwotest/);
+});
+
 test("rozpoznaje brak elementu i zachowuje lokator", () => {
   const result = classifyFailure({
     message: `locator.click: Timeout 20000ms exceeded.\nCall log:\n  - waiting for getByRole('button', { name: 'Zapisz' })`,

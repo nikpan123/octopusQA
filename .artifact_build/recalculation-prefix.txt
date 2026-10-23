@@ -1,0 +1,39 @@
+$ErrorActionPreference = 'Stop'
+[Console]::OutputEncoding = [System.Text.UTF8Encoding]::new($false)
+$connection = $null
+$reader = $null
+$command = $null
+$stage = 'configuration'
+try {
+  Add-Type -AssemblyName System.Data
+  if ($env:OCTOPUS_ENV -and $env:OCTOPUS_ENV -ne 'dev') { throw 'DEV_ONLY' }
+  if ($env:OCTOPUS_DEV_DB_NAME -ne 'GWO_CRMDEV') { throw 'DEV_DATABASE_REQUIRED' }
+  foreach ($key in @('OCTOPUS_DEV_DB_SERVER', 'OCTOPUS_DEV_DB_USER', 'OCTOPUS_DEV_DB_PASSWORD')) {
+    if ([string]::IsNullOrEmpty([Environment]::GetEnvironmentVariable($key))) { throw 'MISSING_CONFIGURATION' }
+  }
+  $port = 1433
+  if ($env:OCTOPUS_DEV_DB_PORT) { $port = [int]$env:OCTOPUS_DEV_DB_PORT }
+  if ($port -lt 1 -or $port -gt 65535) { throw 'INVALID_PORT' }
+
+
+  $builder = New-Object System.Data.SqlClient.SqlConnectionStringBuilder
+  $builder['Data Source'] = "$($env:OCTOPUS_DEV_DB_SERVER),$port"
+  $builder['Initial Catalog'] = $env:OCTOPUS_DEV_DB_NAME
+  $builder['User ID'] = $env:OCTOPUS_DEV_DB_USER
+  $builder['Password'] = $env:OCTOPUS_DEV_DB_PASSWORD
+  $builder['Integrated Security'] = $false
+  $builder['Encrypt'] = $env:OCTOPUS_DEV_DB_ENCRYPT -ne 'false'
+  $builder['TrustServerCertificate'] = $env:OCTOPUS_DEV_DB_TRUST_SERVER_CERTIFICATE -eq 'true'
+  $builder['Connect Timeout'] = 10
+  $builder['Application Name'] = 'Octopus QA own POTW26 recalculation'
+
+  $connection = New-Object System.Data.SqlClient.SqlConnection($builder.get_ConnectionString())
+  $stage = 'connect'
+  $connection.Open()
+  $command = $connection.CreateCommand()
+  $stage = 'read'
+  $command.CommandTimeout = 10
+  $command.CommandText = 'SELECT DB_NAME()'
+  $database = [string]$command.ExecuteScalar()
+  if ($database -ne 'GWO_CRMDEV') { throw 'WRONG_DATABASE' }
+

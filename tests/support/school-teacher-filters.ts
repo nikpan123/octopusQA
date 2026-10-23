@@ -1,3 +1,4 @@
+import { automaticSchoolName, automaticTeacherName } from "../../scripts/test-names.mjs";
 import { randomUUID } from "node:crypto";
 import { mkdir, writeFile } from "node:fs/promises";
 import { expect, type Locator } from "@playwright/test";
@@ -32,7 +33,7 @@ export class TeacherFilterData {
 
   async school(label = "A"): Promise<FilterSchool> {
     const key = `REG_${Date.now()}_${randomUUID().slice(0, 6)}`;
-    const name = `AUTO_TFL_${OCTOPUS_ENV.toUpperCase()}_${label}_${key}`;
+    const name = automaticSchoolName("TFL", "", OCTOPUS_ENV, `${key}:${label}`);
     const id = await backgroundSchoolSetup(this.app.page, async (setup) => {
       const id = await setup.createSchool(name, `TFL-${key}`, "Szkoła podstawowa");
       this.schools.push({ id, name });
@@ -52,7 +53,7 @@ export class TeacherFilterData {
     for (const other of otherSchools) expect(other.name).toMatch(/^AUTO_TFL_/);
     const id = `REG_${Date.now()}_${randomUUID().slice(0, 6)}`;
     const email = `${id.toLowerCase()}@example.invalid`;
-    const lastName = `${id} FILTR ${label}`;
+    const lastName = automaticTeacherName(id);
     const log: TeacherLog = {
       id,
       email,

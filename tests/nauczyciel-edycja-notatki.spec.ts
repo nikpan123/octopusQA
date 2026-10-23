@@ -120,8 +120,8 @@ test("EDIT-28: uwagi nauczyciela są trwałe @teacher @edit", async ({
   await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("email"); oczekiwane: s.email', async () =>
     expect(s.app.detail("email")).toHaveValue(s.email));
 
-  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("firstName"); oczekiwane: "Testowy"', async () =>
-    expect(s.app.detail("firstName")).toHaveValue("Testowy"));
+  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("firstName"); oczekiwane: "Auto"', async () =>
+    expect(s.app.detail("firstName")).toHaveValue("Auto"));
 
   /*
    * Relacja ze szkołą również musi pozostać.

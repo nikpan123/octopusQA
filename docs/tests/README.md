@@ -4,6 +4,8 @@ Ten katalog opisuje aktualne obszary testowe. Źródłem prawdy dla nazw, lokali
 
 Regresja [Redmine #37176](redmine-37176.md) ma dwa nowe scenariusze: ORD-BUG-37176-01 i ORD-BUG-37176-02. Sprawdzają ilości -1 i -10, próbę zapisu oraz brak nowego zamówienia. Zostały napisane, ale nie uruchomione na DEV/TEST.
 
+[Centrum wysyłkowe — Gratisy](centrum-wysylkowe-gratisy.md): osobna paczka GFT-01–GFT-07, sprawdzona na DEV (dotychczasowe 5/5 PASS, nowe testy klas 2/2 PASS). Lista i pełny cykl dodania, edycji, porównania z bazą oraz usunięcia są też w szybkiej regresji.
+
 ## Aktualny stan
 
 [Kopiowanie zamówień w strukturze — Redmine 37160](kopiowanie-zamowien-struktura.md): ORD-COPY-01–ORD-COPY-19. Opisy warunków, kroków i wyników są dostępne w nowym menu Scenariusze lokalnego panelu i powiązane z testami o identycznych ID. ORD-COPY-19 wymaga odrębnego konta bez prawa edycji szkoły.
@@ -12,7 +14,7 @@ Weryfikacja kopiowania na DEV 19.10.2026: **18 passed, 1 skipped**. Testy lokaln
 
 [Redmine #37203 — sortowanie Kategorii](redmine-37203.md) jest powiązany z istniejącymi CAT-23, CAT-24 i CAT-25. Dodano dowody JSON/zrzuty oraz kontrolę rzeczywistej kolejności przy czterech zmianach kierunku. Ta wersja tych trzech testów nie została jeszcze uruchomiona na DEV/TEST.
 
-Progi i Uprawnienia mają 90 pozycji scenariuszy: THR-01–THR-22, PERM-01–PERM-25, ACC-01–ACC-10, ACL-01–ACL-17, NCL-01–NCL-08 i DEB-01–DEB-08. Nowe testy promocji nie zostały uruchomione; używają nauczycieli i szkół bez flag Testowy. Testy DEB mają rzeczywiste warunki sezonowe. [Zakres, przygotowanie danych i pozostałe luki](uprawnienia-i-progi.md). NCL-04 jest zablokowany (`fixme`) do czasu udostępnienia rzeczywistych zamówień historycznych i nie jest gotowym pokryciem tej reguły.
+Progi i Uprawnienia mają 90 pozycji scenariuszy: THR-01–THR-22, PERM-01–PERM-25, ACC-01–ACC-10, ACL-01–ACL-17, NCL-01–NCL-08 i DEB-01–DEB-08. Nowe testy promocji nie zostały uruchomione; używają nauczycieli i szkół bez flag Testowy. Testy DEB mają rzeczywiste warunki sezonowe. [Zakres, przygotowanie danych i pozostałe luki](uprawnienia-i-progi.md). NCL-04 przygotowuje historyczne daty własnych zamówień bezpośrednio w bazie DEV i potwierdza je przez API; wymaga konfiguracji dostępu do bazy.
 
 Dokumenty i edycja zamówień mają 30 nowych scenariuszy ORD-DOC-01–ORD-DOC-30, jeszcze nieuruchomionych. Nie dublują podstawowego zakresu ORD-48–ORD-66. ORD-DOC-28 wymaga istniejącego testowego zamówienia z integracji. [Macierz wymagań i kroki](dokumenty-zamowien.md).
 
@@ -137,3 +139,5 @@ Nie edytuj tabeli w `scenario-index.md` ręcznie.
 - [Główny README](../../README.md)
 - [Panel Test Runner](../../TEST-UI.md)
 - [Indeks wszystkich scenariuszy](scenario-index.md)
+
+[Szybka regresja przed releasem](regresja-przed-releasem.md) · [Zasady opisywania scenariuszy do ręcznego odtworzenia](opisy-scenariuszy.md) · [Rozpoznawanie błędów danych testowych](bledy-danych-testowych.md).

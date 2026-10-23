@@ -28,8 +28,8 @@ test("EDIT-04: zmiana imienia jest trwała i widoczna w historii @teacher @edit"
 
   const form = await openBasicTeacherEdit(page, s.app);
 
-  await test.step('Sprawdzenie: wartość pola w widoku — form.locator("#firstName"); oczekiwane: "Testowy"', async () =>
-    expect(form.locator("#firstName")).toHaveValue("Testowy"));
+  await test.step('Sprawdzenie: wartość pola w widoku — form.locator("#firstName"); oczekiwane: "Auto"', async () =>
+    expect(form.locator("#firstName")).toHaveValue("Auto"));
 
   await typeValue(form.locator("#firstName"), newFirstName);
 
@@ -112,8 +112,8 @@ test("EDIT-05: zmiana nazwiska jest trwała i widoczna w historii @teacher @edit
   await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("lastName"); oczekiwane: expectedLastName', async () =>
     expect(s.app.detail("lastName")).toHaveValue(expectedLastName));
 
-  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("firstName"); oczekiwane: "Testowy"', async () =>
-    expect(s.app.detail("firstName")).toHaveValue("Testowy"));
+  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("firstName"); oczekiwane: "Auto"', async () =>
+    expect(s.app.detail("firstName")).toHaveValue("Auto"));
 
   await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("email"); oczekiwane: s.email', async () =>
     expect(s.app.detail("email")).toHaveValue(s.email));
@@ -322,8 +322,8 @@ test("EDIT-10: puste imię blokuje zapis @teacher @edit @validation", async ({
    */
   await s.app.openPanel("teacher", teacherId);
 
-  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("firstName"); oczekiwane: "Testowy"', async () =>
-    expect(s.app.detail("firstName")).toHaveValue("Testowy"));
+  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("firstName"); oczekiwane: "Auto"', async () =>
+    expect(s.app.detail("firstName")).toHaveValue("Auto"));
 
   await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("lastName"); oczekiwane: s.id', async () =>
     expect(s.app.detail("lastName")).toHaveValue(s.id));

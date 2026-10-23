@@ -107,6 +107,8 @@ test("UI: scoped results, exact saved step, no run request, environment change",
       if (pathname === "/api/test-data") data = { teachers: [], schools: [] };
       if (pathname === "/api/scenario-evidence")
         data = {
+          unavailableReports: 7,
+          archive: { notSaved: 7, unreadable: 0 },
           scenarios: Object.fromEntries(
             scenarios.map((s) => [
               s.id,
@@ -144,8 +146,11 @@ test("UI: scoped results, exact saved step, no run request, environment change",
     const errors = [];
     page.on("pageerror", (error) => errors.push(error.message));
     await page.goto("http://qa.test/#business-scenarios");
+    await page.locator('details.scenario-feature > summary').first().click();
     const complete = page.locator('[data-scenario-key="SC-01"]');
     await expect(complete.locator(":scope > summary")).toContainText("PASS · 1/1 testów · DEV");
+    await expect(complete.locator(":scope > summary")).not.toContainText("archiwum");
+    await expect(page.locator(".scenario-archive-notice")).toContainText("7 przebiegów");
     await expect(page.locator('[data-scenario-key="SC-02"] > summary')).toContainText(
       "Niepełny przebieg · 1/2 testów",
     );

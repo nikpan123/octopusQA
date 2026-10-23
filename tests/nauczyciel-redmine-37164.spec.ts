@@ -1,12 +1,10 @@
-import { test, expect } from "./support/scenario";
+import { test, expect } from "./support/shared-school";
 import { typeValue, type Octopus, waitForOctopusIdle } from "./support/octopus";
 import { saveNewTeacherWithoutSubjectLevel } from "./support/teacher-add";
 import { registerCreatedTeacher } from "./support/teacher-add-scenario";
 import type { Locator } from "@playwright/test";
 
-const firstSchool = { id: "93391", name: "Szkoła QA 1" };
-const secondSchool = { id: "93392", name: "Szkoła QA 2" };
-type School = typeof firstSchool;
+type School = { id: string; name: string };
 
 async function openSchools(app: Octopus, form: Locator) {
   await form.getByRole("button", { name: "Dodaj szkołę", exact: true }).click();
@@ -50,10 +48,10 @@ async function duplicateAttempt(
   const found = schoolRow(dialog.locator("ag-grid-angular").first(), school);
   const selected = schoolRow(dialog.locator("ag-grid-angular").last(), school);
   const plus = found.locator("mat-icon").filter({ hasText: /^\s*add_circle_outline\s*$/ });
+  await expect
+    .soft(plus, "Po wyszukaniu już wybranej szkoły akcja Dodaj nie może znów być dostępna")
+    .toBeHidden();
   const addAvailable = await plus.isVisible();
-  expect
-    .soft(addAvailable, "Po wyszukaniu już wybranej szkoły akcja Dodaj nie może znów być dostępna")
-    .toBe(false);
   // Próbujemy rzeczywistego dodania tylko wtedy, gdy UI udostępnia plus.
   // Nigdy nie klikamy minusa: usunięcie relacji nie jest próbą duplikacji.
   if (addAvailable) await found.getByRole("gridcell").first().click();
@@ -100,6 +98,8 @@ test.describe("Redmine #37164 — unikalne szkoły nauczyciela", () => {
     test(`${c.id}: ${c.title} @teacher @school @relation @regression @redmine-37164`, async ({
       page,
       scenario: s,
+      school: firstSchool,
+      secondSchool,
     }, info) => {
       info.annotations.push({
         type: "Redmine",

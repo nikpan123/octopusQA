@@ -25,11 +25,39 @@ test("35980: scenariusz zbiorczy odróżnia pokrycie automatyczne, częściowe i
     } else assert.ok(scenario.testIds.length);
     if (scenario.automation === "partial") assert.ok(scenario.blocker);
   }
-  for (const ending of ["13"])
+  for (const ending of ["10", "11"])
     assert.equal(
       feature.scenarios.find((item) => item.id.endsWith("-" + ending)).automation,
-      "blocked",
+      "partial",
     );
+  for (const ending of ["09", "13", "14"])
+    assert.equal(
+      feature.scenarios.find((item) => item.id.endsWith("-" + ending)).automation,
+      "automated",
+    );
+});
+
+test("35980: gratisy sprawdzają utworzenie zlecenia, bez oceny blokad", async () => {
+  const catalog = JSON.parse(
+    await readFile(new URL("../test-ui/scenarios.json", import.meta.url), "utf8"),
+  );
+  const scenario = catalog.features
+    .flatMap((feature) => feature.scenarios)
+    .find((item) => item.id === "ORD-SC-35980-13");
+  assert.deepEqual(
+    scenario.testIds,
+    ["14", "15", "16", "17", "30", "31", "32", "33"].map((id) => `ORD-SPEC-35980-${id}`),
+  );
+  assert.match(scenario.expected, /Zlecenie z blokadami również/);
+  const source = await readFile(
+    new URL("../tests/zamowienia-kopie-gratisy.spec.ts", import.meta.url),
+    "utf8",
+  );
+  assert.doesNotMatch(source, /unpermittedForShipping|za mała ilość|brak zamów/i);
+  assert.match(source, /createdGiftOrders\(data\)\)\.length/);
+  assert.match(source, /toBeGreaterThan\(0\)/);
+  assert.match(source, /expectTestFlags/);
+  assert.match(source, /Testowy ma blokować samo utworzenie zlecenia/);
 });
 
 test("35980: pakiet kopiowania obejmuje przywrócone i nowe testy, nie całą regresję", () => {
@@ -44,8 +72,31 @@ test("35980: pakiet kopiowania obejmuje przywrócone i nowe testy, nie całą re
     "zamowienia-redmine-36289",
     "zamowienia-redmine-36290",
     "zamowienia-redmine-35980",
+    "zamowienia-kopie-zmiana-struktury",
   ])
     assert.ok(run.args.includes("tests/" + file + ".spec.ts"));
+});
+
+test("35980: prezentacja i struktura mają powiązane testy, niedostępna zmiana typu jest jawna", async () => {
+  const catalog = JSON.parse(
+    await readFile(new URL("../test-ui/scenarios.json", import.meta.url), "utf8"),
+  );
+  const scenarios = catalog.features.find((feature) => feature.issue === "35980").scenarios;
+  const presentation = scenarios.find((scenario) => scenario.id === "ORD-SC-35980-06");
+  assert.equal(presentation.automation, "automated");
+  assert.equal(presentation.stepLinks[0].checks.length, 4);
+  const changes = scenarios.find((scenario) => scenario.id === "ORD-SC-35980-09");
+  assert.equal(changes.automation, "automated");
+  assert.deepEqual(
+    changes.testIds,
+    ["04", "20", "21", "22", "23", "24"].map((id) => "ORD-SPEC-35980-" + id),
+  );
+  assert.match(changes.expected, /ponownie ręcznie/);
+  assert.ok(
+    changes.preconditions.some((text) =>
+      /Typ i poziom istniejącej szkoły są nieedytowalne/.test(text),
+    ),
+  );
 });
 
 test("UI: kompaktowe scenariusze otwierają osobny opis i nowe okno z dokładnie zaznaczonymi testami", async () => {
@@ -94,7 +145,9 @@ test("UI: kompaktowe scenariusze otwierają osobny opis i nowe okno z dokładnie
     // Wybrany kontekst środowiska źródła przechodzi do nowego okna.
     await page.goto("http://qa.test/?environment=test#business-scenarios");
     await page.locator("#scenarioSearch").fill("35980");
-    const partial = page.locator('[data-scenario-key="ORD-SC-35980-09"]');
+    const featureId = catalog.features.find((feature) => feature.issue === "35980").id;
+    await page.locator(`[data-feature-key="${featureId}"] > summary`).click();
+    const partial = page.locator('[data-scenario-key="ORD-SC-35980-10"]');
     await expect(partial).toContainText("Pokrycie częściowe");
     await expect(partial.locator(".scenario-body")).toBeHidden();
     assert.equal(
@@ -106,13 +159,16 @@ test("UI: kompaktowe scenariusze otwierają osobny opis i nowe okno z dokładnie
     await partial.locator("[data-scenario-open]").click();
     const detail = await detailOpened;
     await expect(detail.locator(".scenario-detail")).toContainText(
-      "Brakuje testów zmiany typu/hierarchii",
+      catalog.features
+        .find((feature) => feature.issue === "35980")
+        .scenarios.find((scenario) => scenario.id === "ORD-SC-35980-10").blocker,
     );
-    await expect(detail.locator("#pageTitle")).toHaveText("ORD-SC-35980-09");
+    await expect(detail.locator("#pageTitle")).toHaveText("ORD-SC-35980-10");
     await expect(detail.locator("#scenarioSearch")).toBeHidden();
     assert.equal(await detail.evaluate(() => window.opener), null);
     await detail.close();
-    await expect(page.locator('[data-scenario-id="ORD-SC-35980-13"]')).toBeDisabled();
+    await page.locator('[data-scenario-key="ORD-SC-35980-13"] > summary').click();
+    await expect(page.locator('a[data-scenario-id="ORD-SC-35980-13"]')).toBeVisible();
     await page.locator('[data-scenario-key="ORD-SC-35980-01"] > summary').click();
     const runOpened = context.waitForEvent("page");
     await page.locator('a[data-scenario-id="ORD-SC-35980-01"]').click();

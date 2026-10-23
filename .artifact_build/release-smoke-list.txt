@@ -1,0 +1,27 @@
+Playwright: środowisko DEV → https://octopus.gwodev.pl
+Listing tests:
+  [chromium] › klubowiczostwo-cykl-zycia.spec.ts:880:1 › CLUB-52: po weryfikacji negatywnej edycja formularza przywraca nauczyciela z Obcy na Nasz @teacher @club @negative-verification @edit @regression
+  [chromium] › klubowiczostwo-nauczyciela.spec.ts:26:1 › CLUB-01: przedmiotopoziom i formularz klubowy nauczyciela są trwałe @teacher @club @history
+  [chromium] › klubowiczostwo-nauczyciela.spec.ts:126:1 › CLUB-02: edycja klasy 4 na 5 dla Matematyka/SP jest trwała @teacher @club @history
+  [chromium] › nauczyciel-dodawanie.spec.ts:65:1 › ADD-01: nauczyciela można utworzyć z imieniem, nazwiskiem, szkołą i e-mailem bez przedmioto-poziomu @teacher @add @positive
+  [chromium] › nauczyciel-dodawanie.spec.ts:1129:3 › ADD-15: brak pola imię blokuje utworzenie nauczyciela @teacher @add @validation
+  [chromium] › nauczyciel-edycja-kontakt.spec.ts:28:1 › EDIT-12: poprawny e-mail można zmienić i zmiana jest widoczna w historii @teacher @edit
+  [chromium] › potwierdzenia-gratisy-2026.spec.ts:156:7 › Potwierdzenia SP i SŚ 2026 — pełna macierz Excela › POTW26-01-MINUS › POTW26-01-MINUS: matematyka SP klasa 4, 4PN-3: o jedną sztukę poniżej minimum dla gratisu @gift @potw26 @gift-smoke
+  [chromium] › potwierdzenia-gratisy-2026.spec.ts:156:7 › Potwierdzenia SP i SŚ 2026 — pełna macierz Excela › POTW26-01-MIN › POTW26-01-MIN: matematyka SP klasa 4, 4PN-3: dokładnie minimum dla gratisu @gift @potw26 @gift-smoke
+  [chromium] › potwierdzenia-gratisy-2026.spec.ts:156:7 › Potwierdzenia SP i SŚ 2026 — pełna macierz Excela › POTW26-01-NO-ORDER › POTW26-01-NO-ORDER: matematyka SP klasa 4, 4PN-3: brak zamówienia szkoły @gift @potw26 @gift-smoke
+  [chromium] › potwierdzenia-gratisy-2026.spec.ts:156:7 › Potwierdzenia SP i SŚ 2026 — pełna macierz Excela › POTW26-01-FOREIGN › POTW26-01-FOREIGN: matematyka SP klasa 4, 4PN-3: potwierdzenie obcego wydawcy @gift @potw26 @gift-smoke
+  [chromium] › potwierdzenia-gratisy-2026.spec.ts:156:7 › Potwierdzenia SP i SŚ 2026 — pełna macierz Excela › POTW26-08-MIN › POTW26-08-MIN: matematyka SŚ klasa 2 P, MLK2-1: 1 egzemplarz w zamówieniu szkoły i potwierdzenie NASZ @gift @potw26 @gift-smoke
+  [chromium] › szkola-dodawanie.spec.ts:79:1 › SCH-03: minimalny poprawny formularz tworzy szkołę @school @school-add @positive
+  [chromium] › szkola-dodawanie.spec.ts:104:1 › SCH-04: brak nazwy blokuje zapis szkoły @school @school-add @validation
+  [chromium] › szkola-edycja.spec.ts:143:1 › SCH-EDIT-04: zmiana WWW i e-maila jest trwała @school @school-edit @positive @contact
+  [chromium] › szkola-medalowosc.spec.ts:31:3 › Medalowość szkoły › MED-02: pole Medal dla szkoły ze złotym medalem jest nieedytowalne
+  [chromium] › szkola-prog.spec.ts:35:5 › Minimalne zamówienie — pole Próg szkoły › THR-12: SP 400 uczniów daje próg cyfrowy 30 @school @threshold @boundaries
+  [chromium] › uprawnienia-api.spec.ts:16:3 › ClassesWithLevels — rzeczywisty eksport uprawnień › ACC-01: przyznana klasa trafia do eksportu wraz z poziomem i zakresem @teacher @entitlement @access-api
+  [chromium] › uprawnienia-promocja-nowy-klient.spec.ts:52:5 › Nowy klient — 01 › NCL-01: zamówienie klasy 4 na progu rozszerza dostęp do 4–6 @teacher @entitlement @promotion @new-client
+  [chromium] › uprawnienia-promocja-nowy-klient.spec.ts:52:5 › Nowy klient — 02 › NCL-02: zamówienie poniżej progu nie uruchamia promocji @teacher @entitlement @promotion @new-client
+  [chromium] › uprawnienia-promocja-nowy-klient.spec.ts:114:5 › Wycofanie promocji — 07 › NCL-07: korekta zakupu odbiera promocję bez pozostawienia klas 5–6 @teacher @entitlement @promotion @new-client @recalculation
+  [chromium] › zamowienia-kopiowanie-struktura.spec.ts:44:5 › Kopiowanie dokumentów w strukturze — Redmine 37160 › ORD-COPY-01: ZS → SP, kopia w tej samej strukturze @school @order @copy @redmine-37160
+  [chromium] › zamowienia-szkoly.spec.ts:43:1 › ORD-01: zamówienie szkoły zachowuje produkt i ilość po ponownym otwarciu @school @order @smoke
+  [chromium] › zamowienia-szkoly.spec.ts:121:1 › ORD-03: edycja ilości dwóch produktów i usunięcie zamówienia @school @order @edit
+  [chromium] › zamowienia-szkoly.spec.ts:313:1 › ORD-05: anulowanie pustego formularza nie tworzy zamówienia @school @order @cancel
+Total: 24 tests in 13 files

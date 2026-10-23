@@ -1,3 +1,4 @@
+import { automaticSchoolName } from "../scripts/test-names.mjs";
 import { test, expect } from "./support/scenario";
 import { OCTOPUS_ENV } from "./support/environment";
 import { CATEGORY_CASES } from "./support/school-category-data";
@@ -21,7 +22,7 @@ test.describe("Kategoria podczas dodawania szkoły", () => {
       page,
       scenario: s,
     }) => {
-      const name = `AUTO_CAT_${OCTOPUS_ENV.toUpperCase()}_ADD_${sample.key}_${s.id}`;
+      const name = automaticSchoolName("CAT", "ADD", OCTOPUS_ENV, `${sample.key}:${s.runId}`);
       const number = `CAT-ADD-${s.id}`;
       await s.record("schoolName", name);
       await s.record("schoolType", sample.type);

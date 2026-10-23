@@ -1,9 +1,10 @@
 import { randomUUID } from "node:crypto";
 import { mkdir, writeFile } from "node:fs/promises";
 import { test as base, expect } from "./fixtures";
-import { OCTOPUS_BASE_URL } from "./environment";
+import { OCTOPUS_BASE_URL, OCTOPUS_ENV } from "./environment";
 import { Octopus } from "./octopus";
 import type { TeacherSubjectLevel } from "./api-factory";
+import { automaticSchoolName, automaticTeacherName } from "../../scripts/test-names.mjs";
 
 export type CreateScenarioTeacherOptions = {
   openPanel?: boolean;
@@ -14,7 +15,9 @@ export type CreateScenarioTeacherOptions = {
 
 export type Scenario = {
   app: Octopus;
+  // Krótkie nazwisko do użycia w UI; runId identyfikuje plik i e-mail cleanupu.
   id: string;
+  runId: string;
   schoolName: string;
   email: string;
   record: (key: string, value: string) => Promise<void>;
@@ -29,11 +32,14 @@ export type Scenario = {
 export const test = base.extend<{ scenario: Scenario }>({
   scenario: async ({ page, apiFactory, performanceMetrics }, use, testInfo) => {
     const app = new Octopus(page);
-    const id = `REG_${Date.now()}_${randomUUID().slice(0, 6)}`;
-    const schoolName = `${id} Szkoła testowa`;
-    const email = `${id.toLowerCase()}@example.invalid`;
+    const runId = `REG_${Date.now()}_${randomUUID().slice(0, 6)}`;
+    const id = automaticTeacherName(runId);
+    const schoolName = automaticSchoolName("SZ", "", OCTOPUS_ENV, runId);
+    const email = `${runId.toLowerCase()}@example.invalid`;
     const data: Record<string, string> = {
-      id,
+      id: runId,
+      displayId: id,
+      environment: OCTOPUS_ENV,
       schoolName,
       email,
       title: testInfo.title,
@@ -41,7 +47,7 @@ export const test = base.extend<{ scenario: Scenario }>({
       cleanupBatchId: process.env.OCTOPUS_CLEANUP_BATCH_ID ?? "",
     };
     await mkdir("runs", { recursive: true });
-    const save = () => writeFile(`runs/${id}.json`, JSON.stringify(data, null, 2));
+    const save = () => writeFile(`runs/${runId}.json`, JSON.stringify(data, null, 2));
     const record = async (key: string, value: string) => {
       data[key] = value;
       await save();
@@ -51,6 +57,7 @@ export const test = base.extend<{ scenario: Scenario }>({
       await use({
         app,
         id,
+        runId,
         schoolName,
         email,
         record,
@@ -84,7 +91,7 @@ export const test = base.extend<{ scenario: Scenario }>({
       }
       data.result = testInfo.status === "passed" ? "PASS" : String(testInfo.status).toUpperCase();
       data.finishedAt = new Date().toISOString();
-      if (data.teacherId)
+      if (data.teacherId && !["DELETED", "ALREADY_ABSENT"].includes(data.cleanupStatus))
         data.cleanupStatus = data.result === "PASS" ? "PENDING_SUITE_END" : "KEPT_FAILED_TEST";
       await performanceMetrics.measure("fixture.scenario.cleanup", async () => {
         await save();

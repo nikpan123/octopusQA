@@ -2,6 +2,7 @@ import { expect } from "@playwright/test";
 import { test } from "./support/scenario";
 import { expandOrderItems, openOrders } from "./support/order";
 import { liveOctopusHeaders } from "./support/live-auth";
+import { OCTOPUS_ENV } from "./support/environment";
 
 type HistoryOrder = {
   id: number;
@@ -11,8 +12,21 @@ type HistoryOrder = {
 };
 
 // Istniejące dane synchronizacji. Testy wyłącznie odczytują je, nie edytują ilości.
-const schoolId = "44874";
-const orderId = "598611";
+// Historii synchronizacji nie da się odtworzyć przez zwykłe utworzenie szkoły.
+// Każde środowisko wskazuje własny, rzeczywisty rekord integracji.
+const referenceKey = `OCTOPUS_HISTORY_36305_${OCTOPUS_ENV.toUpperCase()}`;
+const rawReference = process.env[referenceKey];
+const reference = rawReference
+  ? (JSON.parse(rawReference) as { schoolId: string; orderId: string; year: string })
+  : OCTOPUS_ENV === "dev"
+    ? { schoolId: "44874", orderId: "598611", year: "2020" }
+    : undefined;
+if (
+  reference &&
+  (![reference.schoolId, reference.orderId].every((id) => /^[1-9]\d*$/.test(id)) ||
+    !/^\d{4}$/.test(reference.year))
+)
+  throw new Error(`Niepoprawna referencja ${referenceKey}: wymagane schoolId, orderId i year.`);
 
 for (const [suffix, code, yearInTitle, description] of [
   ["01", "8zc", false, "bez roku w tytule nie dopisuje roku zamówienia"],
@@ -22,6 +36,11 @@ for (const [suffix, code, yearInTitle, description] of [
     page,
     scenario,
   }, info) => {
+    test.skip(
+      !reference,
+      `Brak danych synchronizacji na ${OCTOPUS_ENV.toUpperCase()}. Ustaw ${referenceKey}={"schoolId":"…","orderId":"…","year":"2020"}.`,
+    );
+    const { schoolId, orderId, year: orderYear } = reference!;
     await scenario.app.openPanel("school", schoolId);
     const order =
       await test.step("Odczyt API: istniejące zamówienie synchronizowane i dokładny tytuł wybranej pozycji", async () => {
@@ -50,12 +69,12 @@ for (const [suffix, code, yearInTitle, description] of [
     expect(/\b\d{4}\/\d{4}\b/.test(product.title)).toBe(yearInTitle);
     const expectedTitle = product.title.trim();
     const panel = await openOrders(page);
-    await test.step("UI: rok 2020 i pozycja istniejącego zamówienia z historią", async () => {
+    await test.step(`UI: rok ${orderYear} i pozycja istniejącego zamówienia z historią`, async () => {
       const year = panel.getByRole("combobox");
       await expect(year).toHaveCount(1);
       await expect(year).toContainText(/\d{4}/);
       await year.click();
-      await page.getByRole("option", { name: "2020", exact: true }).click();
+      await page.getByRole("option", { name: orderYear, exact: true }).click();
     });
     const items = await expandOrderItems(panel, orderId);
     await items.getByRole("cell", { name: code, exact: true }).click();

@@ -1,4 +1,6 @@
 import { expect } from "@playwright/test";
+import { entitlementSchoolPattern } from "../../scripts/test-names.mjs";
+import { OCTOPUS_ENV } from "./environment";
 import {
   test,
   GRANTED,
@@ -138,9 +140,9 @@ export async function restorePermission(
 }
 
 export async function expectUnmarkedRecords(data: EntitlementData) {
-  await test.step("UI: nauczyciel i obie dedykowane szkoły mają niezaznaczone Testowy", async () => {
+  await test.step(`UI: nauczyciel i ${data.schools.length === 1 ? "dedykowana szkoła mają" : "obie dedykowane szkoły mają"} niezaznaczone Testowy`, async () => {
     for (const school of data.schools) {
-      expect(school.name).toContain("_ENT_UNMARKED_");
+      expect(school.name).toMatch(entitlementSchoolPattern(OCTOPUS_ENV, true));
       await data.scenario.app.openPanel("school", school.id);
       await expect(data.scenario.app.detail("name")).toHaveValue(school.name);
       await expect(

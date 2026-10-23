@@ -1,0 +1,207 @@
+{
+  "title": "Octopus — regresja przed releasem (26 testów)",
+  "environment": "dev",
+  "workers": 1,
+  "testIds": [
+    "ADD-01",
+    "ADD-15",
+    "EDIT-12",
+    "SCH-03",
+    "SCH-04",
+    "SCH-EDIT-04",
+    "CLUB-01",
+    "CLUB-02",
+    "CLUB-52",
+    "THR-12",
+    "ACC-01",
+    "NCL-01",
+    "NCL-02",
+    "NCL-07",
+    "ORD-01",
+    "ORD-03",
+    "ORD-05",
+    "ORD-COPY-01",
+    "MED-02",
+    "POTW26-01-MINUS",
+    "POTW26-01-MIN",
+    "POTW26-01-NO-ORDER",
+    "POTW26-01-FOREIGN",
+    "POTW26-08-MIN",
+    "GFT-01",
+    "GFT-02"
+  ],
+  "files": [
+    "tests/nauczyciel-dodawanie.spec.ts",
+    "tests/nauczyciel-edycja-kontakt.spec.ts",
+    "tests/szkola-dodawanie.spec.ts",
+    "tests/szkola-edycja.spec.ts",
+    "tests/klubowiczostwo-nauczyciela.spec.ts",
+    "tests/klubowiczostwo-cykl-zycia.spec.ts",
+    "tests/szkola-prog.spec.ts",
+    "tests/uprawnienia-api.spec.ts",
+    "tests/uprawnienia-promocja-nowy-klient.spec.ts",
+    "tests/zamowienia-szkoly.spec.ts",
+    "tests/zamowienia-kopiowanie-struktura.spec.ts",
+    "tests/szkola-medalowosc.spec.ts",
+    "tests/potwierdzenia-gratisy-2026.spec.ts",
+    "tests/centrum-wysylkowe-gratisy.spec.ts"
+  ],
+  "tests": [
+    {
+      "id": "ADD-01",
+      "title": "ADD-01: nauczyciela można utworzyć z imieniem, nazwiskiem, szkołą i e-mailem bez przedmioto-poziomu",
+      "area": "Nauczyciele",
+      "file": "tests/nauczyciel-dodawanie.spec.ts"
+    },
+    {
+      "id": "ADD-15",
+      "title": "ADD-15: brak pola imię blokuje utworzenie nauczyciela",
+      "area": "Nauczyciele",
+      "file": "tests/nauczyciel-dodawanie.spec.ts"
+    },
+    {
+      "id": "EDIT-12",
+      "title": "EDIT-12: poprawny e-mail można zmienić i zmiana jest widoczna w historii",
+      "area": "Nauczyciele",
+      "file": "tests/nauczyciel-edycja-kontakt.spec.ts"
+    },
+    {
+      "id": "SCH-03",
+      "title": "SCH-03: minimalny poprawny formularz tworzy szkołę",
+      "area": "Szkoły",
+      "file": "tests/szkola-dodawanie.spec.ts"
+    },
+    {
+      "id": "SCH-04",
+      "title": "SCH-04: brak nazwy blokuje zapis szkoły",
+      "area": "Szkoły",
+      "file": "tests/szkola-dodawanie.spec.ts"
+    },
+    {
+      "id": "SCH-EDIT-04",
+      "title": "SCH-EDIT-04: zmiana WWW i e-maila jest trwała",
+      "area": "Szkoły",
+      "file": "tests/szkola-edycja.spec.ts"
+    },
+    {
+      "id": "CLUB-01",
+      "title": "CLUB-01: przedmiotopoziom i formularz klubowy nauczyciela są trwałe",
+      "area": "Klubowiczostwo",
+      "file": "tests/klubowiczostwo-nauczyciela.spec.ts"
+    },
+    {
+      "id": "CLUB-02",
+      "title": "CLUB-02: edycja klasy 4 na 5 dla Matematyka/SP jest trwała",
+      "area": "Klubowiczostwo",
+      "file": "tests/klubowiczostwo-nauczyciela.spec.ts"
+    },
+    {
+      "id": "CLUB-52",
+      "title": "CLUB-52: po weryfikacji negatywnej edycja formularza przywraca nauczyciela z Obcy na Nasz",
+      "area": "Klubowiczostwo",
+      "file": "tests/klubowiczostwo-cykl-zycia.spec.ts"
+    },
+    {
+      "id": "THR-12",
+      "title": "THR-12: SP 400 uczniów daje próg cyfrowy 30",
+      "area": "Progi i uprawnienia",
+      "file": "tests/szkola-prog.spec.ts"
+    },
+    {
+      "id": "ACC-01",
+      "title": "ACC-01: przyznana klasa trafia do eksportu wraz z poziomem i zakresem",
+      "area": "Progi i uprawnienia",
+      "file": "tests/uprawnienia-api.spec.ts"
+    },
+    {
+      "id": "NCL-01",
+      "title": "NCL-01: zamówienie klasy 4 na progu rozszerza dostęp do 4–6",
+      "area": "Progi i uprawnienia",
+      "file": "tests/uprawnienia-promocja-nowy-klient.spec.ts"
+    },
+    {
+      "id": "NCL-02",
+      "title": "NCL-02: zamówienie poniżej progu nie uruchamia promocji",
+      "area": "Progi i uprawnienia",
+      "file": "tests/uprawnienia-promocja-nowy-klient.spec.ts"
+    },
+    {
+      "id": "NCL-07",
+      "title": "NCL-07: korekta zakupu odbiera promocję bez pozostawienia klas 5–6",
+      "area": "Progi i uprawnienia",
+      "file": "tests/uprawnienia-promocja-nowy-klient.spec.ts"
+    },
+    {
+      "id": "ORD-01",
+      "title": "ORD-01: zamówienie szkoły zachowuje produkt i ilość po ponownym otwarciu",
+      "area": "Zamówienia i kopiowanie",
+      "file": "tests/zamowienia-szkoly.spec.ts"
+    },
+    {
+      "id": "ORD-03",
+      "title": "ORD-03: edycja ilości dwóch produktów i usunięcie zamówienia",
+      "area": "Zamówienia i kopiowanie",
+      "file": "tests/zamowienia-szkoly.spec.ts"
+    },
+    {
+      "id": "ORD-05",
+      "title": "ORD-05: anulowanie pustego formularza nie tworzy zamówienia",
+      "area": "Zamówienia i kopiowanie",
+      "file": "tests/zamowienia-szkoly.spec.ts"
+    },
+    {
+      "id": "ORD-COPY-01",
+      "title": "ORD-COPY-01: ZS → SP, kopia w tej samej strukturze",
+      "area": "Zamówienia i kopiowanie",
+      "file": "tests/zamowienia-kopiowanie-struktura.spec.ts"
+    },
+    {
+      "id": "MED-02",
+      "title": "MED-02: pole Medal dla szkoły ze złotym medalem jest nieedytowalne",
+      "area": "Medalowość",
+      "file": "tests/szkola-medalowosc.spec.ts"
+    },
+    {
+      "id": "POTW26-01-MINUS",
+      "title": "POTW26-01-MINUS: matematyka SP klasa 4, 4PN-3: o jedną sztukę poniżej minimum dla gratisu",
+      "area": "Gratisy",
+      "file": "tests/potwierdzenia-gratisy-2026.spec.ts"
+    },
+    {
+      "id": "POTW26-01-MIN",
+      "title": "POTW26-01-MIN: matematyka SP klasa 4, 4PN-3: dokładnie minimum dla gratisu",
+      "area": "Gratisy",
+      "file": "tests/potwierdzenia-gratisy-2026.spec.ts"
+    },
+    {
+      "id": "POTW26-01-NO-ORDER",
+      "title": "POTW26-01-NO-ORDER: matematyka SP klasa 4, 4PN-3: brak zamówienia szkoły",
+      "area": "Gratisy",
+      "file": "tests/potwierdzenia-gratisy-2026.spec.ts"
+    },
+    {
+      "id": "POTW26-01-FOREIGN",
+      "title": "POTW26-01-FOREIGN: matematyka SP klasa 4, 4PN-3: potwierdzenie obcego wydawcy",
+      "area": "Gratisy",
+      "file": "tests/potwierdzenia-gratisy-2026.spec.ts"
+    },
+    {
+      "id": "POTW26-08-MIN",
+      "title": "POTW26-08-MIN: matematyka SŚ klasa 2 P, MLK2-1: 1 egzemplarz w zamówieniu szkoły i potwierdzenie NASZ",
+      "area": "Gratisy",
+      "file": "tests/potwierdzenia-gratisy-2026.spec.ts"
+    },
+    {
+      "id": "GFT-01",
+      "title": "GFT-01: lista gratisów zawiera filtry, kolumny i przyciski",
+      "area": "Gratisy",
+      "file": "tests/centrum-wysylkowe-gratisy.spec.ts"
+    },
+    {
+      "id": "GFT-02",
+      "title": "GFT-02: dodanie, edycja, zgodność z bazą i usunięcie gratisu",
+      "area": "Gratisy",
+      "file": "tests/centrum-wysylkowe-gratisy.spec.ts"
+    }
+  ]
+}

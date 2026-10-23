@@ -1,4 +1,16 @@
+import diagnostic from "./test-data-diagnostic.cjs";
+
 const CATEGORY_DETAILS = {
+  EXISTING_TEST_DATA: {
+    label: "Błąd istniejących danych",
+    suggestion:
+      "Sprawdź zamówienia wskazanej szkoły. Usuń je tylko, jeśli służyły do testów, albo przygotuj osobną szkołę i ponów test. Funkcja promocji nie została sprawdzona.",
+  },
+  TEST_DATA_ERROR: {
+    label: "Brak danych środowiska",
+    suggestion:
+      "Uzupełnij dane referencyjne wskazanego środowiska; identyfikatory DEV i TEST są niezależne.",
+  },
   LOCATOR_NOT_FOUND: {
     label: "Brak elementu",
     suggestion: "Sprawdź lokator oraz czy właściwy widok lub dialog został otwarty.",
@@ -105,6 +117,9 @@ function localizedSummary(category, locator, technicalSummary) {
 
 export function classifyFailure(input = {}) {
   const message = clean(input.message || input.stack || input.value || "");
+  const dataError = diagnostic.classifyTestDataError(message);
+  if (dataError)
+    return { ...dataError, action: null, locator: null, message: message.slice(0, 12_000) };
   const lower = message.toLowerCase();
   let category = "UNKNOWN";
 

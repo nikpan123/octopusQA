@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
-import { validateDbConfiguration, validateSqlId } from "./school-order-db.mjs";
+import { validateDbConfiguration, validateSqlId, readCopyEvidence } from "./school-order-db.mjs";
 import { buildRunArguments } from "./test-ui-server.mjs";
 
 const config = {
@@ -67,4 +67,15 @@ test("SQL: osobny pakiet / wybrany test; zwykła regresja nie wymaga dostępu do
     buildRunArguments({ debug: true, selectedTestIds: ["ORD-DB-01"] }).includeDatabase,
     true,
   );
+});
+
+test("SQL: dowody kopii używają rzeczywistych kluczy i zamkniętej listy odczytów", async () => {
+  await assert.rejects(readCopyEvidence("ReadCopyPair; DELETE"), /Nieobsługiwany/);
+  const source = await readFile(new URL("./read-school-order.ps1", import.meta.url), "utf8");
+  assert.match(source, /RelationsCopiedInstitutionsOrders/);
+  assert.match(source, /InstitutionOrderIdCopiedFrom/);
+  assert.match(source, /InstitutionOrderIdCopiedTo/);
+  assert.match(source, /WHERE s.Id=@OrderId AND s.SchoolId=@SchoolId/);
+  assert.match(source, /r.InstitutionTypeIdCopiedFrom=1 AND r.InstitutionTypeIdCopiedTo=1/);
+  assert.doesNotMatch(source, /ExecuteNonQuery/);
 });

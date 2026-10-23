@@ -1,4 +1,4 @@
-export type CopyNode = "A" | "SP" | "LO" | "TECH" | "B" | "BSP" | "SOLO";
+export type CopyNode = "ZS" | "SP" | "LO" | "TECH" | "B" | "BSP" | "SOLO";
 export type CopyPlan = { nodes: CopyNode[]; relations: Array<[CopyNode, CopyNode]> };
 export const COPY_KEYS: Record<CopyNode, import("./school-structure-data").StructureSchoolKey>;
 export const FULL_COPY_PLAN: CopyPlan;

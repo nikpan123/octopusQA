@@ -195,9 +195,11 @@ Panel uruchamia `MED-YEAR-PREP` i `MED-YEAR-01` jako osobne, potwierdzane operac
 
 Widok scenariuszy pokazuje ostatni powiązany przebieg, jego datę, środowisko i zakres (np. 1/3 testów), link do raportu oraz historię pięciu ostatnich przebiegów. Wyniki są odczytywane z zakończonych raportów zapisanych przez panel i tylko z wybranego środowiska. Nie łączymy wyników różnych przebiegów w jeden PASS. Brakujące lub nieczytelne raporty są sygnalizowane.
 
+Braki archiwum są opisane osobno, w rozwijanej informacji na górze widoku. Nie dodajemy globalnego ostrzeżenia do wyników niezwiązanych scenariuszy. Na karcie scenariusza można sprawdzić liczbę jego własnych przebiegów bez raportu. Jeżeli brakuje raportu nowszego powiązanego przebiegu, karta ostrzega o tym przy wyniku ostatniego dostępnego zapisu. Brak HTML nie oznacza braków w pokryciu testami.
+
 Powiązanie kroku z raportem definiuje opcjonalne `stepLinks` w `test-ui/scenarios.json`: indeks `step` liczony od zera oraz `testId` należący do scenariusza i tablica dokładnych nazw `titles` z `test.step`. Krok obejmujący kilka testów używa `checks: [{ testId, titles }, ...]`. Wszystkie wymagane testy i etapy muszą być zapisane jednoznacznie w tym samym przebiegu, aby krok otrzymał PASS. FAIL dowolnego wymaganego etapu pozostaje widoczny także przy braku zapisów pozostałych etapów. Rozwijana lista „Powiązane etapy” umożliwia przejście do każdego z nich oddzielnie.
 
-Powiązano 105 kroków w 32 scenariuszach: cały zestaw ORD-COPY-01–19 i 13 scenariuszy zbiorczych #35980. Pozostałe 8 kroków w ORD-SC-35980-10, -11 i -13 wymaga testów integracji lub gratisów, których obecne kontrole nie realizują w pełnym zakresie; ich niepełnego pokrycia nie oznaczamy jako PASS. Istniejącym kontrolom bez nazw dodano etapy `test.step`, bez zmiany żądań i oczekiwań. Te nazwy pojawią się w raportach z kolejnych uruchomień — stare raporty nie są przepisywane. „Brak zapisu kroku” oznacza wtedy gotowe powiązanie, ale brak odpowiedniego zapisu w wybranym raporcie.
+Powiązano 122 kroki we wszystkich 35 scenariuszach: cały zestaw ORD-COPY-01–19 i 16 scenariuszy zbiorczych #35980. Pozostałe 3 kroki w ORD-SC-35980-10 i -11 wymagają kontrolowanego zdarzenia/synchronizacji, których nie można wywołać na DEV. Nowe testy SQL/API/UI sprawdzają wyłącznie istniejący stan; brak odpowiednich danych oznacza SKIP, nie PASS. Samo powiązanie lub pełna automatyzacja kroku nie dowodzi poprawnego działania. Znane niezgodności gratisów i uprawnień pozostają widoczne jako FAIL, nie są maskowane zmianą oczekiwań. Wewnętrzne warstwy dostępu i kontrola zegara nie są potwierdzane testem końcowego statusu. Istniejącym kontrolom bez nazw dodano etapy `test.step`. Te nazwy pojawiają się w raportach z kolejnych uruchomień — stare raporty nie są przepisywane. „Brak zapisu kroku” oznacza wtedy gotowe powiązanie, ale brak odpowiedniego zapisu w wybranym raporcie.
 
 Przycisk „Pokaż wykonanie” otwiera konkretny przebieg i wskazany etap bez ponownego uruchamiania testu. Brak mapowania albo etapu w starszym raporcie nie oznacza PASS.
 
@@ -243,3 +245,18 @@ Jeśli przypiętego ID nie ma w aktualnym katalogu lub dotyczy osobnego workflow
 - Jeżeli test kończy się bez sklasyfikowanej przyczyny, otwórz raport HTML i trace; reporter użyje wtedy kategorii **Inny błąd**.
 
 Powrót do [głównej dokumentacji](README.md).
+
+### Debugger całego katalogu
+Zakładka „Debugger testów” udostępnia wszystkie testy katalogu DEV / TEST, także CAT-23. Opisany `test.step` jest jednym etapem; czynności przeglądarki i żądania API poza takim etapem mają własne zatrzymania. „Następny krok” wykonuje etap, „Kontynuuj automatycznie” zwalnia kolejne, „Pauza” czeka przed następnym. Zagnieżdżone etapy należą do etapu nadrzędnego. Przygotowanie sesji/logowanie pozostaje automatyczne; pozostałe przygotowanie danych może pojawić się jako krok. Widok nie zmienia zawartości żądań ani odpowiedzi używanych przez asercje.
+
+Warianty o wspólnym ID mają osobne klucze wyboru i są uruchamiane pojedynczo po pełnym tytule oraz lokalizacji. Testy bazy danych pozostają ograniczone do DEV. Roczne testy są jawnie oznaczone „ROCZNY”: przygotowanie snapshotu i weryfikację wykonuj w odpowiedniej kolejności na tym samym środowisku; nie trafiają do zwykłej regresji. Specjalne punkty podglądu testów API i potwierdzenie sprzątania pozostają zachowane. Stop kończy proces i może pozostawić dane. Zwykłe uruchamianie bez debuggera nie instaluje zatrzymań.
+
+Weryfikacja lokalna: `npm run test:debugger` (przykładowy formularz i lokalne API, bez uruchamiania scenariuszy biznesowych).
+
+### Motyw raportów HTML
+Raporty Playwrighta pod `/report/` i `/latest-report/` otrzymują pełne tło zgodne z motywem i początkowy motyw z ustawienia wspólnego dla lokalnych paneli. Zmiana motywu w Centrum testów dociera także do już otwartego raportu. Poprawka działa na odpowiedzi serwera: nie zmienia plików historycznych ani zapisanych wyników i załączników. Weryfikacja: `npm run test:report-theme`.
+
+### Edycja scenariuszy
+W zakładce „Scenariusze” rozwiń przypadek i kliknij „Edytuj scenariusz”; przycisk jest też w osobnym oknie opisu. Formularz zapisuje tytuł, opis, warunki, dane, kroki, oczekiwany wynik i ograniczenia. Nie zmienia ID, powiązanych testów ani kodu automatu. Możesz dodawać, usuwać i przestawiać kroki. Zapis jest lokalny i atomowy; poprzednia wersja katalogu znajduje się w `runs/scenario-edits/`. Równoczesny zapis w innej karcie powoduje komunikat o konflikcie, bez utraty wpisanego tekstu.
+
+Po zmianie instrukcji wcześniejsze wykonania są dostępne w historii, ale nie potwierdzają nowej wersji opisu. Niezmienione i jednoznaczne instrukcje zachowują swoje powiązania z etapami testu po przestawieniu; nowe lub przepisane kroki nie dziedziczą dawnych wyników. Takie powiązanie można później przygotować w katalogu. Testy edytora: `npm run test:scenario-editor`, integracja wszystkich lokalnych paneli: `npm run test:scenario-editors:all`.

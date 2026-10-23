@@ -9,6 +9,7 @@ const flatten = (steps = []) => steps.flatMap((step) => [step, ...flatten(step.s
 // Only structural evidence is retained here. Responses and session data stay out of the index.
 export async function executionsFromHtml(html, run) {
   const files = await reportFiles(html);
+  if (!files.length) throw new Error("Raport nie zawiera czytelnych danych Playwright.");
   const metadata = files.find((file) => file.stats);
   const compactSteps = (steps = [], depth = 0) =>
     depth > 30
@@ -136,7 +137,8 @@ export function scenarioEvidence(scenario, executions) {
       };
     })
     .sort((a, b) => String(b.date).localeCompare(String(a.date)));
-  const latestRun = history[0] || null;
+  if(scenario.descriptionUpdatedAt)for(const run of history)run.beforeDescriptionChange=Boolean(scenario.descriptionUpdatedAt&&run.date<scenario.descriptionUpdatedAt);
+  const latestRun = history.find(run=>!run.beforeDescriptionChange) || null;
   // All step badges refer to the SAME run as the scenario summary, never a mixture of runs.
   const latestExecutions = relevant.filter((item) => item.runId === latestRun?.runId);
   const steps = scenario.steps.map((_, index) => {
@@ -157,7 +159,7 @@ export function scenarioEvidence(scenario, executions) {
 
 export async function loadScenarioEvidence(root, catalog, environment, history) {
   const executions = [];
-  let unavailableReports = 0;
+  const unavailable = [];
   for (const run of history.filter(
     (item) => uuid.test(item.id) && item.environment === environment && item.endedAt,
   )) {
@@ -176,17 +178,43 @@ export async function loadScenarioEvidence(root, catalog, environment, history) 
         if (cache.size > 150) cache.delete(cache.keys().next().value);
       }
       executions.push(...cached.executions);
-    } catch {
-      unavailableReports++;
+    } catch (error) {
+      unavailable.push({
+        runId: run.id,
+        date: run.startedAt || "",
+        testIds: (run.selectedTestIds || []).filter(validPreviewId),
+        reason: error.code === "ENOENT" ? "not_saved" : "unreadable",
+      });
     }
   }
   return {
     environment,
-    unavailableReports,
+    unavailableReports: unavailable.length,
+    archive: {
+      notSaved: unavailable.filter((item) => item.reason === "not_saved").length,
+      unreadable: unavailable.filter((item) => item.reason === "unreadable").length,
+    },
     scenarios: Object.fromEntries(
       catalog.features
         .flatMap((feature) => feature.scenarios)
-        .map((scenario) => [scenario.id, scenarioEvidence(scenario, executions)]),
+        .map((scenario) => {
+          const evidence = scenarioEvidence(scenario, executions);
+          const related = unavailable.filter((run) =>
+            run.testIds.some((id) => scenario.testIds.includes(id)),
+          );
+          return [
+            scenario.id,
+            {
+              ...evidence,
+              archive: {
+                unavailableCount: related.length,
+                newerUnavailableCount: related.filter(
+                  (run) => !evidence.latestRun || run.date > evidence.latestRun.date,
+                ).length,
+              },
+            },
+          ];
+        }),
     ),
   };
 }

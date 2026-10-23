@@ -309,7 +309,7 @@ export class OrderDocuments {
   }
   async moveTeacher(school: { id: string; name: string }) {
     return await apiStep("API: zmiana powiązania nauczyciela ze szkołą", async () => {
-      expect(school.name).toMatch(/^AUTO_ORD_REFERENCE_/);
+      expect(school.name).toMatch(/^AUTO_ORD_(?:REFERENCE_|[DT]_)/);
       expect(this.teacherId).toBeDefined();
       const relation = {
         teacherId: Number(this.teacherId),

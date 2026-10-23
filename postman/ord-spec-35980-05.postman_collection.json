@@ -1,0 +1,321 @@
+{
+  "info": {
+    "name": "Octopus DEV — ORD-SPEC-35980-05 — kopiowanie do tej samej szkoły",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Wersja 2: jednostka szkoły odczytywana w 00 przez InstitutionBrowser, niezależnie od relacji. Raport d7083f0f-a619-4505-a467-14af5ff6689e. Uruchom 00–05 w kolejności, 1 iteracja. Kolekcja tworzy NOWE zamówienie w szkole 94822 i próbuje skopiować je do tej samej jednostki 42318. Nie zmienia daty w bazie: to test kopiowania, nie gratisów. Uzupełnij bearerToken (bez Bearer) i currentUserId dla własnego konta. Szkoła z raportu musi nadal istnieć; jeśli została usunięta, podaj własną szkołę i jej institutionUnitId. Żaden token nie jest dołączony. Dokumenty pozostają do obejrzenia; usuń ręcznie wyłącznie utworzone przez siebie zamówienie po kontroli. Błąd asercji w 04 przy niezmienionej liście w 05 odtwarza nieprawidłowy komunikat sukcesu; nie dowodzi utworzenia duplikatu. Przy 401/403 sprawdź uprawnienia/token; przy 500 nie uznawaj walidacji za poprawną."
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{bearerToken}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "https://octopus.gwodev.pl",
+      "type": "string"
+    },
+    {
+      "key": "bearerToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "schoolId",
+      "value": "94822",
+      "type": "string"
+    },
+    {
+      "key": "schoolUnitId",
+      "value": "42318",
+      "type": "string"
+    },
+    {
+      "key": "currentUserId",
+      "value": "20415",
+      "type": "string"
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "const stop=message=>{pm.execution.skipRequest();pm.execution.setNextRequest(null);throw new Error(message);};",
+          "if(pm.variables.get('baseUrl')!=='https://octopus.gwodev.pl')stop('Kolekcja przeznaczona na DEV.');",
+          "const token=String(pm.variables.get('bearerToken')||'').trim();",
+          "if(!token || /^Bearer\\s/i.test(token))stop('Uzupełnij bearerToken bez prefiksu Bearer.');",
+          "for(const k of ['schoolId','schoolUnitId','currentUserId'])if(!/^[1-9]\\d*$/.test(String(pm.variables.get(k))))stop('Uzupełnij dodatnie ID: '+k);",
+          "if(!pm.info.requestName.startsWith('00') && !pm.info.requestName.startsWith('01')){",
+          " if(pm.collectionVariables.get('runSchoolId')!==String(pm.variables.get('schoolId')) || pm.collectionVariables.get('runUserId')!==String(pm.variables.get('currentUserId')))stop('Konfiguracja zmieniona: zacznij od 01.');",
+          "}"
+        ]
+      }
+    }
+  ],
+  "item": [
+    {
+      "name": "00 — Odczytaj jednostkę bezpośrednio z danych szkoły",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/InstitutionBrowser/GetInstitutions?filterModel={\"institutionIds\":[\"{{schoolId}}\"],\"saveSearchHistory\":false,\"page\":1,\"userId\":{{currentUserId}},\"limit\":10}",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "InstitutionBrowser", "GetInstitutions"],
+          "query": [
+            {
+              "key": "filterModel",
+              "value": "{\"institutionIds\":[\"{{schoolId}}\"],\"saveSearchHistory\":false,\"page\":1,\"userId\":{{currentUserId}},\"limit\":10}"
+            }
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.collectionVariables.unset('resolvedSchoolId');",
+              "pm.collectionVariables.unset('resolvedSchoolUnitId');",
+              "if(pm.response.code!==200){pm.execution.setNextRequest(null);throw new Error('Nie udało się odczytać danych szkoły.');}",
+              "const rows=pm.response.json().data;",
+              "if(!Array.isArray(rows) || rows.length!==1 || String(rows[0].id)!==String(pm.variables.get('schoolId')) || rows[0].isDel || !Number.isSafeInteger(rows[0].institutionUnitId) || rows[0].institutionUnitId<=0){pm.execution.setNextRequest(null);throw new Error('Brak jednoznacznej aktywnej szkoły i ID jednostki.');}",
+              "pm.collectionVariables.set('schoolUnitId',String(rows[0].institutionUnitId));",
+              "pm.collectionVariables.set('resolvedSchoolId',String(rows[0].id));",
+              "pm.collectionVariables.set('resolvedSchoolUnitId',String(rows[0].institutionUnitId));",
+              "pm.test('Jednostka odczytana z danych szkoły',()=>pm.expect(String(pm.variables.get('schoolUnitId'))).to.equal(String(rows[0].institutionUnitId)));",
+              "console.log('Jednostka szkoły:',rows[0].institutionUnitId);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "01 — Stan szkoły przed utworzeniem zamówienia",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/SchoolOrder/GetSchoolOrders?model={\"institutionId\":{{schoolId}},\"page\":1,\"pageSize\":500}",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "SchoolOrder", "GetSchoolOrders"],
+          "query": [
+            {
+              "key": "model",
+              "value": "{\"institutionId\":{{schoolId}},\"page\":1,\"pageSize\":500}"
+            }
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "if (pm.response.code !== 200) { pm.execution.setNextRequest(null); throw new Error('Nie udało się odczytać zamówień.'); }",
+              "const b=pm.response.json();",
+              "if (!Array.isArray(b.data) || b.metaData.totalItems > 500) { pm.execution.setNextRequest(null); throw new Error('Niepełna lub nieprawidłowa lista zamówień.'); }",
+              "",
+              "pm.collectionVariables.set('initialOrders',JSON.stringify(b.data));",
+              "pm.collectionVariables.unset('newOrderId');",
+              "pm.collectionVariables.unset('beforeCopy');",
+              "pm.collectionVariables.set('runSchoolId',String(pm.variables.get('schoolId')));",
+              "pm.collectionVariables.set('runUserId',String(pm.variables.get('currentUserId')));",
+              "pm.test('Odczyt listy poprawny',()=>pm.expect(b.data).to.be.an('array'));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "02 — Utwórz własne zamówienie F7P ×3 i 4P-2 ×2",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/SchoolOrder/AddSchoolOrder",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "SchoolOrder", "AddSchoolOrder"]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n \"institutionId\": {{schoolId}},\n \"createdBy\": {{currentUserId}},\n \"createdAt\": \"{{$isoTimestamp}}\",\n \"orderItems\": [\n   {\"dictOrderItemId\":3005,\"businessCode\":\"F7P\",\"quantity\":3},\n   {\"dictOrderItemId\":4707,\"businessCode\":\"4P-2\",\"quantity\":2}\n ]\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "if(!pm.collectionVariables.get('initialOrders') || pm.collectionVariables.get('newOrderId')) {pm.execution.skipRequest();throw new Error('Najpierw wykonaj 01. Nie ponawiaj tworzenia istniejącego zamówienia.');}"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "let id; try { id=pm.response.json(); } catch(e) {}",
+              "if(pm.response.code!==200 || !Number.isSafeInteger(id) || id<=0){pm.execution.setNextRequest(null);throw new Error('Nie otrzymano ID nowego zamówienia. Nie ponawiaj POST bez sprawdzenia listy.');}",
+              "pm.collectionVariables.set('newOrderId',String(id));",
+              "pm.test('Nowe zamówienie ma ID',()=>pm.expect(id).to.be.above(0));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "03 — Sprawdź oryginał i zapamiętaj stan przed kopiowaniem",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/SchoolOrder/GetSchoolOrders?model={\"institutionId\":{{schoolId}},\"page\":1,\"pageSize\":500}",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "SchoolOrder", "GetSchoolOrders"],
+          "query": [
+            {
+              "key": "model",
+              "value": "{\"institutionId\":{{schoolId}},\"page\":1,\"pageSize\":500}"
+            }
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "if (pm.response.code !== 200) { pm.execution.setNextRequest(null); throw new Error('Nie udało się odczytać zamówień.'); }",
+              "const b=pm.response.json();",
+              "if (!Array.isArray(b.data) || b.metaData.totalItems > 500) { pm.execution.setNextRequest(null); throw new Error('Niepełna lub nieprawidłowa lista zamówień.'); }",
+              "",
+              "const id=Number(pm.collectionVariables.get('newOrderId'));",
+              "const order=b.data.find(o=>o.id===id);",
+              "const expected=[{dictOrderItemId:3005,businessCode:'F7P',quantity:3},{dictOrderItemId:4707,businessCode:'4P-2',quantity:2}];",
+              "if(!order || order.isCopied!==false || Number(order.createdBy)!==Number(pm.variables.get('currentUserId'))) {pm.execution.setNextRequest(null);throw new Error('Brak własnego oryginału.');}",
+              "const lines=order.orderItems.map(i=>({dictOrderItemId:i.dictOrderItemId,businessCode:i.businessCode,quantity:i.quantity})).sort((a,b)=>a.dictOrderItemId-b.dictOrderItemId);",
+              "if(JSON.stringify(lines)!==JSON.stringify(expected)){pm.execution.setNextRequest(null);throw new Error('Pozycje oryginału inne niż oczekiwane.');}",
+              "if(pm.collectionVariables.get('resolvedSchoolId')!==String(pm.variables.get('schoolId')) || pm.collectionVariables.get('resolvedSchoolUnitId')!==String(pm.variables.get('schoolUnitId'))){pm.execution.setNextRequest(null);throw new Error('Najpierw wykonaj krok 00: jednostkę odczytujemy z danych szkoły, nie z relacji zamówienia.');}",
+              "pm.collectionVariables.set('beforeCopy',JSON.stringify(b.data));",
+              "pm.test('Własny oryginał i jednostka tej samej szkoły',()=>pm.expect(order.isCopied).to.equal(false));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "04 — Próba kopiowania do TEJ SAMEJ szkoły",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/SchoolOrder/MakeSchoolOrderCopy",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "SchoolOrder", "MakeSchoolOrderCopy"]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n \"institutionOrderId\": {{newOrderId}},\n \"institutionUnitIdsCopyTo\": [{{schoolUnitId}}],\n \"createdBy\": {{currentUserId}}\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "if(!pm.collectionVariables.get('newOrderId') || !pm.collectionVariables.get('beforeCopy')){pm.execution.skipRequest();throw new Error('Wykonaj kroki 01–03.');}"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "let b={};try{b=pm.response.json();}catch(e){}",
+              "pm.collectionVariables.set('copyResponse',JSON.stringify({http:pm.response.code,body:b}));",
+              "pm.test('API odrzuca kopiowanie do tej samej szkoły',()=>{",
+              " const rejected=[400,404,409,422].includes(pm.response.code) || (pm.response.code===200 && [400,404,409,422].includes(Number(b.codeResult)));",
+              " pm.expect(rejected,'Oczekiwane odrzucenie; odpowiedź: '+JSON.stringify(b)).to.equal(true);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "05 — Porównaj dokumenty po próbie kopiowania",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/SchoolOrder/GetSchoolOrders?model={\"institutionId\":{{schoolId}},\"page\":1,\"pageSize\":500}",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "SchoolOrder", "GetSchoolOrders"],
+          "query": [
+            {
+              "key": "model",
+              "value": "{\"institutionId\":{{schoolId}},\"page\":1,\"pageSize\":500}"
+            }
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "if (pm.response.code !== 200) { pm.execution.setNextRequest(null); throw new Error('Nie udało się odczytać zamówień.'); }",
+              "const b=pm.response.json();",
+              "if (!Array.isArray(b.data) || b.metaData.totalItems > 500) { pm.execution.setNextRequest(null); throw new Error('Niepełna lub nieprawidłowa lista zamówień.'); }",
+              "",
+              "const before=JSON.parse(pm.collectionVariables.get('beforeCopy') || 'null');",
+              "if(!before)throw new Error('Brak odczytu 03.');",
+              "const sort=arr=>arr.slice().sort((a,b)=>a.id-b.id);",
+              "pm.test('Nie dodano, nie usunięto ani nie zmieniono dokumentów',()=>pm.expect(sort(b.data)).to.deep.equal(sort(before)));",
+              "const ids=new Set(before.map(o=>o.id));",
+              "pm.collectionVariables.set('addedOrderIds',JSON.stringify(b.data.filter(o=>!ids.has(o.id)).map(o=>o.id)));",
+              "console.log('Oryginał do kontroli w UI:',pm.collectionVariables.get('newOrderId'));",
+              "console.log('Nowe ID po kopiowaniu:',pm.collectionVariables.get('addedOrderIds'));"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

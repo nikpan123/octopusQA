@@ -1,9 +1,8 @@
 import type { Page } from "@playwright/test";
 import type { AuthSession } from "../scripts/auth.mjs";
 
-import { test, expect } from "./support/fixtures";
+import { test, expect } from "./support/medal-reference-schools";
 
-import { GOLD_SCHOOL, NO_MEDAL_SCHOOL, SILVER_SCHOOL } from "./support/school-medal-data";
 import {
   addStructureSchoolCandidate,
   createStructureRelation,
@@ -118,6 +117,7 @@ test.describe("Struktura szkoły", () => {
   test.describe.configure({ mode: "default" });
   test("STR-01: szkoła bez relacji pokazuje pusty stan struktury @school @structure @smoke", async ({
     page,
+    NO_MEDAL_SCHOOL,
   }) => {
     const app = new Octopus(page);
     const panel = await openSchoolStructure(app, NO_MEDAL_SCHOOL);
@@ -128,6 +128,7 @@ test.describe("Struktura szkoły", () => {
 
   test("STR-02: pusty stan blokuje filtrowanie struktury i pozwala dodać powiązanie @school @structure @validation", async ({
     page,
+    NO_MEDAL_SCHOOL,
   }) => {
     const app = new Octopus(page);
     const panel = await openSchoolStructure(app, NO_MEDAL_SCHOOL);
@@ -142,6 +143,7 @@ test.describe("Struktura szkoły", () => {
 
   test("STR-03: dialog dodawania zawiera filtry, obie tabele i akcje @school @structure @dialog", async ({
     page,
+    NO_MEDAL_SCHOOL,
   }) => {
     const app = new Octopus(page);
     const dialog = await openSchoolStructureDialog(app, NO_MEDAL_SCHOOL);
@@ -184,6 +186,7 @@ test.describe("Struktura szkoły", () => {
 
   test("STR-04: puste wyszukiwanie pokazuje walidację i pozostawia dialog otwarty @school @structure @negative", async ({
     page,
+    NO_MEDAL_SCHOOL,
   }) => {
     const app = new Octopus(page);
     const dialog = await openSchoolStructureDialog(app, NO_MEDAL_SCHOOL);
@@ -196,6 +199,7 @@ test.describe("Struktura szkoły", () => {
 
   test("STR-05: anulowanie pustego dialogu nie zmienia struktury @school @structure @cancel", async ({
     page,
+    NO_MEDAL_SCHOOL,
   }) => {
     const app = new Octopus(page);
     const dialog = await openSchoolStructureDialog(app, NO_MEDAL_SCHOOL);
@@ -211,6 +215,8 @@ test.describe("Struktura szkoły", () => {
 
   test("STR-06: wyszukiwanie po dokładnym ID zwraca właściwą szkołę @school @structure @search", async ({
     page,
+    NO_MEDAL_SCHOOL,
+    GOLD_SCHOOL,
   }) => {
     const app = new Octopus(page);
     const dialog = await openSchoolStructureDialog(app, NO_MEDAL_SCHOOL);
@@ -223,6 +229,8 @@ test.describe("Struktura szkoły", () => {
 
   test("STR-07: wyszukiwanie po pełnej nazwie zwraca właściwą szkołę @school @structure @search", async ({
     page,
+    NO_MEDAL_SCHOOL,
+    SILVER_SCHOOL,
   }) => {
     const app = new Octopus(page);
     const dialog = await openSchoolStructureDialog(app, NO_MEDAL_SCHOOL);
@@ -235,6 +243,8 @@ test.describe("Struktura szkoły", () => {
 
   test("STR-08: wyszukiwanie po fragmencie nazwy zwraca pasującą szkołę @school @structure @search", async ({
     page,
+    NO_MEDAL_SCHOOL,
+    GOLD_SCHOOL,
   }) => {
     const app = new Octopus(page);
     const dialog = await openSchoolStructureDialog(app, NO_MEDAL_SCHOOL);
@@ -256,6 +266,7 @@ test.describe("Struktura szkoły", () => {
 
   test("STR-09: wyszukiwanie po kodzie pocztowym zwraca zgodne adresy @school @structure @search", async ({
     page,
+    NO_MEDAL_SCHOOL,
   }) => {
     const app = new Octopus(page);
     const dialog = await openSchoolStructureDialog(app, NO_MEDAL_SCHOOL);
@@ -268,6 +279,7 @@ test.describe("Struktura szkoły", () => {
 
   test("STR-10: wyszukiwanie po miejscowości zwraca zgodne adresy @school @structure @search", async ({
     page,
+    NO_MEDAL_SCHOOL,
   }) => {
     const app = new Octopus(page);
     const dialog = await openSchoolStructureDialog(app, NO_MEDAL_SCHOOL);
@@ -280,6 +292,7 @@ test.describe("Struktura szkoły", () => {
 
   test("STR-11: wyszukiwanie po ulicy zwraca zgodne adresy @school @structure @search", async ({
     page,
+    NO_MEDAL_SCHOOL,
   }) => {
     const app = new Octopus(page);
     const dialog = await openSchoolStructureDialog(app, NO_MEDAL_SCHOOL);
@@ -292,6 +305,8 @@ test.describe("Struktura szkoły", () => {
 
   test("STR-12: wyszukiwanie łączy ID i nazwę szkoły @school @structure @search", async ({
     page,
+    NO_MEDAL_SCHOOL,
+    GOLD_SCHOOL,
   }) => {
     const app = new Octopus(page);
     const dialog = await openSchoolStructureDialog(app, NO_MEDAL_SCHOOL);
@@ -304,6 +319,7 @@ test.describe("Struktura szkoły", () => {
 
   test("STR-13: nieistniejące ID pozostawia pustą tabelę wyników @school @structure @search @negative", async ({
     page,
+    NO_MEDAL_SCHOOL,
   }) => {
     const app = new Octopus(page);
     const dialog = await openSchoolStructureDialog(app, NO_MEDAL_SCHOOL);
@@ -321,6 +337,8 @@ test.describe("Struktura szkoły", () => {
 
   test("STR-14: szkołę można dodać do planowanych powiązań bez zapisu @school @structure @positive", async ({
     page,
+    NO_MEDAL_SCHOOL,
+    GOLD_SCHOOL,
   }) => {
     const app = new Octopus(page);
     const dialog = await openSchoolStructureDialog(app, NO_MEDAL_SCHOOL);
@@ -336,6 +354,8 @@ test.describe("Struktura szkoły", () => {
 
   test("STR-15: niezapisaną szkołę można usunąć z planowanych powiązań @school @structure @cancel", async ({
     page,
+    NO_MEDAL_SCHOOL,
+    GOLD_SCHOOL,
   }) => {
     const app = new Octopus(page);
     const dialog = await openSchoolStructureDialog(app, NO_MEDAL_SCHOOL);
@@ -354,6 +374,8 @@ test.describe("Struktura szkoły", () => {
 
   test("STR-16: pojedyncze poprawne powiązanie wysyła jedno żądanie zapisu @school @structure @api", async ({
     page,
+    NO_MEDAL_SCHOOL,
+    GOLD_SCHOOL,
   }) => {
     const app = new Octopus(page);
     const dialog = await openSchoolStructureDialog(app, NO_MEDAL_SCHOOL);
@@ -408,6 +430,8 @@ test.describe("Struktura szkoły", () => {
 
   test("STR-18: anulowanie po dodaniu szkoły nie zachowuje planowanego powiązania @school @structure @cancel", async ({
     page,
+    NO_MEDAL_SCHOOL,
+    GOLD_SCHOOL,
   }) => {
     const app = new Octopus(page);
     let dialog = await openSchoolStructureDialog(app, NO_MEDAL_SCHOOL);
@@ -437,6 +461,9 @@ test.describe("Struktura szkoły", () => {
 
   test("STR-19: kilka szkół jest wysyłanych dokładnie raz w jednym zapisie @school @structure @api", async ({
     page,
+    NO_MEDAL_SCHOOL,
+    GOLD_SCHOOL,
+    SILVER_SCHOOL,
   }) => {
     const app = new Octopus(page);
     const dialog = await openSchoolStructureDialog(app, NO_MEDAL_SCHOOL);
@@ -501,6 +528,8 @@ test.describe("Struktura szkoły", () => {
   ]) {
     test(`${relation.id}: typ „${relation.label}” jest dostępny i mapowany do kontraktu API @school @structure @api`, async ({
       page,
+      NO_MEDAL_SCHOOL,
+      GOLD_SCHOOL,
     }) => {
       const app = new Octopus(page);
       const dialog = await openSchoolStructureDialog(app, NO_MEDAL_SCHOOL);
@@ -589,6 +618,7 @@ test.describe("Struktura szkoły", () => {
 
   test("STR-27: bieżącej szkoły nie można dodać jako własnego powiązania @school @structure @validation @negative", async ({
     page,
+    NO_MEDAL_SCHOOL,
   }) => {
     const app = new Octopus(page);
     const dialog = await openSchoolStructureDialog(app, NO_MEDAL_SCHOOL);
@@ -1079,6 +1109,8 @@ test.describe("Struktura szkoły", () => {
 
   test("STR-49: odpowiedź 422 nie zamyka dialogu ani nie ponawia zapisu @school @structure @api @negative", async ({
     page,
+    NO_MEDAL_SCHOOL,
+    GOLD_SCHOOL,
   }) => {
     test.fail(true, "Znany defekt DEV: po odpowiedzi 422 dialog jest zamykany.");
     const app = new Octopus(page);
@@ -1098,6 +1130,8 @@ test.describe("Struktura szkoły", () => {
 
   test("STR-50: odpowiedź 500 zachowuje przygotowaną relację i pozwala ponowić zapis @school @structure @api @negative", async ({
     page,
+    NO_MEDAL_SCHOOL,
+    GOLD_SCHOOL,
   }) => {
     test.fail(true, "Znany defekt DEV: po odpowiedzi 500 dialog jest zamykany i traci stan.");
     const app = new Octopus(page);
@@ -1187,6 +1221,7 @@ test.describe("Struktura szkoły", () => {
 
   test("STR-53: wyszukiwanie złożone wyłącznie z białych znaków jest odrzucane @school @structure @validation @negative", async ({
     page,
+    NO_MEDAL_SCHOOL,
   }) => {
     test.fail(
       true,
@@ -1207,6 +1242,9 @@ test.describe("Struktura szkoły", () => {
 
   test("STR-54: ponowne wyszukiwanie zastępuje poprzednie wyniki @school @structure @search", async ({
     page,
+    NO_MEDAL_SCHOOL,
+    GOLD_SCHOOL,
+    SILVER_SCHOOL,
   }) => {
     const app = new Octopus(page);
     const dialog = await openSchoolStructureDialog(app, NO_MEDAL_SCHOOL);
@@ -1226,6 +1264,8 @@ test.describe("Struktura szkoły", () => {
 
   test("STR-55: tej samej szkoły nie można dodać dwukrotnie do planowanych powiązań @school @structure @validation", async ({
     page,
+    NO_MEDAL_SCHOOL,
+    GOLD_SCHOOL,
   }) => {
     const app = new Octopus(page);
     const dialog = await openSchoolStructureDialog(app, NO_MEDAL_SCHOOL);
@@ -1246,6 +1286,8 @@ test.describe("Struktura szkoły", () => {
 
   test("STR-56: usuniętą planowaną szkołę można ponownie dodać @school @structure @positive", async ({
     page,
+    NO_MEDAL_SCHOOL,
+    GOLD_SCHOOL,
   }) => {
     const app = new Octopus(page);
     const dialog = await openSchoolStructureDialog(app, NO_MEDAL_SCHOOL);
@@ -1263,6 +1305,9 @@ test.describe("Struktura szkoły", () => {
 
   test("STR-57: anulowanie kilku planowanych powiązań nie zachowuje żadnego z nich @school @structure @cancel", async ({
     page,
+    NO_MEDAL_SCHOOL,
+    GOLD_SCHOOL,
+    SILVER_SCHOOL,
   }) => {
     const app = new Octopus(page);
     let dialog = await openSchoolStructureDialog(app, NO_MEDAL_SCHOOL);
@@ -1572,6 +1617,8 @@ test.describe("Struktura szkoły", () => {
 
   test("STR-72: timeout zapisu zachowuje dialog i przygotowaną relację @school @structure @negative", async ({
     page,
+    NO_MEDAL_SCHOOL,
+    GOLD_SCHOOL,
   }) => {
     test.fail(true, "Potwierdzony defekt DEV: timeout zapisu zamyka dialog dodawania.");
     const app = new Octopus(page);

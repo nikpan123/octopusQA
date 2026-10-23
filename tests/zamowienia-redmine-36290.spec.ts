@@ -83,7 +83,7 @@ async function expectManualHistoryUnavailable(
 
 for (const [suffix, source, target] of [
   ["05", "SP", "LO"],
-  ["06", "A", "SP"],
+  ["06", "ZS", "SP"],
 ] as Array<[string, CopyNode, CopyNode]>) {
   const caseTest = copyTestFor(copyPairPlan(source, target));
   caseTest(
@@ -136,7 +136,7 @@ for (const [suffix, source, target] of [
 
 for (const [suffix, source, target] of [
   ["01", "SP", "LO"],
-  ["02", "A", "SP"],
+  ["02", "ZS", "SP"],
 ] as Array<[string, CopyNode, CopyNode]>) {
   const caseTest = copyTestFor(copyPairPlan(source, target));
   caseTest(
@@ -192,7 +192,7 @@ for (const [suffix, source, target] of [
 
 for (const [suffix, source, target] of [
   ["03", "SP", "LO"],
-  ["04", "SP", "A"],
+  ["04", "SP", "ZS"],
 ] as Array<[string, CopyNode, CopyNode]>) {
   const caseTest = copyTestFor(copyPairPlan(source, target));
   caseTest(
@@ -214,7 +214,7 @@ for (const [suffix, source, target] of [
         ["usunięcie pozycji", [original.lines[0]]],
       ] as Array<[string, ClassLine[]]>) {
         await test.step(`Próba API: ${name} kopii nie zmienia żadnego dokumentu`, async () => {
-          const complex = target === "A";
+          const complex = target === "ZS";
           const endpoint = complex
             ? "SchoolComplexOrder/UpdateSchoolComplexOrder"
             : "SchoolOrder/UpdateSchoolOrder";

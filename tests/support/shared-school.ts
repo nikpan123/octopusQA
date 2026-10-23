@@ -1,36 +1,20 @@
 import { test as base, expect } from "./scenario";
-import { GOLD_SCHOOL, SILVER_SCHOOL } from "./school-medal-data";
+import { ensureOrderTestSchool } from "./order-school";
 
 type SharedSchool = {
   id: string;
   name: string;
 };
 
-// Testy edycji nie badają tworzenia szkoły. Korzystają ze stabilnej szkoły
-// referencyjnej właściwej dla aktualnego środowiska, a relację nauczyciela
-// tworzy API factory razem z nauczycielem.
-export const test = base.extend<
-  Record<never, never>,
-  { school: SharedSchool; secondSchool: SharedSchool }
->({
-  school: [
-    async ({}, use) => {
-      await use({
-        id: GOLD_SCHOOL.id,
-        name: GOLD_SCHOOL.name,
-      });
-    },
-    { scope: "worker" },
-  ],
-  secondSchool: [
-    async ({}, use) => {
-      await use({
-        id: SILVER_SCHOOL.id,
-        name: SILVER_SCHOOL.name,
-      });
-    },
-    { scope: "worker" },
-  ],
+// Szkoły są odszukiwane lub przygotowywane na bieżącym środowisku.
+// ID jest sprawdzane ponownie także po odświeżeniu bazy.
+export const test = base.extend<{ school: SharedSchool; secondSchool: SharedSchool }>({
+  school: async ({ page, scenario }, use) => {
+    await use(await ensureOrderTestSchool(page, scenario.app, "teacherPrimary", false));
+  },
+  secondSchool: async ({ page, scenario }, use) => {
+    await use(await ensureOrderTestSchool(page, scenario.app, "teacherSecondary", false));
+  },
 });
 
 export { expect };

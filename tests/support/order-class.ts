@@ -1,3 +1,4 @@
+import { entitlementSchoolPattern, automaticSchoolPrefix } from "../../scripts/test-names.mjs";
 import { apiStep } from "./api-step";
 import { browserSessionState } from "./browser-session";
 import { expect, type APIRequestContext, type Locator, type Page } from "@playwright/test";
@@ -17,6 +18,8 @@ export type ClassProduct = {
 export type ClassLine = { product: ClassProduct; quantity: number };
 type SavedOrder = {
   id: number;
+  createdBy?: number | string;
+  createdByName?: string;
   isCopied?: boolean;
   schoolAdressToOrder?: string;
   createdAt?: string;
@@ -36,11 +39,17 @@ export class OrderClassApi {
     private readonly liveHeaders?: () => Promise<Record<string, string>>,
     private readonly complex = false,
   ) {
-    expect(school.name).toMatch(
-      new RegExp(
-        `^AUTO_(?:ORD_REFERENCE_|CAT_${OCTOPUS_ENV.toUpperCase()}_ENT_|STR_${OCTOPUS_ENV.toUpperCase()}_COPY_)`,
-      ),
+    const ownOrder = new RegExp(
+      `^(?:AUTO_ORD_REFERENCE_${OCTOPUS_ENV.toUpperCase()}_W\\d+(?:_B)?|${automaticSchoolPrefix("ORD", OCTOPUS_ENV)}[AB]_W\\d+)$`,
     );
+    const ownCopy = new RegExp(
+      `^(?:AUTO_STR_${OCTOPUS_ENV.toUpperCase()}_COPY_|${automaticSchoolPrefix("STR", OCTOPUS_ENV)}(?:CP|C)_)`,
+    );
+    expect(
+      ownOrder.test(school.name) ||
+        ownCopy.test(school.name) ||
+        entitlementSchoolPattern(OCTOPUS_ENV).test(school.name),
+    ).toBe(true);
   }
 
   private url(endpoint: string) {

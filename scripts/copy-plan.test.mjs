@@ -11,7 +11,7 @@ import {
 
 test("pakiet kopiowania używa osobnego zestawu szkół, bez powrotu do zajętych starych rekordów", () => {
   assert.deepEqual(COPY_KEYS, {
-    A: "specCopyGroup",
+    ZS: "specCopyGroup",
     SP: "specCopyPrimary",
     LO: "specCopySecondary",
     TECH: "specCopyTechnical",
@@ -26,8 +26,8 @@ test("pakiet kopiowania używa osobnego zestawu szkół, bez powrotu do zajętyc
 test("kopiowanie proste: tylko dwie placówki i jedna relacja, niezależnie od kierunku kopii", () => {
   for (const [source, target, expected] of [
     ["SP", "LO", { nodes: ["SP", "LO"], relations: [["SP", "LO"]] }],
-    ["A", "SP", { nodes: ["A", "SP"], relations: [["A", "SP"]] }],
-    ["SP", "A", { nodes: ["A", "SP"], relations: [["A", "SP"]] }],
+    ["ZS", "SP", { nodes: ["ZS", "SP"], relations: [["ZS", "SP"]] }],
+    ["SP", "ZS", { nodes: ["ZS", "SP"], relations: [["ZS", "SP"]] }],
   ]) {
     const plan = copyPairPlan(source, target);
     assert.deepEqual(plan, expected);
@@ -38,18 +38,18 @@ test("kopiowanie proste: tylko dwie placówki i jedna relacja, niezależnie od k
 });
 
 test("minimalny plan nie skraca relacji wielopoziomowej ani nie zmienia rodzeństwa w rodzica i dziecko", () => {
-  assert.deepEqual(copyPairPlan("LO", "A"), {
-    nodes: ["A", "SP", "LO"],
+  assert.deepEqual(copyPairPlan("LO", "ZS"), {
+    nodes: ["ZS", "SP", "LO"],
     relations: [
-      ["A", "SP"],
+      ["ZS", "SP"],
       ["SP", "LO"],
     ],
   });
   assert.deepEqual(copyPairPlan("SP", "TECH"), {
-    nodes: ["A", "SP", "TECH"],
+    nodes: ["ZS", "SP", "TECH"],
     relations: [
-      ["A", "SP"],
-      ["A", "TECH"],
+      ["ZS", "SP"],
+      ["ZS", "TECH"],
     ],
   });
   assert.deepEqual(copyPairPlan("LO", "TECH"), FULL_COPY_PLAN);
@@ -86,11 +86,11 @@ test("błędny zakres jest odrzucany przed przygotowaniem lub zmianą danych", (
   ])
     assert.throws(() => validateCopyPlan(plan));
   assert.deepEqual(FULL_COPY_PLAN, {
-    nodes: ["A", "SP", "LO", "TECH"],
+    nodes: ["ZS", "SP", "LO", "TECH"],
     relations: [
-      ["A", "SP"],
+      ["ZS", "SP"],
       ["SP", "LO"],
-      ["A", "TECH"],
+      ["ZS", "TECH"],
     ],
   });
 });

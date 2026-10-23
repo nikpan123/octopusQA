@@ -1,5 +1,7 @@
 # Octopus QA — testy regresyjne
 
+[Potwierdzenia SP i SŚ 2026 — gratisy](docs/tests/potwierdzenia-gratisy-2026.md): osobny pakiet 636 scenariuszy dla 51 pozycji Excela. SP: 360 przypadków z automatem i zmianą daty własnego zamówienia bezpośrednio w bazie DEV. SŚ: 276 opisanych przypadków ręcznych wymagających weryfikacji CC, bez progu ilościowego. Pełnego pakietu nie wykonano.
+
 Repozytorium zawiera testy end-to-end aplikacji Octopus napisane w Playwright i TypeScript. Testy działają przez przeglądarkę Chromium, korzystają również z API do przygotowania danych i obsługują dwa środowiska:
 
 | Środowisko | Adres                        | Konfiguracja                |
@@ -12,6 +14,34 @@ Aktualny zestaw zawiera **757 scenariuszy** w 40 plikach. Zwykła regresja obejm
 Pakiet progów i Uprawnień obejmuje 90 pozycji scenariuszy: THR 22, PERM 25, ACC 10, ACL 17, NCL 8 i DEB 8. Nowe testy promocji korzystają z nauczycieli i szkół bez flag Testowy; przypadki debiutu zależne od daty mają jawne warunki sezonowe. Nie zostały uruchomione. [Dokumentacja](docs/tests/uprawnienia-i-progi.md) rozdziela sprawdzenie końcowych przypisań i eksportu od nadal brakującej kontroli zapisanych warstw. NCL-04 jest zablokowany (`fixme`) do czasu udostępnienia rzeczywistych zamówień historycznych i nie jest gotowym pokryciem tej reguły.
 
 Pełna lista jest generowana z kodu i znajduje się w [indeksie scenariuszy](docs/tests/scenario-index.md).
+
+### Krótkie nazwy danych automatycznych
+
+Nowe rekordy tworzone przez testy mają prefiks `AUTO`. Przykłady:
+
+| Rekord | Nazwa |
+| --- | --- |
+| Nauczyciel | imię `Auto`, nazwisko `AUTO_a13f9c24b821` |
+| Nowa szkoła | `AUTO_SZ_D_a13f9c24b821` |
+| Wspólna szkoła nauczycieli | `AUTO_QA_T_A_W0` |
+| Szkoła do kopiowania | `AUTO_STR_D_CP_SP_a13f9c24b821` |
+| Szkoła pakietu potwierdzeń | `AUTO_CAT_D_P26_a13f9c24b821` |
+
+`D/T` oznacza środowisko, krótka rola rozróżnia szkoły zestawu, a sufiks ma 12 znaków. Wspólny generator to `scripts/test-names.mjs`; weryfikacja: `npm run test:names`. Pełny identyfikator `REG_<timestamp>_<suffix>` pozostaje w pliku rejestru i e-mailu, dzięki czemu cleanup nadal rozpoznaje własny rekord. W fixture `scenario.id` jest krótką nazwą widoczną, a `scenario.runId` pełnym identyfikatorem rejestru.
+
+Zmiana dotyczy kolejnych przygotowań danych; istniejące rekordy nie są masowo przemianowywane. Testy pisowni i normalizacji nadal używają celowo zadanych imion i nazwisk. Szkoły referencyjne z rzeczywistymi danymi medalowości zachowują swoje nazwy. Dane bez flagi Testowy nadal mają odrębne, sprawdzane oznaczenia własności.
+
+### Dane szkół na DEV i TEST
+
+ID szkół nie są przenoszone między środowiskami. Testy nauczycieli korzystają ze szkół `AUTO_QA_<D|T>_A_W<n>` i `AUTO_QA_<D|T>_B_W<n>`, a zamówienia z `AUTO_ORD_<D|T>_A_W<n>` i wariantu `B`: przygotowanie wyszukuje je po dokładnej nazwie i tworzy brakujące, oznaczając je jako Testowy. Zapamiętane ID jest ponownie sprawdzane; po odtworzeniu bazy odzyskiwane jest aktualne ID własnej szkoły. Tę samą zasadę stosują istniejące zestawy kategorii, struktury i wyszukiwarki. Błędy API nie są traktowane jako brak danych.
+
+Medalowość, roczna medalowość oraz referencje używane w strukturze wyszukują szkoły po dokładnej nazwie i miejscowości z `tests/support/school-medal-data.ts`, osobno dla środowiska. Oczekiwane medale, przedmioty i historia pozostają niezależnymi oczekiwaniami testu. Brak lub niejednoznaczna referencja daje komunikat „Brak danych środowiska”. Testy #37204 przygotowują własną szkołę i potwierdzają medal Brak przed badaniem filtrów.
+
+Historyczna synchronizacja #36305 wymaga prawdziwego zamówienia z historią. DEV zachowuje dotychczasową referencję. Dla TEST ustaw przed uruchomieniem procesu zmienną `OCTOPUS_HISTORY_36305_TEST` z JSON-em `{"schoolId":"…","orderId":"…","year":"2020"}` (dla DEV można analogicznie nadpisać `OCTOPUS_HISTORY_36305_DEV`). Bez referencji TEST te dwa scenariusze są jawnie pominięte z powodem; nie powstaje sztuczna historia. Wskazana, ale błędna referencja powoduje błąd testu.
+
+`npm run test:test` i `npm run test:ui:test` respektują `OCTOPUS_ENV=test`; konfiguracja domyślna nie nadpisuje już wyboru na DEV.
+
+Sprzątanie nauczycieli również korzysta z wybranego środowiska. Rejestr nowego scenariusza zapisuje `environment`; ID z innego środowiska jest odrzucane przed usuwaniem. Starsze rejestry są rozpoznawane po `lastUrl`, a przy braku obu informacji traktowane jako DEV.
 
 [Redmine #37203 — sortowanie Kategorii](docs/tests/redmine-37203.md): istniejące CAT-23–CAT-25 mają teraz tag `@redmine-37203`, kontrolę rzeczywistej kolejności i dowody JSON/zrzuty. Bieżąca wersja tych trzech testów nie została wykonana na DEV/TEST; wcześniejsze wyniki kategorii dotyczą wersji sprzed tej zmiany.
 
@@ -212,7 +242,7 @@ Szkoły nie są automatycznie usuwane, ponieważ projekt nie ma potwierdzonego e
 - konfiguracja dopuszcza 1–4 workery przez `OCTOPUS_WORKERS`;
 - jednocześnie może działać tylko jeden przebieg dla danego środowiska;
 - pakiet ORD jest ograniczony w panelu do 1–2 workerów;
-- każdy worker ORD używa własnych szkół `AUTO_ORD_REFERENCE_<ENV>_W<n>` i wariantu `_B`;
+- każdy worker ORD używa własnych szkół `AUTO_ORD_<D|T>_A_W<n>` i wariantu `B`;
 - roczna medalowość zawsze działa na jednym workerze.
 
 Szczegóły ORD: [README-PARALLEL-ORD.md](README-PARALLEL-ORD.md).

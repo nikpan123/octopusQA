@@ -13,3 +13,5 @@ export function guidedOperation<T>(
   options?: {checkpoint?:boolean;inspection?:GuidedInspection},
 ): Promise<T>;
 export function observeGuidedRequests(request: APIRequestContext): () => void;
+export function guidedOperationActive(): boolean;
+export function recordGuidedResponse(method:string,args:unknown[],response:import('@playwright/test').APIResponse):Promise<void>;

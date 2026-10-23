@@ -1,4 +1,4 @@
-import { test, expect } from "./support/scenario";
+import { test, expect } from "./support/shared-school";
 import { typeValue } from "./support/octopus";
 
 import {
@@ -53,26 +53,7 @@ import {
   searchTeacherByEmail,
 } from "./support/teacher-add-scenario";
 
-/*
- * =========================================================
- * STAŁE SZKOŁY QA
- * =========================================================
- *
- * W testach dodawania nauczyciela NIE tworzymy
- * dodatkowych szkół.
- *
- * Korzystamy z dwóch istniejących szkół QA.
- */
-
-const TEST_SCHOOL = {
-  id: "93391",
-  name: "Szkoła QA 1",
-} as const;
-
-const SECOND_TEST_SCHOOL = {
-  id: "93392",
-  name: "Szkoła QA 2",
-} as const;
+// Szkoły przygotowuje fixture bieżącego środowiska.
 
 /*
  * =========================================================
@@ -84,6 +65,7 @@ const SECOND_TEST_SCHOOL = {
 test("ADD-01: nauczyciela można utworzyć z imieniem, nazwiskiem, szkołą i e-mailem bez przedmioto-poziomu @teacher @add @positive", async ({
   page,
   scenario: s,
+  school: TEST_SCHOOL,
 }) => {
   /*
    * Ważne:
@@ -92,7 +74,7 @@ test("ADD-01: nauczyciela można utworzyć z imieniem, nazwiskiem, szkołą i e-
    *
    * nOWAK ma pozostać nOWAK.
    */
-  const firstName = "Testowy";
+  const firstName = "Auto";
 
   const lastName = "nOWAK";
 
@@ -227,6 +209,7 @@ test("ADD-01: nauczyciela można utworzyć z imieniem, nazwiskiem, szkołą i e-
 test("ADD-02: nauczyciela można utworzyć z telefonem bez e-maila @teacher @add @positive", async ({
   page,
   scenario: s,
+  school: TEST_SCHOOL,
 }) => {
   const phone = "500500500";
 
@@ -337,10 +320,11 @@ test("ADD-02: nauczyciela można utworzyć z telefonem bez e-maila @teacher @add
 test("ADD-03: dzisiejsza data urodzenia jest akceptowana @teacher @add @birthdate", async ({
   page,
   scenario: s,
+  school: TEST_SCHOOL,
 }) => {
   const today = formatDateDDMMYYYY(new Date());
 
-  const firstName = "Testowy";
+  const firstName = "Auto";
 
   const lastName = "Dzisiejszy";
 
@@ -508,6 +492,7 @@ test("ADD-04: źródło domyślne to Karta nauczyciela i lista zawiera trzy wart
 test("ADD-05: nauczyciela można utworzyć ze źródłem Karta LS @teacher @add @source", async ({
   page,
   scenario: s,
+  school: TEST_SCHOOL,
 }) => {
   const form = await test.step("Przygotowanie: wyszukanie nauczyciela testowego", async () =>
     s.app.prepareTeacher("Zrodlo", s.email, TEST_SCHOOL.id, TEST_SCHOOL.name, {
@@ -547,6 +532,7 @@ test("ADD-05: nauczyciela można utworzyć ze źródłem Karta LS @teacher @add 
 test("ADD-06: zgoda E-mail może być zaznaczona bez zgody Marketing @teacher @add @rodo", async ({
   page,
   scenario: s,
+  school: TEST_SCHOOL,
 }) => {
   const form = await test.step("Przygotowanie: wyszukanie nauczyciela testowego", async () =>
     s.app.prepareTeacher("Rodoemail", s.email, TEST_SCHOOL.id, TEST_SCHOOL.name, {
@@ -647,6 +633,7 @@ test("ADD-06: zgoda E-mail może być zaznaczona bez zgody Marketing @teacher @a
 test("ADD-07: zgoda Telefon może być zaznaczona bez zgody Marketing @teacher @add @rodo", async ({
   page,
   scenario: s,
+  school: TEST_SCHOOL,
 }) => {
   const form = await test.step("Przygotowanie: wyszukanie nauczyciela testowego", async () =>
     s.app.prepareTeacher("Rodotelefon", s.email, TEST_SCHOOL.id, TEST_SCHOOL.name, {
@@ -742,6 +729,7 @@ test("ADD-07: zgoda Telefon może być zaznaczona bez zgody Marketing @teacher @
 test("ADD-08: nauczyciela ze źródłem Karta LS można utworzyć bez żadnej zgody RODO @teacher @add @rodo", async ({
   page,
   scenario: s,
+  school: TEST_SCHOOL,
 }) => {
   const form = await test.step("Przygotowanie: wyszukanie nauczyciela testowego", async () =>
     s.app.prepareTeacher("Bezrodo", s.email, TEST_SCHOOL.id, TEST_SCHOOL.name, {
@@ -798,6 +786,8 @@ test("ADD-08: nauczyciela ze źródłem Karta LS można utworzyć bez żadnej zg
 test("ADD-09: nauczyciela można utworzyć z dwiema szkołami @teacher @add @school", async ({
   page,
   scenario: s,
+  school: TEST_SCHOOL,
+  secondSchool: SECOND_TEST_SCHOOL,
 }) => {
   const form = await test.step("Przygotowanie: wyszukanie nauczyciela testowego", async () =>
     s.app.prepareTeacher("Dwieszkoly", s.email, TEST_SCHOOL.id, TEST_SCHOOL.name));
@@ -842,6 +832,8 @@ test("ADD-09: nauczyciela można utworzyć z dwiema szkołami @teacher @add @sch
 test("ADD-10: szkołę można usunąć przed zapisaniem nauczyciela @teacher @add @school", async ({
   page,
   scenario: s,
+  school: TEST_SCHOOL,
+  secondSchool: SECOND_TEST_SCHOOL,
 }) => {
   const form = await test.step("Przygotowanie: wyszukanie nauczyciela testowego", async () =>
     s.app.prepareTeacher("Usunszkole", s.email, TEST_SCHOOL.id, TEST_SCHOOL.name));
@@ -902,6 +894,7 @@ test("ADD-10: szkołę można usunąć przed zapisaniem nauczyciela @teacher @ad
 test("ADD-11: nauczyciela można utworzyć z przedmioto-poziomem Matematyka SP @teacher @add @subject", async ({
   page,
   scenario: s,
+  school: TEST_SCHOOL,
 }) => {
   const form = await test.step("Przygotowanie: wyszukanie nauczyciela testowego", async () =>
     s.app.prepareTeacher("Matematyka", s.email, TEST_SCHOOL.id, TEST_SCHOOL.name));
@@ -934,6 +927,7 @@ test("ADD-11: nauczyciela można utworzyć z przedmioto-poziomem Matematyka SP @
 test("ADD-12: nauczyciela można utworzyć z wieloma przedmioto-poziomami @teacher @add @subject", async ({
   page,
   scenario: s,
+  school: TEST_SCHOOL,
 }) => {
   const form = await test.step("Przygotowanie: wyszukanie nauczyciela testowego", async () =>
     s.app.prepareTeacher("Wieleprzedmiotow", s.email, TEST_SCHOOL.id, TEST_SCHOOL.name));
@@ -973,6 +967,7 @@ test("ADD-12: nauczyciela można utworzyć z wieloma przedmioto-poziomami @teach
 test("ADD-13: dodawanie nauczyciela zachowuje wielkość liter i akceptuje znak _ @teacher @add @name", async ({
   page,
   scenario: s,
+  school: TEST_SCHOOL,
 }) => {
   const inputFirstName = "nikODEm";
 
@@ -1077,6 +1072,7 @@ test("ADD-13: dodawanie nauczyciela zachowuje wielkość liter i akceptuje znak 
 test("ADD-14: Pokaż przy podobnej osobie zamyka formularz i otwiera istniejącego nauczyciela @teacher @add @duplicate", async ({
   page,
   scenario: s,
+  school: TEST_SCHOOL,
 }) => {
   const existingLastName = "Podobny";
 
@@ -1134,6 +1130,7 @@ for (const missing of ["imię", "nazwisko", "szkoła"] as const) {
     missing === "imię" ? "15" : missing === "nazwisko" ? "16" : "17"
   }: brak pola ${missing} blokuje utworzenie nauczyciela @teacher @add @validation`, async ({
     scenario: s,
+    school: TEST_SCHOOL,
   }) => {
     const form = await test.step("Przygotowanie: wyszukanie nauczyciela testowego", async () =>
       s.app.prepareTeacher(
@@ -1191,6 +1188,7 @@ for (const missing of ["imię", "nazwisko", "szkoła"] as const) {
 test("ADD-18: brak e-maila i telefonu blokuje utworzenie nauczyciela po potwierdzeniu braku przedmioto-poziomu @teacher @add @validation", async ({
   page,
   scenario: s,
+  school: TEST_SCHOOL,
 }) => {
   const lastName = "Bezkontaktu";
 
@@ -1241,6 +1239,7 @@ test("ADD-18: brak e-maila i telefonu blokuje utworzenie nauczyciela po potwierd
 test("ADD-19: wybranie Nie przy ostrzeżeniu o braku przedmioto-poziomu pozostawia formularz otwarty @teacher @add @validation", async ({
   page,
   scenario: s,
+  school: TEST_SCHOOL,
 }) => {
   const form = await test.step("Przygotowanie: wyszukanie nauczyciela testowego", async () =>
     s.app.prepareTeacher("Bezprzedmiotu", s.email, TEST_SCHOOL.id, TEST_SCHOOL.name));
@@ -1290,6 +1289,7 @@ for (const [index, invalidEmail] of invalidEmails.entries()) {
   test(`ADD-20.${index + 1}: niepoprawny e-mail "${invalidEmail}" blokuje zapis @teacher @add @email @validation`, async ({
     page,
     scenario: s,
+    school: TEST_SCHOOL,
   }) => {
     const form = await test.step("Przygotowanie: wyszukanie nauczyciela testowego", async () =>
       s.app.prepareTeacher("Niepoprawnyemail", invalidEmail, TEST_SCHOOL.id, TEST_SCHOOL.name));
@@ -1326,6 +1326,7 @@ for (const [index, invalidEmail] of invalidEmails.entries()) {
 test("ADD-21: e-mail używany przez innego nauczyciela blokuje zapis @teacher @add @email @validation", async ({
   page,
   scenario: s,
+  school: TEST_SCHOOL,
 }) => {
   /*
    * =====================================================
@@ -1448,6 +1449,7 @@ test("ADD-21: e-mail używany przez innego nauczyciela blokuje zapis @teacher @a
 test("ADD-22: telefon krótszy niż 9 cyfr blokuje zapis @teacher @add @phone @validation", async ({
   page,
   scenario: s,
+  school: TEST_SCHOOL,
 }) => {
   const lastName = "Krotkitelefon";
 
@@ -1555,6 +1557,7 @@ test("ADD-22: telefon krótszy niż 9 cyfr blokuje zapis @teacher @add @phone @v
 test("ADD-23: pole telefonu nie pozwala wprowadzić więcej niż 9 cyfr @teacher @add @phone", async ({
   page,
   scenario: s,
+  school: TEST_SCHOOL,
 }) => {
   const form = await test.step("Przygotowanie: wyszukanie nauczyciela testowego", async () =>
     s.app.prepareTeacher("Telefonlimit", "", TEST_SCHOOL.id, TEST_SCHOOL.name));
@@ -1604,6 +1607,7 @@ test("ADD-23: pole telefonu nie pozwala wprowadzić więcej niż 9 cyfr @teacher
 test("ADD-24: przyszła data urodzenia blokuje zapis nauczyciela @teacher @add @birthdate @validation", async ({
   page,
   scenario: s,
+  school: TEST_SCHOOL,
 }) => {
   const form = await test.step("Przygotowanie: wyszukanie nauczyciela testowego", async () =>
     s.app.prepareTeacher("Przyszly", s.email, TEST_SCHOOL.id, TEST_SCHOOL.name));
@@ -1637,6 +1641,7 @@ test("ADD-24: przyszła data urodzenia blokuje zapis nauczyciela @teacher @add @
 test("ADD-25: nauczyciela można utworzyć bez daty urodzenia @teacher @add @birthdate @positive", async ({
   page,
   scenario: s,
+  school: TEST_SCHOOL,
 }) => {
   const lastName = "Bezdaty";
 
@@ -1812,6 +1817,7 @@ test("ADD-25: nauczyciela można utworzyć bez daty urodzenia @teacher @add @bir
 test("ADD-27: brak poziomu blokuje dodanie przedmioto-poziomu @teacher @add @subject @validation", async ({
   page,
   scenario: s,
+  school: TEST_SCHOOL,
 }) => {
   const form = await test.step("Przygotowanie: wyszukanie nauczyciela testowego", async () =>
     s.app.prepareTeacher("Samprzedmiot", s.email, TEST_SCHOOL.id, TEST_SCHOOL.name));
@@ -1908,6 +1914,7 @@ test("ADD-27: brak poziomu blokuje dodanie przedmioto-poziomu @teacher @add @sub
 test("ADD-28: brak przedmiotu blokuje dodanie przedmioto-poziomu @teacher @add @subject @validation", async ({
   page,
   scenario: s,
+  school: TEST_SCHOOL,
 }) => {
   const form = await test.step("Przygotowanie: wyszukanie nauczyciela testowego", async () =>
     s.app.prepareTeacher("Sampoziom", s.email, TEST_SCHOOL.id, TEST_SCHOOL.name));
@@ -2002,6 +2009,7 @@ test("ADD-28: brak przedmiotu blokuje dodanie przedmioto-poziomu @teacher @add @
 test("ADD-29: tego samego przedmioto-poziomu nie można dodać dwa razy @teacher @add @subject @validation", async ({
   page,
   scenario: s,
+  school: TEST_SCHOOL,
 }) => {
   const form = await test.step("Przygotowanie: wyszukanie nauczyciela testowego", async () =>
     s.app.prepareTeacher("Duplikatprzedmiotu", s.email, TEST_SCHOOL.id, TEST_SCHOOL.name));
@@ -2094,6 +2102,7 @@ test("ADD-29: tego samego przedmioto-poziomu nie można dodać dwa razy @teacher
 test("ADD-30: anulowanie kompletnego formularza nie tworzy nauczyciela ani relacji ze szkołą @teacher @add @cancel", async ({
   page,
   scenario: s,
+  school: TEST_SCHOOL,
 }) => {
   const lastName = "Anulowany";
 

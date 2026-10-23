@@ -45,7 +45,7 @@ Fixture `scenario` tworzy unikalny identyfikator w formacie:
 REG_<timestamp>_<losowy-sufiks>
 ```
 
-Na jego podstawie powstają nazwisko, nazwa szkoły i adres e-mail w domenie `example.invalid`. Dane przebiegu są zapisywane w `runs/*.json`, a utworzone rekordy są oznaczane jako testowe. Rekord po nieudanym teście pozostaje do diagnostyki; rekordy poprawnego przebiegu mogą zostać usunięte przez cleanup zestawu.
+Pełny identyfikator pozostaje w rejestrze i adresie e-mail w domenie `example.invalid`. Widoczne nazwisko ma format `AUTO_<12 znaków>`, domyślne imię to `Auto`, a szkoła tworzona dla scenariusza ma nazwę `AUTO_SZ_<D|T>_<12 znaków>`. `scenario.id` jest krótką nazwą, a `scenario.runId` pełnym identyfikatorem rejestru. Dane przebiegu są zapisywane w `runs/*.json`, a utworzone rekordy są oznaczane jako testowe. Rekord po nieudanym teście pozostaje do diagnostyki; rekordy poprawnego przebiegu mogą zostać usunięte przez cleanup zestawu.
 
 ### 3.1. Sprzątanie po nieudanym teście
 
@@ -94,12 +94,7 @@ Setup testów `EDIT-*` nie przechodzi przez formularz dodawania. Factory API two
 
 Otwarcie karty nauczyciela czeka na odpowiedź historii statusów, a snapshot historii na wyrenderowanie pierwszego rzeczywistego wiersza danych. Zapobiega to porównaniu częściowo załadowanej tabeli z jej stanem końcowym bez używania stałych opóźnień.
 
-Testy `ADD-*` korzystają również ze stałych szkół QA:
-
-|      ID | Nazwa       |
-| ------: | ----------- |
-| `93391` | Szkoła QA 1 |
-| `93392` | Szkoła QA 2 |
+Testy `ADD-*` korzystają ze szkół przygotowywanych przez `shared-school` na wybranym środowisku. Nazwy `AUTO_QA_<D|T>_A_W<n>` i `AUTO_QA_<D|T>_B_W<n>` identyfikują własne dane; aktualne ID jest wyszukiwane, a brakująca szkoła tworzona i oznaczana jako Testowy.
 
 ## 4. Dodawanie — ADD-01–ADD-30
 

@@ -1,3 +1,4 @@
+import { automaticTeacherName } from "../../scripts/test-names.mjs";
 import { apiStep } from "./api-step";
 import { expect, type APIRequestContext } from "@playwright/test";
 
@@ -141,15 +142,18 @@ export class OctopusApiFactory {
 
   async createTeacher(options: CreateTeacherOptions): Promise<string> {
     return await apiStep(
-      "Przygotowanie API: utworzenie nauczyciela, szkół i nauczanych przedmiotów",
+      `Przygotowanie API: utwórz nauczyciela, przypisz ${options.schoolIds.length === 1 ? "istniejącą szkołę" : "istniejące szkoły"} i nauczane przedmioty`,
       async () => {
         return this.metrics.measure("setup.api.teacher", async () => {
           if (options.testRecord === false) {
-            expect(
-              options.lastName,
-              "Bez flagi tworzymy wyłącznie własne rekordy regresji",
-            ).toMatch(/^REG_\d+_[a-f0-9]{6}$/);
-            expect(options.email).toBe(`${options.lastName.toLowerCase()}@example.invalid`);
+            const runIdentity = options.email
+              .replace(/@example\.invalid$/, "")
+              .replace(/^reg_/, "REG_");
+            expect(runIdentity, "Bez flagi tworzymy wyłącznie własne rekordy regresji").toMatch(
+              /^REG_\d+_[a-f0-9]{6}$/,
+            );
+            expect(options.email).toBe(`${runIdentity.toLowerCase()}@example.invalid`);
+            expect([automaticTeacherName(runIdentity), runIdentity]).toContain(options.lastName);
           }
           const userId = Number(localStorageValue(this.authSession, "id"));
           if (!Number.isSafeInteger(userId) || userId <= 0) {
@@ -162,7 +166,7 @@ export class OctopusApiFactory {
           const createdAt = new Date().toISOString();
           const teacher = await this.post<CreatedTeacher>("/api/Teacher/AddTeacher", {
             lastName: options.lastName,
-            firstName: options.firstName ?? "Testowy",
+            firstName: options.firstName ?? "Auto",
             email: options.email,
             dateOfBirth: null,
             phone: "",

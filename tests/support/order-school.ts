@@ -1,3 +1,4 @@
+import { automaticSchoolName } from "../../scripts/test-names.mjs";
 import { type Page } from "@playwright/test";
 
 import { fixtureSchools } from "./fixture-schools";
@@ -10,7 +11,7 @@ export type OrderTestSchool = {
   name: string;
 };
 
-export type OrderTestSchoolKey = "primary" | "secondary";
+export type OrderTestSchoolKey = "primary" | "secondary" | "teacherPrimary" | "teacherSecondary";
 
 function orderWorkerSuffix(): string {
   const parallelIndex = process.env.TEST_PARALLEL_INDEX ?? process.env.TEST_WORKER_INDEX ?? "0";
@@ -20,10 +21,18 @@ function orderWorkerSuffix(): string {
 
 function definitionFor(key: OrderTestSchoolKey): { name: string } {
   const worker = orderWorkerSuffix();
-  const base = `AUTO_ORD_REFERENCE_${OCTOPUS_ENV.toUpperCase()}_${worker}`;
-
+  const roles: Record<OrderTestSchoolKey, string> = {
+    primary: "A",
+    secondary: "B",
+    teacherPrimary: "A",
+    teacherSecondary: "B",
+  };
   return {
-    name: key === "primary" ? base : `${base}_B`,
+    name: automaticSchoolName(
+      key.startsWith("teacher") ? "QA" : "ORD",
+      `${roles[key]}_${worker}`,
+      OCTOPUS_ENV,
+    ),
   };
 }
 
@@ -58,7 +67,7 @@ export async function ensureOrderTestSchool(
     school = { id, name: definition.name };
   }
   cachedSchools.set(key, school);
-  // Niektóre testy formularzy od razu używają otwartego profilu. To nawigacja do testu, nie walidacja fixture.
+  // Nawigacja jest potrzebna tylko scenariuszom zaczynającym od profilu szkoły.
   if (openPanel) await app.openPanel("school", school.id);
   return school;
 }

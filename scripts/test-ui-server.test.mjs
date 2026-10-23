@@ -94,7 +94,7 @@ test("scenariusze UI pokazują kroki i wybierają wyłącznie powiązany test be
   const browser = await chromium.launch();
   try {
     const page = await browser.newPage({ viewport: { width: 1500, height: 1000 } });
-    let submitted;
+    let submitted, mockRunning = false;
     const errors = [];
     page.on("pageerror", (error) => errors.push(error.message));
     await page.context().route("**/*", async (route) => {
@@ -118,7 +118,7 @@ test("scenariusze UI pokazują kroki i wybierają wyłącznie powiązany test be
       if (pathname === "/api/history") body = { history: [] };
       if (pathname === "/api/test-data") body = { teachers: [], schools: [] };
       if (pathname === "/api/status" || pathname === "/api/run")
-        body = { running: false, run: null };
+        body = { running: mockRunning, run: null };
       if (pathname === "/api/run") submitted = route.request().postDataJSON();
       return route.fulfill({ contentType: "application/json", body: JSON.stringify(body) });
     });
@@ -126,13 +126,26 @@ test("scenariusze UI pokazują kroki i wybierają wyłącznie powiązany test be
     await page.locator('.qa-sidebar nav').getByRole("link", { name: "Scenariusze", exact: true }).click();
     await page.locator("#scenarioSearch").fill("37160");
     await expect(page.locator(".scenario-item")).toHaveCount(19);
+    const feature = page.locator(`details[data-feature-key="${catalog.features.find(item => item.issue === "37160").id}"]`);
+    await expect(feature).not.toHaveAttribute('open', '');
+    await expect(page.locator('.scenario-item').first()).not.toBeVisible();
+    await feature.locator(':scope > summary').click();
+    await expect(page.locator('.scenario-item').first()).toBeVisible();
     await page.locator(".scenario-history > summary").click();
     await expect(page.locator(".scenario-verification")).toContainText("18 zaliczonych, 1 pominiętych, 0 niezaliczonych");
     await page.locator("#scenarioSearch").fill("ORD-COPY-02");
     const scenario = page.locator('[data-scenario-key="ORD-COPY-02"]');
     await expect(scenario).toHaveCount(1);
     await scenario.locator("summary").click();
-    await expect(scenario).toContainText("Oczekiwany rezultat");
+    await expect(scenario).toContainText("Co powinno się wydarzyć");
+    await expect(scenario.locator('.scenario-expanded')).toBeVisible();
+    await scenario.locator(':scope > summary').click();
+    await expect(scenario.locator('.scenario-expanded')).not.toBeVisible();
+    await scenario.locator(':scope > summary').click();
+    await feature.locator(':scope > summary').click();
+    await expect(scenario).not.toBeVisible();
+    await feature.locator(':scope > summary').click();
+    await expect(scenario.locator('.scenario-expanded')).toBeVisible();
     const opened = page.context().waitForEvent("page");
     await scenario.locator('a[data-scenario-id="ORD-COPY-02"]').click();
     const runner = await opened;
@@ -145,6 +158,21 @@ test("scenariusze UI pokazują kroki i wybierają wyłącznie powiązany test be
     await page.locator("#scenarioSearch").fill("ORD-COPY-19");
     await page.locator('[data-scenario-key="ORD-COPY-19"] > summary').click();
     await expect(page.locator('[data-scenario-id="ORD-COPY-19"]')).toBeEnabled();
+    submitted = undefined;
+    const runAll = feature.locator('.scenario-run-actions [data-run-feature]');
+    await expect(runAll).toContainText('Uruchom wszystkie powiązane testy');
+    page.once('dialog', dialog => dialog.dismiss());
+    await runAll.click();
+    assert.equal(submitted, undefined, 'Anulowanie nie uruchamia testów');
+    await page.locator('#environment').selectOption('test', {force:true});
+    page.once('dialog', dialog => { assert.match(dialog.message(), /TEST/); return dialog.accept(); });
+    mockRunning = true;
+    await runAll.click();
+    const expectedIds = [...new Set(catalog.features.find(item => item.issue === '37160').scenarios.filter(s => s.automation !== 'blocked').flatMap(s => s.testIds))];
+    await expect.poll(() => submitted).toMatchObject({environment:'test',selectedTestIds:expectedIds,grep:'',debug:false});
+    assert.equal(submitted.selectedTestIds.length,19,'Wyszukiwanie jednego przypadku nie ogranicza całego zakresu');
+    await page.locator('.qa-sidebar nav a[href="#business-scenarios"]').click();
+    await expect(feature.locator('.scenario-run-actions [data-run-feature]')).toBeDisabled();
     assert.deepEqual(errors, []);
   } finally {
     await browser.close();

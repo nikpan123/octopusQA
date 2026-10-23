@@ -57,6 +57,21 @@ export class FixtureSchoolsApi {
     return body.data;
   }
 
+  // Referencje biznesowe są tylko odczytywane. ID z DEV nie identyfikuje rekordu na TEST.
+  async reference({ name, city }) {
+    if (!name?.trim() || !city?.trim()) throw new Error("Referencja szkoły wymaga nazwy i miasta.");
+    const rows = (await this.query({ nameOrFullName: name, city })).filter(
+      (row) => row.name === name && row.city === city && row.isDel === false,
+    );
+    if (rows.length !== 1)
+      throw new Error(
+        `Dane referencyjne ${new URL(this.baseURL).host}: oczekiwano jednej aktywnej szkoły „${name}”, ${city}; znaleziono ${rows.length}. Uzupełnij dane tego środowiska.`,
+      );
+    if (!/^[1-9]\d*$/.test(String(rows[0].id)))
+      throw new Error("Niepoprawne ID referencji szkoły.");
+    return { id: String(rows[0].id), name, city };
+  }
+
   validate(row, definition, cachedId) {
     if (!/^(?:AUTO_|AUTOMAT CLUB )/.test(definition.name))
       throw new Error("Przygotowanie dotyczy wyłącznie wydzielonych szkół testowych.");
@@ -89,8 +104,10 @@ export class FixtureSchoolsApi {
           ? rows.filter((row) => String(row.id) === String(definition.id))
           : [];
         if (matches.length > 1) throw new Error("API zwróciło powielone ID szkoły.");
-        if (matches.length) this.validate(matches[0], definition, definition.id);
-        else {
+        // Po odtworzeniu bazy stare ID może należeć do innej szkoły.
+        // Nie dotykamy tego rekordu: odzyskujemy własną szkołę po dokładnej nazwie.
+        if (matches.length && matches[0].name !== definition.name) matches = [];
+        if (!matches.length) {
           // Pusty, poprawny odczyt ID to nie powód do tworzenia: najpierw odzyskaj po dokładnej nazwie.
           matches = (await this.query({ nameOrFullName: definition.name })).filter(
             (row) => row.name === definition.name,

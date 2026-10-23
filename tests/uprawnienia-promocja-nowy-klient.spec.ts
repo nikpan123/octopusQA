@@ -1,10 +1,12 @@
 import { test } from "./support/entitlements";
+import { OCTOPUS_ENV } from "./support/environment";
 import type { ClassLine } from "./support/order-class";
 import {
   preparePromotion,
   previousConfirmation,
   promotionThreshold,
   expectPromotion,
+  prepareNewClientHistory,
 } from "./support/promotions";
 
 // Osobne szkoły per przypadek: status klienta jest własnością szkoły/przedmiotu,
@@ -39,9 +41,9 @@ const cases = [
 
 for (const item of cases) {
   test.describe(`Nowy klient — ${item.id}`, () => {
-    test.fixme(
-      "historical" in item,
-      "Zablokowane przygotowanie NCL-04: AddSchoolOrder ignoruje historyczne createdAt. Potrzebny obsługiwany zapis orderYear albo dedykowane dane zakupów z dwóch poprzednich lat.",
+    test.skip(
+      "historical" in item && OCTOPUS_ENV !== "dev",
+      "NCL-04: zmiana dat własnych zamówień w bazie jest dostępna wyłącznie na DEV.",
     );
     test.use({
       accessTestFlags: { teacher: false, school: false },
@@ -51,10 +53,6 @@ for (const item of cases) {
       access: data,
     }) => {
       test.setTimeout(240000);
-      if ("historical" in item)
-        throw new Error(
-          "NCL-04 wymaga przygotowania rzeczywistych zamówień historycznych przed odblokowaniem testu.",
-        );
       await preparePromotion(data);
       // Znany nauczyciel, nowy klient-szkoła: debiut nauczyciela nie może
       // zamaskować promocji zamówieniowej, także podczas okna letniego.
@@ -62,6 +60,10 @@ for (const item of cases) {
       const record = await test.step("Przygotowanie: aktywne potwierdzenie na bieżący rok", () =>
         data.create());
       const threshold = await promotionThreshold(data, record);
+      if ("historical" in item) {
+        await prepareNewClientHistory(data);
+        await expectPromotion(data, record, []);
+      }
       const api = data.orders();
       const product = await api.product("4P-2", [4]);
       await test.step(`Akcja: zakup ${threshold + item.quantity} sztuk przy progu ${threshold}`, () =>

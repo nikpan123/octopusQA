@@ -46,8 +46,8 @@ test("EDIT-12: poprawny e-mail można zmienić i zmiana jest widoczna w historii
   await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("email"); oczekiwane: oldEmail', async () =>
     expect(s.app.detail("email")).toHaveValue(oldEmail));
 
-  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("firstName"); oczekiwane: "Testowy"', async () =>
-    expect(s.app.detail("firstName")).toHaveValue("Testowy"));
+  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("firstName"); oczekiwane: "Auto"', async () =>
+    expect(s.app.detail("firstName")).toHaveValue("Auto"));
 
   await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("lastName"); oczekiwane: s.id', async () =>
     expect(s.app.detail("lastName")).toHaveValue(s.id));
@@ -162,8 +162,8 @@ test("EDIT-12: poprawny e-mail można zmienić i zmiana jest widoczna w historii
    * Dane podstawowe nie powinny się zmienić.
    */
 
-  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("firstName"); oczekiwane: "Testowy"', async () =>
-    expect(s.app.detail("firstName")).toHaveValue("Testowy"));
+  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("firstName"); oczekiwane: "Auto"', async () =>
+    expect(s.app.detail("firstName")).toHaveValue("Auto"));
 
   await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("lastName"); oczekiwane: s.id', async () =>
     expect(s.app.detail("lastName")).toHaveValue(s.id));
@@ -364,8 +364,8 @@ test("EDIT-13: niepoprawny e-mail blokuje zapis @teacher @edit @validation", asy
   /*
    * Pozostałe dane również bez zmian.
    */
-  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("firstName"); oczekiwane: "Testowy"', async () =>
-    expect(s.app.detail("firstName")).toHaveValue("Testowy"));
+  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("firstName"); oczekiwane: "Auto"', async () =>
+    expect(s.app.detail("firstName")).toHaveValue("Auto"));
 
   await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("lastName"); oczekiwane: s.id', async () =>
     expect(s.app.detail("lastName")).toHaveValue(s.id));
@@ -503,8 +503,8 @@ test("EDIT-14: poprawny telefon można dodać @teacher @edit", async ({
   await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("email"); oczekiwane: s.email', async () =>
     expect(s.app.detail("email")).toHaveValue(s.email));
 
-  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("firstName"); oczekiwane: "Testowy"', async () =>
-    expect(s.app.detail("firstName")).toHaveValue("Testowy"));
+  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("firstName"); oczekiwane: "Auto"', async () =>
+    expect(s.app.detail("firstName")).toHaveValue("Auto"));
 
   await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("lastName"); oczekiwane: s.id', async () =>
     expect(s.app.detail("lastName")).toHaveValue(s.id));
@@ -850,8 +850,8 @@ test("EDIT-17: można usunąć zapisany numer telefonu @teacher @edit", async ({
   await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("email"); oczekiwane: s.email', async () =>
     expect(s.app.detail("email")).toHaveValue(s.email));
 
-  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("firstName"); oczekiwane: "Testowy"', async () =>
-    expect(s.app.detail("firstName")).toHaveValue("Testowy"));
+  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("firstName"); oczekiwane: "Auto"', async () =>
+    expect(s.app.detail("firstName")).toHaveValue("Auto"));
 
   await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("lastName"); oczekiwane: s.id', async () =>
     expect(s.app.detail("lastName")).toHaveValue(s.id));
@@ -975,8 +975,8 @@ test("EDIT-18: anulowanie usunięcia telefonu nie zmienia danych @teacher @edit"
   await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("email"); oczekiwane: s.email', async () =>
     expect(s.app.detail("email")).toHaveValue(s.email));
 
-  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("firstName"); oczekiwane: "Testowy"', async () =>
-    expect(s.app.detail("firstName")).toHaveValue("Testowy"));
+  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("firstName"); oczekiwane: "Auto"', async () =>
+    expect(s.app.detail("firstName")).toHaveValue("Auto"));
 
   await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("lastName"); oczekiwane: s.id', async () =>
     expect(s.app.detail("lastName")).toHaveValue(s.id));
@@ -1440,8 +1440,8 @@ test("EDIT-23: można usunąć e-mail bez telefonu po potwierdzeniu ostrzeżenia
    * =====================================================
    */
 
-  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("firstName"); oczekiwane: "Testowy"', async () =>
-    expect(s.app.detail("firstName")).toHaveValue("Testowy"));
+  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("firstName"); oczekiwane: "Auto"', async () =>
+    expect(s.app.detail("firstName")).toHaveValue("Auto"));
 
   await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("lastName"); oczekiwane: s.id', async () =>
     expect(s.app.detail("lastName")).toHaveValue(s.id));

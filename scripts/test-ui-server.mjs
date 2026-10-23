@@ -4,11 +4,15 @@ import { createReadStream, existsSync } from "node:fs";
 import { mkdir, readFile, readdir, stat, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { randomUUID } from "node:crypto";
+import { randomUUID, createHash } from "node:crypto";
 import { latestTestPreview, validPreviewId } from "./test-preview.mjs";
 import { loadScenarioEvidence, testPreviewForRun } from "./scenario-evidence.mjs";
 import { GuidedApiRun } from "./guided-api.mjs";
 import { DebuggerFrame } from "./debugger-frame.mjs";
+import { withReportTheme } from "./report-theme.mjs";
+import { createScenarioEditor } from "./scenario-editor.mjs";
+import giftSmoke from "../tests/data/gratisy-szybki-test-2026.json" with { type: "json" };
+import releaseSmoke from "../tests/data/regresja-przed-releasem.json" with { type: "json" };
 const debuggerFrame = new DebuggerFrame();
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -16,14 +20,36 @@ const root = path.resolve(__dirname, "..");
 const uiDir = path.join(root, "test-ui");
 const runsDir = path.join(root, "runs");
 const historyFile = path.join(runsDir, "test-ui-history.json");
+const scenarioEditor=createScenarioEditor({file:path.join(uiDir,'scenarios.json'),backupDir:path.join(runsDir,'scenario-edits')});
 const reportsDir = path.join(runsDir, "html-reports");
 
 const PORT = Number(process.env.OCTOPUS_TEST_UI_PORT || 4173);
 
 export const SUITES = {
+  giftCatalog: {
+    label: "Centrum wysyłkowe — Gratisy",
+    files: ["tests/centrum-wysylkowe-gratisy.spec.ts"],
+    testIds: ["GFT-01", "GFT-02", "GFT-03", "GFT-04", "GFT-05", "GFT-06", "GFT-07"],
+  },
+  releaseSmoke: {
+    label: releaseSmoke.title,
+    files: releaseSmoke.files,
+    testIds: releaseSmoke.testIds,
+    grep: `(?:^|\\s)(?:${releaseSmoke.testIds.map(escapeRegex).join("|")})(?=:)`,
+  },
+  giftSmoke2026: {
+    label: giftSmoke.title,
+    files: ["tests/potwierdzenia-gratisy-2026.spec.ts"],
+    grep: "@gift-smoke",
+    testIds: giftSmoke.testIds,
+  },
+  confirmations2026: {
+    label: "Potwierdzenia SP i SŚ 2026 — gratisy (Excel)",
+    files: ["tests/potwierdzenia-gratisy-2026.spec.ts"],
+  },
   database: {
     label: "Baza danych i dokumenty Softlab (DEV)",
-    files: ["tests/zamowienia-soft-delete.spec.ts", "tests/zamowienia-kopie-baza.spec.ts", "tests/zamowienia-softlab-odczyt.spec.ts"],
+    files: ["tests/zamowienia-soft-delete.spec.ts", "tests/zamowienia-kopie-baza.spec.ts", "tests/zamowienia-softlab-odczyt.spec.ts", "tests/zamowienia-kopie-integracja-stan.spec.ts"],
   },
   copying: {
     label: "Kopiowanie zamówień",
@@ -33,6 +59,10 @@ export const SUITES = {
       "tests/zamowienia-redmine-36290.spec.ts",
       "tests/zamowienia-redmine-35980.spec.ts",
       "tests/zamowienia-kopie-uprawnienia.spec.ts",
+      "tests/zamowienia-kopie-uprawnienia-niezalezne.spec.ts",
+      "tests/zamowienia-kopie-gratisy.spec.ts",
+      "tests/zamowienia-kopie-zmiana-struktury.spec.ts",
+      "tests/zamowienia-kopie-struktura-status.spec.ts",
     ],
   },
   all: { label: "Cała regresja", files: [] },
@@ -332,7 +362,13 @@ function finalizeRunCounts(exitCode) {
 }
 
 export function extractTestId(text) {
+  // The leaf title identifies a parameterized test; suite names can also contain IDs.
+  // Accept new prefixes (including digits) without maintaining a per-suite allowlist.
+  const numberedId = /\b[A-Z][A-Z0-9]*(?:-[A-Z0-9]+)*-\d+[A-Z0-9]*(?:-[A-Z0-9]+)*\b/;
+  const leaf = text.split(" › ").at(-1);
   return (
+    leaf.match(numberedId)?.[0] ||
+    text.match(numberedId)?.[0] ||
     text.match(
       /\b(?:ORD|CLUB|SCH(?:-EDIT)?|MED(?:-YEAR)?|ADD|EDIT|TEA|FIND|REL|STR|CAT|TFL|SFLT|THR|PERM|ACC|ACL|NCL|DEB)-[A-Z0-9-]+\b/,
     )?.[0] || null
@@ -529,7 +565,7 @@ function teacherRecord(fileName, run, fileStat) {
     fileName,
     id,
     email: safeString(Object.hasOwn(run, "teacherEmail") ? run.teacherEmail : run.email),
-    lastName: safeString(run.teacherLastName || run.lastName || run.id || run.runId),
+    lastName: safeString(run.teacherLastName || run.lastName || run.displayId || run.id || run.runId),
     title: safeString(run.title),
     runId: runIdentifier(run, fileName),
     result: safeString(run.result),
@@ -752,6 +788,8 @@ export function buildRunArguments(options) {
       suiteLabel: `Krok po kroku · ${ids[0]}`,
       guidedApi: Boolean(options.guidedApi),
       guidedUi: Boolean(options.guidedUi),
+      genericDebugger: Boolean(options.genericDebugger),
+      includeAnnual: Boolean(options.includeAnnual),
       workers: 1,
       includeDatabase: ids[0].startsWith("ORD-DB-"),
     };
@@ -767,19 +805,30 @@ export function buildRunArguments(options) {
 
   const suite = SUITES[options.suite] ? options.suite : "all";
   const suiteDef = SUITES[suite];
+  if (suite === "releaseSmoke" && environment !== releaseSmoke.environment)
+    throw new Error("Szybka regresja przed releasem obejmuje gratisy ze zmianą daty w bazie DEV. Wybierz środowisko DEV.");
+
+  if (suiteDef.testIds && Array.isArray(options.selectedTestIds) &&
+      options.selectedTestIds.some(id => !suiteDef.testIds.includes(String(id))))
+    throw new Error(`Pakiet ${suiteDef.label} obejmuje tylko ${suiteDef.testIds.length} wybranych testów. Wyczyść zaznaczenie lub wybierz pełny pakiet.`);
 
   if (Array.isArray(options.selectedTestIds) && options.selectedTestIds.length > 0) {
-    const safeIds = options.selectedTestIds
+    const safeIds = [...new Set(options.selectedTestIds
       .map(String)
-      .filter((id) => !id.startsWith("MED-YEAR-"))
-      .slice(0, 100);
+      .filter((id) => !id.startsWith("MED-YEAR-")))];
     if (safeIds.length) {
-      args.push("--grep", `(?:${safeIds.map(escapeRegex).join("|")})(?![A-Z0-9-])`);
+      const pattern = `(?:^|\\s)(?:${safeIds.map(escapeRegex).join("|")})(?=:)`;
+      if (pattern.length > 24000)
+        throw new Error("Wybrana lista testów jest za długa. Uruchom pakiet lub podziel wybór na mniejsze grupy.");
+      args.push("--grep", pattern);
     }
   } else {
     if (suiteDef.files.length) args.push(...suiteDef.files);
-    if (options.grep && String(options.grep).trim())
-      args.push("--grep", String(options.grep).trim());
+    const requestedGrep = String(options.grep ?? "").trim();
+    const grep = suiteDef.grep
+      ? (requestedGrep ? `(?=.*${suiteDef.grep})(?:${requestedGrep})` : suiteDef.grep)
+      : requestedGrep;
+    if (grep) args.push("--grep", grep);
   }
 
   const requestedWorkers = [1, 2, 4].includes(Number(options.workers))
@@ -807,9 +856,9 @@ export function buildRunArguments(options) {
     selectedIds.some((id) => /^ORD-(?:COPY-|SPEC-35980-|BUG-3628[39]-|BUG-36290-)/.test(id)) ||
     /@copy|ORD-COPY-|ORD-SPEC-35980-/.test(String(options.grep ?? ""));
   const workers =
-    options.singleTab || includeDatabase || copyingSelection
+    options.singleTab || includeDatabase || copyingSelection || suite === "releaseSmoke"
       ? 1
-      : suite === "orders" || ordersOnlySelection
+      : suite === "orders" || ordersOnlySelection || suite === "confirmations2026" || suite === "giftSmoke2026" || selectedIds.some(id => id.startsWith("POTW26-")) || /POTW26-|@potw26/.test(String(options.grep ?? ""))
         ? Math.min(requestedWorkers, 2)
         : requestedWorkers;
 
@@ -834,14 +883,17 @@ async function startRunInternal(options) {
   let built = buildRunArguments(options);
   if (options.debug) {
     const matches = (await listTests(built.environment)).filter(
-      (test) => test.id === options.selectedTestIds[0],
+      (test) => test.id === options.selectedTestIds[0] && (!options.debuggerTestKey || test.debuggerTestKey === options.debuggerTestKey),
     );
-    if (matches.length !== 1 || matches[0].annual)
+    if (matches.length !== 1 || (matches[0].annual && !options.debugger))
       throw new Error("Wybierz jeden jednoznaczny, zwykły test z aktualnego katalogu.");
     // Capability comes from the current catalog, never a client-supplied flag.
     if (options.debugger && !matches[0].debuggerMode)
       throw new Error("Ten test wymaga przygotowania opisanych kroków. Wybierz test oznaczony UI lub API w debuggerze.");
-    built = buildRunArguments({ ...options, guidedApi: matches[0].debugMode === "api", guidedUi: Boolean(options.debugger && matches[0].debuggerMode === "ui") });
+    built = buildRunArguments({ ...options, guidedApi: matches[0].debugMode === "api", guidedUi: Boolean(options.debugger && matches[0].debuggerMode === "ui"), genericDebugger: Boolean(options.debugger && matches[0].debuggerSteps === "automatic"), includeAnnual: Boolean(options.debugger && matches[0].annual) });
+    // Several parameterized scenarios share a short ID and declaration line.
+    // Match the chosen full title, so one click can never launch all variants.
+    built.args[built.args.indexOf('--grep') + 1] = debuggerTestPattern(matches[0]);
     const file = path.resolve(root, "tests", matches[0].file.replace(/^tests\//, ""));
     if (!file.startsWith(path.join(root, "tests") + path.sep))
       throw new Error("Niepoprawna lokalizacja testu.");
@@ -875,10 +927,11 @@ async function startRunInternal(options) {
     suite: built.suite,
     suiteLabel: built.suiteLabel,
     workers: built.workers || 1,
-    headed: Boolean(options.headed || (!built.guidedApi && options.debug) || built.singleTab),
+    headed: Boolean(options.headed || (!built.guidedApi && !built.guidedUi && options.debug) || built.singleTab),
     debug: Boolean(options.debug),
     debugMode: built.guidedApi ? "api" : built.guidedUi ? "ui" : "inspector",
     debugger: Boolean(options.debugger),
+    debuggerTestKey: options.debuggerTestKey || null,
     singleTab: Boolean(built.singleTab),
     grep: options.grep ? String(options.grep) : "",
     selectedTestIds: Array.isArray(options.selectedTestIds) ? options.selectedTestIds : [],
@@ -901,11 +954,12 @@ async function startRunInternal(options) {
     OCTOPUS_SINGLE_TAB: built.singleTab ? "1" : "0",
     PLAYWRIGHT_HTML_OUTPUT_DIR: reportDir,
     QA_TEST_DEBUGGER: options.debugger ? "1" : "0",
+    QA_DEBUGGER_GENERIC: built.genericDebugger ? "1" : "0",
     ...(options.debugger ? { QA_BROWSER_PREVIEW: "0" } : {}),
     OCTOPUS_GUIDED_API: built.guidedApi ? "1" : "0",
     OCTOPUS_GUIDED_BROWSER: built.guidedApi && (options.headed || options.debugger) ? "1" : "0",
     ...((built.guidedApi || built.guidedUi) ? { PWDEBUG: "0", OCTOPUS_GUIDED_URL: `http://127.0.0.1:${PORT}`, OCTOPUS_GUIDED_KEY: state.guided.key } : {}),
-    ...(options.annualMode ? { OCTOPUS_INCLUDE_ANNUAL: "1" } : {}),
+    OCTOPUS_INCLUDE_ANNUAL: options.annualMode || built.includeAnnual ? "1" : "0",
   };
 
   const child = spawnPlaywright(built.args, {
@@ -986,6 +1040,10 @@ async function stopRun() {
   return true;
 }
 
+export function debuggerTestPattern(test) {
+  return `(?:^| )${escapeRegex(test.title.split(' › ').join(' '))}$`;
+}
+
 export function parseListOutput(output) {
   const tests = [];
   const seen = new Set();
@@ -1007,7 +1065,9 @@ export function parseListOutput(output) {
       column: Number(columnNo),
       annual: /\bMED-YEAR-/.test(title) || /@annual-medal\b/.test(title),
       debugMode: /@step-api\b/.test(title) ? "api" : "inspector",
-      debuggerMode: /@step-api\b/.test(title) ? "api" : /@step-ui\b/.test(title) ? "ui" : null,
+      debuggerMode: /@step-api\b/.test(title) ? "api" : "ui",
+      debuggerSteps: /@step-(api|ui)\b/.test(title) ? "described" : "automatic",
+      debuggerTestKey: createHash('sha256').update(key).digest('hex').slice(0,24),
     });
   }
   return tests;
@@ -1022,7 +1082,7 @@ async function listTests(environment) {
   const result = await new Promise((resolve, reject) => {
     const child = spawnPlaywright(args, {
       cwd: root,
-      env: { ...process.env, OCTOPUS_ENV: env, OCTOPUS_INCLUDE_DATABASE: "1" },
+      env: { ...process.env, OCTOPUS_ENV: env, OCTOPUS_INCLUDE_DATABASE: "1", OCTOPUS_INCLUDE_ANNUAL: "1" },
       stdio: ["ignore", "pipe", "pipe"],
       windowsHide: true,
     });
@@ -1042,7 +1102,7 @@ async function listTests(environment) {
   return tests;
 }
 
-async function serveFile(res, baseDir, relativePath) {
+async function serveFile(res, baseDir, relativePath, { reportTheme = false } = {}) {
   const base = path.resolve(baseDir);
   const target = path.resolve(base, relativePath || "index.html");
   if (!target.startsWith(base + path.sep) && target !== base) {
@@ -1056,6 +1116,12 @@ async function serveFile(res, baseDir, relativePath) {
   if (!existsSync(filePath)) {
     res.writeHead(404);
     res.end("Not found");
+    return;
+  }
+  if (reportTheme && path.basename(filePath) === 'index.html') {
+    const html=withReportTheme(await readFile(filePath,'utf8'));
+    res.writeHead(200,{'Content-Type':'text/html; charset=utf-8','Content-Length':Buffer.byteLength(html),'Cache-Control':'no-cache'});
+    res.end(html);
     return;
   }
   const finalStat = await stat(filePath);
@@ -1121,7 +1187,14 @@ const server = http.createServer(async (req, res) => {
       return;
     }
     if (url.pathname === "/api/scenarios" && req.method === "GET") {
-      sendJson(res, 200, JSON.parse(await readFile(path.join(uiDir, "scenarios.json"), "utf8")));
+      sendJson(res, 200, await scenarioEditor.catalog());
+      return;
+    }
+    if (url.pathname === '/api/scenarios/update' && req.method === 'POST') {
+      try{
+        const catalog=await scenarioEditor.update(await readJsonBody(req),{origin:req.headers.origin,expectedOrigin:`http://127.0.0.1:${PORT}`,contentType:req.headers['content-type'],editToken:req.headers['x-scenario-token']});
+        sendJson(res,200,catalog);
+      }catch(error){sendJson(res,error.status||500,{error:error.message});}
       return;
     }
 
@@ -1230,6 +1303,7 @@ const server = http.createServer(async (req, res) => {
         res,
         path.join(root, "playwright-report"),
         decodeURIComponent(url.pathname.slice("/latest-report/".length)),
+        { reportTheme: true },
       );
       return;
     }
@@ -1246,7 +1320,7 @@ const server = http.createServer(async (req, res) => {
 
       const runReportDir = path.join(reportsDir, runId);
       const reportFile = rest.length && rest.join("/") ? rest.join("/") : "index.html";
-      await serveFile(res, runReportDir, reportFile);
+      await serveFile(res, runReportDir, reportFile, { reportTheme: true });
       return;
     }
 

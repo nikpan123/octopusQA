@@ -1,3 +1,4 @@
+import { automaticSchoolPrefix } from "../../scripts/test-names.mjs";
 import { mkdir, open, readFile, unlink, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { setTimeout as delay } from "node:timers/promises";
@@ -111,9 +112,9 @@ type SearchDataset = { prefix: string; schools: SearchSchool[] };
 type DatasetRegistry = SearchDataset & { schema: 1; rspoBase: number; pending?: string };
 
 const datasetDirectory = path.resolve("playwright", ".auth", OCTOPUS_ENV);
-const datasetPath = path.join(datasetDirectory, "search-filter-schools.json");
+const datasetPath = path.join(datasetDirectory, "search-filter-schools-v2.json");
 const lockPath = `${datasetPath}.lock`;
-const datasetPrefix = `AUTO_SFLT_${OCTOPUS_ENV.toUpperCase()}_V1`;
+const datasetPrefix = automaticSchoolPrefix("SFLT", OCTOPUS_ENV) + "V2";
 let sharedDataset: Promise<SearchDataset> | undefined;
 
 async function prepareSearchDataset(app: Octopus): Promise<SearchDataset> {
@@ -145,7 +146,7 @@ async function prepareSearchDataset(app: Octopus): Promise<SearchDataset> {
       registry = {
         schema: 1,
         prefix: datasetPrefix,
-        rspoBase: OCTOPUS_ENV === "dev" ? 871100 : 871200,
+        rspoBase: OCTOPUS_ENV === "dev" ? 872100 : 872200,
         schools: [],
       };
       await writeFile(datasetPath, JSON.stringify(registry, null, 2));

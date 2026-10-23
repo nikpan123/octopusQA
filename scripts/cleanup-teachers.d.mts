@@ -1,7 +1,11 @@
 import type { Page } from "@playwright/test";
 type CleanupOptions = { includeFailed?: boolean };
 export function validateTeacherRun(run: Record<string, string>, options?: CleanupOptions): void;
-export function deleteTestTeacher(page: Page, run: Record<string, string>): Promise<string>;
+export function deleteTestTeacher(
+  page: Page,
+  run: Record<string, string>,
+  options?: { allowUnmarked?: boolean },
+): Promise<string>;
 export function cleanupSuccessfulTeacher(
   page: Page,
   run: Record<string, string>,

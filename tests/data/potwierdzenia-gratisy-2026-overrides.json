@@ -1,0 +1,13 @@
+{
+  "notes": [
+    "Korekta użytkownika 23.10.2026: matematyka SŚ, potwierdzenie klasy 1 zakres podstawowy korzysta z podręcznika klasy 2 MLK2N-1 (ID 4024); nie ma podręcznika MLK1N-1. Zamówienie i oczekiwany gratis: MLK2N-1."
+  ],
+  "rows": {
+    "MAT-SS-1-H": {
+      "giftId": 4024,
+      "giftCode": "MLK2N-1",
+      "orderCode": "MLK2N-1",
+      "orderClassLevel": 2
+    }
+  }
+}

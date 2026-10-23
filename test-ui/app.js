@@ -19,8 +19,8 @@
   function refresh() { apply(read()); }
   select?.addEventListener('change', () => {
     const value = allowed.includes(select.value) ? select.value : 'auto';
-    try { localStorage.setItem(key, value); } catch {}
-    try { document.cookie = key + '=' + value + '; Path=/; Max-Age=31536000; SameSite=Strict'; } catch {}
+    try { localStorage.setItem(key, value); } catch { /* Motyw działa także bez zapisu preferencji. */ }
+    try { document.cookie = key + '=' + value + '; Path=/; Max-Age=31536000; SameSite=Strict'; } catch { /* Brak cookie nie blokuje panelu. */ }
     apply(value);
   });
   system.addEventListener('change', refresh);
@@ -46,6 +46,7 @@ const state = {
   scenariosLoaded: false,
   scenarioEvidence: {},
   evidenceMessage: "Odczytywanie raportów…",
+  archiveNotice: "",
   selected: new Set(),
   status: null,
   timerHandle: null,
@@ -111,6 +112,18 @@ function updateWorkersForSuite(suite) {
   const ordersSelected = suite === "orders";
 
   workers.disabled = false;
+  if (suite === "releaseSmoke") {
+    workers.value = "1"; workers.disabled = true;
+    hint.textContent = "Regresja przed releasem: 26 wybranych testów Octopusa na DEV, jeden proces. Zestaw obejmuje kopiowanie i gratisy ze zmianą daty w bazie.";
+    hint.hidden = false; return;
+  }
+  if (["confirmations2026", "giftSmoke2026"].includes(suite) && !$("#singleTab")?.checked) {
+    if (workers.value === "4") workers.value = "2";
+    if (option4) option4.disabled = true;
+    hint.textContent = "Potwierdzenia 2026: wybierz 2, aby skrócić czas wykonania, lub 1 dla kolejnego sprawdzania klas. Procesy używają osobnych danych; SP i SŚ działają automatycznie.";
+    hint.hidden = false;
+    return;
+  }
   if ($("#singleTab")?.checked) {
     workers.value = "1";
     workers.disabled = true;
@@ -183,6 +196,7 @@ function renderFailures(failures = [], reportUrl = "#") {
 function renderStatus(payload) {
   window.qaDebugger?.render(payload);
   state.status = payload;
+  syncScenarioRunButtons();
   const run = payload.run;
   setBadge(run?.status, payload.running);
   $("#startBtn").disabled = payload.running;
@@ -409,8 +423,9 @@ const evidenceLabels = { passed: "PASS", failed: "FAIL", partial: "Niepełny prz
 
 function scenarioRunBadge(scenario) {
   const run = state.scenarioEvidence[scenario.id]?.latestRun;
-  if (!run) return `<span class="scenario-execution-note">${escapeHtml(state.evidenceMessage.startsWith("Odczytywanie") || state.evidenceMessage.startsWith("Wyniki niedostępne") ? state.evidenceMessage : "Brak zapisanego wykonania")}</span>`;
-  return `<span class="scenario-execution-badge evidence-${escapeHtml(run.status)}">${escapeHtml(evidenceLabels[run.status] || "Wynik nieznany")} · ${run.executed}/${run.total} testów · ${escapeHtml(run.environment.toUpperCase())} · ${escapeHtml(formatDate(run.date))}${state.evidenceMessage ? " · Niepełne archiwum" : ""}</span>`;
+  if (!run) return `<span class="scenario-execution-note">${escapeHtml(state.evidenceMessage.startsWith("Odczytywanie") || state.evidenceMessage.startsWith("Wyniki niedostępne") ? state.evidenceMessage : scenario.descriptionUpdatedAt ? "Opis zmieniono — wymagane nowe wykonanie" : "Brak zapisanego wykonania")}</span>`;
+  const newer = state.scenarioEvidence[scenario.id]?.archive?.newerUnavailableCount;
+  return `<span class="scenario-execution-badge evidence-${escapeHtml(run.status)}">${escapeHtml(evidenceLabels[run.status] || "Wynik nieznany")} · ${run.executed}/${run.total} testów · ${escapeHtml(run.environment.toUpperCase())} · ${escapeHtml(formatDate(run.date))}${newer ? " · Nowszy przebieg bez raportu" : ""}</span>`;
 }
 
 function scenarioPreviewButton(testId, runId, stepTitle = "") {
@@ -420,14 +435,15 @@ function scenarioPreviewButton(testId, runId, stepTitle = "") {
 function scenarioExecution(scenario) {
   const evidence = state.scenarioEvidence[scenario.id];
   const run = evidence?.latestRun;
-  if (!run) return `<section class="scenario-section scenario-execution"><h4>Wynik wykonania</h4>${scenarioRunBadge(scenario)}<p>Pokrycie automatyzacją nie jest wynikiem testu.</p></section>`;
+  if (!run) return `<section class="scenario-section scenario-execution"><h4>Wynik wykonania</h4>${scenarioRunBadge(scenario)}<p>Pokrycie automatyzacją nie jest wynikiem testu.</p>${evidence?.history?.length?`<details><summary>Wcześniejsze wykonania — poprzedni opis</summary>${evidence.history.map(item=>`<p>${escapeHtml(formatDate(item.date))} · ${escapeHtml(evidenceLabels[item.status]||item.status)}${/^\/report\/[0-9a-f-]+\/$/i.test(item.reportUrl||'')?` <a href="${escapeHtml(item.reportUrl)}" target="_blank" rel="noopener">Pełny raport ↗</a>`:''}</p>`).join('')}</details>`:''}</section>`;
   const reportLink = item => /^\/report\/[0-9a-f-]+\/$/i.test(item.reportUrl || "") ? `<a href="${escapeHtml(item.reportUrl)}" target="_blank" rel="noopener">Pełny raport ↗</a>` : "";
-  return `<section class="scenario-section scenario-execution"><h4>Ostatni powiązany przebieg</h4>${scenarioRunBadge(scenario)}
+  return `<section class="scenario-section scenario-execution"><h4>Ostatni zapisany powiązany przebieg</h4>${scenarioRunBadge(scenario)}
     <p>Wynik dotyczy powiązanych testów w jednym przebiegu, nie całego wymagania. ${scenario.automation !== "automated" ? "Scenariusz nie ma pełnego pokrycia automatycznego." : ""}</p>
     <p>PASS: ${run.counts.passed} · FAIL: ${run.counts.failed} · pominięto: ${run.counts.skipped}${run.counts.unknown ? " · niepełne: " + run.counts.unknown : ""}</p>
     ${run.missingTestIds.length ? `<p>Nieobecne w tym przebiegu: ${run.missingTestIds.map(escapeHtml).join(", ")}</p>` : ""}
     ${reportLink(run)}<div class="scenario-evidence-tests">${run.tests.map(test => scenarioPreviewButton(test.id, run.runId)).join("")}</div>
-    <details class="scenario-evidence-history"><summary>Historia powiązanych przebiegów (ostatnie ${evidence.history.length})</summary><ul>${evidence.history.map(item => `<li>${escapeHtml(formatDate(item.date))} · ${escapeHtml(item.environment.toUpperCase())} · ${escapeHtml(evidenceLabels[item.status] || item.status)} · ${item.executed}/${item.total} testów — ${reportLink(item)}</li>`).join("")}</ul></details>
+    <details class="scenario-evidence-history"><summary>Historia powiązanych przebiegów (ostatnie ${evidence.history.length})</summary><ul>${evidence.history.map(item => `<li>${escapeHtml(formatDate(item.date))} · ${escapeHtml(item.environment.toUpperCase())} · ${escapeHtml(evidenceLabels[item.status] || item.status)} · ${item.executed}/${item.total} testów${item.beforeDescriptionChange?" · przed zmianą opisu":""} — ${reportLink(item)}</li>`).join("")}</ul></details>
+    ${evidence.archive?.unavailableCount ? `<p class="scenario-execution-note">Powiązane przebiegi bez dostępnego raportu HTML: ${evidence.archive.unavailableCount}. ${evidence.archive.newerUnavailableCount ? "Nie można potwierdzić wyniku nowszego przebiegu. Pokazujemy ostatni dostępny zapis." : "Są starsze niż pokazany wynik i nie oznaczają braku testów w scenariuszu."}</p>` : ""}
     ${state.evidenceMessage ? `<p class="scenario-execution-note">${escapeHtml(state.evidenceMessage)}</p>` : ""}
     </section>`;
 }
@@ -449,13 +465,15 @@ async function loadScenarioReports() {
   const requestId = ++evidenceRequest;
   state.scenarioEvidence = {};
   state.evidenceMessage = "Odczytywanie raportów…";
+  state.archiveNotice = "";
   renderScenarios();
   try {
     const data = await api(`/api/scenario-evidence?environment=${encodeURIComponent($("#environment").value)}`);
     if (requestId !== evidenceRequest) return;
     if (!data.scenarios) throw new Error("Odśwież serwer panelu, aby włączyć powiązania raportów.");
     state.scenarioEvidence = data.scenarios;
-    state.evidenceMessage = data.unavailableReports ? `Nie udało się odczytać ${data.unavailableReports} archiwalnych raportów; wynik oparto na dostępnych zapisach.` : "";
+    state.evidenceMessage = "";
+    state.archiveNotice = data.unavailableReports ? `W historii wybranego środowiska ${data.unavailableReports} przebiegów nie ma dostępnego raportu HTML (${data.archive?.notSaved ?? 0} niezapisanych, ${data.archive?.unreadable ?? 0} nieczytelnych). To informacja o archiwum, nie o pokryciu scenariuszy. Wyniki poniżej pochodzą z konkretnych dostępnych raportów.` : "";
   } catch (error) {
     if (requestId !== evidenceRequest) return;
     state.evidenceMessage = `Wyniki niedostępne: ${error.message}`;
@@ -467,18 +485,50 @@ function scenarioTestAction(feature, scenario, available) {
   const missing = scenario.testIds.filter(id => !available.has(id));
   const unavailable = scenario.automation === "blocked" || !scenario.testIds.length || !state.testsLoaded || missing.length;
   if (unavailable) return `<button class="secondary" data-scenario-id="${escapeHtml(scenario.id)}" disabled>${state.testsLoaded ? "Brak dostępnego zestawu" : "Pobieranie testów…"}</button>`;
-  return `<a class="button-link secondary" data-scenario-id="${escapeHtml(scenario.id)}" href="${escapeHtml(scenarioWindowUrl(feature, scenario, true))}" target="_blank" rel="noopener">Wybierz powiązane testy ↗</a>`;
+  return scenarioRunButton(feature, [scenario], scenario.id) + `<a class="button-link secondary" data-scenario-id="${escapeHtml(scenario.id)}" href="${escapeHtml(scenarioWindowUrl(feature, scenario, true))}" target="_blank" rel="noopener">Wybierz powiązane testy ↗</a>`;
 }
 
+let scenarioRunPending = false;
+function scenarioRunSelection(scenarios) {
+  const runnable = scenarios.filter(s => s.automation !== 'blocked');
+  const ids = [...new Set(runnable.flatMap(s => s.testIds))];
+  const available = new Set(state.tests.map(t => t.id));
+  const unavailable = !state.testsLoaded || !ids.length || ids.some(id => !available.has(id)) || state.tests.some(t => ids.includes(t.id) && t.annual);
+  return { ids, unavailable, manual: scenarios.filter(s => s.automation === 'blocked' || !s.testIds.length).length };
+}
+function scenarioRunButton(feature, scenarios, scenarioId = '') {
+  const selection = scenarioRunSelection(scenarios);
+  return `<button type="button" class="primary" data-run-feature="${escapeHtml(feature.id)}" data-run-scenario="${escapeHtml(scenarioId)}" data-run-unavailable="${selection.unavailable}" ${selection.unavailable || state.status?.running || scenarioRunPending ? 'disabled' : ''}>▶ ${scenarioId ? 'Uruchom powiązane testy' : 'Uruchom wszystkie powiązane testy'} (${selection.ids.length})</button>`;
+}
+function syncScenarioRunButtons() {
+  $$('[data-run-feature]').forEach(button => { button.disabled = button.dataset.runUnavailable === 'true' || Boolean(state.status?.running) || scenarioRunPending; });
+}
+async function runScenarioTests(featureId, scenarioId = '') {
+  if (scenarioRunPending || state.status?.running) return;
+  const feature = state.scenarios.find(f => f.id === featureId);
+  if (!feature) return;
+  const scenarios = scenarioId ? feature.scenarios.filter(s => s.id === scenarioId) : feature.scenarios;
+  const selection = scenarioRunSelection(scenarios);
+  if (selection.unavailable) { alert('Nie można uruchomić kompletu powiązanych testów. Sprawdź katalog i ograniczenia scenariuszy. Workflow roczny uruchamiaj osobno.'); return; }
+  const title = scenarioId ? scenarios[0].title : feature.title;
+  if (!confirm(`Uruchomić ${selection.ids.length} powiązanych testów na ${$('#environment').value.toUpperCase()}?\n${title}\n${selection.manual ? `${selection.manual} scenariuszy bez dostępnej automatyzacji pozostanie do sprawdzenia ręcznie.\n` : ''}Testy mogą tworzyć i zmieniać dane. Zostanie wykonany cały zakres powiązań, niezależnie od wyszukiwania i pozostałych zaznaczeń.`)) return;
+  scenarioRunPending = true;
+  syncScenarioRunButtons();
+  try { await startRun({selectedTestIds:selection.ids,grep:'',suite:'all',debug:false,debugger:false}, true); }
+  finally { scenarioRunPending = false; syncScenarioRunButtons(); }
+}
+
+let scenarioEditorInstance;
+const scenarioEditorUI={async open(...args){const {createScenarioEditorUI}=await import('/scenario-editor.js');scenarioEditorInstance??=createScenarioEditorUI({onSaved:async()=>{await loadScenarios();$('#scenarioMessage').textContent='Scenariusz zapisany. Poprzedni opis zachowano w kopii lokalnej.';},onError:message=>{$('#scenarioMessage').textContent=message;}});return scenarioEditorInstance.open(...args);}};
 function scenarioDescription(scenario, available) {
   const missing = scenario.testIds.filter(id => !available.has(id));
   const files = [...new Set(state.tests.filter(test => scenario.testIds.includes(test.id)).map(test => test.file).filter(Boolean))];
   return `<div class="scenario-body scenario-description-grid"><div class="scenario-steps-panel">
-    <section class="scenario-section scenario-preconditions"><h4>Warunki wstępne</h4><ul>${scenario.preconditions.map(value => `<li>${escapeHtml(value)}</li>`).join("")}</ul></section>
-    <section class="scenario-section"><h4>Kroki odtwarzania</h4><p class="scenario-execution-note">Wyniki kroków pochodzą z tego samego przebiegu co podsumowanie. Brak powiązania lub zapisu nie oznacza PASS.</p><ol class="scenario-timeline">${scenario.steps.map((value, index) => scenarioStep(scenario, value, index)).join("")}</ol></section>
+    ${scenario.description?`<section class="scenario-section"><h4>Co sprawdzamy</h4><p>${escapeHtml(scenario.description)}</p></section>`:""}${scenario.data?`<section class="scenario-section"><h4>Dane do przygotowania</h4><p>${escapeHtml(scenario.data)}</p></section>`:""}<section class="scenario-section scenario-preconditions"><h4>Zanim zaczniesz</h4><ul>${scenario.preconditions.map(value => `<li>${escapeHtml(value)}</li>`).join("")}</ul></section>
+    <section class="scenario-section"><h4>Jak wykonać sprawdzenie</h4><p class="scenario-execution-note">Wyniki kroków pochodzą z tego samego przebiegu co podsumowanie. Brak powiązania lub zapisu nie oznacza PASS.</p><ol class="scenario-timeline">${scenario.steps.map((value, index) => scenarioStep(scenario, value, index)).join("")}</ol></section>
     </div><aside class="scenario-result-panel">
     ${scenarioExecution(scenario)}
-    <section class="scenario-section scenario-expected"><h4>Oczekiwany rezultat</h4><p>${escapeHtml(scenario.expected)}</p></section>
+    <section class="scenario-section scenario-expected"><h4>Co powinno się wydarzyć</h4><p>${escapeHtml(scenario.expected)}</p></section>
     <section class="scenario-section scenario-test-links"><h4>Powiązane testy</h4><div class="scenario-test-ids">${scenario.testIds.length ? scenario.testIds.map(id => `<code>${escapeHtml(id)}</code>`).join("") : "Brak automatyzacji — wymaga przygotowania."}</div>
     ${files.length ? `<h4>Skrypt testowy</h4>${files.map(file => `<p class="scenario-source-file">${escapeHtml(file)}</p>`).join("")}` : ''}
     ${scenario.blocker ? `<div class="scenario-limitation"><strong>Ograniczenie pokrycia</strong><p>${escapeHtml(scenario.blocker)}</p></div>` : ""}
@@ -489,6 +539,7 @@ function scenarioDescription(scenario, available) {
 function renderScenarios() {
   const container = $("#scenarioList");
   const expanded = new Set([...container.querySelectorAll('details[data-scenario-key][open]')].map(item => item.dataset.scenarioKey));
+  const expandedFeatures = new Set([...container.querySelectorAll('details[data-feature-key][open]')].map(item => item.dataset.featureKey));
   const available = new Set(state.tests.map(test => test.id));
   const detailId = linkedParams.get("scenario");
   document.body.dataset.scenarioDetail = String(Boolean(detailId));
@@ -504,7 +555,7 @@ function renderScenarios() {
     $("#pageDescription").textContent = scenario.title;
     document.title = scenario.id + " · Scenariusz · Octopus";
     container.innerHTML = `<article class="scenario-detail"><header class="scenario-detail-heading"><small class="scenario-eyebrow">SCENARIUSZ · #${escapeHtml(feature.issue)}</small><h2>${escapeHtml(scenario.title)}</h2><span class="scenario-coverage">${scenarioCoverage(scenario)}</span></header>
-      <div class="scenario-detail-actions">${scenarioTestAction(feature, scenario, available)}<a class="button-link secondary" href="/#business-scenarios" target="_blank" rel="noopener">Katalog scenariuszy ↗</a></div>
+      <div class="scenario-detail-actions"><button class="secondary" data-scenario-edit="${escapeHtml(scenario.id)}" data-feature-id="${escapeHtml(feature.id)}">Edytuj scenariusz</button>${scenarioTestAction(feature, scenario, available)}<a class="button-link secondary" href="/#business-scenarios" target="_blank" rel="noopener">Katalog scenariuszy ↗</a></div>
       <p class="scenario-launch-note">Testy otworzą się w osobnym oknie, już zaznaczone. Samo otwarcie nie uruchamia testów.</p>
       ${scenarioDescription(scenario, available)}</article>`;
   } else {
@@ -516,18 +567,21 @@ function renderScenarios() {
       const verificationText = verification ? `<details class="scenario-history"><summary>Wcześniejsza weryfikacja · ${escapeHtml(verification.environment)} · ${escapeHtml(verification.date)}</summary><p class="scenario-verification">Zapisany przebieg: ${escapeHtml(verification.passed)} zaliczonych, ${escapeHtml(verification.skipped)} pominiętych, ${escapeHtml(verification.failed)} niezaliczonych.<br>${escapeHtml(verification.scope)}</p></details>` : "";
       const issueLinks = `<div class="actions compact">${/^\d+$/.test(feature.issue) ? `<a class="button-link secondary" href="https://redmine.gwo.pl/issues/${encodeURIComponent(feature.issue)}" target="_blank" rel="noopener">Zgłoszenie w Redmine ↗</a>` : ""}${feature.centerIssueId ? `<a class="button-link secondary" href="http://127.0.0.1:4180/#issues/${encodeURIComponent(feature.centerIssueId)}" target="_blank" rel="noopener">Powiązania w Centrum testów ↗</a>` : ""}</div>`;
       const totals = { automated: scenarios.filter(s => s.automation === "automated").length, partial: scenarios.filter(s => s.automation === "partial").length, blocked: scenarios.filter(s => s.automation === "blocked").length };
-      return `<article class="scenario-feature"><div class="scenario-scope-head"><header class="scenario-feature-header"><div><small class="scenario-eyebrow">ZAKRES TESTÓW · #${escapeHtml(feature.issue)}</small><h3>${escapeHtml(feature.title)}</h3></div><div class="scenario-feature-count"><strong>${scenarios.length}</strong><span>scenariuszy</span></div></header><p class="scenario-scope-description">${escapeHtml(feature.scope)}</p>${issueLinks}<div class="scenario-legend"><span class="scenario-total-automated">${totals.automated} z automatyzacją</span>${totals.partial ? `<span class="scenario-total-partial">${totals.partial} częściowych</span>` : ''}${totals.blocked ? `<span>${totals.blocked} do przygotowania</span>` : ''}<small>Pokrycie nie oznacza zaliczonego wykonania.</small></div>${verificationText}</div>
-      <div class="scenario-accordion-list">${scenarios.map(scenario => `<details class="scenario-item scenario-accordion scenario-${scenario.automation}" data-scenario-key="${escapeHtml(scenario.id)}" ${expanded.has(scenario.id) ? 'open' : ''}>
+      return `<details class="scenario-feature" data-feature-key="${escapeHtml(feature.id)}" ${expandedFeatures.has(feature.id) ? 'open' : ''}><summary class="scenario-scope-head"><header class="scenario-feature-header"><div><small class="scenario-eyebrow">ZAKRES TESTÓW · #${escapeHtml(feature.issue)}</small><h3>${escapeHtml(feature.title)}</h3></div><div class="scenario-feature-count"><strong>${scenarios.length}</strong><span>scenariuszy</span></div></header><p class="scenario-scope-description">${escapeHtml(feature.scope)}</p><div class="scenario-legend"><span class="scenario-total-automated">${totals.automated} z automatyzacją</span>${totals.partial ? `<span class="scenario-total-partial">${totals.partial} częściowych</span>` : ''}${totals.blocked ? `<span>${totals.blocked} do przygotowania</span>` : ''}<small>Pokrycie nie oznacza zaliczonego wykonania.</small></div><span class="scenario-expand-hint"><span aria-hidden="true">⌄</span> <span class="when-closed">Rozwiń scenariusze</span><span class="when-open">Zwiń scenariusze</span></span></summary><div class="scenario-feature-body">${issueLinks}${verificationText}
+      <div class="scenario-run-actions">${scenarioRunButton(feature, feature.scenarios)}<a class="button-link secondary" href="#run-tests">Ustawienia uruchomienia</a><p>Uruchamia wszystkie testy powiązane z tą kartą, także poza aktualnym wyszukiwaniem. Środowisko i podgląd wybierzesz w ustawieniach uruchomienia.</p></div><div class="scenario-accordion-list">${scenarios.map(scenario => `<details class="scenario-item scenario-accordion scenario-${scenario.automation}" data-scenario-key="${escapeHtml(scenario.id)}" ${expanded.has(scenario.id) ? 'open' : ''}>
         <summary><span class="scenario-accordion-chevron" aria-hidden="true">⌄</span><span class="scenario-code">${escapeHtml(scenario.id)}</span><span class="scenario-accordion-title"><strong class="scenario-title">${escapeHtml(scenario.title)}</strong><span class="scenario-meta">${scenario.steps.length} kroków · ${scenario.testIds.length} powiązanych testów</span>${scenarioRunBadge(scenario)}</span><span class="scenario-coverage">${scenarioCoverage(scenario)}</span></summary>
-        <div class="scenario-expanded"><div class="scenario-expanded-actions">${scenarioTestAction(feature, scenario, available)}<a class="button-link secondary" data-scenario-open="${escapeHtml(scenario.id)}" href="${escapeHtml(scenarioWindowUrl(feature, scenario))}" target="_blank" rel="noopener">Pełny opis w osobnym oknie ↗</a><p>Samo otwarcie panelu wybiera testy. Uruchomisz je osobnym przyciskiem.</p></div>${scenarioDescription(scenario, available)}</div>
-      </details>`).join("")}</div></article>`;
+        <div class="scenario-expanded"><div class="scenario-expanded-actions"><button class="secondary" data-scenario-edit="${escapeHtml(scenario.id)}" data-feature-id="${escapeHtml(feature.id)}">Edytuj scenariusz</button>${scenarioTestAction(feature, scenario, available)}<a class="button-link secondary" data-scenario-open="${escapeHtml(scenario.id)}" href="${escapeHtml(scenarioWindowUrl(feature, scenario))}" target="_blank" rel="noopener">Pełny opis w osobnym oknie ↗</a><p>Samo otwarcie panelu wybiera testy. Uruchomisz je osobnym przyciskiem.</p></div>${scenarioDescription(scenario, available)}</div>
+      </details>`).join("")}</div></div></details>`;
     }).join("") || '<p class="empty">Brak pasujących scenariuszy.</p>';
   }
+  if (state.archiveNotice && !detailId) container.insertAdjacentHTML("afterbegin", `<details class="scenario-history scenario-archive-notice"><summary>Informacja o archiwalnych raportach</summary><p>${escapeHtml(state.archiveNotice)}</p></details>`);
   container.querySelectorAll("a[data-scenario-open], a[data-scenario-id]").forEach(link => link.addEventListener("click", event => {
     if (event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
     event.preventDefault();
     window.open(link.href, "_blank", "popup,noopener,width=1180,height=900");
   }));
+  container.querySelectorAll("[data-scenario-edit]").forEach(button=>button.addEventListener("click",()=>scenarioEditorUI.open(button.dataset.featureId,button.dataset.scenarioEdit)));
+  container.querySelectorAll('[data-run-feature]').forEach(button => button.addEventListener('click', () => runScenarioTests(button.dataset.runFeature, button.dataset.runScenario)));
   container.querySelectorAll("[data-scenario-preview]").forEach(button => button.addEventListener("click", () => showTestPreview(button.dataset.scenarioPreview, { runId: button.dataset.evidenceRun, stepTitle: button.dataset.evidenceStep })));
 }
 
@@ -585,8 +639,8 @@ async function loadTests() {
   }
 }
 
-async function startRun(extra = {}) {
-  if (linkedOnly && (missingLinkedIds.length || !(extra.selectedTestIds ?? [...state.selected]).length)) {
+async function startRun(extra = {}, independentSelection = false) {
+  if (linkedOnly && !independentSelection && (missingLinkedIds.length || !(extra.selectedTestIds ?? [...state.selected]).length)) {
     alert("Wybierz istniejące testy przypięte do zgłoszenia. Nie uruchomiono całej regresji.");
     return;
   }
@@ -614,6 +668,11 @@ async function startRun(extra = {}) {
 
   if (payload.debug) payload.singleTab = false;
   if (payload.singleTab) { payload.workers = 1; payload.headed = true; }
+  if (payload.suite === "giftSmoke2026" && !payload.selectedTestIds.length) {
+    // Keep the selection narrow even if the browser was refreshed before the
+    // running panel server picked up the newly added suite definition.
+    payload.grep = payload.grep ? `(?=.*@gift-smoke)(?:${payload.grep})` : "@gift-smoke";
+  }
 
   try {
     $("#log").textContent = "";
@@ -923,6 +982,16 @@ $$(".suite").forEach((button) => {
     $$(".suite").forEach((item) => item.classList.remove("active"));
     button.classList.add("active");
     state.suite = button.dataset.suite;
+    if (state.suite === "giftSmoke2026") {
+      state.selected.clear();
+      $("#grep").value = "";
+      renderTests();
+    }
+    if (["releaseSmoke", "giftCatalog"].includes(state.suite)) {
+      state.selected = new Set(button.dataset.testIds.split(","));
+      $("#grep").value = "";
+      renderTests();
+    }
     updateWorkersForSuite(state.suite);
   });
 });
@@ -1147,7 +1216,7 @@ window.qaDebugger = (() => {
       return `<article class="debugger-school"><div><strong>${escapeHtml(school.node)} · ${escapeHtml(school.role)}</strong><span class="debugger-school-id">ID szkoły: ${escapeHtml(school.id)}</span></div><p>${escapeHtml(school.name)}</p>${valid ? `<a class="button-link secondary" href="${escapeHtml(school.url)}" target="_blank" rel="noopener">Otwórz szkołę #${escapeHtml(school.id)} ↗</a>` : ''}<p class="debugger-school-orders"><strong>Zamówienia w momencie podglądu:</strong> ${school.orders.length ? school.orders.map(order => `<span>ID ${escapeHtml(order.id)}${order.symbol ? ' · '+escapeHtml(order.symbol) : ''}${order.copied ? ' · kopia' : ''}</span>`).join('') : 'Brak'}</p></article>`;
     }).join('')}</div>${inspection.phase === 'before' && inspection.request ? `<details class="debugger-planned-request" open><summary>Planowane żądanie — jeszcze niewysłane</summary><pre>${escapeHtml(JSON.stringify(inspection.request,null,2))}</pre></details>` : ''}`;
   }
-  function selectedTest() { return state.tests.find(test => test.id === $('#debugTest').value); }
+  function selectedTest() { return state.tests.find(test => (test.debuggerTestKey || test.id) === $('#debugTest').value); }
   function describe() {
     const test = selectedTest();
     const feature = state.scenarios.find(item => item.scenarios.some(scenario => scenario.testIds.includes(test?.id)));
@@ -1159,15 +1228,15 @@ window.qaDebugger = (() => {
   function picker() {
     const previous = $('#debugTest').value;
     const term = $('#debugSearch').value.trim().toLowerCase();
-    const supported = state.tests.filter(test => !test.annual && test.debuggerMode);
+    const supported = state.tests.filter(test => test.debuggerMode);
     const tests = supported.filter(test => `${test.id} ${test.title}`.toLowerCase().includes(term));
-    const signature = JSON.stringify([term, tests.map(test => [test.id,test.title,test.debuggerMode])]);
+    const signature = JSON.stringify([term, tests.map(test => [test.debuggerTestKey,test.id,test.title,test.debuggerMode])]);
     if (signature !== pickerSignature) {
       pickerSignature = signature;
-      $('#debugTest').innerHTML = '<option value="">Wybierz test…</option>' + tests.map(test => `<option value="${escapeHtml(test.id)}">${test.debuggerMode.toUpperCase()} · ${escapeHtml(test.id)} · ${escapeHtml(test.title.replace(/@[\w-]+/g, '').trim())}</option>`).join('');
-      if (tests.some(test => test.id === previous)) $('#debugTest').value = previous;
+      $('#debugTest').innerHTML = '<option value="">Wybierz test…</option>' + tests.map(test => `<option value="${escapeHtml(test.debuggerTestKey || test.id)}">${test.annual ? 'ROCZNY' : test.debuggerSteps === 'automatic' ? 'UI/API' : test.debuggerMode.toUpperCase()} · ${escapeHtml(test.id)} · ${escapeHtml(test.title.replace(/@[\w-]+/g, '').trim())}</option>`).join('');
+      if (tests.some(test => (test.debuggerTestKey || test.id) === previous)) $('#debugTest').value = previous;
     }
-    $('#debugCapability').textContent = `${supported.length} testów obsługuje opisane kroki (${tests.length} pasuje do wyszukiwania). Pozostałe testy można uruchamiać z katalogu lub w Inspektorze; wymagają jeszcze przygotowania do tego debuggera.`;
+    $('#debugCapability').textContent = `${supported.length} testów dostępnych w debuggerze (${tests.length} pasuje do wyszukiwania). Zatrzymujesz test przed opisanym etapem albo pojedynczą czynnością przeglądarki lub API. Roczna medalowość wymaga osobnego przygotowania snapshotu; nigdy nie uruchamia się razem ze zwykłą regresją.`;
     $('#debugEnvironment').value = $('#environment').value;
     describe();
   }
@@ -1232,11 +1301,21 @@ window.qaDebugger = (() => {
     }
     const signature = JSON.stringify(steps);
     if (signature !== stepSignature) {
+      const timeline = $('.debugger-timeline');
+      const followLatest = !stepSignature || timeline.scrollTop <= 8;
+      const visibleTop = timeline.getBoundingClientRect().top + $('.debugger-timeline-head').offsetHeight;
+      const anchor = !followLatest ? [...$('#debugSteps').children].find(item => item.getBoundingClientRect().bottom > visibleTop) : null;
+      const anchorId = anchor?.dataset.stepId, anchorTop = anchor?.getBoundingClientRect().top;
       stepSignature = signature;
       const open = new Set([...$('#debugSteps').querySelectorAll('details[open]')].map(element => element.dataset.step));
-      $('#debugSteps').innerHTML = steps.map((step,index) => `<li class="debugger-step debugger-step-${escapeHtml(step.status)}"><div class="debugger-step-heading"><span class="debugger-step-number">${index+1}</span><div><strong>${escapeHtml(step.title)}</strong><small>${escapeHtml(labels[step.status] || step.status)}${step.automatic ? ' · automatycznie' : ''}</small></div></div>${step.requests.length ? `<details data-step="${escapeHtml(step.id)}" ${open.has(step.id) ? 'open' : ''}><summary>Żądania i odpowiedzi (${step.requests.length})</summary>${step.requests.map(request => `<div class="debugger-request"><strong>${escapeHtml(request.method)} ${escapeHtml(request.path)} → ${escapeHtml(request.status ?? 'błąd')}</strong><pre>${escapeHtml(JSON.stringify(request,null,2))}</pre></div>`).join('')}</details>` : ''}${step.error ? `<pre class="debugger-error">${escapeHtml(step.error)}</pre>` : ''}</li>`).join('') || '<li class="debugger-step-empty">Nie wykonano jeszcze żadnego etapu.</li>';
+      $('#debugSteps').innerHTML = steps.map((step,index) => ({step,number:index+1})).reverse().map(({step,number}) => `<li data-step-id="${escapeHtml(step.id)}" class="debugger-step debugger-step-${escapeHtml(step.status)}"><div class="debugger-step-heading"><span class="debugger-step-number">${number}</span><div><strong>${escapeHtml(step.title)}</strong><small>${escapeHtml(labels[step.status] || step.status)}${step.automatic ? ' · automatycznie' : ''}</small></div></div>${step.requests.length ? `<details data-step="${escapeHtml(step.id)}" ${open.has(step.id) ? 'open' : ''}><summary>Żądania i odpowiedzi (${step.requests.length})</summary>${step.requests.map(request => `<div class="debugger-request"><strong>${escapeHtml(request.method)} ${escapeHtml(request.path)} → ${escapeHtml(request.status ?? 'błąd')}</strong><pre>${escapeHtml(JSON.stringify(request,null,2))}</pre></div>`).join('')}</details>` : ''}${step.error ? `<pre class="debugger-error">${escapeHtml(step.error)}</pre>` : ''}</li>`).join('') || '<li class="debugger-step-empty">Nie wykonano jeszcze żadnego etapu.</li>';
+      if (followLatest) timeline.scrollTop = 0;
+      else if (anchorId) {
+        const restored = [...$('#debugSteps').children].find(item => item.dataset.stepId === anchorId);
+        if (restored) timeline.scrollTop += restored.getBoundingClientRect().top - anchorTop;
+      }
     }
-    $('#debugStepCount').textContent = `${steps.filter(step => step.status === 'passed').length} zaliczonych · ${steps.filter(step => step.status === 'failed').length} niezaliczonych · ${steps.length} rozpoczętych etapów. Dalsze etapy pojawią się w trakcie testu.`;
+    $('#debugStepCount').textContent = `${steps.filter(step => step.status === 'passed').length} zaliczonych · ${steps.filter(step => step.status === 'failed').length} niezaliczonych · ${steps.length} rozpoczętych etapów. Najnowsze etapy są na górze.`;
   }
   async function control(path,body) {
     try { const response = await api(path,{method:'POST',body:JSON.stringify(body)}); if (!response.accepted) throw new Error('Panel nie potwierdził polecenia.'); }
@@ -1280,10 +1359,10 @@ window.qaDebugger = (() => {
   $('#debugStart').addEventListener('click',async()=>{
     const test = selectedTest();
     if (!test?.debuggerMode || state.status?.running) return;
-    if (!confirm(`Rozpocząć ${test.id} na ${$('#environment').value.toUpperCase()}? To rzeczywisty test, który może zmieniać dane. Przygotowanie wykona się automatycznie; każdy opisany etap zaczeka na przycisk.`)) return;
+    if (!confirm(`Rozpocząć ${test.id} na ${$('#environment').value.toUpperCase()}? To rzeczywisty test, który może zmieniać dane. Sesja przygotuje się automatycznie; test zaczeka przed etapem lub czynnością.${test.annual ? " To ciężki workflow roczny. Weryfikacja wymaga przygotowanego snapshotu dla tego środowiska." : ""}`)) return;
     showingSetup = false;
     $('#debugLogs').textContent = '';
-    await startRun({debug:true,debugger:true,selectedTestIds:[test.id],headed:false,workers:1,grep:'',singleTab:false});
+    await startRun({debug:true,debugger:true,debuggerTestKey:test.debuggerTestKey,selectedTestIds:[test.id],headed:false,workers:1,grep:'',singleTab:false});
   });
   $('#debugNext').addEventListener('click',next);
   $('#debugContinue').addEventListener('click',()=>control('/api/guided/control',{runId:sessionId,continuous:true}));

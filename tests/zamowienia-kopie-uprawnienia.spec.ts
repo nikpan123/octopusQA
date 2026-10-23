@@ -11,7 +11,11 @@ const test = accessTest.extend({
     await use(`COPY_${run}_P${info.parallelIndex}`);
   },
 });
-test.use({ accessTestFlags: { teacher: false, school: false } });
+test.use({
+  accessTestFlags: { teacher: false, school: false },
+  accessTeacherSchools: "target",
+  accessSchoolCount: 2,
+});
 
 for (const [id, change] of [
   ["13", "brak kopii nie daje dostępu"],
@@ -92,7 +96,10 @@ for (const [id, change] of [
       copyId = String(copies[0].id);
       target.owned.add(copyId);
       await test.step("Kopia daje 31 sztuk przy progu 30 i przyznaje dostęp w placówce docelowej", async () => {
+        // Business expectation is soft so a known counting defect does not hide the
+        // separate post-change assertion. Ownership/setup guards remain hard.
         await expect
+          .configure({ soft: true })
           .poll(async () => ({
             count: details(await current())?.orderedCount,
             threshold: details(await current())?.threshold,

@@ -1,0 +1,18 @@
+{
+  "title": "Gratisy 2026 — szybki test (13 przypadków)",
+  "testIds": [
+    "POTW26-01-MINUS",
+    "POTW26-01-MIN",
+    "POTW26-01-LOW-MINUS",
+    "POTW26-01-LOW-MIN",
+    "POTW26-01-NO-ORDER",
+    "POTW26-01-FOREIGN",
+    "POTW26-01-TEST-TEACHER",
+    "POTW26-01-OLD-CONFIRM",
+    "POTW26-08-MIN",
+    "POTW26-16-MIN",
+    "POTW26-29-MIN",
+    "POTW26-41-MIN",
+    "POTW26-43-MIN"
+  ]
+}

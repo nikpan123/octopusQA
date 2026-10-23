@@ -1,8 +1,8 @@
 // Osobny zestaw dla całego pakietu kopiowania. Stare szkoły COPY_* pozostają
 // nietknięte: mogą zawierać relacje utworzone poza bieżącym wykonaniem testów.
-// Dane topologii pozostają jawne: testy hierarchii zachowują pełny graf A.
+// Dane topologii pozostają jawne: testy hierarchii zachowują pełny graf ZS.
 export const COPY_KEYS = {
-  A: "specCopyGroup",
+  ZS: "specCopyGroup",
   SP: "specCopyPrimary",
   LO: "specCopySecondary",
   TECH: "specCopyTechnical",
@@ -11,11 +11,11 @@ export const COPY_KEYS = {
   SOLO: "specCopyStandalone",
 };
 export const FULL_COPY_PLAN = {
-  nodes: ["A", "SP", "LO", "TECH"],
+  nodes: ["ZS", "SP", "LO", "TECH"],
   relations: [
-    ["A", "SP"],
+    ["ZS", "SP"],
     ["SP", "LO"],
-    ["A", "TECH"],
+    ["ZS", "TECH"],
   ],
 };
 export const ISOLATION_COPY_PLAN = {

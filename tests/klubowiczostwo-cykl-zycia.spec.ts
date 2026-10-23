@@ -868,38 +868,74 @@ test("CLUB-51: weryfikacja negatywna zmienia wszystkie klasy NASZE na OBCE @teac
   await s.record("negativeClasses", verifiedClasses.join(","));
 });
 
-test("CLUB-52: potwierdzenie zweryfikowane negatywnie można zmienić z powrotem na NASZE @teacher @club @negative-verification @edit", async ({
+const negativeRestoreSteps = [
+  "Przygotuj nowego nauczyciela ze szkołą podstawową i przedmiotem Matematyka",
+  "Dodaj potwierdzenie NASZ dla klasy 4 i sprawdź status nauczyciela Nasz",
+  "Kliknij Weryfikuj neg. dla tego potwierdzenia i sprawdź zmianę statusu na Obcy",
+  "Otwórz edycję tego samego formularza: klasa 4 OBCA, wydawnictwo INNE",
+  "Odznacz klasę 4 OBCĄ, zaznacz klasę 4 NASZĄ i zapisz formularz bez wysyłania e-maila",
+  "Odśwież profil i sprawdź status Nasz oraz zapis klasy 4 NASZEJ w tym samym potwierdzeniu",
+];
+
+test("CLUB-52: po weryfikacji negatywnej edycja formularza przywraca nauczyciela z Obcy na Nasz @teacher @club @negative-verification @edit @regression", async ({
   page,
   scenario: s,
 }) => {
-  const { teacherId } =
-    await test.step("Przygotowanie: nauczyciel i szkoły do potwierdzeń klubowych", async () =>
-      prepareClubTeacher(page, s));
+  const { teacherId } = await test.step(negativeRestoreSteps[0], () => prepareClubTeacher(page, s));
 
-  const { form } = await openNewClubForm(page);
-  await selectSchool(form, s.schoolName);
-  await ownClass(form, "4").check();
-  await disableTeacherEmail(form);
-  const confirmationId = await saveClubForm(page, form);
+  const confirmationId = await test.step(negativeRestoreSteps[1], async () => {
+    const { form, schoolYear } = await openNewClubForm(page);
+    await selectSchool(form, s.schoolName);
+    await ownClass(form, "4").check();
+    await disableTeacherEmail(form);
+    const id = await saveClubForm(page, form);
+    await expect(
+      subjectLevelRow(page).getByRole("cell", { name: "Nasz", exact: true }),
+    ).toBeVisible();
+    await expect(confirmationRow(page, id)).toHaveCount(1);
+    await s.record("confirmationId", id);
+    await s.record("schoolYear", schoolYear);
+    return id;
+  });
 
-  await negativelyVerifyClubConfirmation(page, confirmationId);
+  await test.step(negativeRestoreSteps[2], async () => {
+    await negativelyVerifyClubConfirmation(page, confirmationId);
+    await expect(confirmationRow(page, confirmationId)).toHaveCount(1);
+    await s.record("statusAfterNegativeVerification", "Obcy");
+  });
 
-  const editForm = await openClubEdit(page, confirmationId);
-  await foreignClass(editForm, "4").uncheck();
-  await ownClass(editForm, "4").check();
-  await saveClubEdit(editForm);
+  const editForm = await test.step(negativeRestoreSteps[3], async () => {
+    const form = await openClubEdit(page, confirmationId);
+    await expect(ownClass(form, "4")).not.toBeChecked();
+    await expect(foreignClass(form, "4")).toBeChecked();
+    await expect(foreignClasses(form).getByRole("combobox")).toContainText("INNE");
+    return form;
+  });
 
-  await s.app.openPanel("teacher", teacherId);
-  await test.step('Sprawdzenie: widoczność elementu — subjectLevelRow(page).getByRole("cell", { name: "Nasz", exact: true })', async () =>
-    expect(subjectLevelRow(page).getByRole("cell", { name: "Nasz", exact: true })).toBeVisible());
+  await test.step(negativeRestoreSteps[4], async () => {
+    await foreignClass(editForm, "4").uncheck();
+    await ownClass(editForm, "4").check();
+    await expect(ownClass(editForm, "4")).toBeChecked();
+    await expect(foreignClass(editForm, "4")).not.toBeChecked();
+    if (
+      await editForm
+        .getByRole("checkbox", { name: "Wysłać maila do nauczyciela", exact: true })
+        .count()
+    )
+      await disableTeacherEmail(editForm);
+    await saveClubEdit(editForm);
+  });
 
-  const verifyForm = await openClubEdit(page, confirmationId);
-  await test.step('Sprawdzenie: zaznaczenie opcji — ownClass(verifyForm, "4")', async () =>
-    expect(ownClass(verifyForm, "4")).toBeChecked());
-  await test.step('Sprawdzenie: negacja — zaznaczenie opcji — foreignClass(verifyForm, "4")', async () =>
-    expect(foreignClass(verifyForm, "4")).not.toBeChecked());
-  await cancelClubForm(verifyForm);
-
-  await s.record("confirmationId", confirmationId);
-  await s.record("restoredTeacherStatus", "Nasz");
+  await test.step(negativeRestoreSteps[5], async () => {
+    await s.app.openPanel("teacher", teacherId);
+    await expect(
+      subjectLevelRow(page).getByRole("cell", { name: "Nasz", exact: true }),
+    ).toBeVisible();
+    await expect(confirmationRow(page, confirmationId)).toHaveCount(1);
+    const form = await openClubEdit(page, confirmationId);
+    await expect(ownClass(form, "4")).toBeChecked();
+    await expect(foreignClass(form, "4")).not.toBeChecked();
+    await cancelClubForm(form);
+    await s.record("restoredTeacherStatus", "Nasz");
+  });
 });

@@ -236,6 +236,8 @@ W `CLUB-08` test nie zakłada, że pierwszy zwrócony rekord należy do pierwsze
 
 ## 8. Uruchamianie
 
+`CLUB-52` jest dostępny również w panelu scenariuszy jako „Klubowiczostwo — powrót do NASZ po weryfikacji negatywnej”. Test tworzy własnego nauczyciela i potwierdzenie Matematyki dla klasy 4, sprawdza status Nasz, klika „Weryfikuj neg.”, a po zmianie statusu na Obcy sprawdza w edycji zaznaczoną klasę OBCĄ i wydawnictwo INNE. Następnie odznacza klasę OBCĄ, zaznacza NASZĄ i zapisuje. Ponowne otwarcie profilu oraz edycji tego samego ID potwierdzenia musi pokazać status Nasz, zaznaczoną klasę NASZĄ i odznaczoną OBCĄ. Każdy z sześciu etapów ma osobny krok w raporcie. Uzupełnionego testu nie uruchamiano na DEV.
+
 ```text
 npx playwright test --grep @club
 ```

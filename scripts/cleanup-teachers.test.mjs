@@ -88,6 +88,33 @@ function pageWith(responses, origin = "https://octopus.gwodev.pl") {
     },
   };
 }
+
+test("sprzątanie TEST respektuje środowisko rejestru i nie przyjmuje ID z DEV", async () => {
+  const previous = process.env.OCTOPUS_ENV;
+  process.env.OCTOPUS_ENV = "test";
+  try {
+    const data = { ...run(), environment: "test" };
+    const page = pageWith([{ status: 204, data: null }], "https://octopus.gwotest.pl");
+    assert.equal(await deleteTestTeacher(page, data), "ALREADY_ABSENT");
+    assert.equal(page.calls[0].expectedOrigin, "https://octopus.gwotest.pl");
+    for (const wrong of [run(), { ...data, environment: "dev" }])
+      await assert.rejects(deleteTestTeacher(page, wrong), /innego środowiska/);
+    assert.equal(page.calls.length, 1);
+    assert.doesNotThrow(() =>
+      validateTeacherRun({
+        ...run(),
+        lastUrl: "https://octopus.gwotest.pl/teacher/teacher-panel/123",
+      }),
+    );
+    await assert.rejects(
+      deleteTestTeacher(pageWith([], "https://octopus.gwodev.pl"), data),
+      /wybranego środowiska/,
+    );
+  } finally {
+    if (previous === undefined) delete process.env.OCTOPUS_ENV;
+    else process.env.OCTOPUS_ENV = previous;
+  }
+});
 test("nieudany test pozostawia dane bez żądań API", async () => {
   const data = { ...run(), result: "FAIL" };
   const page = pageWith([]);
@@ -126,7 +153,7 @@ test("jawna opcja pozwala usunąć poprawnie zweryfikowany rekord nieudanego tes
   assert.equal(failed.cleanupStatus, "DELETED");
   assert.equal(page.calls.filter((call) => call.method === "DELETE").length, 1);
 });
-test("nie wysyła żądań poza dev", async () => {
+test("nie wysyła żądań poza wybrane środowisko Octopus", async () => {
   const page = pageWith([], "https://example.com");
   await assert.rejects(deleteTestTeacher(page, run()));
   assert.equal(page.calls.length, 0);
@@ -174,6 +201,7 @@ test("DELETE zawiera tylko własny ID i wymaga potwierdzenia braku rekordu", asy
   const page = pageWith(responses);
   assert.equal(await deleteTestTeacher(page, run()), "DELETED");
   assert.deepEqual(page.calls[2], {
+    expectedOrigin: "https://octopus.gwodev.pl",
     pathname: "/api/DeleteRecordsDB/DeleteRecordsFromDB",
     method: "DELETE",
     params: { jsonData: '[{"nauczycielId":123}]' },
@@ -185,6 +213,17 @@ test("HTTP 200 z istniejącym rekordem zapisuje błąd sprzątania", async () =>
   const page = pageWith([teacher, { status: 200, data: true }, { status: 200, data: {} }, teacher]);
   await assert.rejects(cleanupSuccessfulTeacher(page, data, async () => {}));
   assert.equal(data.cleanupStatus, "FAILED");
+});
+
+test("sprzątanie własnego nauczyciela bez flagi nie nadaje Testowy i nadal wymaga zgodności nazwiska", async () => {
+  const data = { ...run(), teacherLastName: run().id };
+  const teacher = { status: 200, data: { id: 123, email: data.email, lastName: data.teacherLastName } };
+  const page = pageWith([teacher, { status: 200, data: false }, { status: 200, data: {} }, { status: 204, data: null }]);
+  assert.equal(await deleteTestTeacher(page, data, { allowUnmarked: true }), "DELETED");
+  assert.deepEqual(page.calls.map(c => c.method), ["GET", "GET", "DELETE", "GET"]);
+  const mismatch = pageWith([{ status: 200, data: { ...teacher.data, lastName: "Inna osoba" } }]);
+  await assert.rejects(deleteTestTeacher(mismatch, data, { allowUnmarked: true }));
+  assert.ok(!mismatch.calls.some(c => c.method === "DELETE"));
 });
 test("dużą listę usuwa w osobno potwierdzanych paczkach po 10 nauczycieli", async () => {
   const selected = Array.from({ length: 26 }, (_, index) => {
