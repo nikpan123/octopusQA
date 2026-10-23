@@ -1,6 +1,7 @@
 import { expect } from "@playwright/test";
 import {
   test,
+  twoSchoolTest,
   GRANTED,
   hasBokSource,
   permissionRow,
@@ -364,29 +365,30 @@ test.describe("Uprawnienia — aktywność potwierdzenia i kolejność danych", 
       }
     }
   });
-  test("ACL-13: usunięcie potwierdzenia jednej szkoły zachowuje inne klasy przedmiotu z drugiej szkoły @teacher @entitlement @access-lifecycle @isolation", async ({
-    access: data,
-  }) => {
-    const first = await data.create();
-    const second = await data.create("Matematyka", ["5"], data.schools[1]);
-    const firstClasses = await accessClasses(data, first, [4]);
-    const secondClasses = await accessClasses(data, second, [5]);
-    await data.decide(first, firstClasses);
-    await data.decide(second, secondClasses);
-    await expectAccessExport(data, [
-      { record: first, classes: firstClasses },
-      { record: second, classes: secondClasses },
-    ]);
-    const before = await currentPermission(data, second);
-    const history = await data.history(second);
-    await data.club.remove(data.teacherId, String(first.id));
-    await expectAccessExport(data, [{ record: second, classes: secondClasses }]);
-    await expectBlocked(data, first);
-    await test.step("Porównanie: uprawnienie i historia drugiej szkoły są nienaruszone", async () => {
-      expect(await currentPermission(data, second)).toEqual(before);
-      expect(await data.history(second)).toEqual(history);
-    });
-  });
+  twoSchoolTest(
+    "ACL-13: usunięcie potwierdzenia jednej szkoły zachowuje inne klasy przedmiotu z drugiej szkoły @teacher @entitlement @access-lifecycle @isolation",
+    async ({ access: data }) => {
+      const first = await data.create();
+      const second = await data.create("Matematyka", ["5"], data.schools[1]);
+      const firstClasses = await accessClasses(data, first, [4]);
+      const secondClasses = await accessClasses(data, second, [5]);
+      await data.decide(first, firstClasses);
+      await data.decide(second, secondClasses);
+      await expectAccessExport(data, [
+        { record: first, classes: firstClasses },
+        { record: second, classes: secondClasses },
+      ]);
+      const before = await currentPermission(data, second);
+      const history = await data.history(second);
+      await data.club.remove(data.teacherId, String(first.id));
+      await expectAccessExport(data, [{ record: second, classes: secondClasses }]);
+      await expectBlocked(data, first);
+      await test.step("Porównanie: uprawnienie i historia drugiej szkoły są nienaruszone", async () => {
+        expect(await currentPermission(data, second)).toEqual(before);
+        expect(await data.history(second)).toEqual(history);
+      });
+    },
+  );
 
   test("ACL-14: zmiana decyzji BOK z Matematyki nie zmienia Fizyki ani jej historii @teacher @entitlement @access-lifecycle @manual @isolation", async ({
     access: data,

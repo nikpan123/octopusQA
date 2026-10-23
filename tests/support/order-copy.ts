@@ -66,7 +66,7 @@ export const test = base.extend<
             schools[node],
             scenario,
             () => liveOctopusHeaders(page),
-            node === "A" || node === "B",
+            node === "ZS" || node === "B",
           ),
         ]),
       ) as Record<CopyNode, OrderClassApi>;
@@ -155,12 +155,28 @@ export const test = base.extend<
               );
               await dialog.getByRole("button", { name: "Zapisz", exact: true }).click();
               const saved = await response;
-              expect(saved.ok(), `Zapis kopii HTTP ${saved.status()}`).toBe(true);
+              const text = await saved.text();
+              let body: { codeResult?: number; description?: string; Message?: string } = {};
+              try {
+                const parsed: unknown = JSON.parse(text);
+                if (parsed && typeof parsed === "object") body = parsed;
+              } catch {
+                /* HTTP check handles non-JSON failures. */
+              }
+              await info.attach("Odpowiedź zapisu kopii", {
+                body: JSON.stringify({ httpStatus: saved.status(), response: body }),
+                contentType: "application/json",
+              });
               expect(saved.request().postDataJSON()).toEqual({
                 institutionOrderId: Number(id),
                 institutionUnitIdsCopyTo: targets.map((node) => structure.unit(schools[node])),
                 createdBy: structure.userId,
               });
+
+              expect(
+                saved.ok() && !(Number(body.codeResult) >= 400),
+                `Zapis kopii HTTP ${saved.status()}, odpowiedź: ${text.slice(0, 500)}`,
+              ).toBe(true);
               await expect(dialog).toHaveCount(0);
               await scenario.record("orderCopy", JSON.stringify({ source, id, targets }));
             });
@@ -191,7 +207,7 @@ export const test = base.extend<
         const cleanup = async () => {
           const errors: unknown[] = [];
           // Najpierw zbieramy wszystkie własne nowe dokumenty, następnie usuwamy
-          // kopie ze wszystkich placówek PRZED źródłami (także SP → A).
+          // kopie ze wszystkich placówek PRZED źródłami (także SP → ZS).
           const addedOrders: Array<{ node: CopyNode; id: string; isCopied: boolean }> = [];
           for (const node of [...nodes].reverse()) {
             try {

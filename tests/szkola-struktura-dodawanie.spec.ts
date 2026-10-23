@@ -1,3 +1,4 @@
+import { automaticSchoolName } from "../scripts/test-names.mjs";
 import { randomUUID } from "node:crypto";
 import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
@@ -32,8 +33,7 @@ import {
   dismissWarning,
 } from "./support/school-structure";
 
-const freshName = () =>
-  `AUTO_STR_${OCTOPUS_ENV.toUpperCase()}_ADD_${Date.now()}_${randomUUID().slice(0, 6)}`;
+const freshName = () => automaticSchoolName("STR", "ADD", OCTOPUS_ENV, randomUUID());
 
 type AnchorKey = "addBranch" | "addMain" | "addGroup";
 

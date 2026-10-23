@@ -106,6 +106,18 @@ export async function findHistoricalOrders(requireHistory = false) {
   return result.rows;
 }
 
+export async function readCopyEvidence(action, orderId, schoolId) {
+  if (!["DocumentTypes", "FindCopyHistory", "FindCopyStates", "ReadCopyPair"].includes(action))
+    throw new Error("Nieobsługiwany, stały odczyt dowodów kopii.");
+  const ids =
+    action === "ReadCopyPair"
+      ? ["-OrderId", String(validateSqlId(orderId)), "-SchoolId", String(validateSqlId(schoolId))]
+      : [];
+  const result = await sqlRead(action, ids);
+  if (!Array.isArray(result.rows)) throw new Error("Niepoprawny odczyt dowodów kopii.");
+  return result.rows;
+}
+
 export async function findStatusAudit() {
   const result = await sqlRead("FindStatusAudit");
   if (!Array.isArray(result.rows) || result.rows.length > 10)

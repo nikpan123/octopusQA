@@ -1,13 +1,6 @@
-import { test, expect } from "./support/fixtures";
+import { test, expect } from "./support/medal-reference-schools";
 
 import { Octopus } from "./support/octopus";
-
-import {
-  GOLD_SCHOOL,
-  SILVER_SCHOOL,
-  BRONZE_SCHOOL,
-  NO_MEDAL_SCHOOL,
-} from "./support/school-medal-data";
 
 import {
   expectSchoolMedal,
@@ -35,7 +28,10 @@ import {
 } from "./support/school-medal";
 
 test.describe("Medalowość szkoły", () => {
-  test("MED-02: pole Medal dla szkoły ze złotym medalem jest nieedytowalne", async ({ page }) => {
+  test("MED-02: pole Medal dla szkoły ze złotym medalem jest nieedytowalne", async ({
+    page,
+    GOLD_SCHOOL,
+  }) => {
     const app = new Octopus(page);
 
     await openMedalSchool(app, GOLD_SCHOOL);
@@ -47,6 +43,7 @@ test.describe("Medalowość szkoły", () => {
 
   test("MED-04: tooltip złotego medalu wyświetla przedmioty składające się na medal", async ({
     page,
+    GOLD_SCHOOL,
   }) => {
     const app = new Octopus(page);
 
@@ -59,7 +56,10 @@ test.describe("Medalowość szkoły", () => {
       expectMedalTooltip(page, GOLD_SCHOOL.expectedSubjects));
   });
 
-  test("MED-05: złoty medal jest widoczny w wynikach wyszukiwania szkół", async ({ page }) => {
+  test("MED-05: złoty medal jest widoczny w wynikach wyszukiwania szkół", async ({
+    page,
+    GOLD_SCHOOL,
+  }) => {
     const app = new Octopus(page);
 
     const schoolRow = await searchSchoolById(app, GOLD_SCHOOL);
@@ -70,7 +70,10 @@ test.describe("Medalowość szkoły", () => {
       expect(schoolRow).toContainText("Złoto"));
   });
 
-  test("MED-07: pole Medal dla szkoły ze srebrnym medalem jest nieedytowalne", async ({ page }) => {
+  test("MED-07: pole Medal dla szkoły ze srebrnym medalem jest nieedytowalne", async ({
+    page,
+    SILVER_SCHOOL,
+  }) => {
     const app = new Octopus(page);
 
     await openMedalSchool(app, SILVER_SCHOOL);
@@ -82,6 +85,7 @@ test.describe("Medalowość szkoły", () => {
 
   test("MED-09: tooltip srebrnego medalu wyświetla przedmioty składające się na medal", async ({
     page,
+    SILVER_SCHOOL,
   }) => {
     const app = new Octopus(page);
 
@@ -94,7 +98,10 @@ test.describe("Medalowość szkoły", () => {
       expectMedalTooltip(page, SILVER_SCHOOL.expectedSubjects));
   });
 
-  test("MED-10: srebrny medal jest widoczny w wynikach wyszukiwania szkół", async ({ page }) => {
+  test("MED-10: srebrny medal jest widoczny w wynikach wyszukiwania szkół", async ({
+    page,
+    SILVER_SCHOOL,
+  }) => {
     const app = new Octopus(page);
 
     const schoolRow = await searchSchoolById(app, SILVER_SCHOOL);
@@ -105,7 +112,10 @@ test.describe("Medalowość szkoły", () => {
       expect(schoolRow).toContainText("Srebro"));
   });
 
-  test("MED-12: pole Medal dla szkoły z brązowym medalem jest nieedytowalne", async ({ page }) => {
+  test("MED-12: pole Medal dla szkoły z brązowym medalem jest nieedytowalne", async ({
+    page,
+    BRONZE_SCHOOL,
+  }) => {
     const app = new Octopus(page);
 
     await openMedalSchool(app, BRONZE_SCHOOL);
@@ -117,6 +127,7 @@ test.describe("Medalowość szkoły", () => {
 
   test("MED-14: tooltip brązowego medalu wyświetla przedmiot składający się na medal", async ({
     page,
+    BRONZE_SCHOOL,
   }) => {
     const app = new Octopus(page);
 
@@ -129,7 +140,10 @@ test.describe("Medalowość szkoły", () => {
       expectMedalTooltip(page, BRONZE_SCHOOL.expectedSubjects));
   });
 
-  test("MED-15: brązowy medal jest widoczny w wynikach wyszukiwania szkół", async ({ page }) => {
+  test("MED-15: brązowy medal jest widoczny w wynikach wyszukiwania szkół", async ({
+    page,
+    BRONZE_SCHOOL,
+  }) => {
     const app = new Octopus(page);
 
     const schoolRow = await searchSchoolById(app, BRONZE_SCHOOL);
@@ -140,7 +154,10 @@ test.describe("Medalowość szkoły", () => {
       expect(schoolRow).toContainText("Brąz"));
   });
 
-  test("MED-17: pole Medal dla szkoły bez medalu jest nieedytowalne", async ({ page }) => {
+  test("MED-17: pole Medal dla szkoły bez medalu jest nieedytowalne", async ({
+    page,
+    NO_MEDAL_SCHOOL,
+  }) => {
     const app = new Octopus(page);
 
     await openMedalSchool(app, NO_MEDAL_SCHOOL);
@@ -152,6 +169,7 @@ test.describe("Medalowość szkoły", () => {
 
   test("MED-18: najechanie na wartość Brak nie wyświetla tooltipa z przedmiotami", async ({
     page,
+    NO_MEDAL_SCHOOL,
   }) => {
     const app = new Octopus(page);
 
@@ -162,7 +180,10 @@ test.describe("Medalowość szkoły", () => {
     await test.step("Sprawdzenie: expectNoMedalTooltip", async () => expectNoMedalTooltip(page));
   });
 
-  test("MED-19: wartość Brak jest widoczna w wynikach wyszukiwania szkół", async ({ page }) => {
+  test("MED-19: wartość Brak jest widoczna w wynikach wyszukiwania szkół", async ({
+    page,
+    NO_MEDAL_SCHOOL,
+  }) => {
     const app = new Octopus(page);
 
     const schoolRow = await searchSchoolById(app, NO_MEDAL_SCHOOL);
@@ -173,7 +194,10 @@ test.describe("Medalowość szkoły", () => {
       expect(schoolRow).toContainText("Brak"));
   });
 
-  test("MED-20: historia zmian szkoły zawiera wpis dotyczący złotego medalu", async ({ page }) => {
+  test("MED-20: historia zmian szkoły zawiera wpis dotyczący złotego medalu", async ({
+    page,
+    GOLD_SCHOOL,
+  }) => {
     const app = new Octopus(page);
 
     await openMedalSchool(app, GOLD_SCHOOL);
@@ -222,6 +246,7 @@ test.describe("Medalowość szkoły", () => {
 
   test("MED-21: historia zawiera tylko jeden wpis medalowy dla danego roku szkolnego", async ({
     page,
+    GOLD_SCHOOL,
   }) => {
     const app = new Octopus(page);
 
@@ -259,7 +284,10 @@ test.describe("Medalowość szkoły", () => {
     });
   });
 
-  test("MED-22: wartość wpisu medalowego ma format RRRR/RRRR Medal", async ({ page }) => {
+  test("MED-22: wartość wpisu medalowego ma format RRRR/RRRR Medal", async ({
+    page,
+    GOLD_SCHOOL,
+  }) => {
     const app = new Octopus(page);
 
     await openMedalSchool(app, GOLD_SCHOOL);
@@ -286,7 +314,10 @@ test.describe("Medalowość szkoły", () => {
     console.log(`MED-22: sprawdzono format ${entries.length} wpisów medalowych.`);
   });
 
-  test("MED-23: wpisy medalowe w historii mają źródło Formularz klubowy", async ({ page }) => {
+  test("MED-23: wpisy medalowe w historii mają źródło Formularz klubowy", async ({
+    page,
+    GOLD_SCHOOL,
+  }) => {
     const app = new Octopus(page);
 
     await openMedalSchool(app, GOLD_SCHOOL);
@@ -313,7 +344,10 @@ test.describe("Medalowość szkoły", () => {
     console.log(`MED-23: sprawdzono źródło ${entries.length} wpisów medalowych.`);
   });
 
-  test("MED-24: wpisy medalowe w historii mają uzupełnionego autora", async ({ page }) => {
+  test("MED-24: wpisy medalowe w historii mają uzupełnionego autora", async ({
+    page,
+    GOLD_SCHOOL,
+  }) => {
     const app = new Octopus(page);
 
     await openMedalSchool(app, GOLD_SCHOOL);
@@ -340,7 +374,10 @@ test.describe("Medalowość szkoły", () => {
     console.log(`MED-24: sprawdzono autora dla ${entries.length} wpisów medalowych.`);
   });
 
-  test("MED-25: wpisy medalowe w historii są zapisane z datą 1 października", async ({ page }) => {
+  test("MED-25: wpisy medalowe w historii są zapisane z datą 1 października", async ({
+    page,
+    GOLD_SCHOOL,
+  }) => {
     const app = new Octopus(page);
 
     await openMedalSchool(app, GOLD_SCHOOL);
@@ -370,6 +407,10 @@ test.describe("Medalowość szkoły", () => {
 
   test("MED-26: wpisy medalowe w historii są posortowane od najnowszego sezonu do najstarszego", async ({
     page,
+    GOLD_SCHOOL,
+    SILVER_SCHOOL,
+    BRONZE_SCHOOL,
+    NO_MEDAL_SCHOOL,
   }) => {
     const app = new Octopus(page);
 
@@ -473,7 +514,10 @@ test.describe("Medalowość szkoły", () => {
       expectSchoolResultsMedals(results, ["Złoto", "Srebro"]));
   });
 
-  test("MED-33: złoty medal i jego przedmioty są zgodne między API i UI", async ({ page }) => {
+  test("MED-33: złoty medal i jego przedmioty są zgodne między API i UI", async ({
+    page,
+    GOLD_SCHOOL,
+  }) => {
     const app = new Octopus(page);
 
     const apiMedalData =
@@ -503,7 +547,10 @@ test.describe("Medalowość szkoły", () => {
     });
   });
 
-  test("MED-36: srebrny medal i jego przedmioty są zgodne między API i UI", async ({ page }) => {
+  test("MED-36: srebrny medal i jego przedmioty są zgodne między API i UI", async ({
+    page,
+    SILVER_SCHOOL,
+  }) => {
     const app = new Octopus(page);
 
     const apiMedalData =
@@ -533,7 +580,10 @@ test.describe("Medalowość szkoły", () => {
     });
   });
 
-  test("MED-39: brązowy medal i jego przedmioty są zgodne między API i UI", async ({ page }) => {
+  test("MED-39: brązowy medal i jego przedmioty są zgodne między API i UI", async ({
+    page,
+    BRONZE_SCHOOL,
+  }) => {
     const app = new Octopus(page);
 
     const apiMedalData =
@@ -563,7 +613,10 @@ test.describe("Medalowość szkoły", () => {
     });
   });
 
-  test("MED-43: brak medalu i przedmiotów jest zgodny między API i UI", async ({ page }) => {
+  test("MED-43: brak medalu i przedmiotów jest zgodny między API i UI", async ({
+    page,
+    NO_MEDAL_SCHOOL,
+  }) => {
     const app = new Octopus(page);
 
     const apiMedalData =
@@ -592,6 +645,10 @@ test.describe("Medalowość szkoły", () => {
 
   test("MED-44: medal szkoły jest zgodny z liczbą przedmiotów zwracanych przez API", async ({
     page,
+    GOLD_SCHOOL,
+    SILVER_SCHOOL,
+    BRONZE_SCHOOL,
+    NO_MEDAL_SCHOOL,
   }) => {
     const app = new Octopus(page);
 
@@ -620,6 +677,9 @@ test.describe("Medalowość szkoły", () => {
 
   test("MED-45: lista przedmiotów wpływających na medal nie zawiera duplikatów", async ({
     page,
+    GOLD_SCHOOL,
+    SILVER_SCHOOL,
+    BRONZE_SCHOOL,
   }) => {
     const app = new Octopus(page);
 
@@ -643,6 +703,7 @@ test.describe("Medalowość szkoły", () => {
 
   test("MED-46: wielu nauczycieli MAT SP nie zwiększa liczby przedmiotów medalowych", async ({
     page,
+    BRONZE_SCHOOL,
   }) => {
     const app = new Octopus(page);
 
@@ -682,6 +743,10 @@ test.describe("Medalowość szkoły", () => {
 
   test("MED-47: medal w wynikach wyszukiwania szkoły jest zgodny z wartością zwracaną przez API", async ({
     page,
+    GOLD_SCHOOL,
+    SILVER_SCHOOL,
+    BRONZE_SCHOOL,
+    NO_MEDAL_SCHOOL,
   }) => {
     const app = new Octopus(page);
 
@@ -712,6 +777,7 @@ test.describe("Medalowość szkoły", () => {
 
   test("MED-48: przedmioty nauczycieli nie są automatycznie zaliczane do medalowości szkoły", async ({
     page,
+    BRONZE_SCHOOL,
   }) => {
     const app = new Octopus(page);
 
@@ -789,6 +855,10 @@ test.describe("Medalowość szkoły", () => {
 
   test("MED-49: najnowszy wpis historii medalu jest zgodny z aktualną wartością zwracaną przez API", async ({
     page,
+    GOLD_SCHOOL,
+    SILVER_SCHOOL,
+    BRONZE_SCHOOL,
+    NO_MEDAL_SCHOOL,
   }) => {
     const app = new Octopus(page);
 
@@ -857,6 +927,10 @@ test.describe("Medalowość szkoły", () => {
 
   test("MED-50: historia medalowości zawiera maksymalnie jeden wpis dla każdego roku szkolnego", async ({
     page,
+    GOLD_SCHOOL,
+    SILVER_SCHOOL,
+    BRONZE_SCHOOL,
+    NO_MEDAL_SCHOOL,
   }) => {
     const app = new Octopus(page);
 
@@ -921,6 +995,10 @@ test.describe("Medalowość szkoły", () => {
 
   test("MED-51: wszystkie wpisy historii medalowości mają źródło Formularz klubowy", async ({
     page,
+    GOLD_SCHOOL,
+    SILVER_SCHOOL,
+    BRONZE_SCHOOL,
+    NO_MEDAL_SCHOOL,
   }) => {
     const app = new Octopus(page);
 
@@ -961,6 +1039,10 @@ test.describe("Medalowość szkoły", () => {
 
   test("MED-52: data wpisu medalowości przypada na 1 października roku kończącego sezon", async ({
     page,
+    GOLD_SCHOOL,
+    SILVER_SCHOOL,
+    BRONZE_SCHOOL,
+    NO_MEDAL_SCHOOL,
   }) => {
     const app = new Octopus(page);
 
@@ -1011,6 +1093,10 @@ test.describe("Medalowość szkoły", () => {
 
   test("MED-53: wszystkie wpisy historii medalowości są zapisane przez automat", async ({
     page,
+    GOLD_SCHOOL,
+    SILVER_SCHOOL,
+    BRONZE_SCHOOL,
+    NO_MEDAL_SCHOOL,
   }) => {
     const app = new Octopus(page);
 
@@ -1049,7 +1135,10 @@ test.describe("Medalowość szkoły", () => {
     }
   });
 
-  test("MED-54: wyszukiwanie po ID szkoły ma priorytet nad filtrem medalu", async ({ page }) => {
+  test("MED-54: wyszukiwanie po ID szkoły ma priorytet nad filtrem medalu", async ({
+    page,
+    BRONZE_SCHOOL,
+  }) => {
     const app = new Octopus(page);
 
     const search = await prepareSchoolSearchByIdAndMedal(app, BRONZE_SCHOOL.id, "Złoto");

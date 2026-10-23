@@ -5,7 +5,12 @@ import { chromium } from "@playwright/test";
 
 import { ensureSession, restoreSession } from "./auth.mjs";
 
-const origin = "https://octopus.gwodev.pl";
+const origins = { dev: "https://octopus.gwodev.pl", test: "https://octopus.gwotest.pl" };
+function cleanupOrigin() {
+  const environment = process.env.OCTOPUS_ENV ?? "dev";
+  if (!Object.hasOwn(origins, environment)) throw new Error("Niepoprawne środowisko sprzątania.");
+  return origins[environment];
+}
 
 const failedTestResults = new Set(["FAIL", "FAILED", "TIMEDOUT", "INTERRUPTED"]);
 
@@ -16,6 +21,13 @@ const failedTestResults = new Set(["FAIL", "FAILED", "TIMEDOUT", "INTERRUPTED"])
  */
 
 export function validateTeacherRun(run, { includeFailed = false } = {}) {
+  const recordedOrigin = run.environment
+    ? origins[run.environment]
+    : run.lastUrl
+      ? new URL(run.lastUrl).origin
+      : origins.dev;
+  if (recordedOrigin !== cleanupOrigin())
+    throw new Error("Rejestr nauczyciela należy do innego środowiska; nie wykonano DELETE.");
   const resultAllowed =
     run.result === "PASS" || (includeFailed && failedTestResults.has(run.result));
 
@@ -81,13 +93,14 @@ function teacherMatchesRun(teacher, run) {
  */
 
 async function api(page, pathname, method = "GET", params = {}) {
-  if (new URL(page.url()).origin !== origin) {
-    throw new Error("Sprzątanie dostępne tylko na Octopus dev.");
+  const expectedOrigin = cleanupOrigin();
+  if (new URL(page.url()).origin !== expectedOrigin) {
+    throw new Error("Sprzątanie wymaga strony wybranego środowiska Octopus.");
   }
 
   return page.evaluate(
-    async ({ pathname, method, params }) => {
-      if (location.origin !== "https://octopus.gwodev.pl") {
+    async ({ pathname, method, params, expectedOrigin }) => {
+      if (location.origin !== expectedOrigin) {
         throw new Error("Nieoczekiwana zmiana środowiska.");
       }
 
@@ -153,6 +166,7 @@ async function api(page, pathname, method = "GET", params = {}) {
       pathname,
       method,
       params,
+      expectedOrigin,
     },
   );
 }
@@ -217,11 +231,12 @@ export async function deleteTestTeacher(page, run, { allowUnmarked = false } = {
       );
     }
 
-    console.warn(
-      `Nauczyciel ${run.teacherId}: brak flagi Testowy, ` +
-        "ale rekord jest jednoznacznie zgodny z rejestrem automatu; " +
-        "usunięcie dozwolone przez --allow-unmarked.",
-    );
+    if (process.env.OCTOPUS_CLEANUP_VERBOSE === "1")
+      console.info(
+        `Nauczyciel ${run.teacherId}: brak flagi Testowy, ` +
+          "ale rekord jest jednoznacznie zgodny z rejestrem automatu; " +
+          "usunięcie dozwolone przez --allow-unmarked.",
+      );
   }
 
   const result = await api(page, "/api/DeleteRecordsDB/DeleteRecordsFromDB", "DELETE", {
@@ -509,7 +524,7 @@ export async function cleanupTeacherRecords(
 
     const page = await context.newPage();
 
-    await page.goto(`${origin}/teacher/teacher-panel`);
+    await page.goto(`${cleanupOrigin()}/teacher/teacher-panel`);
 
     await page
       .getByRole("button", {
@@ -655,11 +670,12 @@ export async function cleanupTeacherBatch(
         );
       }
 
-      console.warn(
-        `Nauczyciel ${run.teacherId}: brak flagi Testowy, ` +
-          "ale ID i dane nauczyciela są zgodne z rejestrem automatu; " +
-          "usunięcie dozwolone przez --allow-unmarked.",
-      );
+      if (process.env.OCTOPUS_CLEANUP_VERBOSE === "1")
+        console.info(
+          `Nauczyciel ${run.teacherId}: brak flagi Testowy, ` +
+            "ale ID i dane nauczyciela są zgodne z rejestrem automatu; " +
+            "usunięcie dozwolone przez --allow-unmarked.",
+        );
     }
 
     pending.push(run.teacherId);

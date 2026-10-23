@@ -1,17 +1,10 @@
-import { test, expect } from "./support/fixtures";
+import { test, expect } from "./support/medal-reference-schools";
 
 import { Octopus } from "./support/octopus";
 
 import { getSchoolMedalApiData } from "./support/school-medal";
 
 import { OCTOPUS_ENV } from "./support/environment";
-
-import {
-  GOLD_SCHOOL,
-  SILVER_SCHOOL,
-  BRONZE_SCHOOL,
-  NO_MEDAL_SCHOOL,
-} from "./support/school-medal-data";
 
 import {
   ANNUAL_MEDAL_TARGET_PROCESS_DATE,
@@ -66,6 +59,10 @@ async function loadAnnualMedalSnapshotForCurrentEnvironment() {
 test.describe("Roczne przeliczenie medalowości @annual-medal", () => {
   test("MED-YEAR-PREP: przygotuj snapshot 4 szkół referencyjnych i 50 losowych szkół", async ({
     page,
+    GOLD_SCHOOL,
+    SILVER_SCHOOL,
+    BRONZE_SCHOOL,
+    NO_MEDAL_SCHOOL,
   }) => {
     test.setTimeout(10 * 60 * 1000);
 

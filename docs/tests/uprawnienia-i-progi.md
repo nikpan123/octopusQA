@@ -133,12 +133,14 @@ ACL-15–ACL-16 kontrolują aktualizację ilości i pierwszeństwo BOK, a nie od
 
 ## Promocje nowego klienta i debiutu
 
+W panelu **Scenariusze** dostępny jest osobny dział **Uprawnienia — promocja debiutu i nowego klienta**: 16 przypadków z warunkami początkowymi, danymi, krokami i wynikami, powiązanych z istniejącymi testami DEB i NCL. Przypadki można uruchamiać osobno lub wybrać dostępne testy działu. NCL-04 przygotowuje historyczne daty własnych zamówień w bazie DEV; sześć sezonowych testów debiutu poza wymaganym okresem jest pomijanych. Dodanie scenariuszy nie stanowi wyniku uruchomienia DEV.
+
 Pliki `tests/uprawnienia-promocja-nowy-klient.spec.ts` i `tests/uprawnienia-promocja-debiutu.spec.ts` sprawdzają rzeczywiste przypisania klas oraz dokładny eksport klas, poziomów i zakresów. Wszystkie używają nauczyciela i szkół bez flagi Testowy, z osobnymi szkołami per przypadek. Zamówienia są sprzątane także po błędzie; szkoły pozostają do ponownego użycia. Pozostałe po wcześniejszym przebiegu zamówienia powodują błąd warunku przygotowania, a nie automatyczne usuwanie nieznanych danych.
 
 | ID            | Sprawdzenie                                                                                                |
 | ------------- | ---------------------------------------------------------------------------------------------------------- |
 | NCL-01–NCL-03 | Zakup klasy 4: próg−1 nie daje promocji; próg i próg+1 dają dokładnie 4–6                                  |
-| NCL-04        | Zablokowany `fixme`: wymaga rzeczywistych zamówień z 2024 i 2025; obecny zapis API nie pozwala cofnąć daty |
+| NCL-04 | Dwa zamówienia po 1 sztuce z Y−2 i Y−1: zmiana CreatedAt w bazie DEV, odczyt API; bieżący zakup na progu daje 4–6 |
 | NCL-05        | Zakup klasy 7 daje tylko 7–8                                                                               |
 | NCL-06        | Zakup klas 4 i 7 daje sumę 4–8                                                                             |
 | NCL-07–NCL-08 | Korekta poniżej progu albo usunięcie zakupu wycofuje przyznany wcześniej zakres promocyjny                 |
@@ -151,7 +153,7 @@ Pliki `tests/uprawnienia-promocja-nowy-klient.spec.ts` i `tests/uprawnienia-prom
 
 W NCL wcześniejsze nasze potwierdzenie eliminuje ścieżkę pierwszego potwierdzenia nauczyciela, lecz szkoła nie ma kwalifikujących zakupów historycznych. Potwierdzenie dotyczy poprzedniego roku szkolnego, ale jest wprowadzane z bieżącą datą serwera. Próg jest odczytywany z zapisanego wyniku kwalifikacji; wzór progu kontrolują niezależnie testy THR.
 
-NCL-04 jest pomijany jako `fixme` przed przygotowaniem danych i nie stanowi gotowego pokrycia reguły historycznej. `AddSchoolOrder` ignoruje historyczne `createdAt`, więc zamówienie zapisane obecnie nie jest zakupem z 2024 lub 2025. Odblokowanie wymaga obsługiwanego zapisu roku zamówienia albo dedykowanych danych historycznych. Test nie zastępuje ich zamówieniami bieżącymi i nie korzysta z atrap odpowiedzi.
+NCL-04 został odblokowany 23.10.2026: tworzy dwa własne zamówienia 4P-2 po 1 sztuce, ustawia daty na 1 maja roku Y−2 i Y−1 bezpośrednio w bazie DEV i potwierdza je odczytem API. Następnie sprawdza brak dostępu i dodaje bieżące zamówienie na progu. Wymaga konfiguracji bazy DEV / GWO_CRMDEV; na TEST jest pomijany. Zapis SQL pozostaje ograniczony do własnego ręcznego zamówienia, użytkownika i dedykowanej szkoły NCL-04. Test usuwa własne zamówienia w sprzątaniu także po błędzie. Nie wykonano nowego testu na DEV.
 
 DEB-01–DEB-05 i DEB-07 działają wyłącznie w rzeczywistym oknie sezonowym. Przed kolekcją testów należy ustawić zmienną środowiskową `OCTOPUS_CLUB_FORMS_OPEN_DATE=YYYY-MM-DD` na faktyczną datę otwarcia formularzy. Brak daty albo dzień poza okresem otwarcia–30 września oznacza jawne pominięcie przed przygotowaniem danych. DEB-06 i DEB-08 działają od 1 października do końca roku. Data pochodzi z zegara urządzenia w strefie Europe/Warsaw; urządzenie i serwer muszą mieć zgodną datę. Testy nie przestawiają zegara backendu.
 
@@ -259,3 +261,5 @@ Ta macierz jest zakresem do zaimplementowania, a nie listą wykonanych lub gotow
 | Prezentacja i role                | Pełna kolorystyka, wybór roku w UI, zakres tylko przyznanych klas dla częściowego wyniku, pełny audyt autora i daty oraz konta bez prawa edycji.                                                                                                                                 |
 
 Aktualny zakres jest częściowy i powinien być rozszerzany po udostępnieniu brakujących kontraktów i danych. Sezonowe pominięcia DEB wynikają z rzeczywistej daty obowiązywania reguły, nie zastępują sprawdzenia brakujących warstw.
+
+Audyt nazw danych testowych z 23.10.2026: raport `64b2fdb2-fc38-4e89-b216-c6186b1f3411` zawiera 9 FAIL na wspólnej kontroli starego fragmentu nazwy `_ENT_UNMARKED_` oraz 6 pominięć sezonowych. Przypadki FAIL nie dotarły do oceny promocji. W `expectUnmarkedRecords` zastosowano wspólny wzorzec `entitlementSchoolPattern(OCTOPUS_ENV, true)`, obsługujący dawne nazwy oraz aktualne EU/P26, z zachowaniem odczytu nazwy i flag Testowy w UI. Przejrzano kontrole nazw w testach, przygotowaniu danych, API zamówień i potwierdzeń oraz sprzątaniu. Pozostałe odwołania do REG dotyczą pełnej tożsamości rejestru/e-maila, a nie nazwiska widocznego w aplikacji. Dodano kontrolę lokalną poprawnej nazwy, obcego środowiska, innej przestrzeni danych, zmienionej nazwy oraz włączonych flag Testowy. Wynik wymaga ponownego uruchomienia promocji na DEV.

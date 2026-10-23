@@ -3,6 +3,8 @@ import { randomUUID } from "node:crypto";
 import { safeGuidedValue } from "./guided-api.mjs";
 
 const active = new AsyncLocalStorage();
+const recordedResponses = new WeakSet();
+export const guidedOperationActive = () => Boolean(active.getStore());
 const enabled = () => process.env.OCTOPUS_GUIDED_API === "1" || process.env.QA_TEST_DEBUGGER === "1";
 async function send(path, body) {
   const base = new URL(process.env.OCTOPUS_GUIDED_URL);
@@ -47,6 +49,7 @@ export async function guidedOperation(title, operation, automatic = false, optio
 // Only the scoped business step is recorded; setup, authentication and cleanup
 // are never captured. Original fetch is called exactly once, unchanged.
 export function observeGuidedRequests(request) {
+  if (process.env.QA_DEBUGGER_GENERIC === "1") return () => {};
   if (!enabled()) return () => {};
   const original = request.fetch;
   request.fetch = async function (url, options = {}) {
@@ -92,4 +95,23 @@ export function observeGuidedRequests(request) {
   return () => {
     request.fetch = original;
   };
+}
+
+export async function recordGuidedResponse(method, args, response) {
+  const step = active.getStore();
+  if (!enabled() || !step || step.automatic || recordedResponses.has(response)) return;
+  recordedResponses.add(response);
+  const url = typeof args[0] === "string" ? args[0] : args[0]?.url?.() || "";
+  const path = new URL(url, "http://local").pathname;
+  // Never publish sign-in payloads or token responses, even during a business step.
+  if (/auth|login|token|session|password/i.test(path)) return;
+  const event = { method: String(args[1]?.method || method).toUpperCase(), path,
+    body: safeGuidedValue(args[1]?.data ?? null), status: response.status() };
+  try {
+    const body = await response.body();
+    if (body.length > 256 * 1024) event.response = "Odpowiedź za duża — szczegóły w raporcie/trace.";
+    else { try { event.response = safeGuidedValue(JSON.parse(body.toString("utf8"))); }
+      catch { event.response = "Odpowiedź nie jest JSON-em — szczegóły w raporcie."; } }
+  } catch { event.response = "Treść odpowiedzi niedostępna — szczegóły w raporcie."; }
+  await send("/api/guided/event", {kind:"request", stepId:step.stepId, request:event});
 }

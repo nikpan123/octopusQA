@@ -1,3 +1,4 @@
+import { isAutomaticRecordName } from "../../scripts/test-names.mjs";
 import { expect, type Page } from "@playwright/test";
 import { Octopus, typeValue } from "./octopus";
 import {
@@ -810,7 +811,7 @@ export async function getRandomAnnualMedalCandidates(
       continue;
     }
 
-    if (/^REG_/i.test(name)) {
+    if (isAutomaticRecordName(name)) {
       skippedReg++;
       continue;
     }
@@ -862,7 +863,7 @@ export async function getRandomAnnualMedalCandidates(
 
   console.log(
     `PREP-08: pominięto: ` +
-      `REG_*=${skippedReg}, ` +
+      `AUTO/REG=${skippedReg}, ` +
       `inne miasto=${skippedOtherCity}, ` +
       `referencyjne=${skippedReference}, ` +
       `niepoprawny medal=${skippedInvalidMedal}.`,
@@ -909,8 +910,8 @@ export async function buildRandomAnnualMedalSnapshot(
     ).toBe(candidate.name);
 
     expect(
-      /^REG_/i.test(actualName),
-      `Szkoła ${candidate.id} nie może być rekordem automatycznym REG_*`,
+      isAutomaticRecordName(actualName),
+      `Szkoła ${candidate.id} nie może być rekordem automatycznym AUTO/REG`,
     ).toBeFalsy();
 
     let expectation: AnnualMedalExpectation;

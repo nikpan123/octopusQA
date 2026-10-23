@@ -4,6 +4,7 @@ import path from 'node:path';
 import {enablePreviewDragging} from './preview-drag.cjs';
 import {readPreviewPosition,savePreviewPosition,type PreviewPosition} from './preview-position.cjs';
 import {startDebuggerPreview} from './debugger-browser';
+import {instrumentDebuggerTest,withDebuggerTest} from './debugger-all-tests';
 export * from '@playwright/test';
 
 type Preview = {title:string;step:string;number:number;action:string;testIndex?:number;totalTests?:number;attempt?:number};
@@ -30,8 +31,11 @@ function installPreview() {
   document.documentElement.append(host);
 }
 
-export const test = base.extend<{qaBrowserPreview:boolean|undefined}>({
+export const test = instrumentDebuggerTest(base.extend<{qaBrowserPreview:boolean|undefined;qaDebuggerSteps:void}>({
   qaBrowserPreview:[undefined,{option:true}],
+  qaDebuggerSteps:process.env.QA_TEST_DEBUGGER==='1'&&process.env.QA_DEBUGGER_GENERIC==='1'?[async({page},use,testInfo)=>{
+    await withDebuggerTest(page,testInfo,()=>use());
+  },{auto:true}]:[async({},use)=>{await use();},{auto:true}],
   page:async({page,headless,qaBrowserPreview},use,testInfo)=>{
     // Inspector already shows the current action. Overlay polling uses evaluate(),
     // which would itself become an extra F10 stop every 100 ms in debug mode.
@@ -72,9 +76,11 @@ export const test = base.extend<{qaBrowserPreview:boolean|undefined}>({
     const attach=(target:Page)=>{const handler=()=>{rendered.delete(target);void refresh();};navigationHandlers.set(target,handler);target.on('domcontentloaded',handler);void update(target);};
     context.on('page',attach);for(const target of context.pages())attach(target);
     await refresh();const timer=setInterval(()=>void refresh(),100);
+    const stopDebugger=await startDebuggerPreview(page,testInfo);
     try{await use(page);}finally{
       stopped=true;clearInterval(timer);context.off('page',attach);
       for(const [target,handler] of navigationHandlers)target.off('domcontentloaded',handler);
+      await stopDebugger();
     }
   }
-});
+}));

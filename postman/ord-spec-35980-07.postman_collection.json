@@ -1,0 +1,410 @@
+{
+  "info": {
+    "name": "Octopus DEV — ORD-SPEC-35980-07 — szkoła poza strukturą",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Na podstawie raportu a2084378-4cfb-4601-b3fa-f036955910af. Wpisz bearerToken bez Bearer oraz currentUserId własnego konta. Źródło 94824, odbiorca SOLO 94827. Uruchom 00–07, jedna iteracja, kontynuuj po błędzie asercji. Jednostki odczytywane automatycznie z danych szkół. Tworzy nowe własne zamówienie; nie zmienia relacji, nie zmienia dat w bazie, nie tworzy nauczycieli i nie usuwa dokumentów. Raport: HTTP200, codeResult500 i opis braku relacji; dokumenty bez zmian. Odtworzenie: FAIL w05, PASS w06 i07. Dokumenty pozostają do obejrzenia i ręcznego sprzątnięcia. Przy ponawianiu pomiń02, jeżeli newOrderId już istnieje. Zamówienie z raportu1022383 usunięto; nie używaj go. Token nie jest dołączony."
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{bearerToken}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "https://octopus.gwodev.pl",
+      "type": "string"
+    },
+    {
+      "key": "bearerToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "currentUserId",
+      "value": "20415",
+      "type": "string"
+    },
+    {
+      "key": "sourceSchoolId",
+      "value": "94824",
+      "type": "string"
+    },
+    {
+      "key": "targetSchoolId",
+      "value": "94827",
+      "type": "string"
+    },
+    {
+      "key": "sourceUnitId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "targetUnitId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "newOrderId",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "const stop=m=>{pm.execution.skipRequest();pm.execution.setNextRequest(null);throw new Error(m);};",
+          "if(pm.variables.get('baseUrl')!=='https://octopus.gwodev.pl')stop('Kolekcja przeznaczona na DEV.');",
+          "const token=String(pm.variables.get('bearerToken')||'').trim();",
+          "if(!token || /^Bearer\\s/i.test(token))stop('Uzupełnij bearerToken bez prefiksu Bearer.');",
+          "for(const k of ['sourceSchoolId','targetSchoolId','currentUserId'])if(!/^[1-9]\\d*$/.test(String(pm.variables.get(k))) || !Number.isSafeInteger(Number(pm.variables.get(k))))stop('Uzupełnij dodatnie ID: '+k);",
+          "if(String(pm.variables.get('sourceSchoolId'))===String(pm.variables.get('targetSchoolId')))stop('Użyj dwóch różnych szkół.');",
+          "if(!pm.info.requestName.startsWith('00')){",
+          " const config=JSON.stringify(['sourceSchoolId','targetSchoolId','currentUserId'].map(k=>String(pm.variables.get(k))));",
+          " if(pm.collectionVariables.get('resolvedConfig')!==config)stop('Wykonaj 00 dla bieżącej konfiguracji.');",
+          " for(const k of ['sourceUnitId','targetUnitId'])if(!/^[1-9]\\d*$/.test(String(pm.variables.get(k))))stop('Wykonaj 00: brak ID jednostki.');",
+          "}"
+        ]
+      }
+    }
+  ],
+  "item": [
+    {
+      "name": "00 — Odczytaj jednostki szkoły źródłowej i docelowej",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/InstitutionBrowser/GetInstitutions?filterModel={\"institutionIds\":[\"{{sourceSchoolId}}\",\"{{targetSchoolId}}\"],\"saveSearchHistory\":false,\"page\":1,\"userId\":{{currentUserId}},\"limit\":10}",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "InstitutionBrowser", "GetInstitutions"],
+          "query": [
+            {
+              "key": "filterModel",
+              "value": "{\"institutionIds\":[\"{{sourceSchoolId}}\",\"{{targetSchoolId}}\"],\"saveSearchHistory\":false,\"page\":1,\"userId\":{{currentUserId}},\"limit\":10}"
+            }
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "for(const key of ['resolvedConfig','outsideStructure','beforeSource','beforeTarget'])pm.collectionVariables.unset(key);",
+              "if(pm.response.code!==200){pm.execution.setNextRequest(null);throw new Error('Nie udało się odczytać szkół.');}",
+              "const b=pm.response.json();",
+              "if(!Array.isArray(b.data)){pm.execution.setNextRequest(null);throw new Error('Nieprawidłowe dane szkół.');}",
+              "for(const side of ['source','target']){",
+              " const rows=b.data.filter(s=>String(s.id)===String(pm.variables.get(side+'SchoolId')));",
+              " if(rows.length!==1 || rows[0].isDel || !Number.isSafeInteger(rows[0].institutionUnitId) || rows[0].institutionUnitId<=0){pm.execution.setNextRequest(null);throw new Error('Brak aktywnej szkoły: '+side);}",
+              " pm.collectionVariables.set(side+'UnitId',String(rows[0].institutionUnitId));",
+              "}",
+              "if(pm.variables.get('sourceUnitId')===pm.variables.get('targetUnitId')){pm.execution.setNextRequest(null);throw new Error('Jednostki muszą być różne.');}",
+              "pm.collectionVariables.set('resolvedConfig',JSON.stringify(['sourceSchoolId','targetSchoolId','currentUserId'].map(k=>String(pm.variables.get(k)))));",
+              "pm.test('Odczytano dwie różne szkoły',()=>pm.expect(pm.variables.get('sourceUnitId')).not.to.equal(pm.variables.get('targetUnitId')));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "01 — Sprawdź, że odbiorca pozostaje poza strukturą źródła",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/Institution/GetInstitutionRelations?institutionUnitId={{targetUnitId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "Institution", "GetInstitutionRelations"],
+          "query": [
+            {
+              "key": "institutionUnitId",
+              "value": "{{targetUnitId}}"
+            }
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.collectionVariables.unset('outsideStructure');",
+              "if(pm.response.code!==200){pm.execution.setNextRequest(null);throw new Error('Nie udało się odczytać struktury odbiorcy.');}",
+              "const tree=pm.response.json();",
+              "if(!Array.isArray(tree)){pm.execution.setNextRequest(null);throw new Error('Nieprawidłowy format struktury.');}",
+              "const walk=nodes=>nodes.flatMap(n=>[Number(n.institutionUnitId),...walk(n.children||[])]);",
+              "if(walk(tree).includes(Number(pm.variables.get('sourceUnitId')))){pm.execution.setNextRequest(null);throw new Error('Źródło jest w strukturze odbiorcy. Użyj szkoły poza strukturą.');}",
+              "pm.collectionVariables.set('outsideStructure','YES');",
+              "pm.test('Źródła nie ma w strukturze odbiorcy',()=>pm.expect(walk(tree).includes(Number(pm.variables.get('sourceUnitId')))).to.equal(false));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "02 — Utwórz własny oryginał F7P ×3 i 4P-2 ×2",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/SchoolOrder/AddSchoolOrder",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "SchoolOrder", "AddSchoolOrder"]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n \"institutionId\": {{sourceSchoolId}},\n \"createdBy\": {{currentUserId}},\n \"createdAt\": \"{{$isoTimestamp}}\",\n \"orderItems\": [\n  {\"dictOrderItemId\":3005,\"businessCode\":\"F7P\",\"quantity\":3},\n  {\"dictOrderItemId\":4707,\"businessCode\":\"4P-2\",\"quantity\":2}\n ]\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "if(pm.collectionVariables.get('outsideStructure')!=='YES' || pm.collectionVariables.get('newOrderId')){pm.execution.skipRequest();throw new Error('Wykonaj 00–01. Jeśli newOrderId istnieje, pomiń 02; nie twórz kolejnego zamówienia.');}"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "let id;try{id=pm.response.json();}catch(e){}",
+              "if(pm.response.code!==200 || !Number.isSafeInteger(id) || id<=0){pm.execution.setNextRequest(null);throw new Error('Brak ID nowego zamówienia. Sprawdź listę przed ponowieniem POST.');}",
+              "pm.collectionVariables.set('newOrderId',String(id));",
+              "pm.test('Utworzono nowe zamówienie',()=>pm.expect(id).to.be.above(0));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "03 — Zapamiętaj dokumenty źródła i sprawdź własny oryginał",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/SchoolOrder/GetSchoolOrders?model={\"institutionId\":{{sourceSchoolId}},\"page\":1,\"pageSize\":500}",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "SchoolOrder", "GetSchoolOrders"],
+          "query": [
+            {
+              "key": "model",
+              "value": "{\"institutionId\":{{sourceSchoolId}},\"page\":1,\"pageSize\":500}"
+            }
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "if(pm.response.code!==200){pm.execution.setNextRequest(null);throw new Error('Nie udało się odczytać zamówień.');}",
+              "const b=pm.response.json();",
+              "if(!Array.isArray(b.data) || !b.metaData || b.metaData.totalItems>500 || b.metaData.totalItems!==b.data.length){pm.execution.setNextRequest(null);throw new Error('Niepełna lista zamówień.');}",
+              "",
+              "const order=b.data.find(o=>String(o.id)===String(pm.collectionVariables.get('newOrderId')));",
+              "if(!order || order.isCopied!==false || Number(order.createdBy)!==Number(pm.variables.get('currentUserId'))){pm.execution.setNextRequest(null);throw new Error('Brak własnego oryginału.');}",
+              "const lines=order.orderItems.map(i=>({dictOrderItemId:i.dictOrderItemId,businessCode:i.businessCode,quantity:i.quantity})).sort((a,b)=>a.dictOrderItemId-b.dictOrderItemId);",
+              "const expected=[{dictOrderItemId:3005,businessCode:'F7P',quantity:3},{dictOrderItemId:4707,businessCode:'4P-2',quantity:2}];",
+              "if(JSON.stringify(lines)!==JSON.stringify(expected)){pm.execution.setNextRequest(null);throw new Error('Nieprawidłowe pozycje oryginału.');}",
+              "pm.collectionVariables.set('beforeSource',JSON.stringify(b.data));",
+              "pm.test('Własny oryginał gotowy',()=>pm.expect(order.isCopied).to.equal(false));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "04 — Zapamiętaj dokumenty odbiorcy przed próbą",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/SchoolOrder/GetSchoolOrders?model={\"institutionId\":{{targetSchoolId}},\"page\":1,\"pageSize\":500}",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "SchoolOrder", "GetSchoolOrders"],
+          "query": [
+            {
+              "key": "model",
+              "value": "{\"institutionId\":{{targetSchoolId}},\"page\":1,\"pageSize\":500}"
+            }
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "if(pm.response.code!==200){pm.execution.setNextRequest(null);throw new Error('Nie udało się odczytać zamówień.');}",
+              "const b=pm.response.json();",
+              "if(!Array.isArray(b.data) || !b.metaData || b.metaData.totalItems>500 || b.metaData.totalItems!==b.data.length){pm.execution.setNextRequest(null);throw new Error('Niepełna lista zamówień.');}",
+              "",
+              "pm.collectionVariables.set('beforeTarget',JSON.stringify(b.data));",
+              "pm.test('Odczytano wszystkie dokumenty odbiorcy',()=>pm.expect(b.data.length).to.equal(b.metaData.totalItems));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "05 — Próba kopiowania do szkoły POZA strukturą",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/SchoolOrder/MakeSchoolOrderCopy",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "SchoolOrder", "MakeSchoolOrderCopy"]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n \"institutionOrderId\": {{newOrderId}},\n \"institutionUnitIdsCopyTo\": [{{targetUnitId}}],\n \"createdBy\": {{currentUserId}}\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "if(pm.collectionVariables.get('outsideStructure')!=='YES' || !pm.collectionVariables.get('newOrderId') || !pm.collectionVariables.get('beforeSource') || !pm.collectionVariables.get('beforeTarget')){pm.execution.skipRequest();throw new Error('Wykonaj przygotowanie 00–04.');}"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "let b={};try{b=pm.response.json();}catch(e){}",
+              "pm.collectionVariables.set('copyResponse',JSON.stringify({http:pm.response.code,body:b}));",
+              "pm.test('Odmowa ma kod walidacji, a nie 500 lub sukces',()=>{",
+              " const rejected=[400,404,409,422].includes(pm.response.code) || (pm.response.code===200 && [400,404,409,422].includes(Number(b.codeResult)));",
+              " pm.expect(rejected,'Odpowiedź: '+JSON.stringify(b)).to.equal(true);",
+              "});",
+              "console.log('Odpowiedź próby kopiowania:',pm.response.code,b);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "06 — Porównaj dokumenty źródła po próbie",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/SchoolOrder/GetSchoolOrders?model={\"institutionId\":{{sourceSchoolId}},\"page\":1,\"pageSize\":500}",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "SchoolOrder", "GetSchoolOrders"],
+          "query": [
+            {
+              "key": "model",
+              "value": "{\"institutionId\":{{sourceSchoolId}},\"page\":1,\"pageSize\":500}"
+            }
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "if(pm.response.code!==200){pm.execution.setNextRequest(null);throw new Error('Nie udało się odczytać zamówień.');}",
+              "const b=pm.response.json();",
+              "if(!Array.isArray(b.data) || !b.metaData || b.metaData.totalItems>500 || b.metaData.totalItems!==b.data.length){pm.execution.setNextRequest(null);throw new Error('Niepełna lista zamówień.');}",
+              "",
+              "const before=JSON.parse(pm.collectionVariables.get('beforeSource')||'null');",
+              "if(!before)throw new Error('Brak stanu przed kopiowaniem.');",
+              "const sort=arr=>arr.slice().sort((a,b)=>a.id-b.id);",
+              "pm.test('Dokumenty źródła pozostały bez zmian',()=>pm.expect(sort(b.data)).to.deep.equal(sort(before)));",
+              "const ids=new Set(before.map(o=>o.id));",
+              "pm.collectionVariables.set('sourceAddedOrderIds',JSON.stringify(b.data.filter(o=>!ids.has(o.id)).map(o=>o.id)));",
+              "console.log('Nowe ID — źródła:',pm.collectionVariables.get('sourceAddedOrderIds'));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "07 — Porównaj dokumenty odbiorcy po próbie",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/SchoolOrder/GetSchoolOrders?model={\"institutionId\":{{targetSchoolId}},\"page\":1,\"pageSize\":500}",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "SchoolOrder", "GetSchoolOrders"],
+          "query": [
+            {
+              "key": "model",
+              "value": "{\"institutionId\":{{targetSchoolId}},\"page\":1,\"pageSize\":500}"
+            }
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "if(pm.response.code!==200){pm.execution.setNextRequest(null);throw new Error('Nie udało się odczytać zamówień.');}",
+              "const b=pm.response.json();",
+              "if(!Array.isArray(b.data) || !b.metaData || b.metaData.totalItems>500 || b.metaData.totalItems!==b.data.length){pm.execution.setNextRequest(null);throw new Error('Niepełna lista zamówień.');}",
+              "",
+              "const before=JSON.parse(pm.collectionVariables.get('beforeTarget')||'null');",
+              "if(!before)throw new Error('Brak stanu przed kopiowaniem.');",
+              "const sort=arr=>arr.slice().sort((a,b)=>a.id-b.id);",
+              "pm.test('Dokumenty odbiorcy pozostały bez zmian',()=>pm.expect(sort(b.data)).to.deep.equal(sort(before)));",
+              "const ids=new Set(before.map(o=>o.id));",
+              "pm.collectionVariables.set('targetAddedOrderIds',JSON.stringify(b.data.filter(o=>!ids.has(o.id)).map(o=>o.id)));",
+              "console.log('Nowe ID — odbiorcy:',pm.collectionVariables.get('targetAddedOrderIds'));"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

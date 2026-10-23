@@ -1,4 +1,5 @@
 import { expect } from "@playwright/test";
+import { setTestOrderDate } from "../../scripts/test-order-date.mjs";
 import { ACCESS_YEAR, test, type AccessRecord, type EntitlementData } from "./entitlements";
 import {
   accessClasses,
@@ -25,10 +26,21 @@ export const afterDebutWindow = promotionToday >= `${promotionCalendarYear}-10-0
 export async function preparePromotion(data: EntitlementData) {
   await expectUnmarkedRecords(data);
   await test.step("Warunek przygotowania: dedykowana szkoła nie ma pozostawionych zamówień", async () => {
-    expect(
-      await data.orders().orders(),
-      "Pozostałości poprzedniego przebiegu wymagają wyjaśnienia; test nie usuwa cudzych zamówień",
-    ).toEqual([]);
+    const orders = await data.orders().orders();
+    if (orders.length) {
+      const school = data.schools[0];
+      const documents = orders
+        .map(
+          (order) =>
+            `${order.salesOrderSymbol || order.cmsOrderSymbol || order.id} (ID ${order.id}, autor: ${order.createdByName || order.createdBy})`,
+        )
+        .join("; ");
+      throw new Error(
+        `[EXISTING_TEST_DATA] Nie można rozpocząć testu: szkoła ${school.name} (ID ${school.id}) ma istniejące zamówienia: ${documents}. ` +
+          "Test wymaga szkoły bez zamówień i nie dotarł do sprawdzania promocji. " +
+          "Sprawdź wskazane dokumenty: usuń je tylko, jeśli służyły do testów, albo przygotuj osobną szkołę. Automat nie usuwa tych zamówień.",
+      );
+    }
   });
 }
 
@@ -47,6 +59,35 @@ export async function previousConfirmation(
       classes,
       year: `${ACCESS_YEAR - 1}/${ACCESS_YEAR}`,
     }));
+}
+
+export async function prepareNewClientHistory(data: EntitlementData) {
+  const api = data.orders();
+  const product = await api.product("4P-2", [4]);
+  for (const year of [promotionCalendarYear - 2, promotionCalendarYear - 1]) {
+    const date = `${year}-05-01`;
+    await test.step(`Przygotowanie NCL-04: zamówienie 4P-2, 1 sztuka, data w bazie ${date} i odczyt API`, async () => {
+      const id = await api.save([{ product, quantity: 1 }]);
+      const saved = await setTestOrderDate({
+        orderId: id,
+        schoolId: api.school.id,
+        schoolName: api.school.name,
+        userId: data.userId,
+        date,
+        purpose: "new-client-history",
+      });
+      await data.scenario.record(`newClientHistoricalOrder_${id}`, JSON.stringify(saved));
+      await expect
+        .poll(
+          async () =>
+            (await api.orders()).find((order) => String(order.id) === id)?.createdAt?.slice(0, 10),
+          {
+            message: `NCL-04: historyczna data ${date} zapisana w bazie i widoczna przez API`,
+          },
+        )
+        .toBe(date);
+    });
+  }
 }
 
 export async function promotionThreshold(data: EntitlementData, record: AccessRecord) {

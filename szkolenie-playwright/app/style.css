@@ -1,0 +1,14 @@
+:root { font-family: system-ui, sans-serif; color: #183245; background: #f1f5f7; }
+body { margin: 0; padding: 40px 20px; }
+main { max-width: 850px; margin: auto; padding: 32px; background: white; border-radius: 16px; }
+h1 { font-size: 36px; margin: 10px 0; }
+p { line-height: 1.6; }
+.eyebrow { font-size: 12px; letter-spacing: 2px; color: #176b68; font-weight: 700; }
+.filters { display: grid; gap: 10px; padding: 24px; background: #eef6f5; border-radius: 12px; }
+input, select, button { font: inherit; padding: 12px; border: 1px solid #a0b7bd; border-radius: 6px; }
+button { background: #176b68; color: white; cursor: pointer; margin-top: 8px; }
+ul { padding: 0; list-style: none; }
+li { border-bottom: 1px solid #dce5e8; padding: 18px 0; line-height: 1.7; }
+li span { background: #e8edf8; padding: 3px 8px; border-radius: 6px; font-size: 13px; }
+.footnote { font-size: 13px; color: #526a78; }
+input:focus-visible, select:focus-visible, button:focus-visible { outline: 3px solid #e8aa32; }

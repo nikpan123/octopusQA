@@ -1,9 +1,10 @@
+import { automaticSchoolName, automaticTeacherName } from "../scripts/test-names.mjs";
 import { randomUUID } from "node:crypto";
 import { mkdir, writeFile } from "node:fs/promises";
 
 import { test, expect } from "./support/fixtures";
 import { Octopus } from "./support/octopus";
-import { OCTOPUS_BASE_URL } from "./support/environment";
+import { OCTOPUS_BASE_URL, OCTOPUS_ENV } from "./support/environment";
 
 test("szkoła → nauczyciel → relacja → wyszukiwanie → nauczyciel → historia @smoke", async ({
   page,
@@ -12,11 +13,11 @@ test("szkoła → nauczyciel → relacja → wyszukiwanie → nauczyciel → his
 
   const runId = `REG_${Date.now()}_${randomUUID().slice(0, 6)}`;
 
-  const schoolName = `${runId} Szkoła testowa`;
+  const schoolName = automaticSchoolName("SZ", "", OCTOPUS_ENV, runId);
 
-  const lastName = runId;
+  const lastName = automaticTeacherName(runId);
 
-  const normalizedLastName = "Reg" + runId.slice(3).toLowerCase();
+  const normalizedLastName = lastName[0] + lastName.slice(1).toLowerCase();
 
   const email = `${runId.toLowerCase()}@example.invalid`;
 
@@ -24,6 +25,7 @@ test("szkoła → nauczyciel → relacja → wyszukiwanie → nauczyciel → his
 
   const run: Record<string, string> = {
     runId,
+    environment: OCTOPUS_ENV,
     schoolName,
     lastName,
     email,
@@ -98,7 +100,7 @@ test("szkoła → nauczyciel → relacja → wyszukiwanie → nauczyciel → his
     await test.step("FIND-01: wyszukaj nauczyciela po ID", async () => {
       await app.searchTeacher(run.teacherId);
 
-      await expect(app.detail("firstName")).toHaveValue("Testowy");
+      await expect(app.detail("firstName")).toHaveValue("Auto");
 
       await expect(app.detail("email")).toHaveValue(email);
     });

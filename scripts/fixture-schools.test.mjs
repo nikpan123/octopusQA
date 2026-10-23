@@ -84,17 +84,59 @@ test("fixture: brak ID odzyskuje dokładną nazwę, a brak obu zwraca jawne null
 });
 
 test("fixture: niejednoznaczność, obce dane, usunięta szkoła i niewłaściwy typ blokują przygotowanie", async () => {
-  for (const rows of [
-    [row, row],
-    [{ ...row, name: "Obca szkoła" }],
-    [{ ...row, isDel: true }],
-    [{ ...row, typeId: 100 }],
-  ])
+  for (const rows of [[row, row], [{ ...row, isDel: true }], [{ ...row, typeId: 100 }]])
     await assert.rejects(fixture({ rows }).api.findMany([def]));
   await assert.rejects(fixture({ rows: [], searchRows: [row, row] }).api.findMany([def]));
   const guarded = fixture();
   await assert.rejects(guarded.api.findMany([{ ...def, name: "Zwykła szkoła" }]));
   assert.equal(guarded.calls.length, 0);
+});
+
+test("fixture: stare ID należące do obcej szkoły odzyskuje własny rekord po nazwie", async () => {
+  const f = fixture({ rows: [{ ...row, name: "Obca szkoła" }], searchRows: [{ ...row, id: 9 }] });
+  assert.equal((await f.api.findMany([def]))[0].id, "9");
+  assert.equal(f.calls.filter((c) => c.path.endsWith("GetInstitutions")).length, 2);
+  assert.deepEqual(
+    await fixture({ rows: [{ ...row, name: "Obca szkoła" }], searchRows: [] }).api.findMany([def]),
+    [null],
+  );
+});
+
+test("reference: odszukuje aktualne ID po dokładnej nazwie i mieście, bez zapisu i bez oceny medalu", async () => {
+  const reference = { name: "Szkoła referencyjna", city: "Poznań" };
+  const f = fixture({
+    searchRows: [
+      {
+        ...row,
+        ...reference,
+        id: 900,
+        informationAboutMedalCategory: { medalCategoryName: "Brak" },
+      },
+    ],
+  });
+  assert.deepEqual(await f.api.reference(reference), { ...reference, id: "900" });
+  const filter = JSON.parse(f.calls[0].params.filterModel);
+  assert.equal(filter.nameOrFullName, reference.name);
+  assert.equal(filter.city, reference.city);
+  assert.equal(filter.institutionIds, undefined);
+  assert.equal(filter.saveSearchHistory, false);
+});
+
+test("reference: brak, duplikaty, inne miasto i usunięte dane dają błąd warunków środowiska", async () => {
+  const reference = { name: "Szkoła referencyjna", city: "Poznań" };
+  const candidate = { ...row, ...reference };
+  for (const rows of [
+    [],
+    [candidate, candidate],
+    [{ ...candidate, city: "Warszawa" }],
+    [{ ...candidate, isDel: true }],
+  ])
+    await assert.rejects(
+      fixture({ searchRows: rows }).api.reference(reference),
+      /Dane referencyjne/,
+    );
+  for (const status of [401, 403, 500])
+    await assert.rejects(fixture({ status }).api.reference(reference), /HTTP/);
 });
 
 test("fixture: HTTP 401/403/500 i sieć nie są traktowane jak brak szkoły; błędy nie ujawniają tokenu", async () => {

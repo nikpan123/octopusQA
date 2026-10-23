@@ -1,6 +1,6 @@
-import { test, expect } from "./support/fixtures";
+import { test, expect } from "./support/medal-reference-schools";
 import { Octopus } from "./support/octopus";
-import { GOLD_SCHOOL } from "./support/school-medal-data";
+
 import { expectSchoolMedal } from "./support/school-medal";
 import {
   schoolSearchForm,
@@ -74,6 +74,7 @@ test.describe("Rozszerzone filtry wyszukiwarki szkół", () => {
 
   test("SFLT-09: Medal Brak lub Złoto działa jako OR @school @school-search @medal", async ({
     page,
+    GOLD_SCHOOL,
   }) => {
     const app = new Octopus(page);
     const data =

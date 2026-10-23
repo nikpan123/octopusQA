@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Szkolenie Playwright — scenariusze</title>
+  <link rel="stylesheet" href="/style.css">
+  <script src="/app.js" defer></script>
+</head>
+<body>
+  <main>
+    <p class="eyebrow">TWOJE PIERWSZE TESTY PLAYWRIGHT</p>
+    <h1>Scenariusze testowe.</h1>
+    <p>Uproszczona strona ćwiczeniowa oparta na panelu Hurtowni. Dane są stałe, a filtry działają lokalnie.</p>
+    <section class="filters" aria-label="Filtry scenariuszy">
+      <label for="search">Szukaj przypadku</label>
+      <input id="search" type="search" placeholder="np. CART-001">
+      <label for="priority">Priorytet</label>
+      <select id="priority">
+        <option value="">Wszystkie</option>
+        <option>P0</option><option>P1</option><option>P2</option>
+      </select>
+      <button type="button" id="reset">Wyczyść filtry</button>
+    </section>
+    <p role="status">Wczytywanie…</p>
+    <ul aria-label="Lista scenariuszy"></ul>
+    <p id="empty" hidden>Brak wyników. Zmień hasło lub wyczyść filtry.</p>
+    <p class="footnote">Widoczność scenariusza na liście nie oznacza wykonania ani zaliczenia opisanego testu API.</p>
+  </main>
+</body>
+</html>

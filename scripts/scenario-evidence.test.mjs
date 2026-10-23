@@ -78,7 +78,7 @@ test("catalog: step bindings use existing scenario IDs and unique in-range steps
       bindings++;
     }
   }
-  assert.equal(bindings, 105);
+  assert.equal(bindings, 122);
 });
 
 test("catalog: mapped titles exist in the corresponding test source or copy fixture", async () => {
@@ -92,6 +92,11 @@ test("catalog: mapped titles exist in the corresponding test source or copy fixt
     "zamowienia-redmine-36290.spec.ts",
     "zamowienia-kopie-uprawnienia.spec.ts",
     "support/order-copy.ts",
+    "zamowienia-kopie-gratisy.spec.ts",
+    "zamowienia-kopie-zmiana-struktury.spec.ts",
+    "zamowienia-kopie-struktura-status.spec.ts",
+    "zamowienia-kopie-integracja-stan.spec.ts",
+    "zamowienia-kopie-uprawnienia-niezalezne.spec.ts",
   ];
   const patterns = new Map();
   const escaped = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -138,7 +143,17 @@ test("catalog: mapped titles exist in the corresponding test source or copy fixt
               ? files[3]
               : /^ORD-SPEC-35980-(11|12|13)$/.test(check.testId)
                 ? files[4]
-                : files[1];
+                : /^ORD-DB-(06|07|08|09|10)$/.test(check.testId)
+                  ? files[9]
+                  : /^ORD-SPEC-35980-(1[4-9]|3[0-3])$/.test(check.testId)
+                    ? files[6]
+                    : /^ORD-SPEC-35980-2[3-4]$/.test(check.testId)
+                      ? files[8]
+                      : /^ORD-SPEC-35980-2[5-9]$/.test(check.testId)
+                        ? files[10]
+                        : /^ORD-SPEC-35980-2[0-2]$/.test(check.testId)
+                          ? files[7]
+                          : files[1];
         for (const title of check.titles)
           assert.ok(
             [...patterns.get(file), ...patterns.get(files[5])].some((pattern) =>
@@ -291,6 +306,38 @@ test("evidence: environment isolation, completed run only, fixed preview, cache 
     const updated = await loadScenarioEvidence(root, catalog, "dev", [run]);
     assert.equal(updated.scenarios["SC-01"].latestRun.counts.passed, 1);
     assert.equal(updated.scenarios["SC-01"].steps[0].status, "missing");
+    const oldMissing = {
+      ...run,
+      id: "22222222-2222-4222-8222-222222222222",
+      startedAt: "2026-10-18",
+      selectedTestIds: ["ORD-01"],
+      reportAvailable: false,
+    };
+    const unrelatedMissing = {
+      ...run,
+      id: "33333333-3333-4333-8333-333333333333",
+      startedAt: "2026-10-22",
+      selectedTestIds: ["CLUB-01"],
+      reportAvailable: false,
+    };
+    const scoped = await loadScenarioEvidence(root, catalog, "dev", [
+      run,
+      oldMissing,
+      unrelatedMissing,
+    ]);
+    assert.equal(scoped.unavailableReports, 2);
+    assert.deepEqual(scoped.archive, { notSaved: 2, unreadable: 0 });
+    assert.deepEqual(scoped.scenarios["SC-01"].archive, {
+      unavailableCount: 1,
+      newerUnavailableCount: 0,
+    });
+    const newMissing = {
+      ...oldMissing,
+      id: "44444444-4444-4444-8444-444444444444",
+      startedAt: "2026-10-23",
+    };
+    const newer = await loadScenarioEvidence(root, catalog, "dev", [run, newMissing]);
+    assert.equal(newer.scenarios["SC-01"].archive.newerUnavailableCount, 1);
   } finally {
     await rm(root, { recursive: true, force: true });
   }

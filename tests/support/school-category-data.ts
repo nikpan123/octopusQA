@@ -1,3 +1,4 @@
+import { automaticCategorySchoolName, automaticSchoolPrefix } from "../../scripts/test-names.mjs";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { apiStep } from "./api-step";
@@ -6,6 +7,7 @@ import { fixtureSchools } from "./fixture-schools";
 import { backgroundSchoolSetup } from "./background-school-setup";
 import { OCTOPUS_ENV } from "./environment";
 import { Octopus } from "./octopus";
+import { fixtureSchoolNumber } from "../../scripts/fixture-school-address.mjs";
 import {
   setStudentCount,
   studentCountInput,
@@ -66,16 +68,18 @@ export const EDIT_D_CASE: Definition = {
   category: "D",
 };
 const cachePath = path.resolve("playwright", ".auth", OCTOPUS_ENV, "category-schools.json");
-const prefix = `AUTO_CAT_${OCTOPUS_ENV.toUpperCase()}_`;
+const prefix = automaticSchoolPrefix("CAT", OCTOPUS_ENV);
 
 export async function ensureCategorySchool(
   page: Page,
   app: Octopus,
   definition: Definition,
-  options: { openPanel?: boolean } = {},
+  options: { openPanel?: boolean; label?: string } = {},
 ): Promise<CategorySchool> {
   return apiStep(
-    "Przygotowanie API: tożsamość szkoły, typ, liczba uczniów i flaga Testowy",
+    definition.testRecord === false
+      ? `Przygotowanie API: ${options.label ?? "szkoła"} bez flagi Testowy — typ i liczba uczniów`
+      : `Przygotowanie API: ${options.label ?? "szkoła"} — tożsamość, typ, liczba uczniów i flaga Testowy`,
     async () => {
       if (definition.testRecord === false)
         expect(
@@ -85,7 +89,7 @@ export async function ensureCategorySchool(
       const cache = await readFile(cachePath, "utf8")
         .then((value) => JSON.parse(value) as Record<string, CategorySchool>)
         .catch(() => ({}) as Record<string, CategorySchool>);
-      const name = prefix + definition.key;
+      const name = automaticCategorySchoolName(definition.key, OCTOPUS_ENV);
       const editable = definition.key === EDIT_CASE.key || definition.key === EDIT_D_CASE.key;
       const api = await fixtureSchools(page);
       const [existing] = await api.findMany([
@@ -109,9 +113,14 @@ export async function ensureCategorySchool(
         }
       } else {
         const id = await backgroundSchoolSetup(page, async (setup) => {
-          const id = await setup.createSchool(name, `CAT-${definition.key}`, definition.type, {
-            quantityOfStudents: definition.count,
-          });
+          const id = await setup.createSchool(
+            name,
+            fixtureSchoolNumber(definition.key),
+            definition.type,
+            {
+              quantityOfStudents: definition.count,
+            },
+          );
           if (definition.testRecord !== false) await setup.markTestRecord();
           return id;
         });

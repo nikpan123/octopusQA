@@ -10,27 +10,25 @@ export type MedalReferenceSchool = MedalSchool & {
 };
 
 type MedalEnvironmentData = {
-  gold: MedalReferenceSchool;
-  silver: MedalReferenceSchool;
-  bronze: MedalReferenceSchool;
-  noMedal: MedalReferenceSchool;
+  gold: Omit<MedalReferenceSchool, "id">;
+  silver: Omit<MedalReferenceSchool, "id">;
+  bronze: Omit<MedalReferenceSchool, "id">;
+  noMedal: Omit<MedalReferenceSchool, "id">;
 };
 
 const data: Record<"dev" | "test", MedalEnvironmentData> = {
   dev: {
     gold: {
-      id: "57616",
       name: "Szkoła Podstawowa nr 5",
       city: "Lębork",
       expectedMedal: "Złoto",
-      expectedSubjects: ["Fizyka", "Przyroda", "Edukacja wczesnoszkolna", "Historia"],
+      expectedSubjects: ["Fizyka", "Przyroda", "Edukacja wczesnoszkolna", "Historia", "Matematyka"],
 
       expectedHistoryValue: "2025/2026 Złoto",
       expectedHistoryDate: "2026-10-01 00:00",
     },
 
     silver: {
-      id: "85263",
       name: "Szkoła Podstawowa nr 379",
       city: "Warszawa",
       expectedMedal: "Srebro",
@@ -38,15 +36,13 @@ const data: Record<"dev" | "test", MedalEnvironmentData> = {
     },
 
     bronze: {
-      id: "66109",
       name: "Szkoła Podstawowa w Raszkowie",
-      city: "Raszków",
+      city: "Pogrzybów",
       expectedMedal: "Brąz",
       expectedSubjects: ["Geografia"],
     },
 
     noMedal: {
-      id: "92928",
       name: "Szkoła Podstawowa nr 403",
       city: "Warszawa",
       expectedMedal: "Brak",
@@ -56,7 +52,6 @@ const data: Record<"dev" | "test", MedalEnvironmentData> = {
 
   test: {
     gold: {
-      id: "57616",
       name: "Szkoła Podstawowa nr 5",
       city: "Lębork",
       expectedMedal: "Złoto",
@@ -67,7 +62,6 @@ const data: Record<"dev" | "test", MedalEnvironmentData> = {
     },
 
     silver: {
-      id: "52005",
       name: "Szkoła Podstawowa z Oddziałami Dwujęzycznymi nr 20 Fundacji Szkolnej",
       city: "Warszawa",
       expectedMedal: "Srebro",
@@ -75,15 +69,13 @@ const data: Record<"dev" | "test", MedalEnvironmentData> = {
     },
 
     bronze: {
-      id: "66109",
       name: "Szkoła Podstawowa w Raszkowie",
-      city: "Raszków",
+      city: "Pogrzybów",
       expectedMedal: "Brąz",
       expectedSubjects: ["Matematyka"],
     },
 
     noMedal: {
-      id: "92928",
       name: "Szkoła Podstawowa nr 403",
       city: "Warszawa",
       expectedMedal: "Brak",
@@ -93,11 +85,3 @@ const data: Record<"dev" | "test", MedalEnvironmentData> = {
 };
 
 export const MEDAL_DATA = data[OCTOPUS_ENV];
-
-export const GOLD_SCHOOL = MEDAL_DATA.gold;
-
-export const SILVER_SCHOOL = MEDAL_DATA.silver;
-
-export const BRONZE_SCHOOL = MEDAL_DATA.bronze;
-
-export const NO_MEDAL_SCHOOL = MEDAL_DATA.noMedal;

@@ -1,9 +1,21 @@
 import { defineConfig } from "@playwright/test";
+import path from "node:path";
+import { tmpdir } from "node:os";
+import { randomUUID } from "node:crypto";
 
 // Offline verification only: no Octopus authentication, setup or cleanup.
 export default defineConfig({
+  metadata:
+    process.env.QA_BROWSER_PREVIEW === "1"
+      ? {
+          qaBrowserPreviewDirectory: path.join(tmpdir(), `qa-debugger-overlay-${randomUUID()}`),
+        }
+      : {},
   testDir: "./checks",
-  testMatch: "debugger-pilot.spec.ts",
+  testMatch:
+    process.env.QA_DEBUGGER_GENERIC === "1"
+      ? "debugger-all-tests.spec.ts"
+      : "debugger-pilot.spec.ts",
   workers: 1,
   retries: 0,
   timeout: 30_000,

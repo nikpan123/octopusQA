@@ -20,4 +20,8 @@ export class FixtureSchoolsApi {
     config: { baseURL: string; headers: Record<string, string>; userId: number },
   );
   findMany(definitions: FixtureDefinition[]): Promise<Array<FixtureSchool | null>>;
+  reference(definition: {
+    name: string;
+    city: string;
+  }): Promise<{ id: string; name: string; city: string }>;
 }

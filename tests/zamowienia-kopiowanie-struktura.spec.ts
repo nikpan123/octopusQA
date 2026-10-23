@@ -16,17 +16,17 @@ import { restoreSession } from "../scripts/auth.mjs";
 import { liveOctopusHeaders } from "./support/live-auth";
 
 const directions: Array<[CopyNode, CopyNode]> = [
-  ["A", "SP"],
-  ["A", "LO"],
-  ["A", "TECH"],
-  ["LO", "A"],
+  ["ZS", "SP"],
+  ["ZS", "LO"],
+  ["ZS", "TECH"],
+  ["LO", "ZS"],
   ["LO", "SP"],
   ["LO", "TECH"],
   ["TECH", "LO"],
-  ["SP", "A"],
+  ["SP", "ZS"],
   ["SP", "LO"],
   ["SP", "TECH"],
-  ["TECH", "A"],
+  ["TECH", "ZS"],
   ["TECH", "SP"],
 ];
 const pairTest = copyTestFor(copyPairPlan("SP", "LO"));
@@ -47,10 +47,10 @@ test.describe("Kopiowanie dokumentów w strukturze — Redmine 37160", () => {
       const { id } = await data.source(source);
       const before = await data.snapshot();
       const dialog =
-        await test.step("UI: otwarcie kopiowania i pełny zbiór trzech pozostałych placówek struktury A", () =>
+        await test.step("UI: otwarcie kopiowania i pełny zbiór trzech pozostałych placówek struktury ZS", () =>
           data.open(source, id));
-      await test.step("UI: lista celów zawiera wyłącznie trzy pozostałe placówki struktury A", async () => {
-        for (const node of ["A", "SP", "LO", "TECH"] as CopyNode[])
+      await test.step("UI: lista celów zawiera wyłącznie trzy pozostałe placówki struktury ZS", async () => {
+        for (const node of ["ZS", "SP", "LO", "TECH"] as CopyNode[])
           await expect(copyTargetRow(dialog, data.schools[node])).toHaveCount(
             node === source ? 0 : 1,
           );
@@ -137,8 +137,8 @@ test.describe("Kopiowanie dokumentów w strukturze — Redmine 37160", () => {
   }) => {
     const { id } = await data.source("SP");
     const before = await data.snapshot();
-    await data.save(await data.open("SP", id), "SP", id, ["A", "LO", "TECH"]);
-    await expectCopy(data, before, "SP", id, ["A", "LO", "TECH"]);
+    await data.save(await data.open("SP", id), "SP", id, ["ZS", "LO", "TECH"]);
+    await expectCopy(data, before, "SP", id, ["ZS", "LO", "TECH"]);
   });
   standaloneTest(
     "ORD-COPY-18: placówka bez struktury nie ma funkcji kopiowania @school @order @copy @negative @redmine-37160",

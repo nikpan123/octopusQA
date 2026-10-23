@@ -7,7 +7,9 @@ import { type CategorySchool } from "./school-category";
 import { Octopus } from "./octopus";
 import { OrderClassApi } from "./order-class";
 import { liveOctopusHeaders } from "./live-auth";
-import { backgroundSchoolSetup } from "./background-school-setup";
+import type { TeacherSubjectLevel } from "./api-factory";
+import { deleteTestTeacher } from "../../scripts/cleanup-teachers.mjs";
+import { OCTOPUS_ENV } from "./environment";
 
 export const ACCESS_YEAR = Number(TFL_CURRENT_SCHOOL_YEAR.split("/")[0]);
 export const GRANTED = "Przyznano";
@@ -55,8 +57,10 @@ export type Assignment = {
 export async function entitlementSchool(
   page: Page,
   key = "PRIMARY",
-  students = 400,
+  students: number | null = 400,
   testRecord = true,
+  schoolType = "Szkoła podstawowa",
+  label = "szkoła",
 ) {
   const worker = process.env.TEST_PARALLEL_INDEX ?? "0";
   return ensureCategorySchool(
@@ -65,11 +69,11 @@ export async function entitlementSchool(
     {
       key: `ENT_${testRecord ? "" : "UNMARKED_"}${key}_W${worker}`,
       testRecord,
-      type: "Szkoła podstawowa",
-      count: students,
-      category: students <= 100 ? "C" : students <= 400 ? "B" : "A",
+      type: schoolType,
+      count: students ?? undefined,
+      category: students === null ? "A" : students <= 100 ? "C" : students <= 400 ? "B" : "A",
     },
-    { openPanel: false },
+    { openPanel: false, label },
   );
 }
 
@@ -306,6 +310,9 @@ export class EntitlementData {
   }
 
   async finish() {
+    // A test can clean its orders before removing gifts; fixture teardown need not
+    // repeat an empty cleanup step. Failed removals stay owned and are retried.
+    if (![...this.orderApis.values()].some((api) => api.owned.size > 0)) return;
     return await apiStep(
       "Sprzątanie: usunięcie zamówień i dokumentów utworzonych przez test",
       async () => {
@@ -339,38 +346,93 @@ export const test = base.extend<{
   accessTestFlags: { teacher: boolean; school: boolean };
   accessSchoolNamespace: string;
   accessSchoolKey: string;
+  accessTeacherSchools: "both" | "target";
+  accessSchoolCount: 1 | 2;
+  accessStudentCount: number | null;
+  accessSchoolType: string;
+  accessSubjectLevels: TeacherSubjectLevel[];
+  accessCleanupUnmarkedTeacher: boolean;
 }>({
   accessTestFlags: [{ teacher: true, school: true }, { option: true }],
   accessSchoolNamespace: ["", { option: true }],
   accessSchoolKey: ["", { option: true }],
+  accessTeacherSchools: ["both", { option: true }],
+  accessSchoolCount: [1, { option: true }],
+  accessStudentCount: [400, { option: true }],
+  accessCleanupUnmarkedTeacher: [false, { option: true }],
+  accessSchoolType: ["Szkoła podstawowa", { option: true }],
+  accessSubjectLevels: [
+    [
+      { subject: "Matematyka", level: "Szkoła Podstawowa" },
+      { subject: "Fizyka", level: "Szkoła Podstawowa" },
+    ],
+    { option: true },
+  ],
   access: [
     async (
-      { page, scenario, authSession, performanceMetrics, accessTestFlags, accessSchoolNamespace, accessSchoolKey },
+      {
+        page,
+        scenario,
+        authSession,
+        performanceMetrics,
+        accessTestFlags,
+        accessSchoolNamespace,
+        accessSchoolKey,
+        accessTeacherSchools,
+        accessSchoolCount,
+        accessStudentCount,
+        accessSchoolType,
+        accessSubjectLevels,
+        accessCleanupUnmarkedTeacher,
+      },
       use,
       testInfo,
     ) => {
       if (accessSchoolNamespace && !/^[A-Za-z0-9_]{1,48}$/.test(accessSchoolNamespace))
         throw new Error("Niepoprawna przestrzeń danych uprawnień.");
       const suffix = accessSchoolNamespace ? `_${accessSchoolNamespace}` : "";
-      const schools = [
-        await entitlementSchool(page, `${accessSchoolKey}PRIMARY${suffix}`, 400, accessTestFlags.school),
-        await entitlementSchool(page, `${accessSchoolKey}SECOND${suffix}`, 400, accessTestFlags.school),
-      ];
-      const teacherId = await scenario.createTeacher(schools[0].id, schools[0].name, {
-        openPanel: false,
+      const schools: CategorySchool[] = [];
+      const schoolRoles =
+        accessSchoolCount === 2
+          ? ["PRIMARY", "SECOND"]
+          : [accessTeacherSchools === "target" ? "SECOND" : "PRIMARY"];
+      for (const role of schoolRoles) {
+        schools.push(
+          await entitlementSchool(
+            page,
+            `${accessSchoolKey}${role}${suffix}`,
+            accessStudentCount,
+            accessTestFlags.school,
+            accessSchoolType,
+            accessSchoolCount === 1
+              ? "jedyna szkoła"
+              : role === "PRIMARY"
+                ? "pierwsza szkoła"
+                : "druga szkoła",
+          ),
+        );
+      }
+      const teacherSchools =
+        accessTeacherSchools === "target" ? [schools[schools.length - 1]] : schools;
+      await scenario.record(
+        "accessSchools",
+        JSON.stringify(schools.map(({ id, name }) => ({ id, name }))),
+      );
+      const teacherId = await scenario.createTeacher(teacherSchools[0].id, teacherSchools[0].name, {
+        // API preparation otherwise leaves the main debugger page at about:blank.
+        openPanel: process.env.QA_TEST_DEBUGGER === "1",
         testRecord: accessTestFlags.teacher,
-        additionalSchoolIds: [schools[1].id],
-        subjectLevels: [
-          { subject: "Matematyka", level: "Szkoła Podstawowa" },
-          { subject: "Fizyka", level: "Szkoła Podstawowa" },
-        ],
+        additionalSchoolIds: teacherSchools.slice(1).map((school) => school.id),
+        subjectLevels: accessSubjectLevels,
       });
-      await backgroundSchoolSetup(page, async (setup) => {
-        await setup.openPanel("teacher", teacherId);
-        const teacherTestFlag = setup.page.getByRole("checkbox", { name: "Testowy", exact: true });
-        if (accessTestFlags.teacher) await expect(teacherTestFlag).toBeChecked();
-        else await expect(teacherTestFlag).not.toBeChecked();
+      const teacherTestFlag = await page.context().request.get("/api/Teacher/GetTeacherIsTested", {
+        headers: await liveOctopusHeaders(page),
+        params: { teacherId },
       });
+      expect(teacherTestFlag.ok(), "Odczyt flagi Testowy nowego nauczyciela").toBe(true);
+      expect(await teacherTestFlag.json(), "Flaga nauczyciela zgodna z wariantem testu").toBe(
+        accessTestFlags.teacher,
+      );
       await scenario.record("accessTestFlags", JSON.stringify(accessTestFlags));
       const club = new ClubFormApi(page.context().request, authSession, performanceMetrics, () =>
         liveOctopusHeaders(page),
@@ -403,13 +465,32 @@ export const test = base.extend<{
       } finally {
         await data.finish();
         if (!accessTestFlags.teacher && testInfo.status === "passed") {
-          // Flaga nie uczestniczy w scenariuszu. Dopiero po wszystkich asercjach
-          // oznaczamy własny rekord, aby istniejący bezpieczny cleanup mógł go usunąć.
-          // Nieudany przypadek zostaje nieoznaczony do analizy.
-          await scenario.app.openPanel("teacher", teacherId);
-          await expect(scenario.app.detail("lastName")).toHaveValue(scenario.id);
-          await scenario.app.markTestRecord();
-          await scenario.record("unmarkedTeacherMarkedOnlyForCleanup", "true");
+          if (accessCleanupUnmarkedTeacher) {
+            if (new URL(page.url()).pathname !== `/teacher/teacher-panel/${teacherId}`)
+              await scenario.app.openPanel("teacher", teacherId);
+            const status = await deleteTestTeacher(
+              page,
+              {
+                id: scenario.runId,
+                teacherId,
+                teacherLastName: scenario.id,
+                email: scenario.email,
+                environment: OCTOPUS_ENV,
+                result: "PASS",
+              },
+              { allowUnmarked: true },
+            );
+            await scenario.record("cleanupStatus", status);
+            await scenario.record("cleanupFinishedAt", new Date().toISOString());
+          } else {
+            // Flaga nie uczestniczy w scenariuszu. Dopiero po wszystkich asercjach
+            // oznaczamy własny rekord, aby istniejący bezpieczny cleanup mógł go usunąć.
+            // Nieudany przypadek zostaje nieoznaczony do analizy.
+            await scenario.app.openPanel("teacher", teacherId);
+            await expect(scenario.app.detail("lastName")).toHaveValue(scenario.id);
+            await scenario.app.markTestRecord();
+            await scenario.record("unmarkedTeacherMarkedOnlyForCleanup", "true");
+          }
         }
       }
       // Istniejący rejestr scenario: nauczyciel z udanego testu jest usuwany
@@ -418,6 +499,9 @@ export const test = base.extend<{
     { timeout: 180000 },
   ],
 });
+
+// Only scenarios that exercise independence between schools need a second school.
+export const twoSchoolTest = test.extend({ accessSchoolCount: 2 });
 
 export function permissionRow(panel: Locator, record: AccessRecord) {
   return panel

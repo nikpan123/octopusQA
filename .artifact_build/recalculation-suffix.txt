@@ -1,0 +1,20 @@
+} catch {
+  if ($transaction) { try { $transaction.Rollback() } catch {} }
+  # Nie wypisujemy exception.Message ani connection stringa: mogą zawierać sekrety.
+  $exception = $_.Exception
+  $text = $exception.ToString()
+  $kind = 'connection'
+  if ($text -match 'DEV_ONLY|DEV_DATABASE_REQUIRED|WRONG_DATABASE') { $kind = 'database_guard' }
+  elseif ($text -match 'MISSING_CONFIGURATION|INVALID_PORT|INVALID_ID') { $kind = 'configuration' }
+  elseif ($text -match 'certificate|certyfikat|trust chain|principal name') { $kind = 'certificate' }
+  elseif ($text -match '18456|Login failed|4060') { $kind = 'authentication' }
+  $number = $null
+  if ($exception.InnerException -and $exception.InnerException.PSObject.Properties['Number']) { $number = $exception.InnerException.Number }
+  elseif ($exception.PSObject.Properties['Number']) { $number = $exception.Number }
+  @{ error = @{ kind = $kind; number = $number; stage = $stage; type = $exception.GetType().FullName; line = $_.InvocationInfo.ScriptLineNumber } } | ConvertTo-Json -Compress
+  exit 1
+} finally {
+  if ($reader) { $reader.Dispose() }
+  if ($command) { $command.Dispose() }
+  if ($connection) { $connection.Dispose() }
+}

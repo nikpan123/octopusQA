@@ -23,7 +23,7 @@ test("EDIT-03: zapis nazwiska jest trwały i widoczny w historii @teacher @edit"
   await test.step("Otwórz ponownie; sprawdź dane, relację i historię", async () => {
     await s.app.openPanel("teacher", teacherId);
     await expect(s.app.detail("lastName")).toHaveValue(lastName);
-    await expect(s.app.detail("firstName")).toHaveValue("Testowy");
+    await expect(s.app.detail("firstName")).toHaveValue("Auto");
     await expect(s.app.detail("email")).toHaveValue(s.email);
     await expect(page.getByRole("row").filter({ hasText: school.name })).toHaveCount(1);
     await page.getByRole("tab", { name: "Historia zmian", exact: true }).click();
@@ -162,7 +162,7 @@ test("REL-02: druga szkoła zachowuje pierwszą relację i pokazuje nauczyciela 
       const row = await s.app.schoolTeacherRow(teacherId);
       await expect(row).toHaveCount(1);
       await expect(row.getByRole("gridcell", { name: s.id, exact: true })).toBeVisible();
-      await expect(row.getByRole("gridcell", { name: "Testowy", exact: true })).toBeVisible();
+      await expect(row.getByRole("gridcell", { name: "Auto", exact: true })).toBeVisible();
     }
   });
 });

@@ -486,8 +486,8 @@ test("EDIT-27: wszystkie dane istniejącego adresu prywatnego można zmienić @t
   await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("email"); oczekiwane: s.email', async () =>
     expect(s.app.detail("email")).toHaveValue(s.email));
 
-  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("firstName"); oczekiwane: "Testowy"', async () =>
-    expect(s.app.detail("firstName")).toHaveValue("Testowy"));
+  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("firstName"); oczekiwane: "Auto"', async () =>
+    expect(s.app.detail("firstName")).toHaveValue("Auto"));
 
   await test.step('Sprawdzenie: liczba elementów w widoku — page.getByRole("row").filter({ hasText: school.name, }); oczekiwane: 1', async () =>
     expect(

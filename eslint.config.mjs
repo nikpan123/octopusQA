@@ -51,7 +51,9 @@ export default tseslint.config(
         confirm: "readonly",
         document: "readonly",
         EventSource: "readonly",
+        MutationObserver: "readonly",
         setInterval: "readonly",
+        setTimeout: "readonly",
       },
     },
   },
@@ -70,6 +72,9 @@ export default tseslint.config(
   {
     ...playwright.configs["flat/recommended"],
     files: ["tests/**/*.spec.ts"],
+    settings: {
+      playwright: { globalAliases: { test: ["twoSchoolTest"] } },
+    },
     rules: {
       ...playwright.configs["flat/recommended"].rules,
       "playwright/consistent-spacing-between-blocks": "off",
@@ -89,10 +94,13 @@ export default tseslint.config(
       "tests/zamowienia-redmine-36289.spec.ts",
       "tests/zamowienia-redmine-36290.spec.ts",
       "tests/zamowienia-redmine-35980.spec.ts",
+      "tests/zamowienia-kopie-struktura-status.spec.ts",
     ],
     settings: {
       playwright: {
-        globalAliases: { test: ["caseTest", "pairTest", "isolationTest", "standaloneTest"] },
+        globalAliases: {
+          test: ["caseTest", "pairTest", "isolationTest", "standaloneTest", "readonlyTest"],
+        },
       },
     },
   },

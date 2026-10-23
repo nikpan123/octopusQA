@@ -2,6 +2,7 @@ import { expect } from "@playwright/test";
 import { accessClasses, expectAccessExport } from "./support/access-regression";
 import {
   test,
+  twoSchoolTest,
   ACCESS_YEAR,
   canonicalAssignments,
   expectedAssignments,
@@ -134,46 +135,47 @@ test.describe("ClassesWithLevels — rzeczywisty eksport uprawnień", () => {
     });
   });
 
-  test("ACC-06: identyczne przypisania z dwóch szkół nie są duplikowane @teacher @entitlement @access-api @deduplication", async ({
-    access: data,
-  }) => {
-    const first =
-      await test.step("Przygotowanie: utworzenie potwierdzenia i odczyt uprawnień", async () =>
-        data.create());
-    const second =
-      await test.step("Przygotowanie: utworzenie potwierdzenia i odczyt uprawnień", async () =>
-        data.create("Matematyka", ["4"], data.schools[1]));
-    const firstClasses = (
-      await test.step("API: odczyt dostępnych klas, poziomów i zakresów", async () =>
-        data.checkboxes(first))
-    ).filter((item) => item.isOur && item.class === 4);
-    const secondClasses = (
-      await test.step("API: odczyt dostępnych klas, poziomów i zakresów", async () =>
-        data.checkboxes(second))
-    ).filter((item) => item.isOur && item.class === 4);
-    await test.step("Sprawdzenie: wartość powyżej granicy — firstClasses.length; granica: 0", async () => {
-      expect(firstClasses.length).toBeGreaterThan(0);
-    });
-    await test.step("Sprawdzenie: wartość powyżej granicy — secondClasses.length; granica: 0", async () => {
-      expect(secondClasses.length).toBeGreaterThan(0);
-    });
-    await test.step("Sprawdzenie: zgodność całej struktury i wartości — expectedAssignments([{ record: first, classes: firstClasses }]); oczekiwane: expectedAssignments([{ record: second, classes: secondClasses }])", async () => {
-      expect(expectedAssignments([{ record: first, classes: firstClasses }])).toEqual(
-        expectedAssignments([{ record: second, classes: secondClasses }]),
-      );
-    });
-    await data.decide(first, firstClasses);
-    await data.decide(second, secondClasses);
-    await test.step("Porównanie: eksport API — przedmioty, klasy, poziomy i zakresy; oczekiwane: expectedAssignments([ { record: first, classes: firstClasses }, { record: second, classes: secondClasses }, ])", async () =>
-      expect
-        .poll(async () => canonicalAssignments(await data.export()))
-        .toEqual(
-          expectedAssignments([
-            { record: first, classes: firstClasses },
-            { record: second, classes: secondClasses },
-          ]),
-        ));
-  });
+  twoSchoolTest(
+    "ACC-06: identyczne przypisania z dwóch szkół nie są duplikowane @teacher @entitlement @access-api @deduplication",
+    async ({ access: data }) => {
+      const first =
+        await test.step("Przygotowanie: utworzenie potwierdzenia i odczyt uprawnień", async () =>
+          data.create());
+      const second =
+        await test.step("Przygotowanie: utworzenie potwierdzenia i odczyt uprawnień", async () =>
+          data.create("Matematyka", ["4"], data.schools[1]));
+      const firstClasses = (
+        await test.step("API: odczyt dostępnych klas, poziomów i zakresów", async () =>
+          data.checkboxes(first))
+      ).filter((item) => item.isOur && item.class === 4);
+      const secondClasses = (
+        await test.step("API: odczyt dostępnych klas, poziomów i zakresów", async () =>
+          data.checkboxes(second))
+      ).filter((item) => item.isOur && item.class === 4);
+      await test.step("Sprawdzenie: wartość powyżej granicy — firstClasses.length; granica: 0", async () => {
+        expect(firstClasses.length).toBeGreaterThan(0);
+      });
+      await test.step("Sprawdzenie: wartość powyżej granicy — secondClasses.length; granica: 0", async () => {
+        expect(secondClasses.length).toBeGreaterThan(0);
+      });
+      await test.step("Sprawdzenie: zgodność całej struktury i wartości — expectedAssignments([{ record: first, classes: firstClasses }]); oczekiwane: expectedAssignments([{ record: second, classes: secondClasses }])", async () => {
+        expect(expectedAssignments([{ record: first, classes: firstClasses }])).toEqual(
+          expectedAssignments([{ record: second, classes: secondClasses }]),
+        );
+      });
+      await data.decide(first, firstClasses);
+      await data.decide(second, secondClasses);
+      await test.step("Porównanie: eksport API — przedmioty, klasy, poziomy i zakresy; oczekiwane: expectedAssignments([ { record: first, classes: firstClasses }, { record: second, classes: secondClasses }, ])", async () =>
+        expect
+          .poll(async () => canonicalAssignments(await data.export()))
+          .toEqual(
+            expectedAssignments([
+              { record: first, classes: firstClasses },
+              { record: second, classes: secondClasses },
+            ]),
+          ));
+    },
+  );
   test("ACC-07: ta sama klasa Fizyki zachowuje dwa różne zakresy w eksporcie @teacher @entitlement @access-api @scope", async ({
     access: data,
   }) => {
@@ -196,31 +198,33 @@ test.describe("ClassesWithLevels — rzeczywisty eksport uprawnień", () => {
     await expectAccessExport(data, [{ record, classes: second }]);
   });
 
-  test("ACC-09: odmowa w jednej szkole nie przesłania przyznania tej samej klasy w drugiej @teacher @entitlement @access-api @isolation", async ({
-    access: data,
-  }) => {
-    const first = await data.create();
-    const second = await data.create("Matematyka", ["4"], data.schools[1]);
-    const classes = await accessClasses(data, second, [4]);
-    await data.decide(first, []);
-    await data.decide(second, classes);
-    await expectAccessExport(data, [{ record: second, classes }]);
-  });
+  twoSchoolTest(
+    "ACC-09: odmowa w jednej szkole nie przesłania przyznania tej samej klasy w drugiej @teacher @entitlement @access-api @isolation",
+    async ({ access: data }) => {
+      const first = await data.create();
+      const second = await data.create("Matematyka", ["4"], data.schools[1]);
+      const classes = await accessClasses(data, second, [4]);
+      await data.decide(first, []);
+      await data.decide(second, classes);
+      await expectAccessExport(data, [{ record: second, classes }]);
+    },
+  );
 
-  test("ACC-10: usunięcie jednego z dwóch źródeł nie usuwa wspólnej klasy z eksportu @teacher @entitlement @access-api @deduplication @delete", async ({
-    access: data,
-  }) => {
-    const first = await data.create();
-    const second = await data.create("Matematyka", ["4"], data.schools[1]);
-    const firstClasses = await accessClasses(data, first, [4]);
-    const secondClasses = await accessClasses(data, second, [4]);
-    await data.decide(first, firstClasses);
-    await data.decide(second, secondClasses);
-    await expectAccessExport(data, [
-      { record: first, classes: firstClasses },
-      { record: second, classes: secondClasses },
-    ]);
-    await data.club.remove(data.teacherId, String(first.id));
-    await expectAccessExport(data, [{ record: second, classes: secondClasses }]);
-  });
+  twoSchoolTest(
+    "ACC-10: usunięcie jednego z dwóch źródeł nie usuwa wspólnej klasy z eksportu @teacher @entitlement @access-api @deduplication @delete",
+    async ({ access: data }) => {
+      const first = await data.create();
+      const second = await data.create("Matematyka", ["4"], data.schools[1]);
+      const firstClasses = await accessClasses(data, first, [4]);
+      const secondClasses = await accessClasses(data, second, [4]);
+      await data.decide(first, firstClasses);
+      await data.decide(second, secondClasses);
+      await expectAccessExport(data, [
+        { record: first, classes: firstClasses },
+        { record: second, classes: secondClasses },
+      ]);
+      await data.club.remove(data.teacherId, String(first.id));
+      await expectAccessExport(data, [{ record: second, classes: secondClasses }]);
+    },
+  );
 });

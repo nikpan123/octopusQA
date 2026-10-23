@@ -1,12 +1,21 @@
-import { test, expect, chromium, type Page } from "@playwright/test";
+import { test, expect, chromium, type Page, type BrowserContext } from "@playwright/test";
 import { backgroundSchoolSetup } from "../tests/support/background-school-setup";
 import { OCTOPUS_BASE_URL } from "../tests/support/environment";
 import { restoreSession } from "./auth.mjs";
+import { FixtureSchoolsApi } from "./fixture-schools.mjs";
+import { Octopus } from "../tests/support/octopus";
+import { ensureStructureTestSchools } from "../tests/support/school-structure-data";
 
-function mockSource(options: { failContext?: boolean; failPage?: boolean } = {}) {
+function mockSource(
+  options: {
+    failContext?: boolean;
+    failPage?: boolean;
+    storageState?: Awaited<ReturnType<BrowserContext["storageState"]>>;
+  } = {},
+) {
   const events: string[] = [];
   const setupPage = { identity: "hidden" };
-  const state = { cookies: [], origins: [] };
+  const state = options.storageState ?? { cookies: [], origins: [] };
   const browser = {
     async newContext(args: unknown) {
       expect(args).toEqual({ storageState: state });
@@ -49,6 +58,63 @@ function mockSource(options: { failContext?: boolean; failPage?: boolean } = {})
     }),
   } as unknown as Page;
   return { source, setupPage, events };
+}
+
+for (const fail of [false, true]) {
+  test(`Cztery szkoły używają jednej sesji przygotowania; sprzątanie przeglądarki po ${fail ? "błędzie" : "sukcesie"}`, async () => {
+    const { source, setupPage, events } = mockSource({
+      storageState: {
+        cookies: [],
+        origins: [
+          {
+            origin: OCTOPUS_BASE_URL,
+            localStorage: [
+              { name: "token", value: "offline-token" },
+              { name: "id", value: "1" },
+            ],
+          },
+        ],
+      },
+    });
+    const originalFind = FixtureSchoolsApi.prototype.findMany,
+      originalCreate = Octopus.prototype.createSchool,
+      originalMark = Octopus.prototype.markTestRecord;
+    const calls: string[] = [];
+    FixtureSchoolsApi.prototype.findMany = async (definitions) => definitions.map(() => null);
+    Octopus.prototype.createSchool = async function (name) {
+      expect(this.page).toBe(setupPage);
+      calls.push("create");
+      if (fail && calls.filter((c) => c === "create").length === 3)
+        throw Error("controlled school failure");
+      return String(calls.length);
+    };
+    Octopus.prototype.markTestRecord = async function () {
+      expect(this.page).toBe(setupPage);
+      calls.push("mark");
+    };
+    try {
+      const operation = ensureStructureTestSchools(
+        source,
+        new Octopus(source),
+        ["specCopyGroup", "specCopyPrimary", "specCopySecondary", "specCopyTechnical"],
+        "UNIT_BATCH_" + String(fail),
+      );
+      if (fail) await expect(operation).rejects.toThrow("controlled school failure");
+      else expect(Object.keys(await operation)).toHaveLength(4);
+      expect(events.filter((e) => e === "launchHeadless")).toHaveLength(1);
+      expect(events.filter((e) => e === "newContext")).toHaveLength(1);
+      expect(events.at(-1)).toBe("close");
+      expect(calls).toEqual(
+        fail
+          ? ["create", "mark", "create", "mark", "create"]
+          : Array.from({ length: 4 }, () => ["create", "mark"]).flat(),
+      );
+    } finally {
+      FixtureSchoolsApi.prototype.findMany = originalFind;
+      Octopus.prototype.createSchool = originalCreate;
+      Octopus.prototype.markTestRecord = originalMark;
+    }
+  });
 }
 
 test("przygotowanie nie otwiera kart w widocznej przeglądarce i zwraca wynik", async () => {

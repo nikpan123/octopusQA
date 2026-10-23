@@ -11,6 +11,7 @@ import {
 } from "./support/access-regression";
 import {
   test,
+  twoSchoolTest,
   GRANTED,
   hasBokSource,
   permissionRow,
@@ -336,25 +337,26 @@ test.describe("Uprawnienia nauczyciela — prezentacja dostępu cyfrowego", () =
       expect(permissionRow(panel, physics).locator(".mat-column-subject")).toHaveText("Fizyka"));
   });
 
-  test("PERM-14: ten sam przedmiot w dwóch szkołach ma oddzielne rekordy @teacher @entitlement @isolation", async ({
-    access: data,
-  }) => {
-    const first =
-      await test.step("Przygotowanie: utworzenie potwierdzenia i odczyt uprawnień", async () =>
-        data.create());
-    const second =
-      await test.step("Przygotowanie: utworzenie potwierdzenia i odczyt uprawnień", async () =>
-        data.create("Matematyka", ["4"], data.schools[1]));
-    const panel = await data.open();
-    await test.step('Sprawdzenie: tekst w widoku — permissionRow(panel, first).locator(".mat-column-schoolName"); oczekiwane: data.schools[0].name', async () =>
-      expect(permissionRow(panel, first).locator(".mat-column-schoolName")).toHaveText(
-        data.schools[0].name,
-      ));
-    await test.step('Sprawdzenie: tekst w widoku — permissionRow(panel, second).locator(".mat-column-schoolName"); oczekiwane: data.schools[1].name', async () =>
-      expect(permissionRow(panel, second).locator(".mat-column-schoolName")).toHaveText(
-        data.schools[1].name,
-      ));
-  });
+  twoSchoolTest(
+    "PERM-14: ten sam przedmiot w dwóch szkołach ma oddzielne rekordy @teacher @entitlement @isolation",
+    async ({ access: data }) => {
+      const first =
+        await test.step("Przygotowanie: utworzenie potwierdzenia i odczyt uprawnień", async () =>
+          data.create());
+      const second =
+        await test.step("Przygotowanie: utworzenie potwierdzenia i odczyt uprawnień", async () =>
+          data.create("Matematyka", ["4"], data.schools[1]));
+      const panel = await data.open();
+      await test.step('Sprawdzenie: tekst w widoku — permissionRow(panel, first).locator(".mat-column-schoolName"); oczekiwane: data.schools[0].name', async () =>
+        expect(permissionRow(panel, first).locator(".mat-column-schoolName")).toHaveText(
+          data.schools[0].name,
+        ));
+      await test.step('Sprawdzenie: tekst w widoku — permissionRow(panel, second).locator(".mat-column-schoolName"); oczekiwane: data.schools[1].name', async () =>
+        expect(permissionRow(panel, second).locator(".mat-column-schoolName")).toHaveText(
+          data.schools[1].name,
+        ));
+    },
+  );
 
   test("PERM-15: dane ilościowe w szczególe nie są edytowalne @teacher @entitlement @readonly", async ({
     access: data,
@@ -583,27 +585,28 @@ test.describe("Uprawnienia nauczyciela — prezentacja dostępu cyfrowego", () =
     await expectAccessExport(data, []);
   });
 
-  test("PERM-20: edycja BOK jednej szkoły nie zmienia tego samego przedmiotu w drugiej szkole @teacher @entitlement @manual @isolation", async ({
-    access: data,
-  }) => {
-    const first = await data.create();
-    const second = await data.create("Matematyka", ["5"], data.schools[1]);
-    const firstClasses = await accessClasses(data, first, [4]);
-    const secondClasses = await accessClasses(data, second, [5]);
-    await data.decide(first, []);
-    await data.decide(second, secondClasses);
-    const before = await currentPermission(data, second);
-    const history = await data.history(second);
-    await editPermissionClass(data, first, "4", true);
-    await expectAccessExport(data, [
-      { record: first, classes: firstClasses },
-      { record: second, classes: secondClasses },
-    ]);
-    await test.step("Porównanie API: rekord i historia drugiej szkoły pozostały bez zmian", async () => {
-      expect(await currentPermission(data, second)).toEqual(before);
-      expect(await data.history(second)).toEqual(history);
-    });
-  });
+  twoSchoolTest(
+    "PERM-20: edycja BOK jednej szkoły nie zmienia tego samego przedmiotu w drugiej szkole @teacher @entitlement @manual @isolation",
+    async ({ access: data }) => {
+      const first = await data.create();
+      const second = await data.create("Matematyka", ["5"], data.schools[1]);
+      const firstClasses = await accessClasses(data, first, [4]);
+      const secondClasses = await accessClasses(data, second, [5]);
+      await data.decide(first, []);
+      await data.decide(second, secondClasses);
+      const before = await currentPermission(data, second);
+      const history = await data.history(second);
+      await editPermissionClass(data, first, "4", true);
+      await expectAccessExport(data, [
+        { record: first, classes: firstClasses },
+        { record: second, classes: secondClasses },
+      ]);
+      await test.step("Porównanie API: rekord i historia drugiej szkoły pozostały bez zmian", async () => {
+        expect(await currentPermission(data, second)).toEqual(before);
+        expect(await data.history(second)).toEqual(history);
+      });
+    },
+  );
 
   for (const [index, declared] of ["4", "7"].entries()) {
     test(`PERM-${21 + index}: szkoła testowa bez zamówień rozszerza deklarację Matematyki ${declared} do 4–8 @teacher @entitlement @test-school @no-orders`, async ({

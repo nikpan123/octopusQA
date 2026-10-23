@@ -547,7 +547,7 @@ export class Octopus {
     await this.page.getByRole("button", { name: "Dodaj", exact: true }).click();
     const form = this.dialog("Dodaj nowego nauczyciela");
     await typeValue(this.field(form, "*Nazwisko"), lastName);
-    await typeValue(this.field(form, "*Imię"), "Testowy");
+    await typeValue(this.field(form, "*Imię"), "Auto");
     await typeValue(
       form
         .locator(".new-teacher__personal-input")

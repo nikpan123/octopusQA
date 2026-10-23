@@ -4,8 +4,8 @@ import { expandOrderItems, orderRow } from "./support/order";
 
 for (const [index, source, target] of [
   ["01", "SP", "LO"],
-  ["02", "A", "SP"],
-  ["03", "SP", "A"],
+  ["02", "ZS", "SP"],
+  ["03", "SP", "ZS"],
 ] as Array<[string, CopyNode, CopyNode]>) {
   const caseTest = copyTestFor(copyPairPlan(source, target));
   caseTest(
@@ -48,6 +48,15 @@ for (const [index, source, target] of [
             .locator(".shool-address-container > span")
             .last(),
         ).toHaveText(sourceAddress!);
+      });
+      await test.step("Prezentacja: rozwinięta kopia zachowuje symbol źródła i oznaczenie - kopia", async () => {
+        const sourceOrder = before[source].find((row) => String(row.id) === original.id)!;
+        const symbol = sourceOrder.salesOrderSymbol || sourceOrder.cmsOrderSymbol;
+        expect(symbol, "Nie porównujemy pustego symbolu").toBeTruthy();
+        const panel = await data.panel(target);
+        const items = await expandOrderItems(panel, String(copied.id));
+        await expect(items).toBeVisible();
+        await expect(orderRow(panel, String(copied.id))).toContainText(`${symbol} - kopia`);
       });
       const changed = [{ product: original.lines[0].product, quantity: 8 }];
       await test.step("Zmiana oryginału: nowa ilość i usunięcie drugiego produktu", () =>

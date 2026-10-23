@@ -6,7 +6,7 @@ Zgłoszenie: https://redmine.gwo.pl/issues/37164. Projekt Octopus, typ Błąd. N
 
 Jedna szkoła może być przypisana do jednego nauczyciela dokładnie raz. Ponowne wyszukanie, otwarcie okna lub edycja nie mogą umożliwiać ponownego dodania. Można natomiast dodać drugą, inną szkołę.
 
-Testy korzystają z istniejących szkół QA: **93391 — Szkoła QA 1**, **93392 — Szkoła QA 2**. Szkoły nie są edytowane. Każdy scenariusz używa własnego nauczyciela z identyfikatorem `REG_*`, adresem `@example.invalid` i flagą Testowy. Przy tworzeniu testowany jest rzeczywisty formularz z wymaganymi zgodami dla źródła danych. Przy edycji własny nauczyciel jest przygotowywany przez istniejącą fabrykę API. Edycja szkół odbywa się przyciskiem „Dodaj szkołę” na profilu; zapis tego okna zapisuje relacje bez otwierania osobnej edycji danych podstawowych.
+Testy korzystają z dwóch szkół przygotowywanych przez `shared-school` osobno na DEV i TEST. Aktualne ID są wyszukiwane po dokładnej nazwie; brakujące szkoły powstają jako rekordy Testowy. Kroki regresji nie edytują danych szkół. Każdy scenariusz używa własnego nauczyciela z identyfikatorem `REG_*`, adresem `@example.invalid` i flagą Testowy. Przy tworzeniu testowany jest rzeczywisty formularz z wymaganymi zgodami dla źródła danych. Przy edycji własny nauczyciel jest przygotowywany przez istniejącą fabrykę API. Edycja szkół odbywa się przyciskiem „Dodaj szkołę” na profilu; zapis tego okna zapisuje relacje bez otwierania osobnej edycji danych podstawowych.
 
 ## Scenariusze Playwright
 

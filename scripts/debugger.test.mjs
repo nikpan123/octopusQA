@@ -15,7 +15,7 @@ async function until(predicate, timeout = 20000) {
   const end = Date.now() + timeout;
   while (!predicate()) {
     if (Date.now() > end) throw new Error("Nie doczekano oczekiwanego stanu debuggera.");
-    await new Promise(resolve => setTimeout(resolve, 40));
+    await new Promise(resolve => globalThis.setTimeout(resolve, 40));
   }
 }
 
@@ -93,13 +93,13 @@ test("rzeczywisty Playwright UI: bramka przed kliknięciem, obraz JPEG i kontynu
     const [code]=await ended;
     assert.equal(code,0,output);
     assert.deepEqual(run.steps.map(step=>step.status),["passed","passed","passed"]);
-  }catch(error){throw new Error(error.message+'\n'+output+'\n'+JSON.stringify(run.snapshot()));}
+  }catch(error){throw new Error(error.message+'\n'+output+'\n'+JSON.stringify(run.snapshot()),{cause:error});}
   finally{run.close();if(child.exitCode===null)child.kill();relay.closeAllConnections();await new Promise(resolve=>relay.close(resolve));}
 });
 
 test("zakładka debuggera: wybór, F10, API, raport i układ mobilny bez startu regresji", async () => {
   const browser=await chromium.launch({channel:"msedge",headless:true});
-  const tests=[{id:"MED-BUG-37204-01",title:"Filtrowanie medalu Brak @step-ui",file:"school.spec.ts",debuggerMode:"ui"},{id:"ORD-SPEC-35980-08",title:"Sprawdzenie API @step-api",file:"api.spec.ts",debuggerMode:"api"},{id:"STR-106",title:"Zwykły test",file:"school.spec.ts"}];
+  const tests=[{id:"MED-BUG-37204-01",title:"Filtrowanie medalu Brak @step-ui",file:"school.spec.ts",debuggerMode:"ui"},{id:"ORD-SPEC-35980-08",title:"Sprawdzenie API @step-api",file:"api.spec.ts",debuggerMode:"api"},{id:"CAT-23",title:"Sortowanie kategorii",file:"category.spec.ts",debuggerMode:"ui",debuggerSteps:"automatic",debuggerTestKey:"cat23-key"},{id:"ADD-20",title:"Dodaj A",file:"add.spec.ts",debuggerMode:"ui",debuggerTestKey:"add-a"},{id:"ADD-20",title:"Dodaj B",file:"add.spec.ts",debuggerMode:"ui",debuggerTestKey:"add-b"}];
   let submitted, nextCalls=0, controls=[], starts=0;
   const status={running:false,run:null};
   try{
@@ -128,14 +128,23 @@ test("zakładka debuggera: wybór, F10, API, raport i układ mobilny bez startu 
     const page=await context.newPage();
     await page.addInitScript(()=>{window.EventSource=class {addEventListener(name,handler){if(name==='status')window.__debuggerStatus=handler;}};});
     await page.goto("http://runner.test/#debugger");
-    await expect(page.locator("#debugTest option")).toHaveCount(3);
+    await expect(page.locator("#debugTest option")).toHaveCount(6);
+    await page.locator('#debugSearch').fill('CAT-23');
+    await expect(page.locator('#debugTest option')).toHaveCount(2);
+    await page.locator('#debugTest').selectOption('cat23-key');
+    await expect(page.locator('#debugTestDescription')).toContainText('CAT-23');
+    await page.locator('#debugSearch').fill('ADD-20');
+    await expect(page.locator('#debugTest option')).toHaveCount(3);
+    await page.locator('#debugTest').selectOption('add-b');
+    await expect(page.locator('#debugTestDescription')).toContainText('Dodaj B');
+    await page.locator('#debugSearch').fill('');
     await expect(page.locator(".debugger-setup")).toBeVisible();
     await expect(page.locator(".debugger-session")).toBeHidden();
     for (const theme of ['dark','light']) {
       await page.selectOption('#qa-theme-mode',theme);
       for (const width of [1600,390,320]) {
         await page.setViewportSize({width,height:1000});
-        assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false,`setup ${theme} ${width}`);
+        assert.equal(await page.evaluate(()=>globalThis.document.documentElement.scrollWidth>globalThis.innerWidth),false,`setup ${theme} ${width}`);
         if(process.env.QA_DEBUGGER_SCREENSHOTS&&width!==320) await page.screenshot({path:process.env.QA_DEBUGGER_SCREENSHOTS+`/octopus-debugger-setup-${theme}-${width}.png`,fullPage:true});
       }
     }
@@ -187,6 +196,26 @@ test("zakładka debuggera: wybór, F10, API, raport i układ mobilny bez startu 
     status.run.guided.steps.at(-1).inspection.phase="cleanup";
     await page.evaluate(value=>window.__debuggerStatus({data:JSON.stringify(value)}),status);
     await expect(page.locator('#debugNext')).toContainText("Zatwierdź sprzątanie");
-    for(const theme of ["dark","light"]){await page.selectOption("#qa-theme-mode",theme);for(const width of [1600,1075,650,390,320]){await page.setViewportSize({width,height:1000});assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false,`${theme} ${width}`);if(process.env.QA_DEBUGGER_SCREENSHOTS&&[1600,390].includes(width))await page.screenshot({path:process.env.QA_DEBUGGER_SCREENSHOTS+`/octopus-debugger-${theme}-${width}.png`,fullPage:true});}}
+    // Newest first, with chronological numbering; keep an older step under
+    // the reader's cursor when a new event prepends another card.
+    await page.setViewportSize({width:1600,height:1000});
+    await page.locator('.debugger-timeline').evaluate(el=>el.scrollTop=0);
+    status.run.guided.steps=Array.from({length:40},(_,i)=>({id:'order-'+(i+1),title:'Etap '+(i+1),status:'passed',requests:[{method:'GET',path:'/api/Example',status:200}]}));
+    await page.evaluate(value=>window.__debuggerStatus({data:JSON.stringify(value)}),status);
+    await expect(page.locator('#debugSteps .debugger-step-number').first()).toHaveText('40');
+    await expect(page.locator('#debugSteps .debugger-step-number').last()).toHaveText('1');
+    await page.locator('#debugSteps details').first().evaluate(el=>el.open=true);
+    status.run.guided.steps.push({id:'order-41',title:'Najnowszy etap',status:'waiting',ready:true,requests:[]});
+    await page.evaluate(value=>window.__debuggerStatus({data:JSON.stringify(value)}),status);
+    await expect(page.locator('#debugSteps .debugger-step-number').first()).toHaveText('41');
+    assert.equal(await page.locator('.debugger-timeline').evaluate(el=>el.scrollTop),0);
+    await expect(page.locator('#debugSteps details[data-step="order-40"]')).toHaveAttribute('open','');
+    await page.locator('.debugger-timeline').evaluate(el=>el.scrollTop=700);
+    const anchor=await page.locator('.debugger-timeline').evaluate(el=>{const top=el.getBoundingClientRect().top+el.querySelector('.debugger-timeline-head').offsetHeight;const item=[...el.querySelectorAll('[data-step-id]')].find(x=>x.getBoundingClientRect().bottom>top);return {id:item.dataset.stepId,top:item.getBoundingClientRect().top};});
+    status.run.guided.steps.push({id:'order-42',title:'Kolejny etap',status:'waiting',ready:true,requests:[]});
+    await page.evaluate(value=>window.__debuggerStatus({data:JSON.stringify(value)}),status);
+    const after=await page.locator(`[data-step-id="${anchor.id}"]`).evaluate(el=>el.getBoundingClientRect().top);
+    assert.ok(Math.abs(after-anchor.top)<2,'Nowy etap nie przesuwa czytanego wcześniejszego kroku');
+    for(const theme of ["dark","light"]){await page.selectOption("#qa-theme-mode",theme);for(const width of [1600,1075,650,390,320]){await page.setViewportSize({width,height:1000});assert.equal(await page.evaluate(()=>globalThis.document.documentElement.scrollWidth>globalThis.innerWidth),false,`${theme} ${width}`);if(process.env.QA_DEBUGGER_SCREENSHOTS&&[1600,390].includes(width))await page.screenshot({path:process.env.QA_DEBUGGER_SCREENSHOTS+`/octopus-debugger-${theme}-${width}.png`,fullPage:true});}}
   }finally{await browser.close();}
 });

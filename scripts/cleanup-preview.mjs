@@ -32,7 +32,7 @@ export function buildInventory(logs) {
       file,
       d.result,
       d.schoolId,
-      d.editedLastName ?? d.lastName ?? d.id,
+      d.editedLastName ?? d.teacherLastName ?? d.lastName ?? d.displayId ?? d.id,
       d.cleanupStatus,
     );
     add("order", d.orderId, file, d.result, d.schoolId);

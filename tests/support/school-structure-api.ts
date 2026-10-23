@@ -1,3 +1,4 @@
+import { entitlementSchoolPattern } from "../../scripts/test-names.mjs";
 import { apiStep } from "./api-step";
 import { expect, type APIRequestContext, type APIResponse } from "@playwright/test";
 import type { AuthSession } from "../../scripts/auth.mjs";
@@ -72,9 +73,10 @@ export class StructureApi {
       expect(body.data).toHaveLength(1);
       expect(String(body.data[0].id)).toBe(school.id);
       expect(body.data[0].name).toBe(school.name);
-      expect(school.name).toMatch(
-        new RegExp(`^AUTO_(?:STR_|CAT_${OCTOPUS_ENV.toUpperCase()}_ENT_UNMARKED_)`),
-      );
+      expect(
+        school.name.startsWith("AUTO_STR_") ||
+          entitlementSchoolPattern(OCTOPUS_ENV, true).test(school.name),
+      ).toBe(true);
       expect(body.data[0].isDel).toBe(false);
       expect(
         Number.isSafeInteger(body.data[0].typeId) && body.data[0].typeId > 0,
@@ -91,7 +93,7 @@ export class StructureApi {
   }
 
   registerInactive(school: StructureSchool) {
-    expect(school.name).toMatch(/^AUTO_STR_.*_NIEAKTYWNA$/);
+    expect(school.name).toMatch(/^AUTO_STR_(?:.*_NIEAKTYWNA|[DT]_OFF)$/);
     expect(
       Number.isSafeInteger(school.institutionUnitId) && (school.institutionUnitId ?? 0) > 0,
     ).toBe(true);

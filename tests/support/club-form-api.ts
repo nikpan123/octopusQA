@@ -1,3 +1,4 @@
+import { entitlementSchoolPattern } from "../../scripts/test-names.mjs";
 import { apiStep } from "./api-step";
 import { expect, type APIRequestContext } from "@playwright/test";
 import type { AuthSession } from "../../scripts/auth.mjs";
@@ -110,7 +111,7 @@ export class ClubFormApi {
     schools: Array<{ id: string; name: string }>,
   ) {
     expect(teacherId).toMatch(/^[1-9]\d*$/);
-    expect(lastName).toMatch(/^REG_\d+_[a-f0-9]{6} FILTR /);
+    expect(lastName).toMatch(/^(?:AUTO_[a-f0-9]{12}$|REG_\d+_[a-f0-9]{6} FILTR )/);
     for (const school of schools) {
       expect(school.id).toMatch(/^[1-9]\d*$/);
       expect(school.name).toMatch(/^AUTO_TFL_/);
@@ -125,11 +126,11 @@ export class ClubFormApi {
   ) {
     // Osobna, wąska ścieżka dla fixture Uprawnień; nie rozszerza właścicieli TFL.
     expect(teacherId).toMatch(/^[1-9]\d*$/);
-    expect(lastName).toMatch(/^REG_\d+_[a-f0-9]{6}$/);
+    expect(lastName).toMatch(/^(?:AUTO_[a-f0-9]{12}|REG_\d+_[a-f0-9]{6})$/);
     expect(schools.length).toBeGreaterThan(0);
     for (const school of schools) {
       expect(school.id).toMatch(/^[1-9]\d*$/);
-      expect(school.name).toMatch(new RegExp(`^AUTO_CAT_${OCTOPUS_ENV.toUpperCase()}_ENT_`));
+      expect(school.name).toMatch(entitlementSchoolPattern(OCTOPUS_ENV));
     }
     this.owners.set(teacherId, new Set(schools.map((school) => school.id)));
   }
@@ -153,6 +154,17 @@ export class ClubFormApi {
       this.metrics.increment("api.requests");
       this.metrics.increment(`api.status.${response.status()}`);
       expect(response.ok(), `POST ${path}: HTTP ${response.status()}`).toBe(true);
+      const text = await response.text();
+      let result: { codeResult?: number } | undefined;
+      try {
+        result = JSON.parse(text) as { codeResult?: number };
+      } catch {
+        /* Empty success is allowed. */
+      }
+      if (result?.codeResult !== undefined)
+        expect([200, 204], `POST ${path}: biznesowy kod odpowiedzi ${result.codeResult}`).toContain(
+          result.codeResult,
+        );
       // Bez automatycznych powtórzeń POST: nie tworzymy drugiego potwierdzenia po niepewnym zapisie.
     });
   }

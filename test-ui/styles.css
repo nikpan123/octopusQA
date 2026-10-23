@@ -1163,6 +1163,18 @@ html[data-theme=dark] .qa-app.qa-octopus .scenarios-card{--sc-card:#111827;--sc-
 .qa-octopus .scenarios-card #scenarioSearch{margin-top:10px;width:100%;min-width:0;min-height:46px;border-color:var(--sc-line);background:var(--sc-detail);color:var(--sc-text)}
 .qa-octopus .scenarios-card .scenario-feature{padding:0;margin:0 0 28px;border:1px solid var(--sc-line);border-radius:16px;overflow:hidden;background:var(--sc-card);box-shadow:0 4px 20px #0000000a}
 .qa-octopus .scenario-scope-head{padding:28px}
+.qa-octopus details.scenario-feature>summary.scenario-scope-head{display:block;list-style:none;margin:0;cursor:pointer;font-size:inherit;color:var(--sc-text)}
+.qa-octopus details.scenario-feature>summary.scenario-scope-head::-webkit-details-marker{display:none}
+.qa-octopus details.scenario-feature>summary.scenario-scope-head:hover{background:var(--sc-hover)}
+.qa-octopus details.scenario-feature>summary.scenario-scope-head:focus-visible{outline:2px solid var(--sc-accent);outline-offset:-3px}
+.qa-octopus .scenario-expand-hint{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--sc-accent);margin-top:18px}
+.qa-octopus .scenario-expand-hint>span:first-child{font-size:20px;line-height:1}
+.qa-octopus .scenario-feature:not([open]) .scenario-expand-hint .when-open,.qa-octopus .scenario-feature[open] .scenario-expand-hint .when-closed{display:none}
+.qa-octopus .scenario-feature[open] .scenario-expand-hint>span:first-child{transform:rotate(180deg)}
+.qa-octopus .scenario-feature-body>.actions,.qa-octopus .scenario-feature-body>.scenario-history{margin:0;padding:0 28px 20px}
+.qa-octopus .scenario-run-actions{display:flex;flex-wrap:wrap;align-items:center;gap:10px;padding:0 28px 24px}
+.qa-octopus .scenario-run-actions p{flex-basis:100%;font-size:12px;color:var(--sc-muted);margin:0}
+@media(max-width:650px){.qa-octopus .scenario-run-actions{padding:0 18px 18px}.qa-octopus .scenario-run-actions :is(button,a){white-space:normal;max-width:100%}}
 .qa-octopus .scenario-feature-header{height:auto;min-height:0;background:transparent;border:0;align-items:flex-start;gap:20px}
 html[data-theme=dark] .qa-octopus .scenario-feature-header{background:transparent}
 .qa-octopus .scenario-feature-header>div:first-child{min-width:0}

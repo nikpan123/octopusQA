@@ -1,5 +1,5 @@
 param(
-  [ValidateSet('Probe', 'ReadOrder', 'FindHistorical', 'FindHistoricalWithHistory', 'FindStatusAudit', 'ReadHistorical')][string]$Action = 'Probe',
+  [ValidateSet('Probe', 'ReadOrder', 'FindHistorical', 'FindHistoricalWithHistory', 'FindStatusAudit', 'ReadHistorical', 'DocumentTypes', 'FindCopyHistory', 'FindCopyStates', 'ReadCopyPair')][string]$Action = 'Probe',
   [int]$OrderId = 0,
   [int]$SchoolId = 0
 )
@@ -20,7 +20,7 @@ try {
   $port = 1433
   if ($env:OCTOPUS_DEV_DB_PORT) { $port = [int]$env:OCTOPUS_DEV_DB_PORT }
   if ($port -lt 1 -or $port -gt 65535) { throw 'INVALID_PORT' }
-  if ($Action -in @('ReadOrder', 'ReadHistorical') -and ($OrderId -le 0 -or $SchoolId -le 0)) { throw 'INVALID_ID' }
+  if ($Action -in @('ReadOrder', 'ReadHistorical', 'ReadCopyPair') -and ($OrderId -le 0 -or $SchoolId -le 0)) { throw 'INVALID_ID' }
 
   $builder = New-Object System.Data.SqlClient.SqlConnectionStringBuilder
   $builder['Data Source'] = "$($env:OCTOPUS_DEV_DB_SERVER),$port"
@@ -62,13 +62,88 @@ ORDER BY c.column_id
     $command.CommandText = @'
 SELECT t.name AS TableName, c.name AS ColumnName
 FROM sys.tables t JOIN sys.columns c ON c.object_id = t.object_id
-WHERE t.name LIKE N'%Order%' OR t.name LIKE N'%History%' OR t.name LIKE N'%Relation%' OR t.name IN (N'User', N'Users')
+WHERE t.name LIKE N'%Order%' OR t.name LIKE N'%History%' OR t.name LIKE N'%Relation%' OR t.name LIKE N'%Access%' OR t.name IN (N'User', N'Users', N'School', N'TeacherFormClub')
 ORDER BY t.name, c.column_id
 '@
     $reader = $command.ExecuteReader()
     $relatedColumns = @()
     while ($reader.Read()) { $relatedColumns += @{ table = [string]$reader['TableName']; column = [string]$reader['ColumnName'] } }
     @{ database = $database; columns = @($columns); relatedColumns = @($relatedColumns) } | ConvertTo-Json -Depth 5 -Compress
+  } elseif ($Action -in @('DocumentTypes', 'FindCopyHistory', 'FindCopyStates', 'ReadCopyPair')) {
+    if ($Action -eq 'DocumentTypes') {
+      $command.CommandText = @'
+SELECT TOP (100) Id AS id, Symbol AS symbol, Description AS description FROM dbo.DictSchoolOrderType ORDER BY Id
+'@
+    } elseif ($Action -eq 'FindCopyHistory') {
+      $command.CommandText = @'
+WITH pairs AS (
+SELECT TOP (500) s.Id AS sourceId,s.SchoolId AS sourceSchoolId,c.Id AS copyId,c.SchoolId AS copySchoolId
+FROM dbo.RelationsCopiedInstitutionsOrders r
+JOIN dbo.SchoolOrder s ON s.Id=r.InstitutionOrderIdCopiedFrom
+JOIN dbo.SchoolOrder c ON c.Id=r.InstitutionOrderIdCopiedTo
+JOIN dbo.[User] u ON u.Id=s.CreatedBy
+WHERE r.InstitutionTypeIdCopiedFrom=1 AND r.InstitutionTypeIdCopiedTo=1
+ AND s.IsCopied=0 AND c.IsCopied=1 AND s.IsDel=0 AND c.IsDel=0 AND u.Login=N'automat'
+ORDER BY s.Id DESC,c.Id DESC
+)
+SELECT TOP (10) pairs.sourceId,pairs.sourceSchoolId,pairs.copyId,pairs.copySchoolId,p.DictOrderItemId AS productId
+FROM pairs
+CROSS APPLY (SELECT TOP (1) i.DictOrderItemId FROM dbo.SchoolOrderItem i
+ WHERE i.SchoolOrderId=pairs.sourceId AND EXISTS (SELECT 1 FROM dbo.InstitutionOrderItemHistory h WHERE h.InstitutionOrderItemId=i.Id AND h.InstitutionTypeId=1)
+ AND EXISTS (SELECT 1 FROM dbo.SchoolOrderItem ci WHERE ci.SchoolOrderId=pairs.copyId AND ci.DictOrderItemId=i.DictOrderItemId)
+ ORDER BY i.Id) p
+ORDER BY pairs.sourceId DESC,pairs.copyId DESC
+'@
+    } elseif ($Action -eq 'FindCopyStates') {
+      $command.CommandText = @'
+WITH candidates AS (
+ SELECT s.Id AS sourceId, s.SchoolId AS sourceSchoolId, c.Id AS copyId, c.SchoolId AS copySchoolId,
+ s.IsDel AS sourceDeleted, s.IsCanceled AS sourceCanceled, c.IsDel AS copyDeleted,
+ t.Symbol AS typeSymbol, t.Description AS typeDescription,
+ ROW_NUMBER() OVER(PARTITION BY s.IsDel,s.IsCanceled,s.InstitutionOrderTypeId ORDER BY s.Id DESC,c.Id DESC) AS rn
+ FROM dbo.RelationsCopiedInstitutionsOrders r
+ JOIN dbo.SchoolOrder s ON s.Id=r.InstitutionOrderIdCopiedFrom
+ JOIN dbo.SchoolOrder c ON c.Id=r.InstitutionOrderIdCopiedTo
+ JOIN dbo.[User] u ON u.Id=s.CreatedBy
+ LEFT JOIN dbo.DictSchoolOrderType t ON t.Id=s.InstitutionOrderTypeId
+ WHERE r.InstitutionTypeIdCopiedFrom=1 AND r.InstitutionTypeIdCopiedTo=1
+ AND s.IsCopied=0 AND c.IsCopied=1 AND u.Login=N'automat'
+)
+SELECT TOP (40) * FROM candidates WHERE rn<=3 ORDER BY sourceId DESC,copyId DESC
+'@
+    } else {
+      $command.CommandText = @'
+SELECT s.Id AS sourceId,s.SchoolId AS sourceSchoolId,s.IsDel AS sourceDeleted,s.IsCanceled AS sourceCanceled,
+ s.CmsOrderSymbol AS sourceCmsSymbol,s.SalesOrderSymbol AS sourceSalesSymbol,s.CreatedAt AS sourceCreatedAt,
+ c.Id AS copyId,c.SchoolId AS copySchoolId,c.IsDel AS copyDeleted,c.IsCopied AS copyMarked,c.IsCanceled AS copyCanceled,
+ c.CmsOrderSymbol AS copyCmsSymbol,c.SalesOrderSymbol AS copySalesSymbol,c.CreatedAt AS copyCreatedAt,
+ t.Symbol AS typeSymbol,t.Description AS typeDescription,
+ (SELECT COUNT(*) FROM dbo.SchoolDataChangeHistory h JOIN dbo.[User] hu ON hu.Id=h.CreatedBy
+  WHERE h.SchoolId=s.SchoolId AND hu.Login=N'automat'
+  AND (h.Field LIKE N'%usuni%' OR h.Field LIKE N'%anul%' OR h.Value LIKE N'%usuni%' OR h.Value LIKE N'%anul%')
+  AND PATINDEX(N'%[^0-9]'+CONVERT(nvarchar(20),s.Id)+N'[^0-9]%',N' '+h.Value+N' ')>0) AS sourceStatusAuditCount
+FROM dbo.SchoolOrder s JOIN dbo.RelationsCopiedInstitutionsOrders r ON r.InstitutionOrderIdCopiedFrom=s.Id
+JOIN dbo.SchoolOrder c ON c.Id=r.InstitutionOrderIdCopiedTo
+LEFT JOIN dbo.DictSchoolOrderType t ON t.Id=s.InstitutionOrderTypeId
+WHERE s.Id=@OrderId AND s.SchoolId=@SchoolId AND r.InstitutionTypeIdCopiedFrom=1 AND r.InstitutionTypeIdCopiedTo=1
+ORDER BY c.Id
+'@
+      [void]$command.Parameters.Add('@OrderId', [System.Data.SqlDbType]::Int)
+      [void]$command.Parameters.Add('@SchoolId', [System.Data.SqlDbType]::Int)
+      $command.Parameters['@OrderId'].Value = $OrderId; $command.Parameters['@SchoolId'].Value = $SchoolId
+    }
+    $reader = $command.ExecuteReader(); $rows = @()
+    while ($reader.Read()) {
+      $row = @{}
+      for ($i=0; $i -lt $reader.FieldCount; $i++) {
+        $value=$reader.GetValue($i)
+        if ($value -is [DBNull]) { $value=$null }
+        elseif ($value -is [datetime]) { $value=$value.ToString('o') }
+        $row[$reader.GetName($i)]=$value
+      }
+      $rows += $row
+    }
+    @{ database=$database; rows=@($rows) } | ConvertTo-Json -Depth 6 -Compress
   } elseif ($Action -in @('FindHistorical', 'FindHistoricalWithHistory')) {
     # Kandydaci, nie dowód pochodzenia zmiany. Żaden rekord nie jest modyfikowany.
     $command.CommandText = @'

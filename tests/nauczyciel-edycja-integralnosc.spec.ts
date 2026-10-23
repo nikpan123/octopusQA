@@ -58,8 +58,8 @@ test("EDIT-43: ponowny zapis już znormalizowanych danych bez zmian nie modyfiku
    * Dlatego przed wykonaniem snapshotu czekamy na
    * konkretne oczekiwane wartości.
    */
-  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("firstName"); oczekiwane: "Testowy"', async () =>
-    expect(s.app.detail("firstName")).toHaveValue("Testowy"));
+  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("firstName"); oczekiwane: "Auto"', async () =>
+    expect(s.app.detail("firstName")).toHaveValue("Auto"));
 
   await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("lastName"); oczekiwane: normalizedLastName', async () =>
     expect(s.app.detail("lastName")).toHaveValue(normalizedLastName));

@@ -1,3 +1,4 @@
+import { automaticSchoolName } from "../../scripts/test-names.mjs";
 import { expect, request, type Browser, type BrowserContext } from "@playwright/test";
 import { mkdir, readFile, rename, writeFile } from "node:fs/promises";
 import path from "node:path";
@@ -35,15 +36,15 @@ const cacheFile = path.resolve("playwright", ".auth", OCTOPUS_ENV, "club-schools
 
 const schoolDefinitions = {
   spA: {
-    name: `AUTOMAT CLUB ${OCTOPUS_ENV.toUpperCase()} SP A`,
+    name: automaticSchoolName("CLUB", "SPA", OCTOPUS_ENV),
     type: "Szkoła podstawowa",
   },
   spB: {
-    name: `AUTOMAT CLUB ${OCTOPUS_ENV.toUpperCase()} SP B`,
+    name: automaticSchoolName("CLUB", "SPB", OCTOPUS_ENV),
     type: "Szkoła podstawowa",
   },
   secondary: {
-    name: `AUTOMAT CLUB ${OCTOPUS_ENV.toUpperCase()} SŚ`,
+    name: automaticSchoolName("CLUB", "LO", OCTOPUS_ENV),
     type: "Liceum",
   },
 } as const;

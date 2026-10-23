@@ -82,8 +82,8 @@ test("EDIT-02: anulowanie edycji zachowuje dane i historię @cancel", async ({
   await s.app.openPanel("teacher", teacherId);
   // Dane kontaktowe doczytują się niezależnie od ID i przycisku edycji.
   // Nie zapisuj pustego stanu ładowania jako wartości oczekiwanej.
-  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("firstName"); oczekiwane: "Testowy"', async () =>
-    expect(s.app.detail("firstName")).toHaveValue("Testowy"));
+  await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("firstName"); oczekiwane: "Auto"', async () =>
+    expect(s.app.detail("firstName")).toHaveValue("Auto"));
   await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("lastName"); oczekiwane: s.id', async () =>
     expect(s.app.detail("lastName")).toHaveValue(s.id));
   await test.step('Sprawdzenie: wartość pola w widoku — s.app.detail("email"); oczekiwane: s.email', async () =>
